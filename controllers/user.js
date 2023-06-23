@@ -67,7 +67,7 @@ const loginUser = asyncHandler(async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        const user = await Users.findOne({ email })
+        const user = await Users.findOne({ email }).select("-photo")
         if (!user) {
             return res.status(400).json({
                 error: true,
@@ -143,13 +143,11 @@ const updateUser = asyncHandler(async (req, res) => {
         }
 
         const updateUser = await Users.findByIdAndUpdate(user._id, updatedFields, { new: true });
-
         return res.status(201).send({
             error: false,
             message: "Profile Updated Successfully !!",
             updateUser
         });
-
 
     } catch (error) {
         console.log(error.message)
