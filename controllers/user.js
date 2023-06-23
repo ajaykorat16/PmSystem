@@ -175,7 +175,20 @@ const deleteUserProfile = async (req, res) => {
     }
 }
 
+const getAllUser = async (req, res)=>{
+    try {
+        const getAllUsers = await Users.find()
+        return res.status(200).json({
+            error: false,
+            message: "All users get successfully!!",
+            getAllUsers
+        })
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).send('Server error');
+    }
+}
 
 
 
-module.exports = { createUser, loginUser, updateUser, deleteUserProfile }
+module.exports = { createUser, loginUser, updateUser, deleteUserProfile, getAllUser }
