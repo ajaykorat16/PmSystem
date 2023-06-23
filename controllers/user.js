@@ -193,6 +193,20 @@ const getAllUser = asyncHandler(async (req, res) => {
     }
 })
 
+const getUserProfile = asyncHandler(async (req, res) => {
+    try {
+        const getProfile = await Users.findById({_id:req.user._id})
+        return res.status(200).json({
+            error: false,
+            message: "Users get profile successfully!!",
+            getProfile
+        })
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).send('Server error');
+    }
+})
 
 
-module.exports = { createUser, loginUser, updateUser, deleteUserProfile, getAllUser }
+
+module.exports = { createUser, loginUser, updateUser, deleteUserProfile, getAllUser, getUserProfile }
