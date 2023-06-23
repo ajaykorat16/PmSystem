@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const { check } = require('express-validator');
-const auth = require("../middleware/auth")
+const {auth, isAdmin} = require("../middleware/auth")
 const formidableMiddleware = require('express-formidable');
 
 
-const { createUser, loginUser, updateUser } = require("../controllers/user")
+const { createUser, loginUser, updateUser, deleteUserProfile } = require("../controllers/user")
 
 router.post("/register",
     check('firstname', 'Name is required').notEmpty(),
@@ -27,5 +27,9 @@ router.post("/login",
 )
 
 router.put("/profile", auth, formidableMiddleware(), updateUser)
+
+router.put("/profile/:id", auth, isAdmin, formidableMiddleware(), updateUser)
+
+router.delete("/deleteProfile/:id", auth, isAdmin, deleteUserProfile)
 
 module.exports = router    

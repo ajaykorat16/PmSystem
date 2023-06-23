@@ -106,10 +106,15 @@ const updateUser = async (req, res) => {
     try {
         const { firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining } = req.fields
         const { photo } = req.files;
+        const { id } = req.params
 
-        console.log("fields---->", firstname);
+        let user;
 
-        const user = await Users.findById(req.user._id)
+        if (id) {
+            user = await Users.findById(id)
+        } else {
+            user = await Users.findById(req.user._id)
+        }
 
         if (password && password.length < 6) {
             return res.send({ message: "Password is required and atleast 6 character" })
@@ -117,7 +122,7 @@ const updateUser = async (req, res) => {
 
         const hashedPassword = password ? await hashPassword(password) : undefined
 
-        const updateUser = await Users.findByIdAndUpdate(req.user._id, {
+        const updateUser = await Users.findByIdAndUpdate(user._id, {
             ...req.fields,
             firstname: firstname || user.firstname,
             lastname: lastname || user.lastname,
@@ -147,7 +152,31 @@ const updateUser = async (req, res) => {
     }
 }
 
+const deleteUserProfile = async (req, res) => {
+    try {
+        const { id } = req.params
+        const user = await Users.findOne({ _id: id })
+        if (!user) {
+            return res.status(400).json({
+                error: true,
+                message: "Invalid User"
+            })
+        }
+
+        await Users.findByIdAndDelete({ _id: id })
+
+        return res.status(200).send({
+            error: false,
+            message: "Profile Delete Successfully !!",
+        })
+
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).send('Server error');
+    }
+}
 
 
 
-module.exports = { createUser, loginUser, updateUser }
+
+module.exports = { createUser, loginUser, updateUser, deleteUserProfile }
