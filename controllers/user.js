@@ -1,6 +1,7 @@
 const Users = require("../models/userModel")
 const { validationResult } = require('express-validator');
 const Department = require("../models/departmentModel")
+const fs = require("fs")
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const saltRounds = 10
@@ -106,7 +107,7 @@ const updateUser = async (req, res) => {
         const { firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining } = req.fields
         const { photo } = req.files;
 
-        console.log("fields---->", req, fields);
+        console.log("fields---->", firstname);
 
         const user = await Users.findById(req.user._id)
 

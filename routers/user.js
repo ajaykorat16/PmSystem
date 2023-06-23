@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { check } = require('express-validator');
 const auth = require("../middleware/auth")
+const formidableMiddleware = require('express-formidable');
+
 
 const { createUser, loginUser, updateUser } = require("../controllers/user")
 
@@ -24,6 +26,6 @@ router.post("/login",
     loginUser
 )
 
-router.put("/profile", auth, updateUser)
+router.put("/profile", auth, formidableMiddleware(), updateUser)
 
 module.exports = router    
