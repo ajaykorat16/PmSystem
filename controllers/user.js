@@ -1,4 +1,5 @@
 const Users = require("../models/userModel")
+const Leaves = require("../models/leaveModel")  
 const { validationResult } = require('express-validator');
 const fs = require("fs")
 const jwt = require('jsonwebtoken');
@@ -167,6 +168,14 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
         }
 
         await Users.findByIdAndDelete({ _id: id })
+        const userLeave = await Leaves.findOne({ userId: id });
+        if(userLeave){
+            await Leaves.findByIdAndDelete({ _id: userLeave._id });
+            return res.status(200).send({
+                error: false,
+                message: "User All Record Delete Successfully !!",
+            })
+        }
 
         return res.status(200).send({
             error: false,
