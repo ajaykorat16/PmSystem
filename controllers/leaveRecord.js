@@ -1,7 +1,9 @@
 const Leaves = require("../models/leaveModel")
 const { validationResult } = require('express-validator');
+const asyncHandler = require('express-async-handler')
 
-const createLeave = async (req, res) => {
+
+const createLeave = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -28,9 +30,9 @@ const createLeave = async (req, res) => {
         console.log(error.message)
         res.status(500).send('Server error');
     }
-}
+})
 
-const getAllLeaves = async (req, res) => {
+const getAllLeaves = asyncHandler(async (req, res) => {
     try {
         const leaves = await Leaves.find()
         return res.status(201).json({
@@ -42,9 +44,9 @@ const getAllLeaves = async (req, res) => {
         console.log(error.message)
         res.status(500).send('Server error');
     }
-}
+})
 
-const userGetLeave = async (req, res) => {
+const userGetLeave = asyncHandler(async (req, res) => {
     try {
         const leaves = await Leaves.find({ userId: req.user._id })
         return res.status(201).json({
@@ -56,9 +58,9 @@ const userGetLeave = async (req, res) => {
         console.log(error.message)
         res.status(500).send('Server error');
     }
-}
+})
 
-const updateLeave = async (req, res) => {
+const updateLeave = asyncHandler(async (req, res) => {
     try {
         const { reasone, startDate, endDate, type, status } = req.body
         const { id } = req.params;
@@ -93,9 +95,9 @@ const updateLeave = async (req, res) => {
         console.log(error.message)
         res.status(500).send('Server error');
     }
-}
+})
 
-const deleteLeave = async (req, res) => {
+const deleteLeave = asyncHandler(async (req, res) => {
     try {
         const { id } = req.params;
 
@@ -109,6 +111,6 @@ const deleteLeave = async (req, res) => {
         console.log(error.message)
         res.status(500).send('Server error');
     }
-}
+})
 
 module.exports = { createLeave, getAllLeaves, updateLeave, deleteLeave, userGetLeave }
