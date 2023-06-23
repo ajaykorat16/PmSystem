@@ -1,7 +1,8 @@
 const Department = require("../models/departmentModel")
 const { validationResult } = require('express-validator');
+const asyncHandler = require('express-async-handler')
 
-const createDepartment = async (req, res) => {
+const createDepartment = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -28,9 +29,9 @@ const createDepartment = async (req, res) => {
         console.log(error.message)
         res.status(500).send('Server error');
     }
-}
+})
 
-const updateDepartment = async (req, res) => {
+const updateDepartment = asyncHandler(async (req, res) => {
     try {
         const { id } = req.params
         const { name } = req.body
@@ -53,9 +54,9 @@ const updateDepartment = async (req, res) => {
         console.log(error.message)
         res.status(500).send('Server error');
     }
-}
+})
 
-const deleteDepartment = async (req, res) => {
+const deleteDepartment = asyncHandler(async (req, res) => {
     try {
         const { id } = req.params
 
@@ -76,9 +77,9 @@ const deleteDepartment = async (req, res) => {
         console.log(error.message)
         res.status(500).send('Server error');
     }
-}
+})
 
-const getAllDepartment =  async (req, res)=>{
+const getAllDepartment = asyncHandler(async (req, res) => {
     try {
         const getAllDepartments = await Department.find()
         return res.status(200).json({
@@ -90,7 +91,7 @@ const getAllDepartment =  async (req, res)=>{
         console.log(error.message)
         res.status(500).send('Server error');
     }
-}
+})
 
 
 module.exports = { createDepartment, updateDepartment, deleteDepartment, getAllDepartment }

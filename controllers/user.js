@@ -3,6 +3,8 @@ const { validationResult } = require('express-validator');
 const fs = require("fs")
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const asyncHandler = require('express-async-handler')
+
 const saltRounds = 10
 
 const hashPassword = async (password) => {
@@ -23,7 +25,7 @@ const comparePassword = async (password, hashPassword) => {
 }
 
 
-const createUser = async (req, res) => {
+const createUser = asyncHandler(async (req, res) => {
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -53,9 +55,9 @@ const createUser = async (req, res) => {
         console.log(error.message)
         res.status(500).send('Server error');
     }
-}
+})
 
-const loginUser = async (req, res) => {
+const loginUser = asyncHandler(async (req, res) => {
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -94,9 +96,9 @@ const loginUser = async (req, res) => {
         console.log(error.message)
         res.status(500).send('Server error');
     }
-}
+})
 
-const updateUser = async (req, res) => {
+const updateUser = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -153,9 +155,9 @@ const updateUser = async (req, res) => {
         console.log(error.message)
         res.status(500).send('Server error');
     }
-}
+})
 
-const deleteUserProfile = async (req, res) => {
+const deleteUserProfile = asyncHandler(async (req, res) => {
     try {
         const { id } = req.params
         const user = await Users.findOne({ _id: id })
@@ -177,9 +179,9 @@ const deleteUserProfile = async (req, res) => {
         console.log(error.message)
         res.status(500).send('Server error');
     }
-}
+})
 
-const getAllUser = async (req, res) => {
+const getAllUser = asyncHandler(async (req, res) => {
     try {
         const getAllUsers = await Users.find()
         return res.status(200).json({
@@ -191,7 +193,7 @@ const getAllUser = async (req, res) => {
         console.log(error.message)
         res.status(500).send('Server error');
     }
-}
+})
 
 
 
