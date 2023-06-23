@@ -103,47 +103,51 @@ const updateUser = async (req, res) => {
     }
 
     try {
-        const { firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining } = req.fields
+        const { firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining } = req.fields;
         const { photo } = req.files;
-        const { id } = req.params
+        const { id } = req.params;
 
         let user;
 
         if (id) {
-            user = await Users.findById(id)
+            user = await Users.findById(id);
         } else {
-            user = await Users.findById(req.user._id)
+            user = await Users.findById(req.user._id);
         }
 
         if (password && password.length < 6) {
-            return res.send({ message: "Password is required and atleast 6 character" })
+            return res.send({ message: "Password is required and must be at least 6 characters" });
         }
 
-        const hashedPassword = password ? await hashPassword(password) : undefined
+        const hashedPassword = password ? await hashPassword(password) : undefined;
 
-        const updateUser = await Users.findByIdAndUpdate(user._id, {
-            ...req.fields,
+        const updatedFields = {
             firstname: firstname || user.firstname,
             lastname: lastname || user.lastname,
             email: email || user.email,
             phone: phone || user.phone,
             address: address || user.address,
-            password: hashedPassword || user.passwordlastname,
+            password: hashedPassword || user.password,
             dateOfBirth: dateOfBirth || user.dateOfBirth,
             department: department || user.department,
             dateOfJoining: dateOfJoining || user.dateOfJoining
-        }, { new: true })
+        };
 
         if (photo) {
-            updateUser.photo.data = fs.readFileSync(photo.path);
-            updateUser.photo.contentType = photo.type;
+            updatedFields.photo = {
+                data: fs.readFileSync(photo.path),
+                contentType: photo.type
+            };
         }
+
+        const updateUser = await Users.findByIdAndUpdate(user._id, updatedFields, { new: true });
 
         return res.status(201).send({
             error: false,
             message: "Profile Updated Successfully !!",
             updateUser
-        })
+        });
+
 
     } catch (error) {
         console.log(error.message)
@@ -175,7 +179,7 @@ const deleteUserProfile = async (req, res) => {
     }
 }
 
-const getAllUser = async (req, res)=>{
+const getAllUser = async (req, res) => {
     try {
         const getAllUsers = await Users.find()
         return res.status(200).json({
