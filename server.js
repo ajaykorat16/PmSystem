@@ -6,7 +6,9 @@ const user = require("./routers/user")
 const department = require("./routers/department")
 const leaveRecord =  require("./routers/leaveRecord")
 const app = express()
+var cors = require('cors')
 
+app.use(cors())
 app.use(express.json())
 
 app.get('/', function (req, res) {
