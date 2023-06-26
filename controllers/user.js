@@ -68,7 +68,7 @@ const loginUser = asyncHandler(async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        const user = await Users.findOne({ email }).select("-photo")
+        const user = await Users.findOne({ email }).select("-photo").populate("department")
         if (!user) {
             return res.status(400).json({
                 error: true,

@@ -29,18 +29,19 @@ UserNewForm.propTypes = {
 export default function UserNewForm({ isEdit, currentUser }) {
   const navigate = useNavigate();
 
+  const [showPassword, setShowPassword] = useState(false);
+
   const { enqueueSnackbar } = useSnackbar();
 
   const NewUserSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
     email: Yup.string().required('Email is required').email(),
-    phoneNumber: Yup.string().required('Phone number is required'),
+    phone: Yup.string().required('Phone number is required'),
     address: Yup.string().required('Address is required'),
-    country: Yup.string().required('country is required'),
-    company: Yup.string().required('Company is required'),
-    state: Yup.string().required('State is required'),
-    city: Yup.string().required('City is required'),
-    role: Yup.string().required('Role Number is required'),
+    password: Yup.string().required('country is required'),
+    dateOfJoining: Yup.string().required('Date Of Joining is required'),
+    dateOfBirth: Yup.string().required('Date Of Birth is required'),
+    department: Yup.string().required('Department Number is required'),
     avatarUrl: Yup.mixed().test('required', 'Avatar is required', (value) => value !== ''),
   });
 
@@ -48,17 +49,15 @@ export default function UserNewForm({ isEdit, currentUser }) {
     () => ({
       name: currentUser?.name || '',
       email: currentUser?.email || '',
-      phoneNumber: currentUser?.phoneNumber || '',
+      phone: currentUser?.phoneNumber || '',
       address: currentUser?.address || '',
-      country: currentUser?.country || '',
-      state: currentUser?.state || '',
-      city: currentUser?.city || '',
-      zipCode: currentUser?.zipCode || '',
+      password: currentUser?.password || '',
+      dateOfJoining: currentUser?.dateOfJoining || '',
+      dateOfBirth: currentUser?.dateOfBirth || '',
       avatarUrl: currentUser?.avatarUrl || '',
       isVerified: currentUser?.isVerified || true,
       status: currentUser?.status,
-      company: currentUser?.company || '',
-      role: currentUser?.role || '',
+      department: currentUser?.department || '',
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentUser]
@@ -213,11 +212,26 @@ export default function UserNewForm({ isEdit, currentUser }) {
                 gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' },
               }}
             >
-              <RHFTextField name="name" label="Full Name" />
+              <RHFTextField name="firstname" label="First Name" />
+              <RHFTextField name="lastname" label="Last Name" />
               <RHFTextField name="email" label="Email Address" />
-              <RHFTextField name="phoneNumber" label="Phone Number" />
+              <RHFTextField
+                name="password"
+                label="Password"
+                type={showPassword ? 'text' : 'password'}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton edge="end" onClick={() => setShowPassword(!showPassword)}>
+                        <Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <RHFTextField name="phone" label="Phone" />
 
-              <RHFSelect name="country" label="Country" placeholder="Country">
+              <RHFSelect name="department" label="Department" placeholder="Department">
                 <option value="" />
                 {countries.map((option) => (
                   <option key={option.code} value={option.label}>
