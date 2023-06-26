@@ -1,6 +1,7 @@
 {
   "name": "@minimal/minimal-kit-react",
   "author": "minimals.cc",
+  "proxy": "http://localhost:8080",
   "version": "3.0.0",
   "description": "Javascript Version",
   "private": true,

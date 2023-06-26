@@ -29,6 +29,9 @@ export default function RegisterForm() {
     password: Yup.string().required('Password is required'),
     phone: Yup.string().required('Phone number is required'),
     address: Yup.string().required('Address is required'),
+    dateOfBirth:Yup.string().required('Date of birth is required'),
+    department:Yup.string().required('Department is required'),
+    dateOfJoining:Yup.string().required('Date of joining is required'),
   });
 
   const defaultValues = {
@@ -37,7 +40,10 @@ export default function RegisterForm() {
     email: '',
     password: '',
     phone: '',
-    address:''
+    address:'',
+    dateOfBirth:'',
+    department:'',
+    dateOfJoining:''
   };
 
   const methods = useForm({
@@ -55,7 +61,7 @@ export default function RegisterForm() {
 
   const onSubmit = async (data) => {
     try {
-      await register(data.email, data.password, data.firstName, data.lastName, data.phone, data.address);
+      await register(data.email, data.password, data.firstName, data.lastName, data.phone, data.address, data.dateOfBirth, data.department, data.dateOfJoining );
     } catch (error) {
       console.error(error);
       reset();
@@ -94,8 +100,9 @@ export default function RegisterForm() {
 
         <RHFTextField name="phone" label="Phone" />
         <RHFTextField name="address" label="Address" />
-
-
+        <RHFTextField name="dateOfBirth" label="Date of Birth" />
+        <RHFTextField name="department" label="Department" />
+        <RHFTextField name="dateOfJoining" label="Date of joining" />
 
         <LoadingButton fullWidth size="large" type="submit" variant="contained" loading={isSubmitting}>
           Register
