@@ -5,12 +5,16 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "server": "nodemon server.js",
+    "client": "npm start --prefix ./client",
+    "start": "node server.js",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "author": "\"Jasmin Korat\"",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.0",
+    "concurrently": "^8.2.0",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-async-handler": "^1.2.0",
