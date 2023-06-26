@@ -75,7 +75,8 @@ function AuthProvider({ children }) {
           setSession(accessToken);
 
           const response = await axios.get('/user/profile');
-          const { user } = response.data;
+          console.log(response.data.getProfile)
+          const { getProfile:user } = response.data;
 
           dispatch({
             type: 'INITIALIZE',
