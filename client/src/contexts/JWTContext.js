@@ -22,6 +22,15 @@ const handlers = {
       user,
     };
   },
+  DEPARTMENT: (state, action) => {
+    const { isAuthenticated, getAllDepartments } = action.payload;
+    return {
+      ...state,
+      isAuthenticated,
+      isInitialized: true,
+      getAllDepartments,
+    };
+  },
   LOGIN: (state, action) => {
     const { user } = action.payload;
 
@@ -36,7 +45,7 @@ const handlers = {
     isAuthenticated: false,
     user: null,
   }),
-  REGISTER: (state, action) => {
+  ADDUSER: (state, action) => {
     const { user } = action.payload;
 
     return {
@@ -54,7 +63,7 @@ const AuthContext = createContext({
   method: 'jwt',
   login: () => Promise.resolve(),
   logout: () => Promise.resolve(),
-  register: () => Promise.resolve(),
+  adduser: () => Promise.resolve(),
 });
 
 // ----------------------------------------------------------------------
@@ -70,13 +79,11 @@ function AuthProvider({ children }) {
     const initialize = async () => {
       try {
         const accessToken = window.localStorage.getItem('accessToken');
-
         if (accessToken && isValidToken(accessToken)) {
           setSession(accessToken);
 
           const response = await axios.get('/user/profile');
-          console.log(response.data.getProfile)
-          const { getProfile:user } = response.data;
+          const { getProfile: user } = response.data;
 
           dispatch({
             type: 'INITIALIZE',
@@ -109,12 +116,53 @@ function AuthProvider({ children }) {
     initialize();
   }, []);
 
+  useEffect(() => {
+    const department = async () => {
+      try {
+        const accessToken = window.localStorage.getItem('accessToken');
+        if (accessToken && isValidToken(accessToken)) {
+          setSession(accessToken);
+
+          const { data } = await axios.get('/department');
+          const { getAllDepartments } = data;
+
+          dispatch({
+            type: 'DEPARTMENT',
+            payload: {
+              isAuthenticated: true,
+              getAllDepartments,
+            },
+          });
+        } else {
+          dispatch({
+            type: 'DEPARTMENT',
+            payload: {
+              isAuthenticated: false,
+              getAllDepartments: null,
+            },
+          });
+        }
+      } catch (err) {
+        console.error(err);
+        dispatch({
+          type: 'DEPARTMENT',
+          payload: {
+            isAuthenticated: false,
+            getAllDepartments: null,
+          },
+        });
+      }
+    };
+
+    department();
+  }, []);
+
   const login = async (email, password) => {
     const response = await axios.post('/user/login', {
       email,
       password,
     });
-    const { token:accessToken, user } = response.data;
+    const { token: accessToken, user } = response.data;
     console.log(accessToken)
 
     setSession(accessToken);
@@ -126,47 +174,50 @@ function AuthProvider({ children }) {
     });
   };
 
-  const register = async (email, password, firstName, lastName, phone, address, dateOfBirth, department, dateOfJoining) => {
-    const response = await axios.post('/user/register', {
-      email,
-      password,
-      firstName,
-      lastName,
-      phone,
-      address,
-      dateOfBirth,
-      department,
-      dateOfJoining
-    });
-    const { accessToken, user } = response.data;
+  const adduser = async (email, password, firstName, lastName, phone, address, dateOfBirth, department, dateOfJoining) => {
+    const accessToken = window.localStorage.getItem('accessToken');
+    if (accessToken && isValidToken(accessToken)) {
+      setSession(accessToken);
+      const response = await axios.post('/addUser', {
+        email,
+        password,
+        firstName,
+        lastName,
+        phone,
+        address,
+        dateOfBirth,
+        department,
+        dateOfJoining
+      });
+      const { accessToken, user } = response.data;
+      console.log("adduser--------", user)
+      dispatch({
+        type: 'ADDUSER',
+        payload: {
+          user,
+        },
+      });
+    };
 
-    window.localStorage.setItem('accessToken', accessToken);
-    dispatch({
-      type: 'REGISTER',
-      payload: {
-        user,
-      },
-    });
-  };
+    const logout = async () => {
+      setSession(null);
+      dispatch({ type: 'LOGOUT' });
+    };
 
-  const logout = async () => {
-    setSession(null);
-    dispatch({ type: 'LOGOUT' });
-  };
-
-  return (
-    <AuthContext.Provider
-      value={{
-        ...state,
-        method: 'jwt',
-        login,
-        logout,
-        register,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+    return (
+      <AuthContext.Provider
+        value={{
+          ...state,
+          method: 'jwt',
+          login,
+          logout,
+          adduser,
+        }}
+      >
+        {children}
+      </AuthContext.Provider>
+    );
+  }
 }
 
-export { AuthContext, AuthProvider };
+  export { AuthContext, AuthProvider }
