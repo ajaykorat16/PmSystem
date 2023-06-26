@@ -74,7 +74,7 @@ function AuthProvider({ children }) {
         if (accessToken && isValidToken(accessToken)) {
           setSession(accessToken);
 
-          const response = await axios.get('/api/account/my-account');
+          const response = await axios.get('/user/profile');
           const { user } = response.data;
 
           dispatch({
@@ -113,9 +113,10 @@ function AuthProvider({ children }) {
       email,
       password,
     });
-    const { token, user } = response.data;
+    const { token:accessToken, user } = response.data;
+    console.log(accessToken)
 
-    setSession(token);
+    setSession(accessToken);
     dispatch({
       type: 'LOGIN',
       payload: {

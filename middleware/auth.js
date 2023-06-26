@@ -3,10 +3,12 @@ const Users = require("../models/userModel")
 
 const auth = function (req, res, next) {
 
-    const token = req.headers.authorization
-    if (!token) {
+    const authorizationHeader = req.headers.authorization
+    if (!authorizationHeader) {
         return res.status(401).json({ msg: 'No token, authorization denied' });
     }
+
+    const [bearer, token] = authorizationHeader.split(' ');
 
     // Verify token
     try {
