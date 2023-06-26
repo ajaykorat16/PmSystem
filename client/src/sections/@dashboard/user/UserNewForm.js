@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import Iconify from 'src/components/Iconify';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
 // form
@@ -9,6 +10,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { LoadingButton } from '@mui/lab';
 import { Box, Card, Grid, Stack, Switch, Typography, FormControlLabel } from '@mui/material';
+import { IconButton, InputAdornment, Alert } from '@mui/material';
 // utils
 import { fData } from '../../../utils/formatNumber';
 // routes
@@ -18,7 +20,8 @@ import { countries } from '../../../_mock';
 // components
 import Label from '../../../components/Label';
 import { FormProvider, RHFSelect, RHFSwitch, RHFTextField, RHFUploadAvatar } from '../../../components/hook-form';
-
+import axios from 'axios';
+import useAuth from 'src/hooks/useAuth';
 // ----------------------------------------------------------------------
 
 UserNewForm.propTypes = {
@@ -28,8 +31,10 @@ UserNewForm.propTypes = {
 
 export default function UserNewForm({ isEdit, currentUser }) {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [showPassword, setShowPassword] = useState(false);
+  const [department, setDepartment] = useState([])
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -115,6 +120,18 @@ export default function UserNewForm({ isEdit, currentUser }) {
     },
     [setValue]
   );
+
+  const departmentData = async () => {
+    const { data } = await axios.get("/department")
+    console.log("data====>", data)
+    // setDepartment(data.getAllDepartments.name)
+    console.log("department--->", department)
+  }
+  console.log("user->", user)
+
+  useEffect(() => {
+    departmentData();
+  }, [user]);
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -233,19 +250,16 @@ export default function UserNewForm({ isEdit, currentUser }) {
 
               <RHFSelect name="department" label="Department" placeholder="Department">
                 <option value="" />
-                {countries.map((option) => (
+                {department.map((option) => (
                   <option key={option.code} value={option.label}>
                     {option.label}
                   </option>
                 ))}
               </RHFSelect>
 
-              <RHFTextField name="state" label="State/Region" />
-              <RHFTextField name="city" label="City" />
               <RHFTextField name="address" label="Address" />
-              <RHFTextField name="zipCode" label="Zip/Code" />
-              <RHFTextField name="company" label="Company" />
-              <RHFTextField name="role" label="Role" />
+              <RHFTextField name="dateOfBirth" label="Date Of Birth" />
+              <RHFTextField name="dateOfJoining" label="Date Of Joining" />
             </Box>
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>
