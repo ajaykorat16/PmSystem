@@ -30,6 +30,7 @@ import Iconify from '../../components/Iconify';
 import Scrollbar from '../../components/Scrollbar';
 import SearchNotFound from '../../components/SearchNotFound';
 import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
+import useAuth from 'src/hooks/useAuth';
 // sections
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../../sections/@dashboard/user/list';
 
@@ -49,6 +50,8 @@ const TABLE_HEAD = [
 export default function UserList() {
   const theme = useTheme();
   const { themeStretch } = useSettings();
+
+  const {getAllUsers} = useAuth()
 
   const [userList, setUserList] = useState(_userList);
   const [page, setPage] = useState(0);

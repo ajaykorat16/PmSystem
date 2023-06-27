@@ -31,6 +31,15 @@ const handlers = {
       getAllDepartments,
     };
   },
+  USERS: (state, action) => {
+    const { isAuthenticated, getAllUsers } = action.payload;
+    return {
+      ...state,
+      isAuthenticated,
+      isInitialized: true,
+      getAllUsers,
+    };
+  },
   LOGIN: (state, action) => {
     const { user } = action.payload;
 
@@ -56,7 +65,8 @@ const handlers = {
   },
 };
 
-const reducer = (state, action) => (handlers[action.type] ? handlers[action.type](state, action) : state);
+const reducer = (state, action) =>
+  handlers[action.type] ? handlers[action.type](state, action) : state;
 
 const AuthContext = createContext({
   ...initialState,
@@ -117,6 +127,47 @@ function AuthProvider({ children }) {
   }, []);
 
   useEffect(() => {
+    const users = async () => {
+      try {
+        const accessToken = window.localStorage.getItem('accessToken');
+        if (accessToken && isValidToken(accessToken)) {
+          setSession(accessToken);
+
+          const {data} = await axios.get('/user');
+          const { getAllUsers } = data;
+
+          dispatch({
+            type: 'USERS',
+            payload: {
+              isAuthenticated: true,
+              getAllUsers,
+            },
+          });
+        } else {
+          dispatch({
+            type: 'USERS',
+            payload: {
+              isAuthenticated: false,
+              getAllUsers: null,
+            },
+          });
+        }
+      } catch (err) {
+        console.error(err);
+        dispatch({
+          type: 'USERS',
+          payload: {
+            isAuthenticated: false,
+            getAllUsers: null,
+          },
+        });
+      }
+    };
+
+    users();
+  }, []);
+
+  useEffect(() => {
     const department = async () => {
       try {
         const accessToken = window.localStorage.getItem('accessToken');
@@ -163,7 +214,7 @@ function AuthProvider({ children }) {
       password,
     });
     const { token: accessToken, user } = response.data;
-    console.log(accessToken)
+    console.log(accessToken);
 
     setSession(accessToken);
     dispatch({
@@ -174,7 +225,17 @@ function AuthProvider({ children }) {
     });
   };
 
-  const adduser = async (email, password, firstName, lastName, phone, address, dateOfBirth, department, dateOfJoining) => {
+  const adduser = async (
+    email,
+    password,
+    firstName,
+    lastName,
+    phone,
+    address,
+    dateOfBirth,
+    department,
+    dateOfJoining
+  ) => {
     const accessToken = window.localStorage.getItem('accessToken');
     if (accessToken && isValidToken(accessToken)) {
       setSession(accessToken);
@@ -187,37 +248,37 @@ function AuthProvider({ children }) {
         address,
         dateOfBirth,
         department,
-        dateOfJoining
+        dateOfJoining,
       });
       const { accessToken, user } = response.data;
-      console.log("adduser--------", user)
+      console.log('adduser--------', user);
       dispatch({
         type: 'ADDUSER',
         payload: {
           user,
         },
       });
-    };
+    }
+  };
 
-    const logout = async () => {
-      setSession(null);
-      dispatch({ type: 'LOGOUT' });
-    };
+  const logout = async () => {
+    setSession(null);
+    dispatch({ type: 'LOGOUT' });
+  };
 
-    return (
-      <AuthContext.Provider
-        value={{
-          ...state,
-          method: 'jwt',
-          login,
-          logout,
-          adduser,
-        }}
-      >
-        {children}
-      </AuthContext.Provider>
-    );
-  }
+  return (
+    <AuthContext.Provider
+      value={{
+        ...state,
+        method: 'jwt',
+        login,
+        logout,
+        adduser,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
-export { AuthContext, AuthProvider }
+export { AuthContext, AuthProvider };
