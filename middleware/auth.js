@@ -29,6 +29,7 @@ const auth = function (req, res, next) {
 const isAdmin = async (req, res, next) => {
     try {
         const user = await Users.findById(req.user._id)
+        console.log("admin---->", user)
         if (user.role !== 1) {
             return res.status(401).send({
                 success: false,

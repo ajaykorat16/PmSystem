@@ -15,12 +15,9 @@ import { IconButton, InputAdornment, Alert } from '@mui/material';
 import { fData } from '../../../utils/formatNumber';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
-// _mock
-import { countries } from '../../../_mock';
 // components
 import Label from '../../../components/Label';
 import { FormProvider, RHFSelect, RHFSwitch, RHFTextField, RHFUploadAvatar } from '../../../components/hook-form';
-import axios from 'axios';
 import useAuth from 'src/hooks/useAuth';
 // ----------------------------------------------------------------------
 
@@ -31,10 +28,9 @@ UserNewForm.propTypes = {
 
 export default function UserNewForm({ isEdit, currentUser }) {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const {getAllDepartments} = useAuth()
 
   const [showPassword, setShowPassword] = useState(false);
-  const [department, setDepartment] = useState([])
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -120,18 +116,6 @@ export default function UserNewForm({ isEdit, currentUser }) {
     },
     [setValue]
   );
-
-  const departmentData = async () => {
-    const { data } = await axios.get("/department")
-    console.log("data====>", data)
-    // setDepartment(data.getAllDepartments.name)
-    console.log("department--->", department)
-  }
-  console.log("user->", user)
-
-  useEffect(() => {
-    departmentData();
-  }, [user]);
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -250,9 +234,9 @@ export default function UserNewForm({ isEdit, currentUser }) {
 
               <RHFSelect name="department" label="Department" placeholder="Department">
                 <option value="" />
-                {department.map((option) => (
-                  <option key={option.code} value={option.label}>
-                    {option.label}
+                {getAllDepartments.map((option) => (
+                  <option key={option._id} value={option._id}>
+                    {option.name}
                   </option>
                 ))}
               </RHFSelect>
