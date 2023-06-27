@@ -15,12 +15,9 @@ import { IconButton, InputAdornment, Alert } from '@mui/material';
 import { fData } from '../../../utils/formatNumber';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
-// _mock
-import { countries } from '../../../_mock';
 // components
 import Label from '../../../components/Label';
 import { FormProvider, RHFSelect, RHFSwitch, RHFTextField, RHFUploadAvatar } from '../../../components/hook-form';
-import axios from 'axios';
 import useAuth from 'src/hooks/useAuth';
 // ----------------------------------------------------------------------
 
@@ -238,7 +235,7 @@ export default function UserNewForm({ isEdit, currentUser }) {
               <RHFSelect name="department" label="Department" placeholder="Department">
                 <option value="" />
                 {getAllDepartments.map((option) => (
-                  <option key={option._id} value={option.name}>
+                  <option key={option._id} value={option._id}>
                     {option.name}
                   </option>
                 ))}
