@@ -27,8 +27,6 @@ export default function AccountGeneral() {
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const { user, getAllDepartments } = useAuth();
-  console.log("getAllDepartments-------->", getAllDepartments)
-  console.log("user-------->", user)
 
   const UpdateUserSchema = Yup.object().shape({
     firstname: Yup.string().required('firstname is required'),

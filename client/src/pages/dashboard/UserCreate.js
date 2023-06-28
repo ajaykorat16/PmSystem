@@ -15,6 +15,7 @@ import UserNewForm from '../../sections/@dashboard/user/UserNewForm';
 
 // Redux
 import { addUser } from 'src/redux/slices/user';
+import { updateUserByAdminSuccess } from 'src/redux/slices/user';
 // ----------------------------------------------------------------------
 
 export default function UserCreate() {
@@ -30,24 +31,29 @@ export default function UserCreate() {
     dispatch(addUser(user));
   };
 
-  return (
-    <Page title="User: Create a new user">
-      <Container maxWidth={themeStretch ? false : 'lg'}>
-        <HeaderBreadcrumbs
-          heading={!isEdit ? 'Create a new user' : 'Edit user'}
-          links={[
-            { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'User', href: PATH_DASHBOARD.user.list },
-            { name: !isEdit ? 'New user' : capitalCase(name) },
-          ]}
-        />
+//   const handleUpdateUser = (id, user) = {
+//     dispatch(upadteUserProfileByAdmin(id, user));
+// }
 
-        <UserNewForm
-          isEdit={isEdit}
-          currentUser={currentUser}
-          addUser={handleAddUser}
-        />
-      </Container>
-    </Page>
-  );
+return (
+  <Page title="User: Create a new user">
+    <Container maxWidth={themeStretch ? false : 'lg'}>
+      <HeaderBreadcrumbs
+        heading={!isEdit ? 'Create a new user' : 'Edit user'}
+        links={[
+          { name: 'Dashboard', href: PATH_DASHBOARD.root },
+          { name: 'User', href: PATH_DASHBOARD.user.list },
+          { name: !isEdit ? 'New user' : 'Edit User' },
+        ]}
+      />
+
+      <UserNewForm
+        isEdit={isEdit}
+        currentUser={currentUser}
+        addUser={handleAddUser}
+        // updateUser={handleUpdateUser}
+      />
+    </Container>
+  </Page>
+);
 }

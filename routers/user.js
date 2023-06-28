@@ -47,6 +47,8 @@ router.put("/updateProfile", auth, formidableMiddleware(), updateUser)
 
 router.put("/updateProfile/:id", auth, isAdmin, formidableMiddleware(), updateUser)
 
+router.get("/getUserProfile/:id", auth, isAdmin, formidableMiddleware(), getUserProfile)
+
 router.delete("/deleteProfile/:id", auth, isAdmin, deleteUserProfile)
 
 module.exports = router    
