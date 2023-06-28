@@ -48,7 +48,7 @@ export default slice.reducer;
 export const { addUserSuccess, updateUserSuccess, getUsersSuccess } = slice.actions;
 
 export const getUsers = () => async (dispatch) => {
-  dispatch(startLoading());
+  dispatch(slice.actions.startLoading());
 
   try {
     const accessToken = window.localStorage.getItem('accessToken');
@@ -65,7 +65,7 @@ export const getUsers = () => async (dispatch) => {
       dispatch(getUsersSuccess(response.data.getAllUsers));
     }
   } catch (error) {
-    dispatch(hasError(error.message));
+    dispatch(slice.actions.hasError(error));
   }
 };
 
