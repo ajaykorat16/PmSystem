@@ -34,12 +34,40 @@ const slice = createSlice({
       state.users.pull(action.payload);
       state.users.push(action.payload);
     },
+
+    //GET ALL USERS
+    getUsersSuccess(state, action) {
+      state.isLoading = false;
+      state.users = action.payload;
+    },
   },
 });
 
 export default slice.reducer;
 
-export const { addUserSuccess, updateUserSuccess } = slice.actions;
+export const { addUserSuccess, updateUserSuccess, getUsersSuccess } = slice.actions;
+
+export const getUsers = () => async (dispatch) => {
+  dispatch(startLoading());
+
+  try {
+    const accessToken = window.localStorage.getItem('accessToken');
+    if (accessToken && isValidToken(accessToken)) {
+      setSession(accessToken);
+
+      const headers = {
+        Authorization: `Bearer ${accessToken}`
+      };
+
+      const response = await axios.get('/user', {
+        headers: headers
+      }); 
+      dispatch(getUsersSuccess(response.data.getAllUsers));
+    }
+  } catch (error) {
+    dispatch(hasError(error.message));
+  }
+};
 
 export function addUser(user) {
   return async () => {
