@@ -1,12 +1,14 @@
 import * as Yup from 'yup';
 import { useSnackbar } from 'notistack';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 // form
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { Box, Grid, Card, Stack, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
+import { IconButton, InputAdornment, Alert } from '@mui/material';
+import Iconify from 'src/components/Iconify';
 // hooks
 import useAuth from '../../../../hooks/useAuth';
 // utils
@@ -15,28 +17,34 @@ import { fData } from '../../../../utils/formatNumber';
 import { countries } from '../../../../_mock';
 // components
 import { FormProvider, RHFSwitch, RHFSelect, RHFTextField, RHFUploadAvatar } from '../../../../components/hook-form';
+import { upadteUserProfile } from 'src/redux/slices/user';
+import { useDispatch } from 'react-redux';
 
 // ----------------------------------------------------------------------
 
 export default function AccountGeneral() {
   const { enqueueSnackbar } = useSnackbar();
-
-  const { user } = useAuth();
+  const dispatch = useDispatch();
+  const [showPassword, setShowPassword] = useState(false);
+  const { user, getAllDepartments } = useAuth();
+  console.log("getAllDepartments-------->", getAllDepartments)
+  console.log("user-------->", user)
 
   const UpdateUserSchema = Yup.object().shape({
-    displayName: Yup.string().required('Name is required'),
+    firstname: Yup.string().required('firstname is required'),
   });
 
   const defaultValues = {
-    displayName: user?.displayName || '',
+    firstname: user?.firstname || '',
+    lastname: user?.lastname || '',
     email: user?.email || '',
     photoURL: user?.photoURL || '',
-    phoneNumber: user?.phoneNumber || '',
-    country: user?.country || '',
+    phone: user?.phone || '',
+    department: user?.department.name || '',
     address: user?.address || '',
-    state: user?.state || '',
-    city: user?.city || '',
-    zipCode: user?.zipCode || '',
+    dateOfBirth: user?.dateOfBirth || '',
+    dateOfJoining: user?.dateOfJoining || '',
+    password: user?.password || '',
     about: user?.about || '',
     isPublic: user?.isPublic || '',
   };
@@ -52,14 +60,17 @@ export default function AccountGeneral() {
     formState: { isSubmitting },
   } = methods;
 
-  const onSubmit = async () => {
+  const onSubmit = async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      enqueueSnackbar('Update success!');
+      await dispatch(upadteUserProfile(data));
+      enqueueSnackbar('Update success!', { variant: 'success' });
     } catch (error) {
       console.error(error);
+      enqueueSnackbar('Update failed!', { variant: 'error' });
     }
   };
+  
+  
 
   const handleDrop = useCallback(
     (acceptedFiles) => {
@@ -118,30 +129,39 @@ export default function AccountGeneral() {
                 gridTemplateColumns: { xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)' },
               }}
             >
-              <RHFTextField name="displayName" label="Name" />
+              <RHFTextField name="firstname" label="Firstname" />
+              <RHFTextField name="lastname" label="Lastname" />
               <RHFTextField name="email" label="Email Address" />
-
-              <RHFTextField name="phoneNumber" label="Phone Number" />
+              <RHFTextField
+                type={showPassword ? 'text' : 'password'}
+                name="password"
+                autoComplete="new-password"
+                label="Password"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={() => setShowPassword(!showPassword)}>
+                        <Iconify icon={showPassword ? 'eva:eye-off-outline' : 'eva:eye-outline'} />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <RHFTextField name="phone" label="Phone Number" />
               <RHFTextField name="address" label="Address" />
-
-              <RHFSelect name="country" label="Country" placeholder="Country">
+              <RHFTextField name="dateOfJoining" label="Date Of Joining" />
+              <RHFTextField name="dateOfBirth" label="Date Of Birth" />
+              <RHFSelect name="department" label="Department" placeholder="Department">
                 <option value="" />
-                {countries.map((option) => (
-                  <option key={option.code} value={option.label}>
-                    {option.label}
+                {getAllDepartments.map((option) => (
+                  <option key={option._id} value={option._id}>
+                    {option.name}
                   </option>
                 ))}
               </RHFSelect>
-
-              <RHFTextField name="state" label="State/Region" />
-
-              <RHFTextField name="city" label="City" />
-              <RHFTextField name="zipCode" label="Zip/Code" />
             </Box>
 
             <Stack spacing={3} alignItems="flex-end" sx={{ mt: 3 }}>
-              <RHFTextField name="about" multiline rows={4} label="About" />
-
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
                 Save Changes
               </LoadingButton>

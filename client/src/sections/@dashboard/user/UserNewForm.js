@@ -34,7 +34,6 @@ export default function UserNewForm({ isEdit, currentUser }) {
   const navigate = useNavigate();
   const { getAllDepartments } = useAuth();
   const dispatch = useDispatch();
-  console.log("getAllDepartments : ", getAllDepartments)
   const [showPassword, setShowPassword] = useState(false);
 
   const { enqueueSnackbar } = useSnackbar();
