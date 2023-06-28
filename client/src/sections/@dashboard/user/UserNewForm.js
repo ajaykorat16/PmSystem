@@ -15,10 +15,14 @@ import { IconButton, InputAdornment, Alert } from '@mui/material';
 import { fData } from '../../../utils/formatNumber';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
+// redux
+import { useDispatch } from 'react-redux';
+import { addUser } from 'src/redux/slices/user';
 // components
 import Label from '../../../components/Label';
 import { FormProvider, RHFSelect, RHFSwitch, RHFTextField, RHFUploadAvatar } from '../../../components/hook-form';
 import useAuth from 'src/hooks/useAuth';
+
 // ----------------------------------------------------------------------
 
 UserNewForm.propTypes = {
@@ -28,27 +32,30 @@ UserNewForm.propTypes = {
 
 export default function UserNewForm({ isEdit, currentUser }) {
   const navigate = useNavigate();
-  const {getAllDepartments} = useAuth()
-
+  const { getAllDepartments } = useAuth();
+  const dispatch = useDispatch();
+  console.log("getAllDepartments : ", getAllDepartments)
   const [showPassword, setShowPassword] = useState(false);
 
   const { enqueueSnackbar } = useSnackbar();
 
   const NewUserSchema = Yup.object().shape({
-    name: Yup.string().required('Name is required'),
+    firstname: Yup.string().required('First Name is required'),
+    lastname: Yup.string().required('Last Name is required'),
     email: Yup.string().required('Email is required').email(),
     phone: Yup.string().required('Phone number is required'),
     address: Yup.string().required('Address is required'),
-    password: Yup.string().required('country is required'),
+    password: Yup.string().required('Password is required'),
     dateOfJoining: Yup.string().required('Date Of Joining is required'),
     dateOfBirth: Yup.string().required('Date Of Birth is required'),
-    department: Yup.string().required('Department Number is required'),
-    avatarUrl: Yup.mixed().test('required', 'Avatar is required', (value) => value !== ''),
+    department: Yup.string().required('Department is required'),
+    avatarUrl: Yup.mixed().required('Avatar is required'),
   });
 
   const defaultValues = useMemo(
     () => ({
-      name: currentUser?.name || '',
+      firstname: currentUser?.name || '',
+      lastname: currentUser?.name || '',
       email: currentUser?.email || '',
       phone: currentUser?.phoneNumber || '',
       address: currentUser?.address || '',
@@ -60,7 +67,6 @@ export default function UserNewForm({ isEdit, currentUser }) {
       status: currentUser?.status,
       department: currentUser?.department || '',
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentUser]
   );
 
@@ -87,17 +93,17 @@ export default function UserNewForm({ isEdit, currentUser }) {
     if (!isEdit) {
       reset(defaultValues);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEdit, currentUser]);
+  }, [isEdit, currentUser, reset, defaultValues]);
 
-  const onSubmit = async () => {
+  const onSubmit = async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await dispatch(addUser(data));
       reset();
-      enqueueSnackbar(!isEdit ? 'Create success!' : 'Update success!');
+      enqueueSnackbar(!isEdit ? 'User created successfully!' : 'User updated successfully!', { variant: 'success' });
       navigate(PATH_DASHBOARD.user.list);
     } catch (error) {
       console.error(error);
+      enqueueSnackbar('An error occurred while saving the user.', { variant: 'error' });
     }
   };
 
@@ -216,21 +222,25 @@ export default function UserNewForm({ isEdit, currentUser }) {
               <RHFTextField name="firstname" label="First Name" />
               <RHFTextField name="lastname" label="Last Name" />
               <RHFTextField name="email" label="Email Address" />
+              <RHFTextField name="phone" label="Phone Number" />
+              <RHFTextField name="address" label="Address" />
               <RHFTextField
-                name="password"
-                label="Password"
                 type={showPassword ? 'text' : 'password'}
+                name="password"
+                autoComplete="new-password"
+                label="Password"
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton edge="end" onClick={() => setShowPassword(!showPassword)}>
-                        <Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
+                      <IconButton onClick={() => setShowPassword(!showPassword)}>
+                        <Iconify icon={showPassword ? 'eva:eye-off-outline' : 'eva:eye-outline'} />
                       </IconButton>
                     </InputAdornment>
                   ),
                 }}
               />
-              <RHFTextField name="phone" label="Phone" />
+              <RHFTextField name="dateOfJoining" label="Date Of Joining" />
+              <RHFTextField name="dateOfBirth" label="Date Of Birth" />
 
               <RHFSelect name="department" label="Department" placeholder="Department">
                 <option value="" />
@@ -240,15 +250,11 @@ export default function UserNewForm({ isEdit, currentUser }) {
                   </option>
                 ))}
               </RHFSelect>
-
-              <RHFTextField name="address" label="Address" />
-              <RHFTextField name="dateOfBirth" label="Date Of Birth" />
-              <RHFTextField name="dateOfJoining" label="Date Of Joining" />
             </Box>
 
-            <Stack alignItems="flex-end" sx={{ mt: 3 }}>
+            <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                {!isEdit ? 'Create User' : 'Save Changes'}
+                Save Changes
               </LoadingButton>
             </Stack>
           </Card>
