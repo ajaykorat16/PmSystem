@@ -233,7 +233,7 @@ const getAllUser = asyncHandler(async (req, res) => {
 
 const getUserProfile = asyncHandler(async (req, res) => {
     try {
-        const getProfile = await Users.findById({_id:req.user._id})
+        const getProfile = await Users.findById({_id:req.user._id}).populate("department")
         return res.status(200).json({
             error: false,
             message: "Users get profile successfully!!",
