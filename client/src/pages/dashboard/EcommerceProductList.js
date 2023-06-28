@@ -38,6 +38,8 @@ import {
   ProductListHead,
   ProductListToolbar,
 } from '../../sections/@dashboard/e-commerce/product-list';
+import { getDepartments } from '../../redux/slices/department';
+
 
 // ----------------------------------------------------------------------
 
@@ -54,11 +56,20 @@ const TABLE_HEAD = [
 export default function EcommerceProductList() {
   const { themeStretch } = useSettings();
   const theme = useTheme();
+
   const dispatch = useDispatch();
+  const { departments } = useSelector((state) => state.department);
 
-  const { products } = useSelector((state) => state.product);
+  useEffect(() => {
+    dispatch(getDepartments());
+  }, [dispatch]);
 
-  const [productList, setProductList] = useState([]);
+  useEffect(() => {
+    if (departments.length > 0) {
+      setDepartmentList(departments)
+    }
+  }, [departments]);
+  const [departmentList, setDepartmentList] = useState([]);
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
@@ -66,15 +77,7 @@ export default function EcommerceProductList() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [orderBy, setOrderBy] = useState('createdAt');
 
-  useEffect(() => {
-    dispatch(getProducts());
-  }, [dispatch]);
 
-  useEffect(() => {
-    if (products.length) {
-      setProductList(products);
-    }
-  }, [products]);
 
   const handleRequestSort = (property) => {
     const isAsc = orderBy === property && order === 'asc';

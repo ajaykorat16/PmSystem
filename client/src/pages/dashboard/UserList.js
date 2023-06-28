@@ -1,5 +1,5 @@
 import { sentenceCase } from 'change-case';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 // @mui
 import { useTheme } from '@mui/material/styles';
@@ -30,19 +30,24 @@ import Iconify from '../../components/Iconify';
 import Scrollbar from '../../components/Scrollbar';
 import SearchNotFound from '../../components/SearchNotFound';
 import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
-import useAuth from 'src/hooks/useAuth';
 // sections
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../../sections/@dashboard/user/list';
+import { getUsers } from '../../redux/slices/user';
+import { useDispatch, useSelector } from 'react-redux';
+
+
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', alignRight: false },
-  { id: 'company', label: 'Company', alignRight: false },
-  { id: 'role', label: 'Role', alignRight: false },
-  { id: 'isVerified', label: 'Verified', alignRight: false },
-  { id: 'status', label: 'Status', alignRight: false },
-  { id: '' },
+  { id: 'email', label: 'Email', alignRight: false },
+  { id: 'phone', label: 'Phone', alignRight: false },
+  { id: 'department', label: 'Department', alignRight: false },
+  { id: 'dateofbirth', label: 'DateOfBirth', alignRight: false },
+  { id: 'dateofjoining', label: 'DateOfJoining', alignRight: false },
+  { id: 'leavebalance', label: 'LeaveBalance', alignRight: false },
+  { id: 'address', label: 'Address', alignRight: false },
 ];
 
 // ----------------------------------------------------------------------
@@ -50,10 +55,23 @@ const TABLE_HEAD = [
 export default function UserList() {
   const theme = useTheme();
   const { themeStretch } = useSettings();
+  const dispatch = useDispatch();
+  const { users } = useSelector((state) => state.user);
 
-  const {getAllUsers} = useAuth()
+  useEffect(() => {
+    dispatch(getUsers());
+  }, [dispatch]);
 
-  const [userList, setUserList] = useState(_userList);
+  useEffect(() => {
+    if (users.length > 0) {
+      setUserList(users)
+    }
+  }, [users]);
+
+
+
+
+  const [userList, setUserList] = useState([]);
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
@@ -162,42 +180,38 @@ export default function UserList() {
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
-                  {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, name, role, status, company, avatarUrl, isVerified } = row;
-                    const isItemSelected = selected.indexOf(name) !== -1;
+                  {userList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                    const { _id,firstname, lastname, email, phone,dateOfBirth,department,dateOfJoining,leaveBalance, address} = row;
+                    const isItemSelected = selected.indexOf(firstname) !== -1;
 
                     return (
                       <TableRow
                         hover
-                        key={id}
+                        key={_id}
                         tabIndex={-1}
                         role="checkbox"
                         selected={isItemSelected}
                         aria-checked={isItemSelected}
                       >
                         <TableCell padding="checkbox">
-                          <Checkbox checked={isItemSelected} onClick={() => handleClick(name)} />
+                          <Checkbox checked={isItemSelected} onClick={() => handleClick(firstname)} />
                         </TableCell>
                         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-                          <Avatar alt={name} src={avatarUrl} sx={{ mr: 2 }} />
-                          <Typography variant="subtitle2" noWrap>
-                            {name}
-                          </Typography>
+                          {/* <Avatar alt={firstname} src={avatarUrl} sx={{ mr: 2 }} /> */}
+                          <TableCell variant="subtitle2" noWrap>
+                            {firstname+" "+lastname}
+                          </TableCell>
                         </TableCell>
-                        <TableCell align="left">{company}</TableCell>
-                        <TableCell align="left">{role}</TableCell>
-                        <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
-                        <TableCell align="left">
-                          <Label
-                            variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
-                            color={(status === 'banned' && 'error') || 'success'}
-                          >
-                            {sentenceCase(status)}
-                          </Label>
-                        </TableCell>
+                        <TableCell align="left">{email}</TableCell>
+                        <TableCell align="left">{phone}</TableCell>
+                        <TableCell align="left">{department?.name?department.name:""}</TableCell>
+                        <TableCell align="left">{dateOfBirth}</TableCell>
+                        <TableCell align="left">{dateOfJoining}</TableCell>
+                        <TableCell align="left">{leaveBalance}</TableCell>
+                        <TableCell align="left">{address}</TableCell>
 
                         <TableCell align="right">
-                          <UserMoreMenu onDelete={() => handleDeleteUser(id)} userName={name} />
+                          <UserMoreMenu onDelete={() => handleDeleteUser(_id)} userName={firstname} />
                         </TableCell>
                       </TableRow>
                     );

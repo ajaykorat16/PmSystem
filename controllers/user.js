@@ -190,40 +190,20 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
 
 const getAllUser = asyncHandler(async (req, res) => {
     try {
-        const getAllUsers = await Users.aggregate([
-            {
-              $project: {
-                _id: 1,
-                firstname: 1,
-                lastname: 1,
-                email: 1,
-                phone: 1,
-                address: 1,
-                dateOfBirth: {
-                  $dateToString: {
-                    format: "%Y-%m-%d",
-                    date: "$dateOfBirth"
-                  }
-                },
-                department: 1,
-                dateOfJoining: {
-                  $dateToString: {
-                    format: "%Y-%m-%d",
-                    date: "$dateOfJoining"
-                  }
-                },
-                status: 1,
-                leaveBalance: 1,
-                photo: 1,
-                role: 1,
-              }
-            }
-          ])
+        const getAllUsers = await Users.find().select("-password -photo").populate("department").lean()
+
+        const formattedUsers = getAllUsers.map(user => {
+            return {
+              ...user,
+              dateOfBirth: user.dateOfBirth.toISOString().split('T')[0],
+              dateOfJoining: user.dateOfJoining.toISOString().split('T')[0]
+            };
+          });
         
         return res.status(200).json({
             error: false,
             message: "All users get successfully!!",
-            getAllUsers
+            getAllUsers:formattedUsers
         })
     } catch (error) {
         console.log(error.message)
