@@ -70,6 +70,7 @@ export default function EcommerceProductList() {
     }
   }, [departments]);
   const [departmentList, setDepartmentList] = useState([]);
+  const [productList, setProductList] = useState([]);
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
