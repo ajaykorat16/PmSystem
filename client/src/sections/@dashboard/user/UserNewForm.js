@@ -69,7 +69,7 @@ export default function UserNewForm({ isEdit, currentUser }) {
       avatarUrl: currentUser?.avatarUrl || '',
       isVerified: currentUser?.isVerified || true,
       status: currentUser?.status,
-      department: currentUser?.department.name || '',
+      department: currentUser?.department._id || '',
     }),
     [currentUser]
   );
@@ -246,7 +246,7 @@ export default function UserNewForm({ isEdit, currentUser }) {
               <RHFTextField name="dateOfJoining" label="Date Of Joining" />
               <RHFTextField name="dateOfBirth" label="Date Of Birth" />
 
-              <RHFSelect name="department" label="Department" placeholder="Department">
+              <RHFSelect name="department" label="Department" placeholder="Department" defaultValue={defaultValues.department}>
                 <option value="" />
                 {departments.map((option) => (
                   <option key={option._id} value={option._id}>

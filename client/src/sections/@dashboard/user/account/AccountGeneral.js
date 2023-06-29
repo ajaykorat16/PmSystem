@@ -38,13 +38,11 @@ export default function AccountGeneral() {
     email: user?.email || '',
     photoURL: user?.photoURL || '',
     phone: user?.phone || '',
-    department: user?.department.name || '',
+    department: user?.department._id || '',
     address: user?.address || '',
     dateOfBirth: user?.dateOfBirth || '',
     dateOfJoining: user?.dateOfJoining || '',
     password: user?.password || '',
-    about: user?.about || '',
-    isPublic: user?.isPublic || '',
   };
 
   const methods = useForm({
@@ -113,7 +111,6 @@ export default function AccountGeneral() {
               }
             />
 
-            <RHFSwitch name="isPublic" labelPlacement="start" label="Public Profile" sx={{ mt: 5 }} />
           </Card>
         </Grid>
 
@@ -149,7 +146,7 @@ export default function AccountGeneral() {
               <RHFTextField name="address" label="Address" />
               <RHFTextField name="dateOfJoining" label="Date Of Joining" />
               <RHFTextField name="dateOfBirth" label="Date Of Birth" />
-              <RHFSelect name="department" label="Department" placeholder="Department">
+              <RHFSelect name="department" label="Department" placeholder="Department" defaultValue={defaultValues.department}>
                 <option value="" />
                 {getAllDepartments.map((option) => (
                   <option key={option._id} value={option._id}>
