@@ -68,9 +68,6 @@ export default function UserList() {
     }
   }, [users]);
 
-
-
-
   const [userList, setUserList] = useState([]);
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');

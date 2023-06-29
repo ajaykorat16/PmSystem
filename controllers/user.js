@@ -190,7 +190,7 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
 
 const getAllUser = asyncHandler(async (req, res) => {
     try {
-        const getAllUsers = await Users.find().select("-password -photo").populate("department").lean()
+        const getAllUsers = await Users.find().select("-photo").populate("department").lean()
 
         const formattedUsers = getAllUsers.map(user => {
             return {

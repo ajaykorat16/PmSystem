@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
 // form
@@ -11,28 +11,13 @@ import { styled } from '@mui/material/styles';
 import { Grid, Card, Chip, Stack, Button, TextField, Typography, Autocomplete } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
+import { useDispatch, useSelector } from 'react-redux';
 // components
-import { RHFSwitch, RHFEditor, FormProvider, RHFTextField, RHFUploadSingleFile } from '../../../components/hook-form';
+import { RHFSwitch, RHFEditor, FormProvider, RHFTextField, RHFUploadSingleFile, RHFSelect } from '../../../components/hook-form';
 //
 import BlogNewPostPreview from './BlogNewPostPreview';
-
+import { getUsers } from 'src/redux/slices/user';
 // ----------------------------------------------------------------------
-
-const TAGS_OPTION = [
-  'Toy Story 3',
-  'Logan',
-  'Full Metal Jacket',
-  'Dangal',
-  'The Sting',
-  '2001: A Space Odyssey',
-  "Singin' in the Rain",
-  'Toy Story',
-  'Bicycle Thieves',
-  'The Kid',
-  'Inglourious Basterds',
-  'Snatch',
-  '3 Idiots',
-];
 
 const LabelStyle = styled(Typography)(({ theme }) => ({
   ...theme.typography.subtitle2,
@@ -44,6 +29,7 @@ const LabelStyle = styled(Typography)(({ theme }) => ({
 
 export default function BlogNewPostForm() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [open, setOpen] = useState(false);
 
@@ -56,25 +42,32 @@ export default function BlogNewPostForm() {
   const handleClosePreview = () => {
     setOpen(false);
   };
+  const { users } = useSelector((state) => state.user);
+  useEffect(async () => {
+    await dispatch(getUsers());
+  }, [dispatch]);
+
+  console.log("users------>", users)
+
+  const leaveStatus = ["Pending", "Approved", "Rejected"]
+  const leaveType = ["Paid", "LWP"]
 
   const NewBlogSchema = Yup.object().shape({
-    title: Yup.string().required('Title is required'),
-    description: Yup.string().required('Description is required'),
-    content: Yup.string().min(1000).required('Content is required'),
-    cover: Yup.mixed().required('Cover is required'),
+    userId: Yup.string().required('User is required'),
+    reason: Yup.string().required('Reasone is required'),
+    startDate: Yup.string().required('Start Data is required'),
+    endDate: Yup.string().required('End Data is required'),
+    status: Yup.string().required('Status is required'),
+    type: Yup.string().required('Type is required'),
   });
 
   const defaultValues = {
-    title: '',
-    description: '',
-    content: '',
-    cover: null,
-    tags: ['Logan'],
-    publish: true,
-    comments: true,
-    metaTitle: '',
-    metaDescription: '',
-    metaKeywords: ['Logan'],
+    userId: '',
+    reason: '',
+    startDate: null,
+    endDate: null,
+    status: 'Pending',
+    type: 'LWP'
   };
 
   const methods = useForm({
@@ -93,8 +86,9 @@ export default function BlogNewPostForm() {
 
   const values = watch();
 
-  const onSubmit = async () => {
+  const onSubmit = async (data) => {
     try {
+      console.log("leavedata-------->", data)
       await new Promise((resolve) => setTimeout(resolve, 500));
       reset();
       handleClosePreview();
@@ -105,23 +99,6 @@ export default function BlogNewPostForm() {
     }
   };
 
-  const handleDrop = useCallback(
-    (acceptedFiles) => {
-      const file = acceptedFiles[0];
-
-      if (file) {
-        setValue(
-          'cover',
-          Object.assign(file, {
-            preview: URL.createObjectURL(file),
-          })
-        );
-      }
-    },
-    [setValue]
-  );
-
-
   return (
     <>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -129,19 +106,19 @@ export default function BlogNewPostForm() {
           <Grid item xs={12} md={8}>
             <Card sx={{ p: 3 }}>
               <Stack spacing={3}>
-                <RHFTextField name="title" label="Post Title" />
-
-                <RHFTextField name="description" label="Description" multiline rows={3} />
-
+                <RHFSelect name="name" label="User Name" placeholder="User Name">
+                  <option value="" />
+                  {users.map((option) => (
+                    <option key={option._id} value={option._id}>
+                      {option.firstname} {option.lastname}
+                    </option>
+                  ))}
+                </RHFSelect>
                 <div>
-                  <LabelStyle>Content</LabelStyle>
-                  <RHFEditor name="content" />
+                  <LabelStyle>Reason for leave</LabelStyle>
+                  <RHFEditor name="reason" />
                 </div>
 
-                <div>
-                  <LabelStyle>Cover</LabelStyle>
-                  <RHFUploadSingleFile name="cover" accept="image/*" maxSize={3145728} onDrop={handleDrop} />
-                </div>
               </Stack>
             </Card>
           </Grid>
@@ -149,63 +126,27 @@ export default function BlogNewPostForm() {
           <Grid item xs={12} md={4}>
             <Card sx={{ p: 3 }}>
               <Stack spacing={3}>
-                <div>
-                  <RHFSwitch
-                    name="publish"
-                    label="Publish"
-                    labelPlacement="start"
-                    sx={{ mb: 1, mx: 0, width: 1, justifyContent: 'space-between' }}
-                  />
 
-                  <RHFSwitch
-                    name="comments"
-                    label="Enable comments"
-                    labelPlacement="start"
-                    sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
-                  />
-                </div>
+                <RHFSelect name="status" label="Status" placeholder="Status">
+                  <option value="" />
+                  {leaveStatus.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </RHFSelect>
 
-                <Controller
-                  name="tags"
-                  control={control}
-                  render={({ field }) => (
-                    <Autocomplete
-                      multiple
-                      freeSolo
-                      onChange={(event, newValue) => field.onChange(newValue)}
-                      options={TAGS_OPTION.map((option) => option)}
-                      renderTags={(value, getTagProps) =>
-                        value.map((option, index) => (
-                          <Chip {...getTagProps({ index })} key={option} size="small" label={option} />
-                        ))
-                      }
-                      renderInput={(params) => <TextField label="Tags" {...params} />}
-                    />
-                  )}
-                />
+                <RHFSelect name="type" label="Type" placeholder="Status">
+                  <option value="" />
+                  {leaveType.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </RHFSelect>
 
-                <RHFTextField name="metaTitle" label="Meta title" />
-
-                <RHFTextField name="metaDescription" label="Meta description" fullWidth multiline rows={3} />
-
-                <Controller
-                  name="metaKeywords"
-                  control={control}
-                  render={({ field }) => (
-                    <Autocomplete
-                      multiple
-                      freeSolo
-                      onChange={(event, newValue) => field.onChange(newValue)}
-                      options={TAGS_OPTION.map((option) => option)}
-                      renderTags={(value, getTagProps) =>
-                        value.map((option, index) => (
-                          <Chip {...getTagProps({ index })} key={option} size="small" label={option} />
-                        ))
-                      }
-                      renderInput={(params) => <TextField label="Meta keywords" {...params} />}
-                    />
-                  )}
-                />
+                <RHFTextField name="startDate" label="Leave Start Date" />
+                <RHFTextField name="endDate" label="Leave End Date" />
               </Stack>
             </Card>
 

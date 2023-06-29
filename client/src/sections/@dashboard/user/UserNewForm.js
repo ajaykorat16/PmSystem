@@ -22,8 +22,7 @@ import { addUser, getUsers, upadteUserProfileByAdmin } from 'src/redux/slices/us
 // components
 import Label from '../../../components/Label';
 import { FormProvider, RHFSelect, RHFSwitch, RHFTextField, RHFUploadAvatar } from '../../../components/hook-form';
-import { getUserByAdmin } from 'src/redux/slices/user';
-import useAuth from 'src/hooks/useAuth';
+import { getDepartments } from '../../../redux/slices/department';
 
 // ----------------------------------------------------------------------
 
@@ -35,9 +34,12 @@ UserNewForm.propTypes = {
 export default function UserNewForm({ isEdit, currentUser }) {
   const { name: id } = useParams();
   const navigate = useNavigate();
-  const { getAllDepartments } = useAuth();
+  const { departments } = useSelector((state) => state.department);
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
+  useEffect(() => {
+    dispatch(getDepartments());
+  }, [dispatch]);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -67,7 +69,7 @@ export default function UserNewForm({ isEdit, currentUser }) {
       avatarUrl: currentUser?.avatarUrl || '',
       isVerified: currentUser?.isVerified || true,
       status: currentUser?.status,
-      department: currentUser?.department || '',
+      department: currentUser?.department.name || '',
     }),
     [currentUser]
   );
@@ -246,7 +248,7 @@ export default function UserNewForm({ isEdit, currentUser }) {
 
               <RHFSelect name="department" label="Department" placeholder="Department">
                 <option value="" />
-                {getAllDepartments.map((option) => (
+                {departments.map((option) => (
                   <option key={option._id} value={option._id}>
                     {option.name}
                   </option>

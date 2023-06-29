@@ -16,7 +16,6 @@ import UserNewForm from '../../sections/@dashboard/user/UserNewForm';
 
 // Redux
 import { addUser, getUsers } from 'src/redux/slices/user';
-import { updateUserByAdminSuccess } from 'src/redux/slices/user';
 // ----------------------------------------------------------------------
 
 export default function UserCreate() {
@@ -26,7 +25,6 @@ export default function UserCreate() {
   const dispatch = useDispatch();
   const isEdit = pathname.includes('edit');
 
-  const currentUser = null; // Fetch the current user from the Redux store or API
   const { users } = useSelector((state) => state.user)
   const currentUsers = users.find((user) => user._id === id)
 
