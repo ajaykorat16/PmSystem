@@ -39,9 +39,9 @@ import {
   ProductListToolbar,
 } from '../../sections/@dashboard/e-commerce/product-list';
 import { getDepartments, deleteDepartment } from '../../redux/slices/department';
-import { RHFTextField } from 'src/components/hook-form';
-import { Stack } from 'immutable';
-import { Controller } from 'react-hook-form';
+import Iconify from 'src/components/Iconify';
+import { Link as RouterLink } from 'react-router-dom';
+import { Button } from '@mui/material';
 
 
 
@@ -138,18 +138,28 @@ export default function EcommerceProductList() {
   const isNotFound = !filteredProducts.length && Boolean(filterName);
 
   return (
-    <Page title="Ecommerce: Product List">
+    <Page title="Ecommerce: Department List">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs
-          heading="Product List"
+          heading="Department List"
           links={[
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
             {
-              name: 'E-Commerce',
+              name: 'Department',
               href: PATH_DASHBOARD.eCommerce.root,
             },
-            { name: 'Product List' },
+            { name: 'Department List' },
           ]}
+          action={
+            <Button
+              variant="contained"
+              component={RouterLink}
+              to={PATH_DASHBOARD.eCommerce.newProduct}
+              startIcon={<Iconify icon={'eva:plus-fill'} />}
+            >
+              New Department
+            </Button>
+          }
         />
         <Card>
 
@@ -202,20 +212,6 @@ export default function EcommerceProductList() {
                             {name}
                           </Typography>
                         </TableCell>
-                        {/* <TableCell style={{ minWidth: 160 }}>{fDate(createdAt)}</TableCell>
-                        <TableCell style={{ minWidth: 160 }}>
-                          <Label
-                            variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
-                            color={
-                              (inventoryType === 'out_of_stock' && 'error') ||
-                              (inventoryType === 'low_stock' && 'warning') ||
-                              'success'
-                            }
-                          >
-                            {inventoryType ? sentenceCase(inventoryType) : ''}
-                          </Label>
-                        </TableCell>
-                        <TableCell align="right">{fCurrency(price)}</TableCell> */}
                         <TableCell align="right">
                           <ProductMoreMenu departmentName={name} id={_id} onDelete={() => handleDeleteDepartment(_id)} />
                         </TableCell>

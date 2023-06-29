@@ -103,6 +103,7 @@ export default function ProductNewForm({ isEdit, currentDepartment }) {
     control,
     setValue,
     getValues,
+    handleSubmit,
     formState: { isSubmitting },
   } = methods;
 
@@ -128,15 +129,16 @@ export default function ProductNewForm({ isEdit, currentDepartment }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEdit, currentDepartment]);
 
-  const handleSubmit = async (e) => {
+  const onSubmit = async (data) => {
     try {
-      e.preventDefault();
+      console.log(data)
+
       if(isEdit){
-        dispatch(updateDepartment(name,id))
+        dispatch(updateDepartment(data.name,id))
         navigate(PATH_DASHBOARD.eCommerce.list);
       }
       else{
-        dispatch(addDepartment(name))
+        dispatch(addDepartment(data.name))
         navigate(PATH_DASHBOARD.eCommerce.list);
       }
       
@@ -152,14 +154,14 @@ export default function ProductNewForm({ isEdit, currentDepartment }) {
 
 
   return (
-    <FormProvider methods={methods} onSubmit={handleSubmit}>
+    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={3}>
         <Grid item xs={12} md={8}>
           <Card sx={{ p: 3 }}>
             <Stack spacing={3}>
-              <RHFTextField name="name"  label="Department Name" onChange={(e) => setName(e.target.value)}/>
+              <RHFTextField name="name"  label="Department Name" />
               <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
-              {!isEdit ? 'Create Product' : 'Save Changes'}
+              Save Changes
             </LoadingButton>
             </Stack>
           </Card>
