@@ -1,4 +1,3 @@
-import { paramCase, capitalCase } from 'change-case';
 import { useParams, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';

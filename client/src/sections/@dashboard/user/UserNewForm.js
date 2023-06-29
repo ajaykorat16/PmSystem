@@ -11,14 +11,14 @@ import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { LoadingButton } from '@mui/lab';
 import { Box, Card, Grid, Stack, Switch, Typography, FormControlLabel } from '@mui/material';
-import { IconButton, InputAdornment, Alert } from '@mui/material';
+import { IconButton, InputAdornment } from '@mui/material';
 // utils
 import { fData } from '../../../utils/formatNumber';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
 // redux
 import { useDispatch, useSelector } from 'react-redux';
-import { addUser, getUsers, upadteUserProfileByAdmin } from 'src/redux/slices/user';
+import { addUser, upadteUserProfileByAdmin } from 'src/redux/slices/user';
 // components
 import Label from '../../../components/Label';
 import { FormProvider, RHFSelect, RHFSwitch, RHFTextField, RHFUploadAvatar } from '../../../components/hook-form';

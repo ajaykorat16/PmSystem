@@ -1,22 +1,23 @@
 import * as Yup from 'yup';
-import { useCallback, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
 // form
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 // @mui
 import { LoadingButton } from '@mui/lab';
 import { styled } from '@mui/material/styles';
-import { Grid, Card, Chip, Stack, Button, TextField, Typography, Autocomplete } from '@mui/material';
+import { Grid, Card, Stack, Button, Typography } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
 import { useDispatch, useSelector } from 'react-redux';
 // components
-import { RHFSwitch, RHFEditor, FormProvider, RHFTextField, RHFUploadSingleFile, RHFSelect } from '../../../components/hook-form';
+import { RHFEditor, FormProvider, RHFTextField, RHFSelect } from '../../../components/hook-form';
 //
 import BlogNewPostPreview from './BlogNewPostPreview';
 import { getUsers } from 'src/redux/slices/user';
+import { createLeave } from 'src/redux/slices/leaves';
 // ----------------------------------------------------------------------
 
 const LabelStyle = styled(Typography)(({ theme }) => ({
@@ -27,7 +28,7 @@ const LabelStyle = styled(Typography)(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export default function BlogNewPostForm() {
+export default function BlogNewPostForm(isEdit, currentLeave) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -43,16 +44,15 @@ export default function BlogNewPostForm() {
     setOpen(false);
   };
   const { users } = useSelector((state) => state.user);
-  useEffect(async () => {
-    await dispatch(getUsers());
-  }, [dispatch]);
 
-  console.log("users------>", users)
+  useEffect(() => {
+    dispatch(getUsers());
+  }, [dispatch]);
 
   const leaveStatus = ["Pending", "Approved", "Rejected"]
   const leaveType = ["Paid", "LWP"]
 
-  const NewBlogSchema = Yup.object().shape({
+  const NewLeaveSchema = Yup.object().shape({
     userId: Yup.string().required('User is required'),
     reason: Yup.string().required('Reasone is required'),
     startDate: Yup.string().required('Start Data is required'),
@@ -62,18 +62,27 @@ export default function BlogNewPostForm() {
   });
 
   const defaultValues = {
-    userId: '',
-    reason: '',
-    startDate: null,
-    endDate: null,
-    status: 'Pending',
-    type: 'LWP'
+    userId: currentLeave.userId || '',
+    reason: currentLeave.reason || '',
+    startDate: currentLeave.startDate || '',
+    endDate: currentLeave.endDate || '',
+    status: currentLeave.status || 'Pending',
+    type: currentLeave.type || 'LWP',
   };
 
   const methods = useForm({
-    resolver: yupResolver(NewBlogSchema),
+    resolver: yupResolver(NewLeaveSchema),
     defaultValues,
   });
+
+  useEffect(() => {
+    if (isEdit && currentLeave) {
+      reset(defaultValues);
+    }
+    if (!isEdit) {
+      reset(defaultValues);
+    }
+  }, [isEdit, currentLeave, defaultValues]);
 
   const {
     reset,

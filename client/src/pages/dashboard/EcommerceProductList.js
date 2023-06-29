@@ -1,7 +1,5 @@
-import { sentenceCase } from 'change-case';
 import { useState, useEffect } from 'react';
 // @mui
-import { useTheme } from '@mui/material/styles';
 import {
   Box,
   Card,
@@ -16,19 +14,13 @@ import {
   TablePagination,
 } from '@mui/material';
 // redux
-import { dispatch, useDispatch, useSelector } from '../../redux/store';
-import { getProducts } from '../../redux/slices/product';
-// utils
-import { fDate } from '../../utils/formatTime';
-import { fCurrency } from '../../utils/formatNumber';
+import { useDispatch, useSelector } from '../../redux/store';
 // routes
 import { PATH_DASHBOARD } from '../../routes/paths';
 // hooks
 import useSettings from '../../hooks/useSettings';
 // components
 import Page from '../../components/Page';
-import Label from '../../components/Label';
-import Image from '../../components/Image';
 import Scrollbar from '../../components/Scrollbar';
 import SearchNotFound from '../../components/SearchNotFound';
 import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
@@ -56,7 +48,6 @@ const TABLE_HEAD = [
 
 export default function EcommerceProductList() {
   const { themeStretch } = useSettings();
-  const theme = useTheme();
 
   const dispatch = useDispatch();
   const { departments } = useSelector((state) => state.department);
