@@ -69,7 +69,7 @@ const deleteDepartment = asyncHandler(async (req, res) => {
         }
 
         await Department.findByIdAndDelete({ _id: id })
-        return res.status(201).json({
+        return res.status(200).json({
             error: false,
             message: "Department delete successfully!!",
         })

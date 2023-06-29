@@ -14,6 +14,7 @@ import useSettings from '../../hooks/useSettings';
 import Page from '../../components/Page';
 import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 import ProductNewForm from '../../sections/@dashboard/e-commerce/ProductNewForm';
+import { getDepartments } from '../../redux/slices/department';
 
 // ----------------------------------------------------------------------
 
@@ -21,31 +22,31 @@ export default function EcommerceProductCreate() {
   const { themeStretch } = useSettings();
   const dispatch = useDispatch();
   const { pathname } = useLocation();
-  const { name } = useParams();
-  const { products } = useSelector((state) => state.product);
+  const { name:id } = useParams();
+  const { departments } = useSelector((state) => state.department);
   const isEdit = pathname.includes('edit');
-  const currentProduct = products.find((product) => paramCase(product.name) === name);
+  const currentDepartment = departments.find((department) => department._id === id);
 
   useEffect(() => {
-    dispatch(getProducts());
+    dispatch(getDepartments());
   }, [dispatch]);
 
   return (
-    <Page title="Ecommerce: Create a new product">
+    <Page title="Ecommerce: Create a new Department">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs
-          heading={!isEdit ? 'Create a new product' : 'Edit product'}
+          heading={!isEdit ? 'Create a new department' : 'Edit department'}
           links={[
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
             {
               name: 'E-Commerce',
               href: PATH_DASHBOARD.eCommerce.root,
             },
-            { name: !isEdit ? 'New product' : name },
+            { name: !isEdit ? 'New product' : 'Edit product' },
           ]}
         />
 
-        <ProductNewForm isEdit={isEdit} currentProduct={currentProduct} />
+        <ProductNewForm isEdit={isEdit} currentDepartment={currentDepartment} />
       </Container>
     </Page>
   );
