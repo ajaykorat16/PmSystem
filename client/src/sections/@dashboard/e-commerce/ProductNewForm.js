@@ -69,16 +69,18 @@ export default function ProductNewForm({ isEdit, currentDepartment }) {
   const navigate = useNavigate();
   const [name, setName] = useState("")
   const dispatch = useDispatch();
-  useEffect(() => {
-    setName(currentDepartment?.name)
-  }, [])
+
+  // useEffect(() => {
+  //   setName(currentDepartment.name)
+  // }, [])
+
   
 
 
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const NewProductSchema = Yup.object().shape({
+  const NewDepartmentSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
   });
 
@@ -91,7 +93,7 @@ export default function ProductNewForm({ isEdit, currentDepartment }) {
   );
 
   const methods = useForm({
-    resolver: yupResolver(NewProductSchema),
+    resolver: yupResolver(NewDepartmentSchema),
     defaultValues,
   });
 
@@ -103,6 +105,16 @@ export default function ProductNewForm({ isEdit, currentDepartment }) {
     getValues,
     formState: { isSubmitting },
   } = methods;
+
+  useEffect(() => {
+    if (isEdit && currentDepartment) {
+      reset(defaultValues);
+    }
+    if (!isEdit) {
+      reset(defaultValues);
+    }
+  }, [isEdit, currentDepartment, reset, defaultValues]);
+  
 
   const values = watch();
 
@@ -145,7 +157,7 @@ export default function ProductNewForm({ isEdit, currentDepartment }) {
         <Grid item xs={12} md={8}>
           <Card sx={{ p: 3 }}>
             <Stack spacing={3}>
-              <RHFTextField name="name" value={name} label="Department Name" onChange={(e) => setName(e.target.value)}/>
+              <RHFTextField name="name"  label="Department Name" onChange={(e) => setName(e.target.value)}/>
               <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
               {!isEdit ? 'Create Product' : 'Save Changes'}
             </LoadingButton>
