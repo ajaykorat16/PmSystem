@@ -1,6 +1,7 @@
 import { paramCase, capitalCase } from 'change-case';
 import { useParams, useLocation } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from 'react';
 // @mui
 import { Container } from '@mui/material';
 // routes
@@ -14,18 +15,25 @@ import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 import UserNewForm from '../../sections/@dashboard/user/UserNewForm';
 
 // Redux
-import { addUser } from 'src/redux/slices/user';
+import { addUser, getUsers } from 'src/redux/slices/user';
 import { updateUserByAdminSuccess } from 'src/redux/slices/user';
 // ----------------------------------------------------------------------
 
 export default function UserCreate() {
   const { themeStretch } = useSettings();
   const { pathname } = useLocation();
-  const { name = '' } = useParams();
+  const { name : id } = useParams();
   const dispatch = useDispatch();
   const isEdit = pathname.includes('edit');
 
   const currentUser = null; // Fetch the current user from the Redux store or API
+  const { users } = useSelector((state) => state.user)
+  const currentUsers = users.find((user) => user._id === id)
+
+  useEffect(() => {
+    dispatch(getUsers())
+  }, [dispatch])
+
 
   const handleAddUser = (user) => {
     dispatch(addUser(user));
@@ -49,7 +57,7 @@ return (
 
       <UserNewForm
         isEdit={isEdit}
-        currentUser={currentUser}
+        currentUser={currentUsers}
         addUser={handleAddUser}
         // updateUser={handleUpdateUser}
       />

@@ -17,8 +17,8 @@ import { fData } from '../../../utils/formatNumber';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
 // redux
-import { useDispatch } from 'react-redux';
-import { addUser, upadteUserProfileByAdmin } from 'src/redux/slices/user';
+import { useDispatch, useSelector } from 'react-redux';
+import { addUser, getUsers, upadteUserProfileByAdmin } from 'src/redux/slices/user';
 // components
 import Label from '../../../components/Label';
 import { FormProvider, RHFSelect, RHFSwitch, RHFTextField, RHFUploadAvatar } from '../../../components/hook-form';
@@ -33,7 +33,7 @@ UserNewForm.propTypes = {
 };
 
 export default function UserNewForm({ isEdit, currentUser }) {
-
+  const { name: id } = useParams();
   const navigate = useNavigate();
   const { getAllDepartments } = useAuth();
   const dispatch = useDispatch();
@@ -56,10 +56,10 @@ export default function UserNewForm({ isEdit, currentUser }) {
 
   const defaultValues = useMemo(
     () => ({
-      firstname: currentUser?.name || '',
-      lastname: currentUser?.name || '',
+      firstname: currentUser?.firstname || '',
+      lastname: currentUser?.lastname || '',
       email: currentUser?.email || '',
-      phone: currentUser?.phoneNumber || '',
+      phone: currentUser?.phone || '',
       address: currentUser?.address || '',
       password: currentUser?.password || '',
       dateOfJoining: currentUser?.dateOfJoining || '',
@@ -71,13 +71,6 @@ export default function UserNewForm({ isEdit, currentUser }) {
     }),
     [currentUser]
   );
-
-  console.log("defaultValues-------->", currentUser)
-
-  if (isEdit) {
-
-
-  }
 
   const methods = useForm({
     resolver: yupResolver(NewUserSchema),
@@ -103,15 +96,6 @@ export default function UserNewForm({ isEdit, currentUser }) {
       reset(defaultValues);
     }
   }, [isEdit, currentUser, reset, defaultValues]);
-
-
-  const { name: id } = useParams();
-  if (isEdit) {
-    console.log("isEdit------>", isEdit)
-    console.log("userId------->", id);
-  }
-
-
 
   const onSubmit = async (data) => {
     try {
