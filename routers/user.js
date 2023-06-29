@@ -5,13 +5,11 @@ const {auth, isAdmin} = require("../middleware/auth")
 const formidableMiddleware = require('express-formidable');
 
 
-const { createUser, loginUser,getPhoto, updateUser, deleteUserProfile, getAllUser, getUserProfile } = require("../controllers/user")
+const { createUser, loginUser, updateUser, deleteUserProfile, getAllUser, getUserProfile } = require("../controllers/user")
 
 router.get("/", auth, isAdmin, getAllUser)
 
 router.get("/profile", auth, getUserProfile)
-
-router.get("/photo/:id", getPhoto)
 
 router.post("/register",
     check('firstname', 'Name is required').notEmpty(),

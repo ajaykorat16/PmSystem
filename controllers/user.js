@@ -232,22 +232,4 @@ const getUserProfile = asyncHandler(async (req, res) => {
     }
 })
 
-
-const getPhoto = asyncHandler(async (req, res) => {
-    try {
-        const { id } = req.params
-
-        const user=await Users.findById(id).select("photo")
-
-        if (user.photo.data) {
-            res.set("Content-type", user.photo.contentType);
-            return res.status(200).send(user.photo.data);
-        }
-        
-    } catch (error) {
-        console.log(error.message)
-        res.status(500).send('Server error');
-    }
-})
-
-module.exports = { createUser, loginUser, getPhoto, updateUser, deleteUserProfile, getAllUser, getUserProfile }
+module.exports = { createUser, loginUser, updateUser, deleteUserProfile, getAllUser, getUserProfile }
