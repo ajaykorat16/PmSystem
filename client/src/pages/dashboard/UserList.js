@@ -34,8 +34,7 @@ import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../../sections/@dashboard/user/list';
 import { getUsers } from '../../redux/slices/user';
 import { useDispatch, useSelector } from 'react-redux';
-
-
+import { deleteUser } from '../../redux/slices/user';
 
 // ----------------------------------------------------------------------
 
@@ -48,6 +47,7 @@ const TABLE_HEAD = [
   { id: 'dateofjoining', label: 'DateOfJoining', alignRight: false },
   { id: 'leavebalance', label: 'LeaveBalance', alignRight: false },
   { id: 'address', label: 'Address', alignRight: false },
+  { id: '' },
 ];
 
 // ----------------------------------------------------------------------
@@ -119,10 +119,9 @@ export default function UserList() {
     setPage(0);
   };
 
-  const handleDeleteUser = (userId) => {
-    const deleteUser = userList.filter((user) => user.id !== userId);
-    setSelected([]);
-    setUserList(deleteUser);
+  const handleDeleteUser = async (userId) => {
+    await dispatch(deleteUser(userId));
+    setUserList(users)
   };
 
   const handleDeleteMultiUser = (selected) => {
@@ -181,7 +180,7 @@ export default function UserList() {
                 />
                 <TableBody>
                   {userList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { _id,firstname, lastname, email, phone,dateOfBirth,department,dateOfJoining,leaveBalance, address} = row;
+                    const { _id, firstname, lastname, email, phone, dateOfBirth, department, dateOfJoining, leaveBalance, address } = row;
                     const isItemSelected = selected.indexOf(firstname) !== -1;
 
                     return (
@@ -199,19 +198,19 @@ export default function UserList() {
                         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
                           {/* <Avatar alt={firstname} src={avatarUrl} sx={{ mr: 2 }} /> */}
                           <TableCell variant="subtitle2" noWrap>
-                            {firstname+" "+lastname}
+                            {firstname + " " + lastname}
                           </TableCell>
                         </TableCell>
                         <TableCell align="left">{email}</TableCell>
                         <TableCell align="left">{phone}</TableCell>
-                        <TableCell align="left">{department?.name?department.name:""}</TableCell>
+                        <TableCell align="left">{department?.name ? department.name : ""}</TableCell>
                         <TableCell align="left">{dateOfBirth}</TableCell>
                         <TableCell align="left">{dateOfJoining}</TableCell>
                         <TableCell align="left">{leaveBalance}</TableCell>
                         <TableCell align="left">{address}</TableCell>
 
                         <TableCell align="right">
-                          <UserMoreMenu onDelete={() => handleDeleteUser(_id)} userName={firstname} />
+                          <UserMoreMenu onDelete={() => handleDeleteUser(_id)} userName={_id} />
                         </TableCell>
                       </TableRow>
                     );

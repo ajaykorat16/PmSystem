@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
+import { useParams } from 'react-router-dom';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Iconify from 'src/components/Iconify';
 import { useSnackbar } from 'notistack';
@@ -17,10 +18,11 @@ import { fData } from '../../../utils/formatNumber';
 import { PATH_DASHBOARD } from '../../../routes/paths';
 // redux
 import { useDispatch } from 'react-redux';
-import { addUser } from 'src/redux/slices/user';
+import { addUser, upadteUserProfileByAdmin } from 'src/redux/slices/user';
 // components
 import Label from '../../../components/Label';
 import { FormProvider, RHFSelect, RHFSwitch, RHFTextField, RHFUploadAvatar } from '../../../components/hook-form';
+import { getUserByAdmin } from 'src/redux/slices/user';
 import useAuth from 'src/hooks/useAuth';
 
 // ----------------------------------------------------------------------
@@ -31,6 +33,7 @@ UserNewForm.propTypes = {
 };
 
 export default function UserNewForm({ isEdit, currentUser }) {
+
   const navigate = useNavigate();
   const { getAllDepartments } = useAuth();
   const dispatch = useDispatch();
@@ -69,6 +72,13 @@ export default function UserNewForm({ isEdit, currentUser }) {
     [currentUser]
   );
 
+  console.log("defaultValues-------->", currentUser)
+
+  if (isEdit) {
+
+
+  }
+
   const methods = useForm({
     resolver: yupResolver(NewUserSchema),
     defaultValues,
@@ -94,9 +104,18 @@ export default function UserNewForm({ isEdit, currentUser }) {
     }
   }, [isEdit, currentUser, reset, defaultValues]);
 
+
+  const { name: id } = useParams();
+  if (isEdit) {
+    console.log("isEdit------>", isEdit)
+    console.log("userId------->", id);
+  }
+
+
+
   const onSubmit = async (data) => {
     try {
-      await dispatch(addUser(data));
+      isEdit ? await dispatch(upadteUserProfileByAdmin(id, data)) : await dispatch(addUser(data));
       reset();
       enqueueSnackbar(!isEdit ? 'User created successfully!' : 'User updated successfully!', { variant: 'success' });
       navigate(PATH_DASHBOARD.user.list);

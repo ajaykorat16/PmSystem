@@ -1,5 +1,5 @@
 const Users = require("../models/userModel")
-const Leaves = require("../models/leaveModel")  
+const Leaves = require("../models/leaveModel")
 const { validationResult } = require('express-validator');
 const fs = require("fs")
 const jwt = require('jsonwebtoken');
@@ -169,7 +169,7 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
 
         await Users.findByIdAndDelete({ _id: id })
         const userLeave = await Leaves.findOne({ userId: id });
-        if(userLeave){
+        if (userLeave) {
             await Leaves.findByIdAndDelete({ _id: userLeave._id });
             return res.status(200).send({
                 error: false,
@@ -194,16 +194,16 @@ const getAllUser = asyncHandler(async (req, res) => {
 
         const formattedUsers = getAllUsers.map(user => {
             return {
-              ...user,
-              dateOfBirth: user.dateOfBirth.toISOString().split('T')[0],
-              dateOfJoining: user.dateOfJoining.toISOString().split('T')[0]
+                ...user,
+                dateOfBirth: user.dateOfBirth.toISOString().split('T')[0],
+                dateOfJoining: user.dateOfJoining.toISOString().split('T')[0]
             };
-          });
-        
+        });
+
         return res.status(200).json({
             error: false,
             message: "All users get successfully!!",
-            getAllUsers:formattedUsers
+            getAllUsers: formattedUsers
         })
     } catch (error) {
         console.log(error.message)
@@ -213,7 +213,14 @@ const getAllUser = asyncHandler(async (req, res) => {
 
 const getUserProfile = asyncHandler(async (req, res) => {
     try {
-        const getProfile = await Users.findById({_id:req.user._id}).populate("department")
+        const { id } = req.params
+
+        let getProfile;
+        if (id) {
+            getProfile = await Users.findById({ _id: id }).populate("department")
+        } else {
+            getProfile = await Users.findById({ _id: req.user._id }).populate("department")
+        }
         return res.status(200).json({
             error: false,
             message: "Users get profile successfully!!",
@@ -224,7 +231,5 @@ const getUserProfile = asyncHandler(async (req, res) => {
         res.status(500).send('Server error');
     }
 })
-
-
 
 module.exports = { createUser, loginUser, updateUser, deleteUserProfile, getAllUser, getUserProfile }
