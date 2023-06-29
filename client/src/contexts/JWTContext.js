@@ -22,15 +22,6 @@ const handlers = {
       user,
     };
   },
-  DEPARTMENT: (state, action) => {
-    const { isAuthenticated, getAllDepartments } = action.payload;
-    return {
-      ...state,
-      isAuthenticated,
-      isInitialized: true,
-      getAllDepartments,
-    };
-  },
   USERS: (state, action) => {
     const { isAuthenticated, getAllUsers } = action.payload;
     return {
@@ -54,15 +45,6 @@ const handlers = {
     isAuthenticated: false,
     user: null,
   }),
-  ADDUSER: (state, action) => {
-    const { user } = action.payload;
-
-    return {
-      ...state,
-      isAuthenticated: true,
-      user,
-    };
-  },
 };
 
 const reducer = (state, action) =>
@@ -73,7 +55,6 @@ const AuthContext = createContext({
   method: 'jwt',
   login: () => Promise.resolve(),
   logout: () => Promise.resolve(),
-  adduser: () => Promise.resolve(),
 });
 
 // ----------------------------------------------------------------------
@@ -167,47 +148,6 @@ function AuthProvider({ children }) {
     users();
   }, []);
 
-  useEffect(() => {
-    const department = async () => {
-      try {
-        const accessToken = window.localStorage.getItem('accessToken');
-        if (accessToken && isValidToken(accessToken)) {
-          setSession(accessToken);
-
-          const { data } = await axios.get('/department');
-          const { getAllDepartments } = data;
-
-          dispatch({
-            type: 'DEPARTMENT',
-            payload: {
-              isAuthenticated: true,
-              getAllDepartments,
-            },
-          });
-        } else {
-          dispatch({
-            type: 'DEPARTMENT',
-            payload: {
-              isAuthenticated: false,
-              getAllDepartments: null,
-            },
-          });
-        }
-      } catch (err) {
-        console.error(err);
-        dispatch({
-          type: 'DEPARTMENT',
-          payload: {
-            isAuthenticated: false,
-            getAllDepartments: null,
-          },
-        });
-      }
-    };
-
-    department();
-  }, []);
-
   const login = async (email, password) => {
     const response = await axios.post('/user/login', {
       email,
@@ -225,42 +165,6 @@ function AuthProvider({ children }) {
     });
   };
 
-  const adduser = async (
-    email,
-    password,
-    firstName,
-    lastName,
-    phone,
-    address,
-    dateOfBirth,
-    department,
-    dateOfJoining
-  ) => {
-    const accessToken = window.localStorage.getItem('accessToken');
-    if (accessToken && isValidToken(accessToken)) {
-      setSession(accessToken);
-      const response = await axios.post('/addUser', {
-        email,
-        password,
-        firstName,
-        lastName,
-        phone,
-        address,
-        dateOfBirth,
-        department,
-        dateOfJoining,
-      });
-      const { accessToken, user } = response.data;
-      console.log('adduser--------', user);
-      dispatch({
-        type: 'ADDUSER',
-        payload: {
-          user,
-        },
-      });
-    }
-  };
-
   const logout = async () => {
     setSession(null);
     dispatch({ type: 'LOGOUT' });
@@ -273,7 +177,6 @@ function AuthProvider({ children }) {
         method: 'jwt',
         login,
         logout,
-        adduser,
       }}
     >
       {children}

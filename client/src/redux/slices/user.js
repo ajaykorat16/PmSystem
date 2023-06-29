@@ -100,8 +100,6 @@ export const getUserByAdmin = (id) => async (dispatch) => {
       const response = await axios.get(`/user/getUserProfile/${id}`, {
         headers: headers
       });
-
-      console.log("get user by admin-->", response)
       dispatch(getUserByAdminSuccess(response.data.getProfile));
     }
   } catch (error) {
@@ -224,7 +222,7 @@ export function deleteUser(userId) {
         };
 
         await axios.delete(`/user/deleteProfile/${userId}`, { headers: headers });
-        const response = await axios.get('/user', { headers: headers });
+        await axios.get('/user', { headers: headers });
         dispatch(deleteUserSuccess(userId));
         dispatch(getUsers()); 
         

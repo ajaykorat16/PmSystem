@@ -48,7 +48,7 @@ ProfileCover.propTypes = {
 export default function ProfileCover({ myProfile }) {
   const { user } = useAuth();
 
-  const { position, cover } = myProfile;
+  const { cover } = myProfile;
 
   return (
     <RootStyle>

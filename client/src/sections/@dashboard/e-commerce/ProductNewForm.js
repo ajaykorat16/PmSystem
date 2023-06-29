@@ -1,55 +1,25 @@
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
-import { useSnackbar } from 'notistack';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 // form
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { styled } from '@mui/material/styles';
 import { LoadingButton } from '@mui/lab';
-import { Card, Chip, Grid, Stack, TextField, Typography, Autocomplete, InputAdornment } from '@mui/material';
+import { Card, Grid, Stack, Typography } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
 // components
 import {
   FormProvider,
-  RHFSwitch,
-  RHFSelect,
-  RHFEditor,
-  RHFTextField,
-  RHFRadioGroup,
-  RHFUploadMultiFile,
+  RHFTextField
 } from '../../../components/hook-form';
-import { addDepartment,updateDepartment } from 'src/redux/slices/department';
+import { addDepartment, updateDepartment } from 'src/redux/slices/department';
 import { useDispatch } from 'react-redux';
 
 // ----------------------------------------------------------------------
-
-const GENDER_OPTION = ['Men', 'Women', 'Kids'];
-
-const CATEGORY_OPTION = [
-  { group: 'Clothing', classify: ['Shirts', 'T-shirts', 'Jeans', 'Leather'] },
-  { group: 'Tailored', classify: ['Suits', 'Blazers', 'Trousers', 'Waistcoats'] },
-  { group: 'Accessories', classify: ['Shoes', 'Backpacks and bags', 'Bracelets', 'Face masks'] },
-];
-
-const TAGS_OPTION = [
-  'Toy Story 3',
-  'Logan',
-  'Full Metal Jacket',
-  'Dangal',
-  'The Sting',
-  '2001: A Space Odyssey',
-  "Singin' in the Rain",
-  'Toy Story',
-  'Bicycle Thieves',
-  'The Kid',
-  'Inglourious Basterds',
-  'Snatch',
-  '3 Idiots',
-];
 
 const LabelStyle = styled(Typography)(({ theme }) => ({
   ...theme.typography.subtitle2,
@@ -65,20 +35,9 @@ ProductNewForm.propTypes = {
 };
 
 export default function ProductNewForm({ isEdit, currentDepartment }) {
-  const {name:id}=useParams()
+  const { name: id } = useParams()
   const navigate = useNavigate();
-  const [name, setName] = useState("")
   const dispatch = useDispatch();
-
-  // useEffect(() => {
-  //   setName(currentDepartment.name)
-  // }, [])
-
-  
-
-
-
-  const { enqueueSnackbar } = useSnackbar();
 
   const NewDepartmentSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
@@ -115,7 +74,7 @@ export default function ProductNewForm({ isEdit, currentDepartment }) {
       reset(defaultValues);
     }
   }, [isEdit, currentDepartment, reset, defaultValues]);
-  
+
 
   const values = watch();
 
@@ -131,27 +90,17 @@ export default function ProductNewForm({ isEdit, currentDepartment }) {
 
   const onSubmit = async (data) => {
     try {
-      console.log(data)
-
-      if(isEdit){
-        dispatch(updateDepartment(data.name,id))
+      if (isEdit) {
+        dispatch(updateDepartment(data.name, id))
         navigate(PATH_DASHBOARD.eCommerce.list);
-      }
-      else{
+      } else {
         dispatch(addDepartment(data.name))
         navigate(PATH_DASHBOARD.eCommerce.list);
       }
-      
-
     } catch (error) {
       console.error(error);
     }
   };
-
-
-
-
-
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -159,10 +108,10 @@ export default function ProductNewForm({ isEdit, currentDepartment }) {
         <Grid item xs={12} md={8}>
           <Card sx={{ p: 3 }}>
             <Stack spacing={3}>
-              <RHFTextField name="name"  label="Department Name" />
+              <RHFTextField name="name" label="Department Name" />
               <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
-              Save Changes
-            </LoadingButton>
+                Save Changes
+              </LoadingButton>
             </Stack>
           </Card>
         </Grid>

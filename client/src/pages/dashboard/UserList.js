@@ -1,19 +1,15 @@
-import { sentenceCase } from 'change-case';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 // @mui
-import { useTheme } from '@mui/material/styles';
 import {
   Card,
   Table,
-  Avatar,
   Button,
   Checkbox,
   TableRow,
   TableBody,
   TableCell,
   Container,
-  Typography,
   TableContainer,
   TablePagination,
 } from '@mui/material';
@@ -21,11 +17,8 @@ import {
 import { PATH_DASHBOARD } from '../../routes/paths';
 // hooks
 import useSettings from '../../hooks/useSettings';
-// _mock_
-import { _userList } from '../../_mock';
 // components
 import Page from '../../components/Page';
-import Label from '../../components/Label';
 import Iconify from '../../components/Iconify';
 import Scrollbar from '../../components/Scrollbar';
 import SearchNotFound from '../../components/SearchNotFound';
@@ -53,7 +46,6 @@ const TABLE_HEAD = [
 // ----------------------------------------------------------------------
 
 export default function UserList() {
-  const theme = useTheme();
   const { themeStretch } = useSettings();
   const dispatch = useDispatch();
   const { users } = useSelector((state) => state.user);
@@ -62,6 +54,7 @@ export default function UserList() {
     dispatch(getUsers());
   }, [dispatch]);
 
+  console.log("userlist-----", users)
   useEffect(() => {
     if (users.length > 0) {
       setUserList(users)

@@ -1,24 +1,24 @@
 import * as Yup from 'yup';
 import { useSnackbar } from 'notistack';
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 // form
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { Box, Grid, Card, Stack, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { IconButton, InputAdornment, Alert } from '@mui/material';
+import { IconButton, InputAdornment } from '@mui/material';
 import Iconify from 'src/components/Iconify';
 // hooks
 import useAuth from '../../../../hooks/useAuth';
 // utils
 import { fData } from '../../../../utils/formatNumber';
-// _mock
-import { countries } from '../../../../_mock';
 // components
 import { FormProvider, RHFSwitch, RHFSelect, RHFTextField, RHFUploadAvatar } from '../../../../components/hook-form';
 import { upadteUserProfile } from 'src/redux/slices/user';
 import { useDispatch } from 'react-redux';
+import { getDepartments } from 'src/redux/slices/department';
+import { useSelector } from 'react-redux';
 
 // ----------------------------------------------------------------------
 
@@ -26,7 +26,11 @@ export default function AccountGeneral() {
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
-  const { user, getAllDepartments } = useAuth();
+  const { user } = useAuth();
+  const { departments } = useSelector((state) => state.department);
+  useEffect(() => {
+    dispatch(getDepartments());
+  }, [dispatch]);
 
   const UpdateUserSchema = Yup.object().shape({
     firstname: Yup.string().required('firstname is required'),
@@ -68,8 +72,6 @@ export default function AccountGeneral() {
     }
   };
   
-  
-
   const handleDrop = useCallback(
     (acceptedFiles) => {
       const file = acceptedFiles[0];
@@ -151,7 +153,7 @@ export default function AccountGeneral() {
               <RHFTextField name="dateOfBirth" label="Date Of Birth" />
               <RHFSelect name="department" label="Department" placeholder="Department">
                 <option value="" />
-                {getAllDepartments.map((option) => (
+                {departments.map((option) => (
                   <option key={option._id} value={option._id}>
                     {option.name}
                   </option>
