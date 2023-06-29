@@ -69,16 +69,18 @@ export default function ProductNewForm({ isEdit, currentDepartment }) {
   const navigate = useNavigate();
   const [name, setName] = useState("")
   const dispatch = useDispatch();
-  useEffect(() => {
-    setName(currentDepartment?.name)
-  }, [])
+
+  // useEffect(() => {
+  //   setName(currentDepartment.name)
+  // }, [])
+
   
 
 
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const NewProductSchema = Yup.object().shape({
+  const NewDepartmentSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
   });
 
@@ -91,7 +93,7 @@ export default function ProductNewForm({ isEdit, currentDepartment }) {
   );
 
   const methods = useForm({
-    resolver: yupResolver(NewProductSchema),
+    resolver: yupResolver(NewDepartmentSchema),
     defaultValues,
   });
 
@@ -101,8 +103,19 @@ export default function ProductNewForm({ isEdit, currentDepartment }) {
     control,
     setValue,
     getValues,
+    handleSubmit,
     formState: { isSubmitting },
   } = methods;
+
+  useEffect(() => {
+    if (isEdit && currentDepartment) {
+      reset(defaultValues);
+    }
+    if (!isEdit) {
+      reset(defaultValues);
+    }
+  }, [isEdit, currentDepartment, reset, defaultValues]);
+  
 
   const values = watch();
 
@@ -116,15 +129,16 @@ export default function ProductNewForm({ isEdit, currentDepartment }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEdit, currentDepartment]);
 
-  const handleSubmit = async (e) => {
+  const onSubmit = async (data) => {
     try {
-      e.preventDefault();
+      console.log(data)
+
       if(isEdit){
-        dispatch(updateDepartment(name,id))
+        dispatch(updateDepartment(data.name,id))
         navigate(PATH_DASHBOARD.eCommerce.list);
       }
       else{
-        dispatch(addDepartment(name))
+        dispatch(addDepartment(data.name))
         navigate(PATH_DASHBOARD.eCommerce.list);
       }
       
@@ -140,14 +154,14 @@ export default function ProductNewForm({ isEdit, currentDepartment }) {
 
 
   return (
-    <FormProvider methods={methods} onSubmit={handleSubmit}>
+    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={3}>
         <Grid item xs={12} md={8}>
           <Card sx={{ p: 3 }}>
             <Stack spacing={3}>
-              <RHFTextField name="name" value={name} label="Department Name" onChange={(e) => setName(e.target.value)}/>
+              <RHFTextField name="name"  label="Department Name" />
               <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
-              {!isEdit ? 'Create Product' : 'Save Changes'}
+              Save Changes
             </LoadingButton>
             </Stack>
           </Card>
