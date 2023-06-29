@@ -16,7 +16,7 @@ import {
   TablePagination,
 } from '@mui/material';
 // redux
-import { useDispatch, useSelector } from '../../redux/store';
+import { dispatch, useDispatch, useSelector } from '../../redux/store';
 import { getProducts } from '../../redux/slices/product';
 // utils
 import { fDate } from '../../utils/formatTime';
@@ -38,16 +38,17 @@ import {
   ProductListHead,
   ProductListToolbar,
 } from '../../sections/@dashboard/e-commerce/product-list';
-import { getDepartments } from '../../redux/slices/department';
+import { getDepartments, deleteDepartment } from '../../redux/slices/department';
+import { RHFTextField } from 'src/components/hook-form';
+import { Stack } from 'immutable';
+import { Controller } from 'react-hook-form';
+
 
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Product', alignRight: false },
-  { id: 'createdAt', label: 'Create at', alignRight: false },
-  { id: 'inventoryType', label: 'Status', alignRight: false },
-  { id: 'price', label: 'Price', alignRight: true },
+  { id: 'name', label: 'Name', alignRight: false },
   { id: '' },
 ];
 
@@ -119,10 +120,9 @@ export default function EcommerceProductList() {
     setFilterName(filterName);
   };
 
-  const handleDeleteProduct = (productId) => {
-    const deleteProduct = productList.filter((product) => product.id !== productId);
-    setSelected([]);
-    setProductList(deleteProduct);
+  const handleDeleteDepartment = async (productId) => {
+    dispatch(deleteDepartment(productId))
+
   };
 
   const handleDeleteProducts = (selected) => {
@@ -151,8 +151,8 @@ export default function EcommerceProductList() {
             { name: 'Product List' },
           ]}
         />
-
         <Card>
+
           <ProductListToolbar
             numSelected={selected.length}
             filterName={filterName}
@@ -174,15 +174,15 @@ export default function EcommerceProductList() {
                 />
 
                 <TableBody>
-                  {filteredProducts.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, name, cover, price, createdAt, inventoryType } = row;
+                  {departmentList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                    const { _id, name } = row;
 
                     const isItemSelected = selected.indexOf(name) !== -1;
 
                     return (
                       <TableRow
                         hover
-                        key={id}
+                        key={_id}
                         tabIndex={-1}
                         role="checkbox"
                         selected={isItemSelected}
@@ -192,17 +192,17 @@ export default function EcommerceProductList() {
                           <Checkbox checked={isItemSelected} onClick={() => handleClick(name)} />
                         </TableCell>
                         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-                          <Image
+                          {/* <Image
                             disabledEffect
                             alt={name}
                             src={cover}
                             sx={{ borderRadius: 1.5, width: 64, height: 64, mr: 2 }}
-                          />
+                          /> */}
                           <Typography variant="subtitle2" noWrap>
                             {name}
                           </Typography>
                         </TableCell>
-                        <TableCell style={{ minWidth: 160 }}>{fDate(createdAt)}</TableCell>
+                        {/* <TableCell style={{ minWidth: 160 }}>{fDate(createdAt)}</TableCell>
                         <TableCell style={{ minWidth: 160 }}>
                           <Label
                             variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
@@ -215,9 +215,9 @@ export default function EcommerceProductList() {
                             {inventoryType ? sentenceCase(inventoryType) : ''}
                           </Label>
                         </TableCell>
-                        <TableCell align="right">{fCurrency(price)}</TableCell>
+                        <TableCell align="right">{fCurrency(price)}</TableCell> */}
                         <TableCell align="right">
-                          <ProductMoreMenu productName={name} onDelete={() => handleDeleteProduct(id)} />
+                          <ProductMoreMenu departmentName={name} id={_id} onDelete={() => handleDeleteDepartment(_id)} />
                         </TableCell>
                       </TableRow>
                     );
