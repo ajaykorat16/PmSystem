@@ -29,16 +29,22 @@ const slice = createSlice({
             state.leaves.push(action.payload);
         },
 
+        //GET ALL LEAVES
         getLeavesSuccess(state, action) {
             state.isLoading = false;
             state.leaves = action.payload;
-          },
+        },
+
+        //DELETE LEAVES
+        deleteLeavesSuccess(state, action) {
+            state.leaves = state.leaves.filter((leave) => leave.id !== action.payload);
+        },
     }
 });
 
 export default slice.reducer;
 
-export const { createLeaveSuccess, getLeavesSuccess } = slice.actions;
+export const { createLeaveSuccess, getLeavesSuccess, deleteLeavesSuccess } = slice.actions;
 
 
 export function createLeave(leaveRecord) {
@@ -68,25 +74,49 @@ export function createLeave(leaveRecord) {
 
 export const getLeaves = () => async (dispatch) => {
     dispatch(slice.actions.startLoading());
-  
+
     try {
-      const accessToken = window.localStorage.getItem('accessToken');
-      if (accessToken && isValidToken(accessToken)) {
-        setSession(accessToken);
-        const headers = {
-          Authorization: `Bearer ${accessToken}`,
-        };
-  
-        const response = await axios.get('/leaves', {
-          headers: headers,
-        });
-        console.log("res------>", response)
-        dispatch(getLeavesSuccess(response.data.leaves));
-      }
+        const accessToken = window.localStorage.getItem('accessToken');
+        if (accessToken && isValidToken(accessToken)) {
+            setSession(accessToken);
+            const headers = {
+                Authorization: `Bearer ${accessToken}`,
+            };
+
+            const response = await axios.get('/leaves', {
+                headers: headers,
+            });
+            dispatch(getLeavesSuccess(response.data.leaves));
+        }
     } catch (error) {
         dispatch(slice.actions.startLoading());
     }
-  };
+};
+
+
+export function deleteLeave(userId) {
+    return async () => {
+        dispatch(slice.actions.startLoading());
+        try {
+            const accessToken = window.localStorage.getItem('accessToken');
+            if (accessToken && isValidToken(accessToken)) {
+                setSession(accessToken);
+
+                const headers = {
+                    Authorization: `Bearer ${accessToken}`
+                };
+
+                await axios.delete(`/leaves/deleteLeave/${userId}`, { headers: headers });
+                console.log("hello")
+                dispatch(deleteLeavesSuccess(userId));
+                dispatch(getLeaves());
+
+            }
+        } catch (error) {
+            dispatch(slice.actions.hasError(error));
+        }
+    };
+}
 
 
 

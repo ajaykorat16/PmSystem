@@ -10,13 +10,13 @@ router.get("/", auth, isAdmin, getAllLeaves)
 router.get("/userLeaves", auth, userGetLeave)
 
 router.post("/createLeave",
-    check('reasone', 'reasone is required').notEmpty(),
+    check('reason', 'reasone is required').notEmpty(),
     check('startDate', 'startDate is required').notEmpty(),
     check('endDate', 'endDate is required').notEmpty(),
     auth, createLeave)
 
 router.post("/createLeave/:id",
-    check('reasone', 'reasone is required').notEmpty(),
+    check('reason', 'reasone is required').notEmpty(),
     check('startDate', 'startDate is required').notEmpty(),
     check('endDate', 'endDate is required').notEmpty(),
     auth, isAdmin, createLeave)

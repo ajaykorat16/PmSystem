@@ -9,7 +9,8 @@ const createLeave = asyncHandler(async (req, res) => {
         return res.status(400).json({ errors: errors.array() });
     }
     try {
-        const { reasone, startDate, endDate, type, userId, status } = req.body
+        const { reason, startDate, endDate, type, userId, status } = req.body
+        console.log("req.body", req.body)
         // const { id } = req.params
 
         // let userId;
@@ -19,7 +20,7 @@ const createLeave = asyncHandler(async (req, res) => {
         //     userId = req.user._id
         // }    
      
-        const createLeaves = await new Leaves({ userId, reasone, startDate, endDate, type, status }).save();
+        const createLeaves = await new Leaves({ userId, reason, startDate, endDate, type, status }).save();
         return res.status(201).json({
             error: false,
             message: "Your Leave Create successfully !!",

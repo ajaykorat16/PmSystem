@@ -1,6 +1,5 @@
-import orderBy from 'lodash/orderBy';
 import { Link as RouterLink } from 'react-router-dom';
-import { useEffect, useCallback, useState } from 'react';
+import { useEffect, useState } from 'react';
 // @mui
 import {
   Card,
@@ -14,50 +13,22 @@ import {
   TableContainer,
   TablePagination,
 } from '@mui/material';
-// routes
 // hooks
 import useSettings from '../../hooks/useSettings';
-import useIsMountedRef from '../../hooks/useIsMountedRef';
-// utils
-import axios from '../../utils/axios';
 // routes
 import { PATH_DASHBOARD } from '../../routes/paths';
 // components
 import Page from '../../components/Page';
 import Iconify from '../../components/Iconify';
-import { SkeletonPostItem } from '../../components/skeleton';
 import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 // sections
-import { BlogPostCard, BlogPostsSort, BlogPostsSearch } from '../../sections/@dashboard/blog';
 import { UserListHead, UserListToolbar, UserMoreMenu } from 'src/sections/@dashboard/user/list';
 import Scrollbar from 'src/components/Scrollbar';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteUser } from 'src/redux/slices/user';
 import SearchNotFound from 'src/components/SearchNotFound';
-import { getUsers } from 'src/redux/slices/user';
 import { getLeaves } from 'src/redux/slices/leaves';
+import { deleteLeave } from 'src/redux/slices/leaves';
 // ----------------------------------------------------------------------
-
-const SORT_OPTIONS = [
-  { value: 'latest', label: 'Latest' },
-  { value: 'popular', label: 'Popular' },
-  { value: 'oldest', label: 'Oldest' },
-];
-
-// ----------------------------------------------------------------------
-
-const applySort = (posts, sortBy) => {
-  if (sortBy === 'latest') {
-    return orderBy(posts, ['createdAt'], ['desc']);
-  }
-  if (sortBy === 'oldest') {
-    return orderBy(posts, ['createdAt'], ['asc']);
-  }
-  if (sortBy === 'popular') {
-    return orderBy(posts, ['view'], ['desc']);
-  }
-  return posts;
-};
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', alignRight: false },
@@ -76,38 +47,16 @@ export default function BlogPosts() {
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState([]);
   const [filterName, setFilterName] = useState('');
-  const [userList, setUserList] = useState([]);
   const [leaveList, setLeaveList] = useState([]);
-
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('name');
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  // const isMountedRef = useIsMountedRef();
-
-  // const [posts, setPosts] = useState([]);
-
-  // const [filters, setFilters] = useState('latest');
-
-  // const sortedPosts = applySort(posts, filters);
 
   const handleRequestSort = (property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
-  const { users } = useSelector((state) => state.user);
-
-  useEffect(() => {
-    dispatch(getUsers());
-  }, [dispatch]);
-
-  console.log("userlist-----", users)
-  useEffect(() => {
-    if (users.length > 0) {
-      setUserList(users)
-    }
-  }, [users]);
 
   useEffect(() => {
     dispatch(getLeaves());
@@ -115,44 +64,21 @@ export default function BlogPosts() {
 
   const { leaves } = useSelector((state) => state.leave);
 
-  console.log("leaves------", leaves)
-
   useEffect(() => {
     if (leaves.length > 0) {
       setLeaveList(leaves)
     }
   }, [leaves]);
 
-  // const getAllPosts = useCallback(async () => {
-  //   try {
-  //     const response = await axios.get('/api/blog/posts/all');
-
-  //     if (isMountedRef.current) {
-  //       setPosts(response.data.posts);
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // }, [isMountedRef]);
-
-  // useEffect(() => {
-  //   getAllPosts();
-  // }, [getAllPosts]);
-
-  // const handleChangeSort = (value) => {
-  //   if (value) {
-  //     setFilters(value);
-  //   }
-  // };
-  const handleFilterByName = (filterName) => {
-    setFilterName(filterName);
+  const handleFilterByName = (_id) => {
+    setFilterName(_id);
     setPage(0);
   };
 
   const handleDeleteMultiUser = (selected) => {
-    const deleteUsers = userList.filter((user) => !selected.includes(user.name));
+    const deleteLeaves = leaveList.filter((leave) => !selected.includes(leave._id));
     setSelected([]);
-    setUserList(deleteUsers);
+    setLeaveList(deleteLeaves);
   };
 
   const handleSelectAllClick = (checked) => {
@@ -179,17 +105,17 @@ export default function BlogPosts() {
     setSelected(newSelected);
   };
 
-  const handleDeleteUser = async (userId) => {
-    await dispatch(deleteUser(userId));
-    setUserList(users)
+  const handleDeleteLeave = async (userId) => {
+    await dispatch(deleteLeave(userId));
+    setLeaveList(leaves)
   };
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-  const filteredUsers = applySortFilter(userList, getComparator(order, orderBy), filterName);
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - userList.length) : 0;
+  const filteredUsers = applySortFilter(leaveList, getComparator(order, orderBy), filterName);
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - leaveList.length) : 0;
   const isNotFound = !filteredUsers.length && Boolean(filterName);
 
 
@@ -215,22 +141,6 @@ export default function BlogPosts() {
           }
         />
 
-        {/* <Stack mb={5} direction="row" alignItems="center" justifyContent="space-between">
-          <BlogPostsSearch />
-          <BlogPostsSort query={filters} options={SORT_OPTIONS} onSort={handleChangeSort} />
-        </Stack>
-
-        <Grid container spacing={3}>
-          {(!posts.length ? [...Array(12)] : sortedPosts).map((post, index) =>
-            post ? (
-              <Grid key={post.id} item xs={12} sm={6} md={(index === 0 && 6) || 3}>
-                <BlogPostCard post={post} index={index} />
-              </Grid>
-            ) : (
-              <SkeletonPostItem key={index} />
-            )
-          )}
-        </Grid> */}
         <Card>
           <UserListToolbar
             numSelected={selected.length}
@@ -240,13 +150,13 @@ export default function BlogPosts() {
           />
 
           <Scrollbar>
-            <TableContainer sx={{ minWidth: 800 }}>
+            <TableContainer sx={{ minWidth: 1000 }}>
               <Table>
                 <UserListHead
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={userList.length}
+                  rowCount={leaveList.length}
                   numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
@@ -281,7 +191,7 @@ export default function BlogPosts() {
                         <TableCell align="left">{status}</TableCell>
 
                         <TableCell align="right">
-                          <UserMoreMenu onDelete={() => handleDeleteUser(_id)} userName={_id} />
+                          <UserMoreMenu onDelete={() => handleDeleteLeave(userId._id)} userName={userId._id} />
                         </TableCell>
                       </TableRow>
                     );
