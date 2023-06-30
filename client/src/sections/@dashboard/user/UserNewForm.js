@@ -36,7 +36,7 @@ export default function UserNewForm({ isEdit, currentUser }) {
   const navigate = useNavigate();
   const { departments } = useSelector((state) => state.department);
   const dispatch = useDispatch();
-  const [showPassword, setShowPassword] = useState(false);
+
   useEffect(() => {
     dispatch(getDepartments());
   }, [dispatch]);
@@ -49,11 +49,10 @@ export default function UserNewForm({ isEdit, currentUser }) {
     email: Yup.string().required('Email is required').email(),
     phone: Yup.string().required('Phone number is required'),
     address: Yup.string().required('Address is required'),
-    password: Yup.string().required('Password is required'),
     dateOfJoining: Yup.string().required('Date Of Joining is required'),
     dateOfBirth: Yup.string().required('Date Of Birth is required'),
     department: Yup.string().required('Department is required'),
-    avatarUrl: Yup.mixed().required('Avatar is required'),
+    photo: Yup.mixed().required('Avatar is required'),
   });
 console.log("currentuser------->", currentUser)
   const defaultValues = useMemo(
@@ -63,10 +62,9 @@ console.log("currentuser------->", currentUser)
       email: currentUser?.email || '',
       phone: currentUser?.phone || '',
       address: currentUser?.address || '',
-      password: currentUser?.password || '',
       dateOfJoining: currentUser?.dateOfJoining || '',
       dateOfBirth: currentUser?.dateOfBirth || '',
-      avatarUrl: currentUser?.avatarUrl || '',
+      photo: currentUser?.photo || '',
       isVerified: currentUser?.isVerified || true,
       status: currentUser?.status,
       department: currentUser?.department._id || '',
@@ -117,7 +115,7 @@ console.log("currentuser------->", currentUser)
 
       if (file) {
         setValue(
-          'avatarUrl',
+          'photo',
           Object.assign(file, {
             preview: URL.createObjectURL(file),
           })
@@ -132,18 +130,9 @@ console.log("currentuser------->", currentUser)
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
           <Card sx={{ py: 10, px: 3 }}>
-            {isEdit && (
-              <Label
-                color={values.status !== 'active' ? 'error' : 'success'}
-                sx={{ textTransform: 'uppercase', position: 'absolute', top: 24, right: 24 }}
-              >
-                {values.status}
-              </Label>
-            )}
-
             <Box sx={{ mb: 5 }}>
               <RHFUploadAvatar
-                name="avatarUrl"
+                name="photo"
                 accept="image/*"
                 maxSize={3145728}
                 onDrop={handleDrop}
@@ -164,52 +153,6 @@ console.log("currentuser------->", currentUser)
                 }
               />
             </Box>
-
-            {isEdit && (
-              <FormControlLabel
-                labelPlacement="start"
-                control={
-                  <Controller
-                    name="status"
-                    control={control}
-                    render={({ field }) => (
-                      <Switch
-                        {...field}
-                        checked={field.value !== 'active'}
-                        onChange={(event) => field.onChange(event.target.checked ? 'banned' : 'active')}
-                      />
-                    )}
-                  />
-                }
-                label={
-                  <>
-                    <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-                      Banned
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                      Apply disable account
-                    </Typography>
-                  </>
-                }
-                sx={{ mx: 0, mb: 3, width: 1, justifyContent: 'space-between' }}
-              />
-            )}
-
-            <RHFSwitch
-              name="isVerified"
-              labelPlacement="start"
-              label={
-                <>
-                  <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-                    Email Verified
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                    Disabling this will automatically send the user a verification email
-                  </Typography>
-                </>
-              }
-              sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
-            />
           </Card>
         </Grid>
 
@@ -228,21 +171,6 @@ console.log("currentuser------->", currentUser)
               <RHFTextField name="email" label="Email Address" />
               <RHFTextField name="phone" label="Phone Number" />
               <RHFTextField name="address" label="Address" />
-              <RHFTextField
-                type={showPassword ? 'text' : 'password'}
-                name="password"
-                autoComplete="new-password"
-                label="Password"
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton onClick={() => setShowPassword(!showPassword)}>
-                        <Iconify icon={showPassword ? 'eva:eye-off-outline' : 'eva:eye-outline'} />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
               <RHFTextField name="dateOfJoining" label="Date Of Joining" />
               <RHFTextField name="dateOfBirth" label="Date Of Birth" />
 
