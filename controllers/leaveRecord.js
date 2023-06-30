@@ -9,17 +9,9 @@ const createLeave = asyncHandler(async (req, res) => {
         return res.status(400).json({ errors: errors.array() });
     }
     try {
-        const { reasone, startDate, endDate, type, userId, status } = req.body
-        // const { id } = req.params
+        const { reason, startDate, endDate, type, userId, status } = req.body
 
-        // let userId;
-        // if (id) {
-        //     userId = id
-        // } else {
-        //     userId = req.user._id
-        // }    
-     
-        const createLeaves = await new Leaves({ userId, reasone, startDate, endDate, type, status }).save();
+        const createLeaves = await new Leaves({ userId, reason, startDate, endDate, type, status }).save();
         return res.status(201).json({
             error: false,
             message: "Your Leave Create successfully !!",
@@ -34,11 +26,18 @@ const createLeave = asyncHandler(async (req, res) => {
 
 const getAllLeaves = asyncHandler(async (req, res) => {
     try {
-        const leaves = await Leaves.find()
-        return res.status(201).json({
+        const leaves = await Leaves.find().populate("userId").lean()    
+        const formattedLeaves = leaves.map(leave => {
+            return {
+                ...leave,
+                startDate: leave.startDate.toISOString().split('T')[0],
+                endDate: leave.endDate.toISOString().split('T')[0]
+            };
+        });
+        return res.status(200).json({
             error: false,
             message: "Get All Leave successfully !!",
-            leaves
+            leaves: formattedLeaves
         })
     } catch (error) {
         console.log(error.message)
@@ -49,7 +48,7 @@ const getAllLeaves = asyncHandler(async (req, res) => {
 const userGetLeave = asyncHandler(async (req, res) => {
     try {
         const leaves = await Leaves.find({ userId: req.user._id })
-        return res.status(201).json({
+        return res.status(200).json({
             error: false,
             message: "Get All Leave successfully !!",
             leaves
