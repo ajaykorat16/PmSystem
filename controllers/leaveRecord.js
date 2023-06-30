@@ -10,16 +10,7 @@ const createLeave = asyncHandler(async (req, res) => {
     }
     try {
         const { reason, startDate, endDate, type, userId, status } = req.body
-        console.log("req.body", req.body)
-        // const { id } = req.params
 
-        // let userId;
-        // if (id) {
-        //     userId = id
-        // } else {
-        //     userId = req.user._id
-        // }    
-     
         const createLeaves = await new Leaves({ userId, reason, startDate, endDate, type, status }).save();
         return res.status(201).json({
             error: false,

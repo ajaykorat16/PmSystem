@@ -107,7 +107,6 @@ export function deleteLeave(userId) {
                 };
 
                 await axios.delete(`/leaves/deleteLeave/${userId}`, { headers: headers });
-                console.log("hello")
                 dispatch(deleteLeavesSuccess(userId));
                 dispatch(getLeaves());
 
