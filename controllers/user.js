@@ -106,7 +106,7 @@ const updateUser = asyncHandler(async (req, res) => {
     }
 
     try {
-        const { firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining } = req.fields;
+        const { firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining } = req.fields;
         const { photo } = req.files;
         const { id } = req.params;
 
@@ -118,19 +118,12 @@ const updateUser = asyncHandler(async (req, res) => {
             user = await Users.findById(req.user._id);
         }
 
-        if (password && password.length < 6) {
-            return res.send({ message: "Password is required and must be at least 6 characters" });
-        }
-
-        const hashedPassword = password ? await hashPassword(password) : undefined;
-
         const updatedFields = {
             firstname: firstname || user.firstname,
             lastname: lastname || user.lastname,
             email: email || user.email,
             phone: phone || user.phone,
             address: address || user.address,
-            password: hashedPassword || user.password,
             dateOfBirth: dateOfBirth || user.dateOfBirth,
             department: department || user.department,
             dateOfJoining: dateOfJoining || user.dateOfJoining
@@ -190,26 +183,32 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
 
 const getAllUser = asyncHandler(async (req, res) => {
     try {
-        const getAllUsers = await Users.find().select("-photo").populate("department").lean()
-
-        const formattedUsers = getAllUsers.map(user => {
-            return {
-                ...user,
-                dateOfBirth: user.dateOfBirth.toISOString().split('T')[0],
-                dateOfJoining: user.dateOfJoining.toISOString().split('T')[0]
-            };
-        });
-
-        return res.status(200).json({
-            error: false,
-            message: "All users get successfully!!",
-            getAllUsers: formattedUsers
-        })
+      const getAllUsers = await Users.find().populate("department").lean();
+  
+      const formattedUsers = getAllUsers.map(user => {
+        const photoUrl = user.photo && user.photo.contentType
+          ? `data:${user.photo.contentType};base64,${user.photo.data.toString("base64")}`
+          : null;
+        
+        return {
+          ...user,
+          dateOfBirth: user.dateOfBirth.toISOString().split('T')[0],
+          dateOfJoining: user.dateOfJoining.toISOString().split('T')[0],
+          photo:photoUrl,
+        };
+      });
+  
+      return res.status(200).json({
+        error: false,
+        message: "All users retrieved successfully",
+        getAllUsers: formattedUsers
+      });
     } catch (error) {
-        console.log(error.message)
-        res.status(500).send('Server error');
+      console.log(error.message);
+      res.status(500).send('Server error');
     }
-})
+  });
+  
 
 const getUserProfile = asyncHandler(async (req, res) => {
     try {
@@ -221,10 +220,18 @@ const getUserProfile = asyncHandler(async (req, res) => {
         } else {
             getProfile = await Users.findById({ _id: req.user._id }).populate("department")
         }
+
+        const photoUrl = getProfile.photo && getProfile.photo.contentType
+      ? `data:${getProfile.photo.contentType};base64,${getProfile.photo.data.toString("base64")}`
+      : null;
+
         return res.status(200).json({
             error: false,
             message: "Users get profile successfully!!",
-            getProfile
+            getProfile:{
+                ...getProfile.toObject(),
+                photo:photoUrl,
+              },
         })
     } catch (error) {
         console.log(error.message)

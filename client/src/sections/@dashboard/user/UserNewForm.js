@@ -36,7 +36,7 @@ export default function UserNewForm({ isEdit, currentUser }) {
   const navigate = useNavigate();
   const { departments } = useSelector((state) => state.department);
   const dispatch = useDispatch();
-  const [showPassword, setShowPassword] = useState(false);
+
   useEffect(() => {
     dispatch(getDepartments());
   }, [dispatch]);
@@ -49,11 +49,10 @@ export default function UserNewForm({ isEdit, currentUser }) {
     email: Yup.string().required('Email is required').email(),
     phone: Yup.string().required('Phone number is required'),
     address: Yup.string().required('Address is required'),
-    password: Yup.string().required('Password is required'),
     dateOfJoining: Yup.string().required('Date Of Joining is required'),
     dateOfBirth: Yup.string().required('Date Of Birth is required'),
     department: Yup.string().required('Department is required'),
-    avatarUrl: Yup.mixed().required('Avatar is required'),
+    photo: Yup.mixed().required('Avatar is required'),
   });
 
   const defaultValues = useMemo(
@@ -63,10 +62,9 @@ export default function UserNewForm({ isEdit, currentUser }) {
       email: currentUser?.email || '',
       phone: currentUser?.phone || '',
       address: currentUser?.address || '',
-      password: currentUser?.password || '',
       dateOfJoining: currentUser?.dateOfJoining || '',
       dateOfBirth: currentUser?.dateOfBirth || '',
-      avatarUrl: currentUser?.avatarUrl || '',
+      photo: currentUser?.photo || '',
       isVerified: currentUser?.isVerified || true,
       status: currentUser?.status,
       department: currentUser?.department._id || '',
@@ -117,7 +115,7 @@ export default function UserNewForm({ isEdit, currentUser }) {
 
       if (file) {
         setValue(
-          'avatarUrl',
+          'photo',
           Object.assign(file, {
             preview: URL.createObjectURL(file),
           })
@@ -143,7 +141,7 @@ export default function UserNewForm({ isEdit, currentUser }) {
 
             <Box sx={{ mb: 5 }}>
               <RHFUploadAvatar
-                name="avatarUrl"
+                name="photo"
                 accept="image/*"
                 maxSize={3145728}
                 onDrop={handleDrop}
@@ -228,21 +226,6 @@ export default function UserNewForm({ isEdit, currentUser }) {
               <RHFTextField name="email" label="Email Address" />
               <RHFTextField name="phone" label="Phone Number" />
               <RHFTextField name="address" label="Address" />
-              <RHFTextField
-                type={showPassword ? 'text' : 'password'}
-                name="password"
-                autoComplete="new-password"
-                label="Password"
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton onClick={() => setShowPassword(!showPassword)}>
-                        <Iconify icon={showPassword ? 'eva:eye-off-outline' : 'eva:eye-outline'} />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
               <RHFTextField name="dateOfJoining" label="Date Of Joining" />
               <RHFTextField name="dateOfBirth" label="Date Of Birth" />
 

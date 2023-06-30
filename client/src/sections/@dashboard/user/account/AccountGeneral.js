@@ -7,8 +7,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { Box, Grid, Card, Stack, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { IconButton, InputAdornment } from '@mui/material';
-import Iconify from 'src/components/Iconify';
 // hooks
 import useAuth from '../../../../hooks/useAuth';
 // utils
@@ -25,7 +23,6 @@ import { useSelector } from 'react-redux';
 export default function AccountGeneral() {
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
-  const [showPassword, setShowPassword] = useState(false);
   const { user } = useAuth();
   const { departments } = useSelector((state) => state.department);
   useEffect(() => {
@@ -40,13 +37,12 @@ export default function AccountGeneral() {
     firstname: user?.firstname || '',
     lastname: user?.lastname || '',
     email: user?.email || '',
-    photoURL: user?.photoURL || '',
+    photoURL: user?.photo || '',
     phone: user?.phone || '',
     department: user?.department._id || '',
     address: user?.address || '',
     dateOfBirth: user?.dateOfBirth || '',
     dateOfJoining: user?.dateOfJoining || '',
-    password: user?.password || '',
   };
 
   const methods = useForm({
@@ -129,21 +125,6 @@ export default function AccountGeneral() {
               <RHFTextField name="firstname" label="Firstname" />
               <RHFTextField name="lastname" label="Lastname" />
               <RHFTextField name="email" label="Email Address" />
-              <RHFTextField
-                type={showPassword ? 'text' : 'password'}
-                name="password"
-                autoComplete="new-password"
-                label="Password"
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton onClick={() => setShowPassword(!showPassword)}>
-                        <Iconify icon={showPassword ? 'eva:eye-off-outline' : 'eva:eye-outline'} />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
               <RHFTextField name="phone" label="Phone Number" />
               <RHFTextField name="address" label="Address" />
               <RHFTextField name="dateOfJoining" label="Date Of Joining" />
