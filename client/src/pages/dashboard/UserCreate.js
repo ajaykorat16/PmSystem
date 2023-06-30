@@ -36,10 +36,6 @@ export default function UserCreate() {
     dispatch(addUser(user));
   };
 
-//   const handleUpdateUser = (id, user) = {
-//     dispatch(upadteUserProfileByAdmin(id, user));
-// }
-
 return (
   <Page title="User: Create a new user">
     <Container maxWidth={themeStretch ? false : 'lg'}>
@@ -56,7 +52,6 @@ return (
         isEdit={isEdit}
         currentUser={currentUsers}
         addUser={handleAddUser}
-        // updateUser={handleUpdateUser}
       />
     </Container>
   </Page>
