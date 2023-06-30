@@ -37,7 +37,7 @@ export default function AccountGeneral() {
     firstname: user?.firstname || '',
     lastname: user?.lastname || '',
     email: user?.email || '',
-    photoURL: user?.photo || '',
+    photo: user?.photo || '',
     phone: user?.phone || '',
     department: user?.department._id || '',
     address: user?.address || '',
@@ -72,7 +72,7 @@ export default function AccountGeneral() {
 
       if (file) {
         setValue(
-          'photoURL',
+          'photo',
           Object.assign(file, {
             preview: URL.createObjectURL(file),
           })
@@ -88,7 +88,7 @@ export default function AccountGeneral() {
         <Grid item xs={12} md={4}>
           <Card sx={{ py: 10, px: 3, textAlign: 'center' }}>
             <RHFUploadAvatar
-              name="photoURL"
+              name="photo"
               accept="image/*"
               maxSize={3145728}
               onDrop={handleDrop}

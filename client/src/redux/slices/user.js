@@ -145,7 +145,7 @@ export function upadteUserProfile(user) {
           Authorization: `Bearer ${accessToken}`
         };
 
-        const { firstname, lastname, email, phone, address, department, dateOfBirth, dateOfJoining, password } = user;
+        const { firstname, lastname, email, phone, address, department, dateOfBirth, dateOfJoining, password,photo } = user;
 
         const updateUserData = new FormData()
         updateUserData.append("firstname", firstname)
@@ -157,6 +157,8 @@ export function upadteUserProfile(user) {
         updateUserData.append("dateOfBirth", dateOfBirth)
         updateUserData.append("dateOfJoining", dateOfJoining)
         updateUserData.append("password", password)
+        photo && updateUserData.append("photo", photo);
+
 
         const response = await axios.put('/user/updateProfile', updateUserData, {
           headers: headers,
@@ -183,7 +185,7 @@ export function upadteUserProfileByAdmin(id, user) {
           Authorization: `Bearer ${accessToken}`
         };
 
-        const { firstname, lastname, email, phone, address, department, dateOfBirth, dateOfJoining, password } = user;
+        const { firstname, lastname, email, phone, address, department, dateOfBirth, dateOfJoining, password,photo } = user;
 
         const updateUserData = new FormData()
         updateUserData.append("firstname", firstname)
@@ -195,6 +197,7 @@ export function upadteUserProfileByAdmin(id, user) {
         updateUserData.append("dateOfBirth", dateOfBirth)
         updateUserData.append("dateOfJoining", dateOfJoining)
         updateUserData.append("password", password)
+        photo && updateUserData.append("photo", photo);
 
         const response = await axios.put(`/user/updateProfile/${id}`, updateUserData, {
           headers: headers,

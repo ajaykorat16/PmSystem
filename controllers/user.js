@@ -126,7 +126,8 @@ const updateUser = asyncHandler(async (req, res) => {
             address: address || user.address,
             dateOfBirth: dateOfBirth || user.dateOfBirth,
             department: department || user.department,
-            dateOfJoining: dateOfJoining || user.dateOfJoining
+            dateOfJoining: dateOfJoining || user.dateOfJoining,
+            photo:photo || user.photo
         };
 
         if (photo) {
