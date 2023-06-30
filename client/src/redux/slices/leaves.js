@@ -28,12 +28,17 @@ const slice = createSlice({
         createLeaveSuccess(state, action) {
             state.leaves.push(action.payload);
         },
+
+        getLeavesSuccess(state, action) {
+            state.isLoading = false;
+            state.leaves = action.payload;
+          },
     }
 });
 
 export default slice.reducer;
 
-export const { createLeaveSuccess } = slice.actions;
+export const { createLeaveSuccess, getLeavesSuccess } = slice.actions;
 
 
 export function createLeave(leaveRecord) {
@@ -56,10 +61,32 @@ export function createLeave(leaveRecord) {
                 dispatch(createLeaveSuccess(data.leave));
             }
         } catch (error) {
-            dispatch(slice.actions.hasError(error));
+            dispatch(slice.actions.startLoading());
         }
     };
 }
+
+export const getLeaves = () => async (dispatch) => {
+    dispatch(slice.actions.startLoading());
+  
+    try {
+      const accessToken = window.localStorage.getItem('accessToken');
+      if (accessToken && isValidToken(accessToken)) {
+        setSession(accessToken);
+        const headers = {
+          Authorization: `Bearer ${accessToken}`,
+        };
+  
+        const response = await axios.get('/leaves', {
+          headers: headers,
+        });
+        console.log("res------>", response)
+        dispatch(getLeavesSuccess(response.data.leaves));
+      }
+    } catch (error) {
+        dispatch(slice.actions.startLoading());
+    }
+  };
 
 
 

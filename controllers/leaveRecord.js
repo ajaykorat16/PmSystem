@@ -34,11 +34,18 @@ const createLeave = asyncHandler(async (req, res) => {
 
 const getAllLeaves = asyncHandler(async (req, res) => {
     try {
-        const leaves = await Leaves.find()
-        return res.status(201).json({
+        const leaves = await Leaves.find().populate("userId").lean()    
+        const formattedLeaves = leaves.map(leave => {
+            return {
+                ...leave,
+                startDate: leave.startDate.toISOString().split('T')[0],
+                endDate: leave.endDate.toISOString().split('T')[0]
+            };
+        });
+        return res.status(200).json({
             error: false,
             message: "Get All Leave successfully !!",
-            leaves
+            leaves: formattedLeaves
         })
     } catch (error) {
         console.log(error.message)
@@ -49,7 +56,7 @@ const getAllLeaves = asyncHandler(async (req, res) => {
 const userGetLeave = asyncHandler(async (req, res) => {
     try {
         const leaves = await Leaves.find({ userId: req.user._id })
-        return res.status(201).json({
+        return res.status(200).json({
             error: false,
             message: "Get All Leave successfully !!",
             leaves

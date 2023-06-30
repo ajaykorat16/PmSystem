@@ -6,7 +6,7 @@ const leaveSchema = new mongoose.Schema({
         ref: "User",
         required: true,
     },
-    reasone: {
+    reason: {
         type: String,
         required: true,
         trim: true
