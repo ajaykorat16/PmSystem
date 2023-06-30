@@ -28,6 +28,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import SearchNotFound from 'src/components/SearchNotFound';
 import { getLeaves } from 'src/redux/slices/leaves';
 import { deleteLeave } from 'src/redux/slices/leaves';
+import LeaveMoreMenu from 'src/sections/@dashboard/blog/LeaveMoreMenu';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
@@ -105,8 +106,8 @@ export default function BlogPosts() {
     setSelected(newSelected);
   };
 
-  const handleDeleteLeave = async (userId) => {
-    await dispatch(deleteLeave(userId));
+  const handleDeleteLeave = async (id) => {
+    await dispatch(deleteLeave(id));
     setLeaveList(leaves)
   };
 
@@ -191,7 +192,7 @@ export default function BlogPosts() {
                         <TableCell align="left">{status}</TableCell>
 
                         <TableCell align="right">
-                          <UserMoreMenu onDelete={() => handleDeleteLeave(userId._id)} userName={userId._id} />
+                          <LeaveMoreMenu onDelete={() => handleDeleteLeave(_id)} id={_id} />
                         </TableCell>
                       </TableRow>
                     );

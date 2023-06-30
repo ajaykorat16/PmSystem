@@ -70,6 +70,7 @@ export const PATH_DASHBOARD = {
     posts: path(ROOTS_DASHBOARD, '/blog/posts'),
     post: path(ROOTS_DASHBOARD, '/blog/post/:title'),
     postById: path(ROOTS_DASHBOARD, '/blog/post/apply-these-7-secret-techniques-to-improve-event'),
+    editById: path(ROOTS_DASHBOARD, `/blog/reece-chung/edit`),
     newPost: path(ROOTS_DASHBOARD, '/blog/new-post')
   }
 };

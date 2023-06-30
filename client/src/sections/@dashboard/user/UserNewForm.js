@@ -55,7 +55,7 @@ export default function UserNewForm({ isEdit, currentUser }) {
     department: Yup.string().required('Department is required'),
     avatarUrl: Yup.mixed().required('Avatar is required'),
   });
-
+console.log("currentuser------->", currentUser)
   const defaultValues = useMemo(
     () => ({
       firstname: currentUser?.firstname || '',

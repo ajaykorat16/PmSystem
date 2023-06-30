@@ -39,12 +39,18 @@ const slice = createSlice({
         deleteLeavesSuccess(state, action) {
             state.leaves = state.leaves.filter((leave) => leave.id !== action.payload);
         },
+
+        //UPDATE LEAVE
+        upadteLeaveByAdminSuccess(state, action) {
+            state.leaves.pull(action.payload);
+            state.leaves.push(action.payload);
+        },
     }
 });
 
 export default slice.reducer;
 
-export const { createLeaveSuccess, getLeavesSuccess, deleteLeavesSuccess } = slice.actions;
+export const { createLeaveSuccess, getLeavesSuccess, deleteLeavesSuccess, upadteLeaveByAdminSuccess } = slice.actions;
 
 
 export function createLeave(leaveRecord) {
@@ -94,7 +100,7 @@ export const getLeaves = () => async (dispatch) => {
 };
 
 
-export function deleteLeave(userId) {
+export function deleteLeave(id) {
     return async () => {
         dispatch(slice.actions.startLoading());
         try {
@@ -106,10 +112,35 @@ export function deleteLeave(userId) {
                     Authorization: `Bearer ${accessToken}`
                 };
 
-                await axios.delete(`/leaves/deleteLeave/${userId}`, { headers: headers });
-                dispatch(deleteLeavesSuccess(userId));
+                await axios.delete(`/leaves/deleteLeave/${id}`, { headers: headers });
+                dispatch(deleteLeavesSuccess(id));
                 dispatch(getLeaves());
+            }
+        } catch (error) {
+            dispatch(slice.actions.hasError(error));
+        }
+    };
+}
 
+export function upadteLeaveByAdmin(id, leaveRecord) {
+    return async (dispatch) => {
+        dispatch(slice.actions.startLoading());
+        try {
+            const accessToken = window.localStorage.getItem('accessToken');
+            if (accessToken && isValidToken(accessToken)) {
+                setSession(accessToken);
+
+                const headers = {
+                    Authorization: `Bearer ${accessToken}`
+                };
+
+                const { userId, reasone, startDate, endDate, type, status } = leaveRecord;
+
+                const response = await axios.put(`/leaves/updateLeave/${id}`, { userId, reasone, startDate, endDate, type, status }, {
+                    headers: headers,
+                });
+                const { data } = response;
+                dispatch(slice.actions.updateUserSuccess(data.leave));
             }
         } catch (error) {
             dispatch(slice.actions.hasError(error));

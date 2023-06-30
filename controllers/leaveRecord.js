@@ -61,19 +61,20 @@ const userGetLeave = asyncHandler(async (req, res) => {
 
 const updateLeave = asyncHandler(async (req, res) => {
     try {
-        const { reasone, startDate, endDate, type, status } = req.body
+        const { reason, startDate, endDate, type, status, userId } = req.body
         const { id } = req.params;
 
         let userLeave;
 
         if (id) {
-            userLeave = await Leaves.findOne({ userId: id });
+            userLeave = await Leaves.findOne({ _id: id });
         } else {
             userLeave = await Leaves.findOne({ userId: req.user._id });
         }
 
         const updatedFields = {
-            reasone: reasone || userLeave.reasone,
+            userId: userId || userLeave.userId,
+            reason: reason || userLeave.reason,
             startDate: startDate || userLeave.startDate,
             endDate: endDate || userLeave.endDate,
             type: type || userLeave.type,
@@ -87,7 +88,7 @@ const updateLeave = asyncHandler(async (req, res) => {
         return res.status(201).send({
             error: false,
             message: "Leave Updated Successfully !!",
-            updateLeave
+            leave: updateLeave
         });
 
     } catch (error) {
@@ -100,8 +101,7 @@ const deleteLeave = asyncHandler(async (req, res) => {
     try {
         const { id } = req.params;
 
-        const userLeave = await Leaves.findOne({ userId: id });
-        await Leaves.findByIdAndDelete({ _id: userLeave._id });
+        await Leaves.findByIdAndDelete({ _id: id });
         return res.status(201).send({
             error: false,
             message: "Leave Delete Successfully !!",

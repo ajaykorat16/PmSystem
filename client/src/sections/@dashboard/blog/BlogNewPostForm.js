@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
 // form
@@ -18,22 +18,29 @@ import { RHFEditor, FormProvider, RHFTextField, RHFSelect } from '../../../compo
 import BlogNewPostPreview from './BlogNewPostPreview';
 import { getUsers } from 'src/redux/slices/user';
 import { createLeave } from 'src/redux/slices/leaves';
+import { useParams } from 'react-router-dom';
+import PropTypes from 'prop-types';
 // ----------------------------------------------------------------------
 
 const LabelStyle = styled(Typography)(({ theme }) => ({
   ...theme.typography.subtitle2,
   color: theme.palette.text.secondary,
   marginBottom: theme.spacing(1),
-}));
+}));  
 
 // ----------------------------------------------------------------------
 
+BlogNewPostForm.propTypes = {
+  isEdit: PropTypes.bool,
+  currentLeave: PropTypes.object,
+};
+
 export default function BlogNewPostForm(isEdit, currentLeave) {
+  const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const [open, setOpen] = useState(false);
-
   const { enqueueSnackbar } = useSnackbar();
 
   const handleOpenPreview = () => {
@@ -43,7 +50,12 @@ export default function BlogNewPostForm(isEdit, currentLeave) {
   const handleClosePreview = () => {
     setOpen(false);
   };
+
   const { users } = useSelector((state) => state.user);
+
+  console.log("isEdit------>", isEdit)
+  console.log("currentLeave------>", currentLeave?.userId)
+  
 
   useEffect(() => {
     dispatch(getUsers());
@@ -61,14 +73,17 @@ export default function BlogNewPostForm(isEdit, currentLeave) {
     type: Yup.string().required('Type is required'),
   });
 
-  const defaultValues = {
-    userId: currentLeave.userId || '',
-    reason: currentLeave.reason || '',
-    startDate: currentLeave.startDate || '',
-    endDate: currentLeave.endDate || '',
-    status: currentLeave.status || 'Pending',
-    type: currentLeave.type || 'LWP',
-  };
+  const defaultValues = useMemo(
+    () => ({
+      userId: currentLeave?.userId || '',
+      reason: currentLeave?.reason || '',
+      startDate: currentLeave?.startDate || '',
+      endDate: currentLeave?.endDate || '',
+      status: currentLeave?.status || 'Pending',
+      type: currentLeave?.type || 'LWP',
+    }),
+    [currentLeave]
+  );
 
   const methods = useForm({
     resolver: yupResolver(NewLeaveSchema),

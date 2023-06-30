@@ -10,16 +10,27 @@ import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 // sections
 import { BlogNewPostForm } from '../../sections/@dashboard/blog';
 import { useDispatch } from 'react-redux';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { createLeave } from 'src/redux/slices/leaves';
+import { getLeaves } from 'src/redux/slices/leaves';
+import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
 
 // ----------------------------------------------------------------------
 
 export default function BlogNewPost() {
   const { themeStretch } = useSettings();
   const { pathname } = useLocation();
-  const isEdit = pathname.includes('edit'); 
+  const isEdit = pathname.includes('edit');
   const dispatch = useDispatch();
+  const { id } = useParams();
+
+  const { leaves } = useSelector((state) => state.leave)
+  const currentLeaves = leaves.find((leave) => leave._id === id)
+console.log("currentLeaves..........",currentLeaves)
+  useEffect(() => {
+    dispatch(getLeaves())
+  }, [dispatch])
 
   const handleCreateLeave = (leaveRecord) => {
     dispatch(createLeave(leaveRecord));
@@ -28,7 +39,7 @@ export default function BlogNewPost() {
     <Page title="Leave: New Leave">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs
-          heading="Create a new leave"
+          heading={!isEdit ? "Create a new leave" : "Edit Leave"}
           links={[
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
             { name: 'Blog', href: PATH_DASHBOARD.blog.root },
@@ -36,10 +47,10 @@ export default function BlogNewPost() {
           ]}
         />
 
-        <BlogNewPostForm 
-        isEdit={isEdit}
-        currentUser={null} 
-        createLeave = {handleCreateLeave}
+        <BlogNewPostForm
+          isEdit={isEdit}
+          currentLeave={currentLeaves}
+          createLeave={handleCreateLeave}
         />
       </Container>
     </Page>
