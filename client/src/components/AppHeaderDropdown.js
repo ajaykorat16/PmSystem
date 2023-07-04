@@ -15,8 +15,22 @@ import {
 import CIcon from '@coreui/icons-react'
 
 import avatar8 from './../assets/images/avatars/8.jpg'
+import { useLogin } from '../context/LoginContext'
+import { useNavigate } from 'react-router-dom'
 
 const AppHeaderDropdown = () => {
+  const {logout}=useLogin()
+  const navigate=useNavigate()
+
+const handleLogout=()=>{
+  try {
+    logout()
+    navigate('/login')
+  } catch (error) {
+    
+  }
+}
+  
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
@@ -29,7 +43,7 @@ const AppHeaderDropdown = () => {
           Profile
         </CDropdownItem>
         <CDropdownDivider />
-        <CDropdownItem href="#">
+        <CDropdownItem onClick={handleLogout} >
           <CIcon icon={cilLockLocked} className="me-2" />
           Logout
         </CDropdownItem>
