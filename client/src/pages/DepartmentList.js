@@ -11,6 +11,9 @@ const DepartmentList = () => {
             <div className="wrapper d-flex flex-column min-vh-100 bg-light">
                 <AppHeader />
                 <div className="body flex-grow-1 px-3">
+                <div className="mb-3">
+                        <h2 className='mb-5 mt-2'>Department List</h2>
+                    </div>
                     <CTable>
                         <CTableHead>
                             <CTableRow>
