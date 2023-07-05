@@ -3,17 +3,16 @@ const Users = require("../models/userModel")
 
 const auth = function (req, res, next) {
 
-    const authorizationHeader = req.headers.authorization
-    if (!authorizationHeader) {
+    const token = req.headers.authorization
+    if (!token) {
         return res.status(401).json({ msg: 'No token, authorization denied' });
     }
-
-    const [bearer, token] = authorizationHeader.split(' ');
 
     // Verify token
     try {
         jwt.verify(token, process.env.JWT_SECRET_KEY, (error, decoded) => {
             if (error) {
+                console.log(error)
                 return res.status(401).json({ msg: 'Token is not valid' });
             } else {
                 req.user = decoded.user;

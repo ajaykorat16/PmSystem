@@ -3,19 +3,20 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import { Provider } from 'react-redux'
 import store from './store';
-import { LoginProvider } from './context/LoginContext';
+import { AuthProvider } from './context/AuthContext';
 
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <LoginProvider>
-    <Provider store={store}>
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>
-    </Provider>
-  </LoginProvider>
+  <AuthProvider>
+      <Provider store={store}>
+        <React.StrictMode>
+          <App />
+        </React.StrictMode>
+      </Provider>
+  </AuthProvider>
+
 
 );
 

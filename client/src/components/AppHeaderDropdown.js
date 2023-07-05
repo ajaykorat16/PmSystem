@@ -15,11 +15,11 @@ import {
 import CIcon from '@coreui/icons-react'
 
 import avatar8 from './../assets/images/avatars/8.jpg'
-import { useLogin } from '../context/LoginContext'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 const AppHeaderDropdown = () => {
-  const {logout}=useLogin()
+  const {logout}=useAuth()
   const navigate=useNavigate()
 
 const handleLogout=()=>{

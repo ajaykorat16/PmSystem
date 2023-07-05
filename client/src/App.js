@@ -1,3 +1,4 @@
+import AdminRoutes from './components/Routes/AdminRoutes';
 import DefaultLayout from './pages/DefaultLayout';
 import DepartmentCreate from './pages/DepartmentCreate';
 import DepartmentList from './pages/DepartmentList';
@@ -15,7 +16,8 @@ function App() {
     <>
       <Router>
         <Routes>
-          <Route path="/" element={<DefaultLayout />} />
+          <Route path="/" element={<AdminRoutes />} />
+          <Route path="/home" element={<DefaultLayout />} />
           <Route path="/login" element={<Login />} />
           <Route path="/user/list" element={<UserList />} />
           <Route path="/user/create" element={<UserCreate />} />

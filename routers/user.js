@@ -11,6 +11,10 @@ router.get("/", auth, isAdmin, getAllUser)
 
 router.get("/profile", auth, getUserProfile)
 
+router.get('/admin-auth',auth,isAdmin,(req,res)=>{
+    res.status(200).json({ok:true})
+})
+
 router.post("/register",
     check('firstname', 'Name is required').notEmpty(),
     check('lastname', 'Name is required').notEmpty(),

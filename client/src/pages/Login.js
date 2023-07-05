@@ -14,15 +14,15 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
-import { useLogin } from '../context/LoginContext'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 
 
 const Login = () => {
     const [email, setEmail] = useState("ajaykorat204@gmail.com");
     const [password, setPassword] = useState("ajay@2208");
-    const { login, isLoggedIn } = useLogin()
+    const {auth,login}=useAuth()
     const navigate=useNavigate()
 
     const handleSubmit = (e) => {
@@ -36,10 +36,11 @@ const Login = () => {
     }
     
     useEffect(() => {
-      if(isLoggedIn){
-        navigate("/")
-      } 
-    }, [isLoggedIn,navigate])
+        if (auth?.token) {
+          navigate('/')
+        }
+      }, [auth?.token, navigate])
+
     
 
     return (
