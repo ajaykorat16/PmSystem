@@ -11,7 +11,6 @@ const LeaveList = () => {
 
     useEffect(() => {
         setLeaveList(leave)
-        console.log(leave)
     }, [leave])
 
 

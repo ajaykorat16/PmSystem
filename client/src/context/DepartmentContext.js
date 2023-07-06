@@ -1,39 +1,56 @@
 import { useState, useContext, createContext, useEffect } from "react";
-import axios from 'axios'
+import axios from "axios";
 import { useAuth } from "./AuthContext";
 
-const DepartmentContext = createContext()
+const DepartmentContext = createContext();
 
 const DepartmentProvider = ({ children }) => {
-    const [department, setDepartment] = useState([])
-    const { auth } = useAuth()
-    const headers = {
-        Authorization: auth?.token
-    };
-    useEffect(() => {
-        const getDepartment = async () => {
-            try {
-                const res = await axios.get(`/department`,{headers})
-                if (res.data.error === false) {
-                    setDepartment(res.data.getAllDepartments)
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        getDepartment()
-    }, [auth?.token])
-    
+  const [department, setDepartment] = useState([]);
+  const { auth } = useAuth();
+  const headers = {
+    Authorization: auth?.token,
+  };
 
-    return (
-        <DepartmentContext.Provider value={{ department }}>
-            {children}
-        </DepartmentContext.Provider>
-    )
+  const getDepartment = async () => {
+    try {
+      const res = await axios.get(`/department`, { headers });
+      if (res.data.error === false) {
+        setDepartment(res.data.getAllDepartments);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getDepartment();
+  }, [auth?.token]);
 
-}
+  //add department
+  const addDepartment = async (name) => {
+    try {
+      await axios.post("/department/createDepartment", { name }, { headers });
+      getDepartment()
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-//custom hook 
-const useDepartment = () => useContext(DepartmentContext)
+  //delete department
+  // const deleteDepartment = async (_id) => {
+  //     try {
+  //         await axios.delete(`/department/deleteDepartment/${_id}`, {headers})
+  //     } catch (error) {
+  //         console.log(error);
+  //     }
+  // }
+  return (
+    <DepartmentContext.Provider value={{ department, addDepartment }}>
+      {children}
+    </DepartmentContext.Provider>
+  );
+};
 
-export { useDepartment, DepartmentProvider }
+//custom hook
+const useDepartment = () => useContext(DepartmentContext);
+
+export { useDepartment, DepartmentProvider };
