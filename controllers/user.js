@@ -109,7 +109,6 @@ const updateUser = asyncHandler(async (req, res) => {
         const { firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining } = req.fields;
         const { photo } = req.files;
         const { id } = req.params;
-
         let user;
 
         if (id) {

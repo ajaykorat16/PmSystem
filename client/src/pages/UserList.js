@@ -1,13 +1,22 @@
 import React from 'react'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
-import { CTable, CTableHead, CTableRow, CTableHeaderCell, CTableDataCell, CTableBody } from '@coreui/react';
-import { useEffect } from 'react';
+import { CTable, CTableHead, CTableRow, CTableHeaderCell, CTableDataCell, CTableBody, CButton } from '@coreui/react';
 import { useUser } from '../context/UserContext';
+import { useNavigate } from 'react-router-dom'
 
 
 const UserList = () => {
-    const { users } = useUser()
+    const { users, deleteUser } = useUser()
+    const navigate = useNavigate();
+
+    const handleDelete = async (id) => {
+        await deleteUser(id)
+    }
+
+    const handleUpdate = async (id) => {
+        navigate(`/user/update/${id}`)
+    }
     return (
         <div>
             <AppSidebar />
@@ -28,6 +37,7 @@ const UserList = () => {
                                 <CTableHeaderCell scope="col">Department</CTableHeaderCell>
                                 <CTableHeaderCell scope="col">Date Of Birth</CTableHeaderCell>
                                 <CTableHeaderCell scope="col">Date Of Joining</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Action</CTableHeaderCell>
                             </CTableRow>
                         </CTableHead>
                         <CTableBody>
@@ -41,6 +51,10 @@ const UserList = () => {
                                     <CTableDataCell>{u.department ? u.department.name : ""}</CTableDataCell>
                                     <CTableDataCell>{u.dateOfBirth}</CTableDataCell>
                                     <CTableDataCell>{u.dateOfJoining}</CTableDataCell>
+                                    <CTableDataCell>
+                                        <CButton color="success" variant="outline" onClick={() => { handleUpdate(u._id) }}>Edit</CButton>
+                                        <CButton color="danger" variant="outline" onClick={() => { handleDelete(u._id); }}>Delete</CButton>
+                                    </CTableDataCell>
                                 </CTableRow>
                             ))}
                         </CTableBody>

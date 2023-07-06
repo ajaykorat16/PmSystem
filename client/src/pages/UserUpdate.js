@@ -3,30 +3,41 @@ import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
 import { CForm, CCol, CFormInput, CFormSelect, CButton } from '@coreui/react';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useUser } from '../context/UserContext';
 import { useDepartment } from '../context/DepartmentContext';
+import { useEffect } from 'react';
 
 
-const UserCreate = () => {
+const UserUpdate = () => {
     const [firstname, setFirstname] = useState("")
     const [lastname, setLastname] = useState("")
     const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
     const [phone, setPhone] = useState("");
     const [address, setAddress] = useState("");
     const [departments, setDepartments] = useState("");
     const [dateOfBirth, setDateOfBirth] = useState("");
     const [dateOfJoining, setDateOfJoining] = useState("");
-    const { createUser } = useUser()
+    const { updateUser, getUserProfile } = useUser()
     const { department } = useDepartment()
     const navigate = useNavigate();
+    const params = useParams();
+
+    const getSingleUser = async () => {
+        await getUserProfile(params.id)
+    }
+
+    useEffect(() => {
+        getSingleUser()
+    }, [params.id])
+
 
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            let addUser = { firstname, lastname, email, password, phone, address, dateOfBirth, department: departments, dateOfJoining }
-            await createUser(addUser)
+            let updateUsers = { firstname, lastname, email, phone, address, dateOfBirth, department: departments, dateOfJoining }
+            let id = params.id
+            await updateUser(updateUsers, id)
             navigate('/user/list')
         } catch (error) {
             console.log(error)
@@ -40,7 +51,7 @@ const UserCreate = () => {
                 <AppHeader />
                 <div className="body flex-grow-1 px-3">
                     <div className="mb-3">
-                        <h2 className='mb-5 mt-2'>Create User</h2>
+                        <h2 className='mb-5 mt-2'>Update User</h2>
                     </div>
                     <CForm className="row g-3" onSubmit={handleSubmit}>
                         <CCol md={6}>
@@ -52,26 +63,26 @@ const UserCreate = () => {
                         <CCol md={6}>
                             <CFormInput type="email" id="inputEmail4" label="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
                         </CCol>
-                        <CCol md={6}>
+                        {/* <CCol md={6}>
                             <CFormInput type="password" id="inputPassword4" label="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                        </CCol>
+                        </CCol> */}
                         <CCol md={6}>
                             <CFormInput type="number" id="inputPhone" label="Phone Number" value={phone} onChange={(e) => setPhone(e.target.value)} />
                         </CCol>
                         <CCol xs={6}>
-                            <CFormInput id="inputAddress" label="Address" placeholder="1234 Main St" value={address} onChange={(e) => setAddress(e.target.value)} />
+                            <CFormInput id="inputAddress" label="Address" placeholder="Enter your address" value={address} onChange={(e) => setAddress(e.target.value)} />
                         </CCol>
-                        <CCol md={4}>
+                        <CCol md={6}>
                             <CFormSelect id="inputDepartment" label="Department" onChange={(e) => setDepartments(e.target.value)}>
                                 {department.map((d) => (
                                     <option key={d._id} value={d._id}>{d.name}</option>
                                 ))}
                             </CFormSelect>
                         </CCol>
-                        <CCol xs={4}>
+                        <CCol xs={6}>
                             <CFormInput type="date" id="inputJoining" label="Date Of Joining" value={dateOfJoining} onChange={(e) => setDateOfJoining(e.target.value)} />
                         </CCol>
-                        <CCol xs={4}>
+                        <CCol xs={6}>
                             <CFormInput type="date" id="inputBirth" label="Date Of Birth" value={dateOfBirth} onChange={(e) => setDateOfBirth(e.target.value)} />
                         </CCol>
                         <CCol xs={12}>
@@ -84,4 +95,4 @@ const UserCreate = () => {
     )
 }
 
-export default UserCreate
+export default UserUpdate
