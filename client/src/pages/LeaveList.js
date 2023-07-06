@@ -1,10 +1,20 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
 import { CTable, CTableHead, CTableRow, CTableHeaderCell, CTableDataCell, CTableBody } from '@coreui/react';
+import { useLeave } from '../context/LeaveContext';
 
 
 const LeaveList = () => {
+    const { leave } = useLeave()
+    const [leaveList, setLeaveList] = useState([])
+
+    useEffect(() => {
+        setLeaveList(leave)
+        console.log(leave)
+    }, [leave])
+
+
     return (
         <div>
             <AppSidebar />
@@ -18,29 +28,27 @@ const LeaveList = () => {
                         <CTableHead>
                             <CTableRow>
                                 <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                                <CTableHeaderCell scope="col">Class</CTableHeaderCell>
-                                <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
-                                <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Name</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Reason</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Start Date</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">End Date</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Type</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Status</CTableHeaderCell>
                             </CTableRow>
                         </CTableHead>
                         <CTableBody>
-                            <CTableRow>
-                                <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                                <CTableDataCell>Mark</CTableDataCell>
-                                <CTableDataCell>Otto</CTableDataCell>
-                                <CTableDataCell>@mdo</CTableDataCell>
-                            </CTableRow>
-                            <CTableRow>
-                                <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                                <CTableDataCell>Jacob</CTableDataCell>
-                                <CTableDataCell>Thornton</CTableDataCell>
-                                <CTableDataCell>@fat</CTableDataCell>
-                            </CTableRow>
-                            <CTableRow>
-                                <CTableHeaderCell scope="row">3</CTableHeaderCell>
-                                <CTableDataCell colSpan={2}>Larry the Bird</CTableDataCell>
-                                <CTableDataCell>@twitter</CTableDataCell>
-                            </CTableRow>
+                            {leaveList && leaveList.map((l,index) => (
+                                <CTableRow>
+                                    <CTableHeaderCell scope="row">{index+1}</CTableHeaderCell>
+                                    <CTableDataCell>{`${l?.userId?.firstname} ${l?.userId?.lastname}`}</CTableDataCell>
+                                    <CTableDataCell>{l.reason}</CTableDataCell>
+                                    <CTableDataCell>{l.startDate}</CTableDataCell>
+                                    <CTableDataCell>{l.endDate}</CTableDataCell>
+                                    <CTableDataCell>{l.type}</CTableDataCell>
+                                    <CTableDataCell>{l.status}</CTableDataCell>
+                                </CTableRow>
+                            ))
+                            }
                         </CTableBody>
                     </CTable>
                 </div>

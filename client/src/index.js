@@ -6,6 +6,7 @@ import store from './store';
 import { AuthProvider } from './context/AuthContext';
 import { UserProvider } from './context/UserContext';
 import { BrowserRouter } from 'react-router-dom';
+import { LeaveProvider } from './context/LeaveContext';
 
 
 
@@ -13,13 +14,15 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <AuthProvider>
     <UserProvider>
-      <Provider store={store}>
-        <React.StrictMode>
-          <BrowserRouter>
-          <App />
-          </BrowserRouter>
-        </React.StrictMode>
-      </Provider>
+      <LeaveProvider>
+        <Provider store={store}>
+          <React.StrictMode>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </React.StrictMode>
+        </Provider>
+      </LeaveProvider>
     </UserProvider>
   </AuthProvider>
 

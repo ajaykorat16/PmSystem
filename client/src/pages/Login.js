@@ -14,7 +14,7 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 
@@ -24,12 +24,13 @@ const Login = () => {
     const [password, setPassword] = useState("ajay@2208");
     const {auth,login}=useAuth()
     const navigate=useNavigate()
+    const location=useLocation()
 
     const handleSubmit = (e) => {
         e.preventDefault()
         try {
             login(email, password)
-            navigate('/user/list')
+            navigate('/home')
         } catch (error) {
             console.log(error)
         }
@@ -37,7 +38,7 @@ const Login = () => {
     
     useEffect(() => {
         if (auth?.token) {
-          navigate('/home')
+            location.pathname!=='/'?navigate(location.pathname):navigate('/home')
         }
       }, [auth?.token, navigate])
 
