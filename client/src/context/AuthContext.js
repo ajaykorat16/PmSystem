@@ -51,15 +51,12 @@ const AuthProvider = ({ children }) => {
         const data = localStorage.getItem('auth')
         if (data) {
             const parseData = JSON.parse(data)
-            console.log("data---", parseData)
-            console.log("auth data", auth)
             setAuth({
                 ...auth,
                 user: parseData.user,
                 token: parseData.token
             })
         }
-        console.log("authhhhhhhhhhhh", auth)
     }, [])
 
     return (

@@ -9,11 +9,9 @@ const UserProvider = ({ children }) => {
     const { auth } = useAuth()
     const getUsers = async () => {
         try {
-            console.log("auth--->", auth)
             const res = await axios.get(`/user/userList`)
 
             if (res.data.error === false) {
-                console.log("res--->", res)
                 setUsers(res.data.getAllUsers)
             }
 
