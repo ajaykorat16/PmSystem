@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
-import { CTable, CTableHead, CTableRow, CTableHeaderCell, CTableDataCell, CTableBody } from '@coreui/react';
+import { CTable, CTableHead, CTableRow, CTableHeaderCell, CTableDataCell, CTableBody, CButton } from '@coreui/react';
 import { useDepartment } from '../context/DepartmentContext';
 
 
@@ -13,6 +13,8 @@ const DepartmentList = () => {
         setDepartmentList(department)
         console.log(department)
     }, [department])
+    
+
     return (
         <div>
             <AppSidebar />
@@ -27,6 +29,7 @@ const DepartmentList = () => {
                             <CTableRow>
                                 <CTableHeaderCell scope="col">#</CTableHeaderCell>
                                 <CTableHeaderCell scope="col">Name</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Action</CTableHeaderCell>
                             </CTableRow>
                         </CTableHead>
                         <CTableBody>
@@ -34,6 +37,7 @@ const DepartmentList = () => {
                             <CTableRow key={list._id}>
                                 <CTableHeaderCell scope="row">{index+1}</CTableHeaderCell>
                                 <CTableDataCell>{list.name}</CTableDataCell>
+                                {/* <CButton className='btn btn-danger' onClick={deleteDepartment(list._id)}>Delete</CButton> */}
                             </CTableRow>
                             ))}
                             
