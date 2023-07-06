@@ -1,10 +1,18 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
 import { CTable, CTableHead, CTableRow, CTableHeaderCell, CTableDataCell, CTableBody } from '@coreui/react';
+import { useDepartment } from '../context/DepartmentContext';
 
 
 const DepartmentList = () => {
+    const  {department}  = useDepartment()
+    const [departmentList, setDepartmentList] = useState([])
+
+    useEffect(() => {
+        setDepartmentList(department)
+        console.log(department)
+    }, [department])
     return (
         <div>
             <AppSidebar />
@@ -18,29 +26,17 @@ const DepartmentList = () => {
                         <CTableHead>
                             <CTableRow>
                                 <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                                <CTableHeaderCell scope="col">Class</CTableHeaderCell>
-                                <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
-                                <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Name</CTableHeaderCell>
                             </CTableRow>
                         </CTableHead>
                         <CTableBody>
-                            <CTableRow>
-                                <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                                <CTableDataCell>Mark</CTableDataCell>
-                                <CTableDataCell>Otto</CTableDataCell>
-                                <CTableDataCell>@mdo</CTableDataCell>
+                            {departmentList && departmentList.map((list, index)=>(
+                            <CTableRow key={list._id}>
+                                <CTableHeaderCell scope="row">{index+1}</CTableHeaderCell>
+                                <CTableDataCell>{list.name}</CTableDataCell>
                             </CTableRow>
-                            <CTableRow>
-                                <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                                <CTableDataCell>Jacob</CTableDataCell>
-                                <CTableDataCell>Thornton</CTableDataCell>
-                                <CTableDataCell>@fat</CTableDataCell>
-                            </CTableRow>
-                            <CTableRow>
-                                <CTableHeaderCell scope="row">3</CTableHeaderCell>
-                                <CTableDataCell colSpan={2}>Larry the Bird</CTableDataCell>
-                                <CTableDataCell>@twitter</CTableDataCell>
-                            </CTableRow>
+                            ))}
+                            
                         </CTableBody>
                     </CTable>
                 </div>
