@@ -7,14 +7,7 @@ import { useUser } from '../context/UserContext';
 
 
 const UserList = () => {
-
-    const { getUsers } = useUser()
-
-    useEffect(() => {
-        getUsers()
-    }, [])
-
-
+    const { users } = useUser()
     return (
         <div>
             <AppSidebar />
@@ -25,32 +18,31 @@ const UserList = () => {
                         <h2 className='mb-5 mt-2'>User List</h2>
                     </div>
                     <CTable>
-                        <CTableHead>
+                        <CTableHead color="dark">
                             <CTableRow>
                                 <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                                <CTableHeaderCell scope="col">Class</CTableHeaderCell>
-                                <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
-                                <CTableHeaderCell scope="col">Heading</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Name</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Email</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Phone</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Address</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Department</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Date Of Birth</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Date Of Joining</CTableHeaderCell>
                             </CTableRow>
                         </CTableHead>
                         <CTableBody>
-                            <CTableRow>
-                                <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                                <CTableDataCell>Mark</CTableDataCell>
-                                <CTableDataCell>Otto</CTableDataCell>
-                                <CTableDataCell>@mdo</CTableDataCell>
-                            </CTableRow>
-                            <CTableRow>
-                                <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                                <CTableDataCell>Jacob</CTableDataCell>
-                                <CTableDataCell>Thornton</CTableDataCell>
-                                <CTableDataCell>@fat</CTableDataCell>
-                            </CTableRow>
-                            <CTableRow>
-                                <CTableHeaderCell scope="row">3</CTableHeaderCell>
-                                <CTableDataCell colSpan={2}>Larry the Bird</CTableDataCell>
-                                <CTableDataCell>@twitter</CTableDataCell>
-                            </CTableRow>
+                            {users.map((u, i) => (
+                                <CTableRow key={u._id}>
+                                    <CTableHeaderCell scope="row">{i + 1}</CTableHeaderCell>
+                                    <CTableDataCell>{u.firstname} {u.lastname}</CTableDataCell>
+                                    <CTableDataCell>{u.email}</CTableDataCell>
+                                    <CTableDataCell>{u.phone}</CTableDataCell>
+                                    <CTableDataCell>{u.address}</CTableDataCell>
+                                    <CTableDataCell>{u.department ? u.department.name : ""}</CTableDataCell>
+                                    <CTableDataCell>{u.dateOfBirth}</CTableDataCell>
+                                    <CTableDataCell>{u.dateOfJoining}</CTableDataCell>
+                                </CTableRow>
+                            ))}
                         </CTableBody>
                     </CTable>
                 </div>
