@@ -15,7 +15,7 @@ router.post("/createLeave",
     check('endDate', 'endDate is required').notEmpty(),
     auth, createLeave)
 
-router.post("/createLeave/:id",
+router.post("/createLeaveAdmin",
     check('reason', 'reasone is required').notEmpty(),
     check('startDate', 'startDate is required').notEmpty(),
     check('endDate', 'endDate is required').notEmpty(),

@@ -11,9 +11,18 @@ const LeaveProvider = ({ children }) => {
         Authorization: auth?.token
     };
 
+    const addLeave=async(leaveData)=>{
+        try {
+            const {userId,reason,endDate,type,status}=leaveData
+
+            const res = await axios.get(`/leaves/createLeaveAdmin`,{userId,reason,endDate,type,status},{headers})
+
+        } catch (error) {
+            
+        }
+    }
+
    
-
-
     useEffect(() => {
         const getLeave = async () => {
             try {

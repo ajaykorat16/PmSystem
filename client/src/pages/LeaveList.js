@@ -38,7 +38,7 @@ const LeaveList = () => {
                         </CTableHead>
                         <CTableBody>
                             {leaveList && leaveList.map((l,index) => (
-                                <CTableRow>
+                                <CTableRow key={l._id}>
                                     <CTableHeaderCell scope="row">{index+1}</CTableHeaderCell>
                                     <CTableDataCell>{`${l?.userId?.firstname} ${l?.userId?.lastname}`}</CTableDataCell>
                                     <CTableDataCell>{l.reason}</CTableDataCell>
