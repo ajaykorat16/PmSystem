@@ -15,7 +15,7 @@ const LeaveProvider = ({ children }) => {
         try {
             const {userId,reason,endDate,type,status}=leaveData
 
-            const res = await axios.get(`/leaves/createLeaveAdmin`,{userId,reason,endDate,type,status},{headers})
+            const res = await axios.post(`/leaves/createLeaveAdmin`,{userId,reason,endDate,type,status},{headers})
 
         } catch (error) {
             
@@ -41,7 +41,7 @@ const LeaveProvider = ({ children }) => {
     
 
     return (
-        <LeaveContext.Provider value={{ leave }}>
+        <LeaveContext.Provider value={{ leave,addLeave }}>
             {children}
         </LeaveContext.Provider>
     )
