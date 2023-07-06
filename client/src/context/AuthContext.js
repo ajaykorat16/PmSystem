@@ -3,7 +3,6 @@ import axios from 'axios'
 
 const AuthContext = createContext()
 
-
 const AuthProvider = ({ children }) => {
 
     const [auth, setAuth] = useState({
@@ -19,15 +18,13 @@ const AuthProvider = ({ children }) => {
             const res = await axios.post(`/user/login`, { email, password })
 
             if (res.data.error === false) {
-                localStorage.setItem('auth', JSON.stringify(res.data))
                 setAuth({
                     ...auth,
                     user: res.data.user,
                     token: res.data.token
                 })
+                localStorage.setItem('auth', JSON.stringify(res.data))
             }
-
-
         } catch (error) {
             console.log(error)
         }
@@ -54,12 +51,15 @@ const AuthProvider = ({ children }) => {
         const data = localStorage.getItem('auth')
         if (data) {
             const parseData = JSON.parse(data)
+            console.log("data---", parseData)
+            console.log("auth data", auth)
             setAuth({
                 ...auth,
                 user: parseData.user,
                 token: parseData.token
             })
         }
+        console.log("authhhhhhhhhhhh", auth)
     }, [])
 
     return (

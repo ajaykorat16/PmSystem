@@ -29,7 +29,7 @@ const Login = () => {
         e.preventDefault()
         try {
             login(email, password)
-
+            navigate('/user/list')
         } catch (error) {
             console.log(error)
         }

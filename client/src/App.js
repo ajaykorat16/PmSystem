@@ -8,25 +8,23 @@ import Login from './pages/Login';
 import UserCreate from './pages/UserCreate';
 import UserList from './pages/UserList';
 import './scss/style.scss';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom'
 
 
 function App() {
   return (
     <>
-      <Router>
-        <Routes>
-          <Route path="/" element={<AdminRoutes />} />
-          <Route path="/home" element={<DefaultLayout />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/user/list" element={<UserList />} />
-          <Route path="/user/create" element={<UserCreate />} />
-          <Route path="/leave/list" element={<LeaveList />} />
-          <Route path="/leave/create" element={<LeaveCreate />} />
-          <Route path="/department/list" element={<DepartmentList />} />
-          <Route path="/department/create" element={<DepartmentCreate />} />
-        </Routes>
-      </Router>
+      <Routes>
+        <Route path="/" element={<AdminRoutes />} />
+        <Route path="/home" element={<DefaultLayout />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/user/list" element={<UserList />} />
+        <Route path="/user/create" element={<UserCreate />} />
+        <Route path="/leave/list" element={<LeaveList />} />
+        <Route path="/leave/create" element={<LeaveCreate />} />
+        <Route path="/department/list" element={<DepartmentList />} />
+        <Route path="/department/create" element={<DepartmentCreate />} />
+      </Routes>
     </>
   );
 }

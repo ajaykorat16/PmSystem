@@ -2,9 +2,19 @@ import React from 'react'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
 import { CTable, CTableHead, CTableRow, CTableHeaderCell, CTableDataCell, CTableBody } from '@coreui/react';
+import { useEffect } from 'react';
+import { useUser } from '../context/UserContext';
 
 
 const UserList = () => {
+
+    const { getUsers } = useUser()
+
+    useEffect(() => {
+        getUsers()
+    }, [])
+
+
     return (
         <div>
             <AppSidebar />

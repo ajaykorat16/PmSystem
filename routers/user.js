@@ -7,7 +7,7 @@ const formidableMiddleware = require('express-formidable');
 
 const { createUser, loginUser, updateUser, deleteUserProfile, getAllUser, getUserProfile } = require("../controllers/user")
 
-router.get("/", auth, isAdmin, getAllUser)
+router.get("/userList", auth, isAdmin, getAllUser)
 
 router.get("/profile", auth, getUserProfile)
 
