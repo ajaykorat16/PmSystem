@@ -20,17 +20,17 @@ function App() {
     <>
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/" element={<AdminRoutes />}>
-          <Route path="/home" element={<DefaultLayout />} />
-          <Route path="/user/list" element={<UserList />} />
-          <Route path="/user/create" element={<UserCreate />} />
-          <Route path="/user/update/:id" element={<UserUpdate />} />
-          <Route path="/leave/list" element={<LeaveList />} />
-          <Route path="/leave/create" element={<LeaveCreate />} />
-          <Route path="/leave/update/:id" element={<LeaveUpdate />} />
-          <Route path="/department/list" element={<DepartmentList />} />
-          <Route path="/department/create" element={<DepartmentCreate />} />
-          <Route path="/department/update/:id" element={<DepartmentUpdate/>}/>
+        <Route path="/" element={<DefaultLayout />} />
+        <Route path="/dashboard" element={<AdminRoutes />}>
+          <Route path="user/list" element={<UserList />} />
+          <Route path="user/create" element={<UserCreate />} />
+          <Route path="user/update/:id" element={<UserUpdate />} />
+          <Route path="leave/list" element={<LeaveList />} />
+          <Route path="leave/create" element={<LeaveCreate />} />
+          <Route path="leave/update/:id" element={<LeaveUpdate />} />
+          <Route path="department/list" element={<DepartmentList />} />
+          <Route path="department/create" element={<DepartmentCreate />} />
+          <Route path="department/update/:id" element={<DepartmentUpdate />} />
         </Route>
       </Routes>
     </>

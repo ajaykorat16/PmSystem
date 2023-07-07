@@ -16,7 +16,7 @@ const UserList = () => {
     }
 
     const handleUpdate = async (id) => {
-        navigate(`/user/update/${id}`)
+        navigate(`/dashboard/user/update/${id}`)
     }
     return (
         <div>

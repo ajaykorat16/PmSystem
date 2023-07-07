@@ -25,13 +25,11 @@ const LeaveCreate = () => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            
             const leaveData = { reason, startDate, endDate, type, userId, status }
             await addLeave(leaveData)
-            navigate('/leave/list')
-
+            navigate('/dashboard/leave/list')
         } catch (error) {
-
+            console.log(error)
         }
     }
 

@@ -30,7 +30,7 @@ const Login = () => {
         e.preventDefault()
         try {
             login(email, password)
-            navigate('/home')
+            navigate('/')
         } catch (error) {
             console.log(error)
         }

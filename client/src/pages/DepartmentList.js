@@ -16,12 +16,11 @@ const DepartmentList = () => {
     }
 
     const handleUpdate = async (id) => {
-        navigate(`/department/update/${id}`)
+        navigate(`/dashboard/department/update/${id}`)
     }
 
     useEffect(() => {
         setDepartmentList(department)
-        // console.log(department)
     }, [department])
     
 

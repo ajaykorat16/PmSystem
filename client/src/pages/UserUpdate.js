@@ -53,7 +53,7 @@ const UserUpdate = () => {
             let updateUsers = { firstname, lastname, email, phone, address, dateOfBirth, department: departments, dateOfJoining, photo: newPhoto || photo }
             let id = params.id
             await updateUser(updateUsers, id)
-            navigate('/user/list')
+            navigate('/dashboard/user/list')
         } catch (error) {
             console.log(error)
         }

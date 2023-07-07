@@ -14,8 +14,7 @@ const DepartmentCreate = () => {
     e.preventDefault();
     try {
       await addDepartment(name);
-      navigate("/department/list");
-      console.log(name);
+      navigate("/dashboard/department/list");
     } catch (error) {
       console.log(error);
     }

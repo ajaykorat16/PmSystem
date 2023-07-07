@@ -25,7 +25,7 @@ useEffect(() => {
     try {
         const id = params.id
       await updateDepartment(name,id);
-      navigate("/department/list");
+      navigate("/dashboard/department/list");
       console.log(name);
     } catch (error) {
       console.log(error);

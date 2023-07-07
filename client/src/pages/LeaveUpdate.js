@@ -28,7 +28,7 @@ const LeaveUpdate = () => {
         try {
             const leaveData = { reason, startDate, endDate, type, userId, status }
             await updateLeave(leaveData, id)
-            navigate('/leave/list')
+            navigate('/dashboard/leave/list')
 
         } catch (error) {
             console.log(error)

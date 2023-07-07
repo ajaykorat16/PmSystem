@@ -20,7 +20,7 @@ const LeaveList = () => {
     }
 
     const handleUpdate = async (id) => {
-        navigate(`/leave/update/${id}`)
+        navigate(`/dashboard/leave/update/${id}`)
     }
 
 

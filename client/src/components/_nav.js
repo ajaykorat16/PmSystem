@@ -18,12 +18,12 @@ const _nav = [
       {
         component: CNavItem,
         name: 'User List',
-        to: '/user/list',
+        to: '/dashboard/user/list',
       },
       {
         component: CNavItem,
         name: 'Create User',
-        to: '/user/create',
+        to: '/dashboard/user/create',
       },
     ],
   },
@@ -36,12 +36,12 @@ const _nav = [
       {
         component: CNavItem,
         name: 'Leaves List',
-        to: '/leave/list',
+        to: '/dashboard/leave/list',
       },
       {
         component: CNavItem,
         name: 'Create Leave',
-        to: '/leave/create',
+        to: '/dashboard/leave/create',
       },
     ],
   },
@@ -54,12 +54,12 @@ const _nav = [
       {
         component: CNavItem,
         name: 'Department List',
-        to: '/department/list',
+        to: '/dashboard/department/list',
       },
       {
         component: CNavItem,
         name: 'Create Department',
-        to: '/department/create',
+        to: '/dashboard/department/create',
       },
     ],
   },

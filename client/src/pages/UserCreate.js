@@ -27,7 +27,7 @@ const UserCreate = () => {
         try {
             let addUser = { firstname, lastname, email, password, phone, address, dateOfBirth, department: departments, dateOfJoining }
             await createUser(addUser)
-            navigate('/user/list')
+            navigate('/dashboard/user/list')
         } catch (error) {
             console.log(error)
         }
