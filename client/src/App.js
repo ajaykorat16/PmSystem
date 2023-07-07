@@ -28,6 +28,7 @@ function App() {
           <Route path="/leave/update/:id" element={<LeaveUpdate />} />
           <Route path="/department/list" element={<DepartmentList />} />
           <Route path="/department/create" element={<DepartmentCreate />} />
+          <Route path="/department/update/:id" element={<DepartmentUpdate/>}/>
         </Route>
       </Routes>
     </>

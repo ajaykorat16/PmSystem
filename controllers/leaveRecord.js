@@ -62,11 +62,15 @@ const userGetLeave = asyncHandler(async (req, res) => {
 
 const getLeaveById = asyncHandler(async (req, res) => {
     try {
-        const leaves = await Leaves.findById(req.params.id).populate('userId')
+        const leaves = await Leaves.findById(req.params.id).populate('userId').lean();
         return res.status(200).json({
             error: false,
             message: "Get Leave successfully !!",
-            leaves
+            leaves:{
+                ...leaves,
+                startDate:leaves.startDate.toISOString().split('T')[0],
+                endDate:leaves.endDate.toISOString().split('T')[0],
+            }
         })
     } catch (error) {
         console.log(error.message)
