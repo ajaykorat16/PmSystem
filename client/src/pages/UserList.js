@@ -4,9 +4,8 @@ import AppHeader from '../components/AppHeader'
 import { CTable, CTableHead, CTableRow, CTableHeaderCell, CTableDataCell, CTableBody, CButton } from '@coreui/react';
 import { useUser } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom'
-import { CAvatar } from '@coreui/react'
 import { CImage } from '@coreui/react'
-
+import { CAvatar } from '@coreui/react'
 
 const UserList = () => {
     const { users, deleteUser } = useUser()
@@ -45,7 +44,13 @@ const UserList = () => {
                         <CTableBody>
                             {users.map((u, i) => (
                                 <CTableRow key={u._id}>
-                                    <CTableHeaderCell scope="row"><CImage align="start" rounded src={u.photo} width={30} height={30} /></CTableHeaderCell>
+                                    <CTableHeaderCell scope="row">
+                                        {
+                                            u.photo ?
+                                                (<CImage align="start" rounded src={u.photo} width={30} height={30} />)
+                                                :
+                                                (<CAvatar color="success" textColor="white" shape="rounded">{u.firstname.charAt(0)}{u.lastname.charAt(0)}</CAvatar>)
+                                        }</CTableHeaderCell>
                                     <CTableDataCell>{u.firstname} {u.lastname}</CTableDataCell>
                                     <CTableDataCell>{u.email}</CTableDataCell>
                                     <CTableDataCell>{u.phone}</CTableDataCell>
@@ -55,7 +60,7 @@ const UserList = () => {
                                     <CTableDataCell>{u.dateOfJoining}</CTableDataCell>
                                     <CTableDataCell>
                                         <CButton color="success" variant="outline" onClick={() => { handleUpdate(u._id) }}>Edit</CButton>
-                                        <CButton color="danger" variant="outline" onClick={() => { handleDelete(u._id); }}>Delete</CButton>
+                                        <CButton color="danger" variant="outline" onClick={() => { handleDelete(u._id); }} className='m-1'>Delete</CButton>
                                     </CTableDataCell>
                                 </CTableRow>
                             ))}
