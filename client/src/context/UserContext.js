@@ -73,13 +73,14 @@ const UserProvider = ({ children }) => {
 
     const getUserProfile = async (id) => {
         try {
-            const res = await axios.get(`/user/getUserProfile/${id}`, { headers });
+            const { data } = await axios.get(`/user/getUserProfile/${id}`, { headers });
+            return data
         } catch (error) {
             console.log(error);
         }
     }
 
-    
+
     return (
         <UserContext.Provider value={{ users, createUser, updateUser, deleteUser, getUserProfile }}>
             {children}

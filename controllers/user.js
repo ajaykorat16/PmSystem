@@ -4,7 +4,8 @@ const { validationResult } = require('express-validator');
 const fs = require("fs")
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const asyncHandler = require('express-async-handler')
+const asyncHandler = require('express-async-handler');
+const { Console } = require("console");
 
 const saltRounds = 10
 
@@ -107,6 +108,7 @@ const updateUser = asyncHandler(async (req, res) => {
 
     try {
         const { firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining } = req.fields;
+        console.log("req.filed---", req.fields)
         const { photo } = req.files;
         const { id } = req.params;
         let user;
@@ -126,7 +128,7 @@ const updateUser = asyncHandler(async (req, res) => {
             dateOfBirth: dateOfBirth || user.dateOfBirth,
             department: department || user.department,
             dateOfJoining: dateOfJoining || user.dateOfJoining,
-            photo:photo || user.photo
+            photo: photo || user.photo
         };
 
         if (photo) {
@@ -183,32 +185,32 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
 
 const getAllUser = asyncHandler(async (req, res) => {
     try {
-      const getAllUsers = await Users.find().populate("department").lean();
-  
-      const formattedUsers = getAllUsers.map(user => {
-        const photoUrl = user.photo && user.photo.contentType
-          ? `data:${user.photo.contentType};base64,${user.photo.data.toString("base64")}`
-          : null;
-        
-        return {
-          ...user,
-          dateOfBirth: user.dateOfBirth.toISOString().split('T')[0],
-          dateOfJoining: user.dateOfJoining.toISOString().split('T')[0],
-          photo:photoUrl,
-        };
-      });
-  
-      return res.status(200).json({
-        error: false,
-        message: "All users retrieved successfully",
-        getAllUsers: formattedUsers
-      });
+        const getAllUsers = await Users.find().populate("department").lean();
+
+        const formattedUsers = getAllUsers.map(user => {
+            const photoUrl = user.photo && user.photo.contentType
+                ? `data:${user.photo.contentType};base64,${user.photo.data.toString("base64")}`
+                : null;
+
+            return {
+                ...user,
+                dateOfBirth: user.dateOfBirth.toISOString().split('T')[0],
+                dateOfJoining: user.dateOfJoining.toISOString().split('T')[0],
+                photo: photoUrl,
+            };
+        });
+
+        return res.status(200).json({
+            error: false,
+            message: "All users retrieved successfully",
+            getAllUsers: formattedUsers
+        });
     } catch (error) {
-      console.log(error.message);
-      res.status(500).send('Server error');
+        console.log(error.message);
+        res.status(500).send('Server error');
     }
-  });
-  
+});
+
 
 const getUserProfile = asyncHandler(async (req, res) => {
     try {
@@ -222,16 +224,18 @@ const getUserProfile = asyncHandler(async (req, res) => {
         }
 
         const photoUrl = getProfile.photo && getProfile.photo.contentType
-      ? `data:${getProfile.photo.contentType};base64,${getProfile.photo.data.toString("base64")}`
-      : null;
+            ? `data:${getProfile.photo.contentType};base64,${getProfile.photo.data.toString("base64")}`
+            : null;
 
         return res.status(200).json({
             error: false,
             message: "Users get profile successfully!!",
-            getProfile:{
+            getProfile: {
                 ...getProfile.toObject(),
-                photo:photoUrl,
-              },
+                photo: photoUrl,
+                dateOfBirth: getProfile.dateOfBirth.toISOString().split('T')[0],
+                dateOfJoining: getProfile.dateOfJoining.toISOString().split('T')[0],
+            },
         })
     } catch (error) {
         console.log(error.message)

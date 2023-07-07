@@ -7,6 +7,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useUser } from '../context/UserContext';
 import { useDepartment } from '../context/DepartmentContext';
 import { useEffect } from 'react';
+import { CImage } from '@coreui/react'
 
 
 const UserUpdate = () => {
@@ -18,18 +19,30 @@ const UserUpdate = () => {
     const [departments, setDepartments] = useState("");
     const [dateOfBirth, setDateOfBirth] = useState("");
     const [dateOfJoining, setDateOfJoining] = useState("");
+    const [photo, setPhoto] = useState("");
     const { updateUser, getUserProfile } = useUser()
     const { department } = useDepartment()
     const navigate = useNavigate();
     const params = useParams();
 
-    const getSingleUser = async () => {
-        await getUserProfile(params.id)
-    }
-
     useEffect(() => {
-        getSingleUser()
-    }, [params.id])
+        const fetchData = async () => {
+            try {
+                let { getProfile } = await getUserProfile(params.id);
+                setFirstname(getProfile.firstname);
+                setLastname(getProfile.lastname);
+                setEmail(getProfile.email);
+                setAddress(getProfile.address)
+                setPhone(getProfile.phone)
+                setDepartments(getProfile.department ? getProfile.department._id : "")
+                setDateOfBirth(getProfile.dateOfBirth)
+                setDateOfJoining(getProfile.dateOfJoining)
+            } catch (error) {
+                console.error("Error fetching user profile:", error);
+            }
+        };
+        fetchData();
+    }, [params.id]);
 
 
     const handleSubmit = async (e) => {
@@ -54,6 +67,9 @@ const UserUpdate = () => {
                         <h2 className='mb-5 mt-2'>Update User</h2>
                     </div>
                     <CForm className="row g-3" onSubmit={handleSubmit}>
+                        <div className="clearfix">
+                            <CImage align="center" rounded src="/images/react400.jpg" width={200} height={200} />
+                        </div>
                         <CCol md={6}>
                             <CFormInput id="inputFirstName" label="First Name" value={firstname} onChange={(e) => setFirstname(e.target.value)} />
                         </CCol>
@@ -73,7 +89,7 @@ const UserUpdate = () => {
                             <CFormInput id="inputAddress" label="Address" placeholder="Enter your address" value={address} onChange={(e) => setAddress(e.target.value)} />
                         </CCol>
                         <CCol md={6}>
-                            <CFormSelect id="inputDepartment" label="Department" onChange={(e) => setDepartments(e.target.value)}>
+                            <CFormSelect id="inputDepartment" label="Department" value={departments} onChange={(e) => setDepartments(e.target.value)}>
                                 {department.map((d) => (
                                     <option key={d._id} value={d._id}>{d.name}</option>
                                 ))}
