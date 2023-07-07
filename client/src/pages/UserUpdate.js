@@ -37,6 +37,7 @@ const UserUpdate = () => {
                 setDepartments(getProfile.department ? getProfile.department._id : "")
                 setDateOfBirth(getProfile.dateOfBirth)
                 setDateOfJoining(getProfile.dateOfJoining)
+                setPhoto(getProfile.photo)
             } catch (error) {
                 console.error("Error fetching user profile:", error);
             }
@@ -48,7 +49,7 @@ const UserUpdate = () => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            let updateUsers = { firstname, lastname, email, phone, address, dateOfBirth, department: departments, dateOfJoining }
+            let updateUsers = { firstname, lastname, email, phone, address, dateOfBirth, department: departments, dateOfJoining, photo }
             let id = params.id
             await updateUser(updateUsers, id)
             navigate('/user/list')
@@ -67,9 +68,6 @@ const UserUpdate = () => {
                         <h2 className='mb-5 mt-2'>Update User</h2>
                     </div>
                     <CForm className="row g-3" onSubmit={handleSubmit}>
-                        <div className="clearfix">
-                            <CImage align="center" rounded src="/images/react400.jpg" width={200} height={200} />
-                        </div>
                         <CCol md={6}>
                             <CFormInput id="inputFirstName" label="First Name" value={firstname} onChange={(e) => setFirstname(e.target.value)} />
                         </CCol>
@@ -100,6 +98,10 @@ const UserUpdate = () => {
                         </CCol>
                         <CCol xs={6}>
                             <CFormInput type="date" id="inputBirth" label="Date Of Birth" value={dateOfBirth} onChange={(e) => setDateOfBirth(e.target.value)} />
+                        </CCol>
+                        <CCol xs={12}>
+                            {photo ? photo.name : "Upload Photo"}
+                            <CFormInput type="file" className="form-control" label={photo ? photo.name : "Upload Photo"} id="inputGroupFile04" accept="image/*" aria-describedby="inputGroupFileAddon04" aria-label="Upload" onChange={(e) => setPhoto(e.target.files[0])} />
                         </CCol>
                         <CCol xs={12}>
                             <CButton type="submit" className="me-md-2">Submit</CButton>

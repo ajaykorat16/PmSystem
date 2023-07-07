@@ -4,6 +4,8 @@ import AppHeader from '../components/AppHeader'
 import { CTable, CTableHead, CTableRow, CTableHeaderCell, CTableDataCell, CTableBody, CButton } from '@coreui/react';
 import { useUser } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom'
+import { CAvatar } from '@coreui/react'
+import { CImage } from '@coreui/react'
 
 
 const UserList = () => {
@@ -43,7 +45,7 @@ const UserList = () => {
                         <CTableBody>
                             {users.map((u, i) => (
                                 <CTableRow key={u._id}>
-                                    <CTableHeaderCell scope="row">{i + 1}</CTableHeaderCell>
+                                    <CTableHeaderCell scope="row"><CImage align="start" rounded src={u.photo} width={30} height={30} /></CTableHeaderCell>
                                     <CTableDataCell>{u.firstname} {u.lastname}</CTableDataCell>
                                     <CTableDataCell>{u.email}</CTableDataCell>
                                     <CTableDataCell>{u.phone}</CTableDataCell>
