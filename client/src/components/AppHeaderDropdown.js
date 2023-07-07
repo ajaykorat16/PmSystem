@@ -47,10 +47,8 @@ const AppHeaderDropdown = () => {
   };
 
   useEffect(() => {
-    if(auth?.user._id){
       fetchData();
-    }
-  }, [auth?.user._id]);
+  }, []);
 
   return (
     <CDropdown variant="nav-item">
