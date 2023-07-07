@@ -1,19 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AppSidebar from "../components/AppSidebar";
 import AppHeader from "../components/AppHeader";
 import { CRow, CCol, CFormInput, CButton, CForm } from "@coreui/react";
 import { useDepartment } from "../context/DepartmentContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const DepartmentCreate = () => {
   const navigate = useNavigate();
+  const params = useParams();
   const [name, setName] = useState();
-  const { addDepartment } = useDepartment();
+  const { updateDepartment, getSingleDepartment } = useDepartment();
+
+  const singleDepartment = async () => {
+    const data = await getSingleDepartment(params.id)
+    setName(data.name)
+}
+
+useEffect(() => {
+    singleDepartment()
+}, [params.id])
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await addDepartment(name);
+        const id = params.id
+      await updateDepartment(name,id);
       navigate("/department/list");
       console.log(name);
     } catch (error) {
@@ -28,7 +39,7 @@ const DepartmentCreate = () => {
         <AppHeader />
         <div className="body flex-grow-1 px-3">
           <div className="mb-3">
-            <h2 className="mb-5 mt-2">Create Department</h2>
+            <h2 className="mb-5 mt-2">Update Department</h2>
           </div>
           <CForm className="row g-3" onSubmit={handleSubmit}>
               <CCol sm={4}>
@@ -40,7 +51,7 @@ const DepartmentCreate = () => {
                 />
               </CCol>
               <CCol xs="auto">
-                <CButton type="submit">Submit</CButton>
+                <CButton type="submit">Edit</CButton>
               </CCol>
           </CForm>
         </div>

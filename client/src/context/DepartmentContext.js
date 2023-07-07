@@ -11,6 +11,7 @@ const DepartmentProvider = ({ children }) => {
     Authorization: auth?.token,
   };
 
+  //getDepartments
   const getDepartment = async () => {
     try {
       const res = await axios.get(`/department`, { headers });
@@ -36,15 +37,37 @@ const DepartmentProvider = ({ children }) => {
   };
 
   //delete department
-  // const deleteDepartment = async (_id) => {
-  //     try {
-  //         await axios.delete(`/department/deleteDepartment/${_id}`, {headers})
-  //     } catch (error) {
-  //         console.log(error);
-  //     }
-  // }
+  const deleteDepartment = async (id) => {
+      try {
+          const res = await axios.delete(`/department/deleteDepartment/${id}`, {headers})
+          getDepartment()
+      } catch (error) {
+          console.log(error);
+      }
+  }
+
+  //update department
+  const updateDepartment = async (name,id) => {
+    try {
+      await axios.put(`/department/updateDepartment/${id}`, {name}, {headers})
+      getDepartment()
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  //getSingleDepartment
+  const getSingleDepartment = async (id) => {
+    try {
+      const {data} = await axios.get(`/department/getSingleDepartment/${id}`, {headers})
+      return data.getSingle
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
-    <DepartmentContext.Provider value={{ department, addDepartment }}>
+    <DepartmentContext.Provider value={{ department, addDepartment, deleteDepartment, updateDepartment, getSingleDepartment}}>
       {children}
     </DepartmentContext.Provider>
   );
