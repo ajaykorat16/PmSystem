@@ -34,7 +34,7 @@ const LeaveList = () => {
                         <h2 className='mb-5 mt-2'>Leave List</h2>
                     </div>
                     <CTable>
-                        <CTableHead>
+                        <CTableHead color="dark">
                             <CTableRow>
                                 <CTableHeaderCell scope="col">#</CTableHeaderCell>
                                 <CTableHeaderCell scope="col">Name</CTableHeaderCell>
@@ -57,7 +57,7 @@ const LeaveList = () => {
                                     <CTableDataCell>{l.type}</CTableDataCell>
                                     <CTableDataCell>{l.status}</CTableDataCell>
                                     <CTableDataCell>
-                                        <CButton color="success" variant="outline" onClick={() => { handleUpdate(l._id) }}>Edit</CButton>
+                                        <CButton color="success" variant="outline" onClick={() => { handleUpdate(l._id) }} className='m-1'>Edit</CButton>
                                         <CButton color="danger" variant="outline" onClick={() => { handleDelete(l._id); }}>Delete</CButton>
                                     </CTableDataCell>
                                 </CTableRow>

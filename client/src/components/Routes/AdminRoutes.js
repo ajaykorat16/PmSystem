@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import axios from 'axios'
 import { useAuth } from '../../context/AuthContext'
-import Login from '../../pages/Login'
+import Spinner from '../Spinner'
 
 
 const AdminRoutes = () => {
@@ -27,7 +27,7 @@ const AdminRoutes = () => {
 
     }, [auth?.token])
 
-    return ok? <Outlet/>:<Login/>
+    return ok? <Outlet/>:<Spinner/>
     
  
 }
