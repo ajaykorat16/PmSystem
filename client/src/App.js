@@ -2,6 +2,7 @@ import AdminRoutes from './components/Routes/AdminRoutes';
 import DefaultLayout from './pages/DefaultLayout';
 import DepartmentCreate from './pages/DepartmentCreate';
 import DepartmentList from './pages/DepartmentList';
+import DepartmentUpdate from './pages/DepartmentUpdate';
 import LeaveCreate from './pages/LeaveCreate';
 import LeaveList from './pages/LeaveList';
 import LeaveUpdate from './pages/LeaveUpdate';
@@ -11,6 +12,7 @@ import UserList from './pages/UserList';
 import UserUpdate from './pages/UserUpdate';
 import './scss/style.scss';
 import { Routes, Route } from 'react-router-dom'
+
 
 
 function App() {
