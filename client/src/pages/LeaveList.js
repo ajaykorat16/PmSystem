@@ -1,17 +1,27 @@
 import React, { useEffect, useState } from 'react'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
-import { CTable, CTableHead, CTableRow, CTableHeaderCell, CTableDataCell, CTableBody } from '@coreui/react';
+import { CTable, CTableHead, CTableRow, CTableHeaderCell, CTableDataCell, CTableBody,CButton } from '@coreui/react';
 import { useLeave } from '../context/LeaveContext';
+import { useNavigate } from 'react-router-dom';
 
 
 const LeaveList = () => {
-    const { leave } = useLeave()
+    const { leave,deleteLeave } = useLeave()
     const [leaveList, setLeaveList] = useState([])
+    const navigate=useNavigate()
 
     useEffect(() => {
         setLeaveList(leave)
     }, [leave])
+
+    const handleDelete = async (id) => {
+        await deleteLeave(id)
+    }
+
+    const handleUpdate = async (id) => {
+        navigate(`/leave/update/${id}`)
+    }
 
 
     return (
@@ -33,6 +43,7 @@ const LeaveList = () => {
                                 <CTableHeaderCell scope="col">End Date</CTableHeaderCell>
                                 <CTableHeaderCell scope="col">Type</CTableHeaderCell>
                                 <CTableHeaderCell scope="col">Status</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Action</CTableHeaderCell>
                             </CTableRow>
                         </CTableHead>
                         <CTableBody>
@@ -45,6 +56,10 @@ const LeaveList = () => {
                                     <CTableDataCell>{l.endDate}</CTableDataCell>
                                     <CTableDataCell>{l.type}</CTableDataCell>
                                     <CTableDataCell>{l.status}</CTableDataCell>
+                                    <CTableDataCell>
+                                        <CButton color="success" variant="outline" onClick={() => { handleUpdate(l._id) }}>Edit</CButton>
+                                        <CButton color="danger" variant="outline" onClick={() => { handleDelete(l._id); }}>Delete</CButton>
+                                    </CTableDataCell>
                                 </CTableRow>
                             ))
                             }

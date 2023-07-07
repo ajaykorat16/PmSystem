@@ -26,7 +26,7 @@ const createLeave = asyncHandler(async (req, res) => {
 
 const getAllLeaves = asyncHandler(async (req, res) => {
     try {
-        const leaves = await Leaves.find().populate("userId").lean()    
+        const leaves = await Leaves.find().populate("userId").lean()
         const formattedLeaves = leaves.map(leave => {
             return {
                 ...leave,
@@ -58,6 +58,22 @@ const userGetLeave = asyncHandler(async (req, res) => {
         res.status(500).send('Server error');
     }
 })
+
+
+const getLeaveById = asyncHandler(async (req, res) => {
+    try {
+        const leaves = await Leaves.findById(req.params.id).populate('userId')
+        return res.status(200).json({
+            error: false,
+            message: "Get Leave successfully !!",
+            leaves
+        })
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).send('Server error');
+    }
+})
+
 
 const updateLeave = asyncHandler(async (req, res) => {
     try {
@@ -112,4 +128,4 @@ const deleteLeave = asyncHandler(async (req, res) => {
     }
 })
 
-module.exports = { createLeave, getAllLeaves, updateLeave, deleteLeave, userGetLeave }
+module.exports = { createLeave, getAllLeaves, updateLeave, deleteLeave, userGetLeave, getLeaveById }

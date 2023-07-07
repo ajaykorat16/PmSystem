@@ -4,6 +4,7 @@ import DepartmentCreate from './pages/DepartmentCreate';
 import DepartmentList from './pages/DepartmentList';
 import LeaveCreate from './pages/LeaveCreate';
 import LeaveList from './pages/LeaveList';
+import LeaveUpdate from './pages/LeaveUpdate';
 import Login from './pages/Login';
 import UserCreate from './pages/UserCreate';
 import UserList from './pages/UserList';
@@ -24,6 +25,7 @@ function App() {
           <Route path="/user/update/:id" element={<UserUpdate />} />
           <Route path="/leave/list" element={<LeaveList />} />
           <Route path="/leave/create" element={<LeaveCreate />} />
+          <Route path="/leave/update/:id" element={<LeaveUpdate />} />
           <Route path="/department/list" element={<DepartmentList />} />
           <Route path="/department/create" element={<DepartmentCreate />} />
         </Route>

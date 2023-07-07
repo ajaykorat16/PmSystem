@@ -3,11 +3,13 @@ const router = express.Router();
 const { check } = require('express-validator');
 const { auth, isAdmin } = require("../middleware/auth")
 
-const { createLeave, getAllLeaves, updateLeave, deleteLeave, userGetLeave } = require("../controllers/leaveRecord")
+const { createLeave, getAllLeaves, updateLeave, deleteLeave, userGetLeave, getLeaveById } = require("../controllers/leaveRecord")
 
 router.get("/", auth, isAdmin, getAllLeaves)
 
 router.get("/userLeaves", auth, userGetLeave)
+
+router.get("/getLeaveById/:id", auth, getLeaveById)
 
 router.post("/createLeave",
     check('reason', 'reasone is required').notEmpty(),

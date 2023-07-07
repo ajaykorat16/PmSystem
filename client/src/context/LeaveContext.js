@@ -31,9 +31,43 @@ const LeaveProvider = ({ children }) => {
             }
 
         } catch (error) {
-
+            console.log(error)
         }
     };
+
+    const deleteLeave = async (id) => {
+        try {
+            const res = await axios.delete(`/leaves/deleteLeave/${id}`, { headers });
+            getLeave()
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const updateLeave = async (leaveData, id) => {
+        try {
+            const { reason, startDate, endDate, type, userId, status } = leaveData
+
+            await axios.put(`/leaves/updateLeave/${id}`, { reason, startDate, endDate, type, userId, status }, { headers })
+
+            getLeave()
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const getLeaveById = async (id) => {
+        try {
+            const {data} = await axios.get(`/leaves/getLeaveById/${id}`, { headers })
+
+            return data.leaves
+
+        } catch (error) {
+            console.log(error)
+        }
+    };
+
 
     useEffect(() => {
         getLeave()
@@ -41,7 +75,7 @@ const LeaveProvider = ({ children }) => {
 
 
     return (
-        <LeaveContext.Provider value={{ leave, addLeave }}>
+        <LeaveContext.Provider value={{ leave, addLeave, deleteLeave, updateLeave,getLeaveById }}>
             {children}
         </LeaveContext.Provider>
     )
