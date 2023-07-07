@@ -37,18 +37,19 @@ const AppHeaderDropdown = () => {
     }
   }
 
+  const fetchData = async () => {
+    try {
+      let { getProfile } = await getUserProfile(auth?.user._id);
+      setPhoto(getProfile.photo)
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        let { getProfile } = await getUserProfile(auth?.user._id);
-        console.log("getprofile", getProfile)
-        setPhoto(getProfile.photo)
-      } catch (error) {
-        console.error("Error fetching user profile:", error);
-      }
-    };
+   
     fetchData();
-  }, [auth?.user._id]);
+  }, []);
 
   return (
     <CDropdown variant="nav-item">
