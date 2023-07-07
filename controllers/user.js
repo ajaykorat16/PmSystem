@@ -108,7 +108,6 @@ const updateUser = asyncHandler(async (req, res) => {
 
     try {
         const { firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining } = req.fields;
-        console.log("req.filed---", req.fields)
         const { photo } = req.files;
         const { id } = req.params;
         let user;

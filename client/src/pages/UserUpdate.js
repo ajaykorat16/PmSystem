@@ -18,6 +18,7 @@ const UserUpdate = () => {
     const [address, setAddress] = useState("");
     const [departments, setDepartments] = useState("");
     const [dateOfBirth, setDateOfBirth] = useState("");
+    const [newPhoto, setNewPhoto] = useState(null);
     const [dateOfJoining, setDateOfJoining] = useState("");
     const [photo, setPhoto] = useState("");
     const { updateUser, getUserProfile } = useUser()
@@ -37,6 +38,7 @@ const UserUpdate = () => {
                 setDepartments(getProfile.department ? getProfile.department._id : "")
                 setDateOfBirth(getProfile.dateOfBirth)
                 setDateOfJoining(getProfile.dateOfJoining)
+                setPhoto(getProfile.photo)
             } catch (error) {
                 console.error("Error fetching user profile:", error);
             }
@@ -48,7 +50,7 @@ const UserUpdate = () => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            let updateUsers = { firstname, lastname, email, phone, address, dateOfBirth, department: departments, dateOfJoining }
+            let updateUsers = { firstname, lastname, email, phone, address, dateOfBirth, department: departments, dateOfJoining, photo: newPhoto || photo }
             let id = params.id
             await updateUser(updateUsers, id)
             navigate('/user/list')
@@ -56,6 +58,10 @@ const UserUpdate = () => {
             console.log(error)
         }
     }
+
+    const handlePhoto = async (e) => {
+        setNewPhoto(e.target.files[0]);
+    };
 
     return (
         <div>
@@ -67,42 +73,133 @@ const UserUpdate = () => {
                         <h2 className='mb-5 mt-2'>Update User</h2>
                     </div>
                     <CForm className="row g-3" onSubmit={handleSubmit}>
-                        <div className="clearfix">
-                            <CImage align="center" rounded src="/images/react400.jpg" width={200} height={200} />
-                        </div>
+                        {photo && !newPhoto && (
+                            <CCol xs={12}>
+                                <CImage
+                                    align="left"
+                                    rounded
+                                    src={photo}
+                                    width={200}
+                                    height={200}
+                                />
+                            </CCol>
+                        )}
+
+                        {!photo && newPhoto && (
+                            <CCol xs={12}>
+                                <CImage
+                                    align="left"
+                                    rounded
+                                    src={URL.createObjectURL(newPhoto)}
+                                    width={200}
+                                    height={200}
+                                />
+                            </CCol>
+                        )}
+
+                        {photo && newPhoto && (
+                            <CCol xs={12}>
+                                <CImage
+                                    align="left"
+                                    rounded
+                                    src={URL.createObjectURL(newPhoto)}
+                                    width={200}
+                                    height={200}
+                                />
+                            </CCol>
+                        )}
+
                         <CCol md={6}>
-                            <CFormInput id="inputFirstName" label="First Name" value={firstname} onChange={(e) => setFirstname(e.target.value)} />
+                            <CFormInput
+                                id="inputFirstName"
+                                label="First Name"
+                                value={firstname}
+                                onChange={(e) => setFirstname(e.target.value)}
+                            />
                         </CCol>
                         <CCol md={6}>
-                            <CFormInput id="inputLastName" label="Last Name" value={lastname} onChange={(e) => setLastname(e.target.value)} />
+                            <CFormInput
+                                id="inputLastName"
+                                label="Last Name"
+                                value={lastname}
+                                onChange={(e) => setLastname(e.target.value)}
+                            />
                         </CCol>
                         <CCol md={6}>
-                            <CFormInput type="email" id="inputEmail4" label="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                            <CFormInput
+                                type="email"
+                                id="inputEmail4"
+                                label="Email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
                         </CCol>
-                        {/* <CCol md={6}>
-                            <CFormInput type="password" id="inputPassword4" label="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                        </CCol> */}
                         <CCol md={6}>
-                            <CFormInput type="number" id="inputPhone" label="Phone Number" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                            <CFormInput
+                                type="number"
+                                id="inputPhone"
+                                label="Phone Number"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
+                            />
                         </CCol>
                         <CCol xs={6}>
-                            <CFormInput id="inputAddress" label="Address" placeholder="Enter your address" value={address} onChange={(e) => setAddress(e.target.value)} />
+                            <CFormInput
+                                id="inputAddress"
+                                label="Address"
+                                placeholder="Enter your address"
+                                value={address}
+                                onChange={(e) => setAddress(e.target.value)}
+                            />
                         </CCol>
                         <CCol md={6}>
-                            <CFormSelect id="inputDepartment" label="Department" value={departments} onChange={(e) => setDepartments(e.target.value)}>
+                            <CFormSelect
+                                id="inputDepartment"
+                                label="Department"
+                                value={departments}
+                                onChange={(e) => setDepartments(e.target.value)}
+                            >
                                 {department.map((d) => (
-                                    <option key={d._id} value={d._id}>{d.name}</option>
+                                    <option key={d._id} value={d._id}>
+                                        {d.name}
+                                    </option>
                                 ))}
                             </CFormSelect>
                         </CCol>
                         <CCol xs={6}>
-                            <CFormInput type="date" id="inputJoining" label="Date Of Joining" value={dateOfJoining} onChange={(e) => setDateOfJoining(e.target.value)} />
+                            <CFormInput
+                                type="date"
+                                id="inputJoining"
+                                label="Date Of Joining"
+                                value={dateOfJoining}
+                                onChange={(e) => setDateOfJoining(e.target.value)}
+                            />
                         </CCol>
                         <CCol xs={6}>
-                            <CFormInput type="date" id="inputBirth" label="Date Of Birth" value={dateOfBirth} onChange={(e) => setDateOfBirth(e.target.value)} />
+                            <CFormInput
+                                type="date"
+                                id="inputBirth"
+                                label="Date Of Birth"
+                                value={dateOfBirth}
+                                onChange={(e) => setDateOfBirth(e.target.value)}
+                            />
                         </CCol>
                         <CCol xs={12}>
-                            <CButton type="submit" className="me-md-2">Submit</CButton>
+                            <CFormInput
+                                type="file"
+                                className="form-control"
+                                label={photo ? photo.name : "Upload Photo"}
+                                id="inputGroupFile04"
+                                accept="image/*"
+                                aria-describedby="inputGroupFileAddon04"
+                                aria-label="Upload"
+                                onChange={handlePhoto}
+                            />
+                        </CCol>
+                        <CCol xs={12}>
+                            <CButton type="submit" className="me-md-2">
+                                Submit
+                            </CButton>
                         </CCol>
                     </CForm>
                 </div>
