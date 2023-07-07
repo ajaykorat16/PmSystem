@@ -93,5 +93,29 @@ const getAllDepartment = asyncHandler(async (req, res) => {
     }
 })
 
+const getSingleDepartment = asyncHandler(async (req, res) => {
+    try {
+        const {id} = req.params
 
-module.exports = { createDepartment, updateDepartment, deleteDepartment, getAllDepartment }
+        const existingDepartment = await Department.findById({ _id: id })
+        if (!existingDepartment) {
+            return res.status(400).json({
+                error: true,
+                message: "Department is not existing"
+            })
+        }
+
+        const getSingle = await Department.findById({_id: id})
+        return res.status(200).json({
+            error: false,
+            message: "Single Department getting successfull !",
+            getSingle
+        })
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).send('Server error');
+    }
+})
+
+
+module.exports = { createDepartment, updateDepartment, deleteDepartment, getAllDepartment, getSingleDepartment }

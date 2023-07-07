@@ -3,15 +3,25 @@ import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
 import { CTable, CTableHead, CTableRow, CTableHeaderCell, CTableDataCell, CTableBody, CButton } from '@coreui/react';
 import { useDepartment } from '../context/DepartmentContext';
+import { useNavigate } from 'react-router-dom';
 
 
 const DepartmentList = () => {
-    const  {department}  = useDepartment()
+    const  {department, deleteDepartment}  = useDepartment()
     const [departmentList, setDepartmentList] = useState([])
+    const navigate = useNavigate()
+
+    const handleDelete = async (id) => {
+        await deleteDepartment(id)
+    }
+
+    const handleUpdate = async (id) => {
+        navigate(`/department/update/${id}`)
+    }
 
     useEffect(() => {
         setDepartmentList(department)
-        console.log(department)
+        // console.log(department)
     }, [department])
     
 
@@ -37,7 +47,10 @@ const DepartmentList = () => {
                             <CTableRow key={list._id}>
                                 <CTableHeaderCell scope="row">{index+1}</CTableHeaderCell>
                                 <CTableDataCell>{list.name}</CTableDataCell>
-                                {/* <CButton className='btn btn-danger' onClick={deleteDepartment(list._id)}>Delete</CButton> */}
+                                <CTableDataCell>
+                                    <CButton color="danger" variant="outline" onClick={() => { handleDelete(list._id); }}>Delete</CButton> {" "}
+                                    <CButton color="success" variant="outline" onClick={() => { handleUpdate(list._id); }}>Edit</CButton>
+                                </CTableDataCell>
                             </CTableRow>
                             ))}
                             
