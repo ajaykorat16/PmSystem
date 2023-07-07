@@ -38,7 +38,6 @@ const Login = () => {
     
     useEffect(() => {
         if (auth?.token) {
-            console.log("auth", auth)
             location.pathname!=='/'?navigate(location.pathname):navigate('/home')
         }
       }, [auth?.token, navigate])
