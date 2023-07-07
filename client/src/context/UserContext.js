@@ -42,7 +42,7 @@ const UserProvider = ({ children }) => {
 
     const updateUser = async (updateUsers, id) => {
         try {
-            let { firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining } = updateUsers
+            let { firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining, photo } = updateUsers
             const editUser = new FormData()
             editUser.append("firstname", firstname)
             editUser.append("lastname", lastname)
@@ -52,6 +52,7 @@ const UserProvider = ({ children }) => {
             editUser.append("department", department)
             editUser.append("dateOfJoining", dateOfJoining)
             editUser.append("dateOfBirth", dateOfBirth)
+            photo && editUser.append("photo", photo);
 
             await axios.put(`/user/updateProfile/${id}`, editUser, { headers });
             fetchUsers()

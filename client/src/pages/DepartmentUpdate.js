@@ -8,7 +8,7 @@ import { useNavigate, useParams } from "react-router-dom";
 const DepartmentCreate = () => {
   const navigate = useNavigate();
   const params = useParams();
-  const [name, setName] = useState();
+  const [name, setName] = useState("");
   const { updateDepartment, getSingleDepartment } = useDepartment();
 
   const singleDepartment = async () => {

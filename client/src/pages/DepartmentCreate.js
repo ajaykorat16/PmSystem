@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 const DepartmentCreate = () => {
   const navigate = useNavigate();
-  const [name, setName] = useState();
+  const [name, setName] = useState("");
   const { addDepartment } = useDepartment();
 
   const handleSubmit = async (e) => {
@@ -34,7 +34,6 @@ const DepartmentCreate = () => {
               <CCol sm={4}>
                 <CFormInput
                   placeholder="Department"
-                  aria-label="Department"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
