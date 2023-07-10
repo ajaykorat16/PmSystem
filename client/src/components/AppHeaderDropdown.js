@@ -39,8 +39,10 @@ const AppHeaderDropdown = () => {
 
   const fetchData = async () => {
     try {
-      let { getProfile } = await getUserProfile(auth?.user._id);
-      setPhoto(getProfile.photo)
+      if (auth?.user) {
+      let { getProfile } = await getUserProfile(auth.user._id);
+      setPhoto(getProfile.photo);
+    }
     } catch (error) {
       console.error("Error fetching user profile:", error);
     }
@@ -49,7 +51,7 @@ const AppHeaderDropdown = () => {
   useEffect(() => {
       fetchData();
   }, []);
-
+  
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
@@ -64,7 +66,7 @@ const AppHeaderDropdown = () => {
         <CDropdownDivider />
         <CDropdownItem onClick={handleLogout} >
           <CIcon icon={cilLockLocked} className="me-2" />
-          Logout
+          {auth ? ("Logout"): ("Login")}
         </CDropdownItem>
       </CDropdownMenu>
     </CDropdown>
