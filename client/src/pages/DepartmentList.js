@@ -5,6 +5,7 @@ import { CTable, CTableHead, CTableRow, CTableHeaderCell, CTableDataCell, CTable
 import { useDepartment } from '../context/DepartmentContext';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../components/Loader'
+import { AiTwotoneDelete, AiTwotoneEdit } from 'react-icons/ai';
 
 
 const DepartmentList = () => {
@@ -55,9 +56,9 @@ const DepartmentList = () => {
                                     <CTableRow key={list._id}>
                                         <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                                         <CTableDataCell>{list.name}</CTableDataCell>
-                                        <CTableDataCell>
-                                            <CButton color="danger" variant="outline" onClick={() => { handleDelete(list._id); }}>Delete</CButton> {" "}
-                                            <CButton color="success" variant="outline" onClick={() => { handleUpdate(list._id); }}>Edit</CButton>
+                                         <CTableDataCell>
+                                            <AiTwotoneEdit color="success" variant="outline" onClick={() => { handleUpdate(list._id) }} className='edit'/>
+                                            <AiTwotoneDelete color="danger" variant="outline" onClick={() => { handleDelete(list._id); }} className='delete'/>
                                         </CTableDataCell>
                                     </CTableRow>
                                 ))}

@@ -5,6 +5,8 @@ import { CTable, CTableHead, CTableRow, CTableHeaderCell, CTableDataCell, CTable
 import { useLeave } from '../context/LeaveContext';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../components/Loader'
+import moment from 'moment';
+import { AiTwotoneDelete, AiTwotoneEdit } from 'react-icons/ai';
 
 
 const LeaveList = () => {
@@ -62,13 +64,13 @@ const LeaveList = () => {
                                         <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
                                         <CTableDataCell>{`${l?.userId?.firstname} ${l?.userId?.lastname}`}</CTableDataCell>
                                         <CTableDataCell>{l.reason}</CTableDataCell>
-                                        <CTableDataCell>{l.startDate}</CTableDataCell>
-                                        <CTableDataCell>{l.endDate}</CTableDataCell>
+                                        <CTableDataCell>{moment(l.startDate).format('DD/MM/YYYY')}</CTableDataCell>
+                                        <CTableDataCell>{moment(l.endDate).format('DD/MM/YYYY')}</CTableDataCell>
                                         <CTableDataCell>{l.type}</CTableDataCell>
                                         <CTableDataCell>{l.status}</CTableDataCell>
                                         <CTableDataCell>
-                                            <CButton color="success" variant="outline" onClick={() => { handleUpdate(l._id) }} className='m-1'>Edit</CButton>
-                                            <CButton color="danger" variant="outline" onClick={() => { handleDelete(l._id); }}>Delete</CButton>
+                                            <AiTwotoneEdit color="success" variant="outline" onClick={() => { handleUpdate(l._id) }} className='edit'/>
+                                            <AiTwotoneDelete color="danger" variant="outline" onClick={() => { handleDelete(l._id); }} className='delete'/>
                                         </CTableDataCell>
                                     </CTableRow>
                                 ))

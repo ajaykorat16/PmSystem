@@ -34,7 +34,7 @@ const createUser = asyncHandler(async (req, res) => {
         return res.status(400).json({ errors: errors.array() });
     }
     try {
-        const { firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining } = req.body
+        const {employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining } = req.body
 
         const existingUser = await Users.findOne({ email })
 
@@ -46,7 +46,7 @@ const createUser = asyncHandler(async (req, res) => {
         }
         const hashedPassword = await hashPassword(password)
 
-        const newUser = await new Users({ firstname, lastname, email, password: hashedPassword, phone, address, dateOfBirth, department, dateOfJoining }).save()
+        const newUser = await new Users({employeeNumber, firstname, lastname, email, password: hashedPassword, phone, address, dateOfBirth, department, dateOfJoining }).save()
 
         return res.status(201).json({
             error: false,
@@ -107,7 +107,7 @@ const updateUser = asyncHandler(async (req, res) => {
     }
 
     try {
-        const { firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining } = req.fields;
+        const {employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining } = req.fields;
         const { photo } = req.files;
         const { id } = req.params;
         let user;
@@ -119,6 +119,7 @@ const updateUser = asyncHandler(async (req, res) => {
         }
 
         const updatedFields = {
+            employeeNumber: employeeNumber || user.employeeNumber,
             firstname: firstname || user.firstname,
             lastname: lastname || user.lastname,
             email: email || user.email,
@@ -129,6 +130,7 @@ const updateUser = asyncHandler(async (req, res) => {
             dateOfJoining: dateOfJoining || user.dateOfJoining,
             photo: photo || user.photo
         };
+        console.log(updatedFields);
 
         if (photo) {
             updatedFields.photo = {

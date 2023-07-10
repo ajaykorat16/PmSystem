@@ -1,0 +1,9 @@
+.edit{
+    cursor: pointer;
+    font-size: 24px;
+}
+.delete{
+    margin-left: 10px;
+    cursor: pointer;
+    font-size: 24px;
+}

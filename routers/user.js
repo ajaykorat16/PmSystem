@@ -16,6 +16,7 @@ router.get('/admin-auth',auth,isAdmin,(req,res)=>{
 })
 
 router.post("/register",
+    check('employeeNumber', 'Employee Number is reruired').notEmpty(),
     check('firstname', 'Name is required').notEmpty(),
     check('lastname', 'Name is required').notEmpty(),
     check('email', 'Please include a valid email').isEmail(),
@@ -29,6 +30,7 @@ router.post("/register",
 )
 
 router.post("/addUser",
+    check('employeeNumber', 'Employee Number is reruired').notEmpty(),
     check('firstname', 'Name is required').notEmpty(),
     check('lastname', 'Name is required').notEmpty(),
     check('email', 'Please include a valid email').isEmail(),

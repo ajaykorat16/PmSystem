@@ -1,7 +1,7 @@
 import React from 'react'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
-import { CForm, CCol, CFormInput, CFormSelect, CButton } from '@coreui/react';
+import { CForm, CCol, CFormInput, CFormSelect, CButton, CRow } from '@coreui/react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '../context/UserContext';
@@ -9,6 +9,7 @@ import { useDepartment } from '../context/DepartmentContext';
 
 
 const UserCreate = () => {
+    const [employeeNumber, setEmployeeNumber] = useState("")
     const [firstname, setFirstname] = useState("")
     const [lastname, setLastname] = useState("")
     const [email, setEmail] = useState("");
@@ -25,8 +26,9 @@ const UserCreate = () => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            let addUser = { firstname, lastname, email, password, phone, address, dateOfBirth, department: departments, dateOfJoining }
+            let addUser = {employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth, department: departments, dateOfJoining }
             await createUser(addUser)
+            console.log(createUser);
             navigate('/dashboard/user/list')
         } catch (error) {
             console.log(error)
@@ -43,6 +45,11 @@ const UserCreate = () => {
                         <h2 className='mb-5 mt-2'>Create User</h2>
                     </div>
                     <CForm className="row g-3" onSubmit={handleSubmit}>
+                        <CRow>
+                            <CCol md={4}>
+                                <CFormInput id="inputEmployeeNo" label="Employee Number" value={employeeNumber} onChange={(e) => setEmployeeNumber(e.target.value)} />
+                            </CCol>
+                        </CRow>
                         <CCol md={6}>
                             <CFormInput id="inputFirstName" label="First Name" value={firstname} onChange={(e) => setFirstname(e.target.value)} />
                         </CCol>

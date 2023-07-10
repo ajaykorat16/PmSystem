@@ -32,8 +32,8 @@ const UserProvider = ({ children }) => {
 
     const createUser = async (addUser) => {
         try {
-            const { firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining } = addUser
-            const res = await axios.post("/user/addUser", { firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining }, { headers });
+            const {employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining } = addUser
+            const res = await axios.post("/user/addUser", {employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining }, { headers });
         } catch (error) {
             console.log(error);
         }
@@ -42,8 +42,9 @@ const UserProvider = ({ children }) => {
 
     const updateUser = async (updateUsers, id) => {
         try {
-            let { firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining, photo } = updateUsers
+            let {employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining, photo } = updateUsers
             const editUser = new FormData()
+            editUser.append("employeeNumber", employeeNumber)
             editUser.append("firstname", firstname)
             editUser.append("lastname", lastname)
             editUser.append("email", email)

@@ -1,7 +1,7 @@
 import React from 'react'
 import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
-import { CForm, CCol, CFormInput, CFormSelect, CButton } from '@coreui/react';
+import { CForm, CCol, CFormInput, CFormSelect, CButton, CRow } from '@coreui/react';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom'
 import { useUser } from '../context/UserContext';
@@ -12,6 +12,7 @@ import Loader from '../components/Loader'
 
 
 const UserUpdate = () => {
+    const [employeeNumber, setEmployeeNumber] = useState("")
     const [firstname, setFirstname] = useState("")
     const [lastname, setLastname] = useState("")
     const [email, setEmail] = useState("");
@@ -33,6 +34,7 @@ const UserUpdate = () => {
             try {
                 let { getProfile } = await getUserProfile(params.id);
                 if (getProfile) {
+                    setEmployeeNumber(getProfile.employeeNumber)
                     setFirstname(getProfile.firstname);
                     setLastname(getProfile.lastname);
                     setEmail(getProfile.email);
@@ -55,7 +57,7 @@ const UserUpdate = () => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            let updateUsers = { firstname, lastname, email, phone, address, dateOfBirth, department: departments, dateOfJoining, photo: newPhoto || photo }
+            let updateUsers = {employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department: departments, dateOfJoining, photo: newPhoto || photo }
             let id = params.id
             await updateUser(updateUsers, id)
             navigate('/dashboard/user/list')
@@ -115,7 +117,15 @@ const UserUpdate = () => {
                                     />
                                 </CCol>
                             )}
-
+                            <CRow>
+                                <CCol md={4}>
+                                    <CFormInput 
+                                    id="inputEmployeeNo" 
+                                    label="Employee Number" 
+                                    value={employeeNumber} 
+                                    onChange={(e) => setEmployeeNumber(e.target.value)} />
+                                </CCol>
+                            </CRow>
                             <CCol md={6}>
                                 <CFormInput
                                     id="inputFirstName"
