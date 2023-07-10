@@ -22,27 +22,33 @@ import { useAuth } from '../context/AuthContext'
 const Login = () => {
     const [email, setEmail] = useState("ajaykorat204@gmail.com");
     const [password, setPassword] = useState("ajay@2208");
-    const {auth,login}=useAuth()
-    const navigate=useNavigate()
-    const location=useLocation()
+    const { auth, login, isLoggedIn } = useAuth()
+    const navigate = useNavigate()
+    const location = useLocation()
+
 
     const handleSubmit = (e) => {
         e.preventDefault()
         try {
             login(email, password)
-            navigate('/')
         } catch (error) {
             console.log(error)
         }
     }
-    
+    useEffect(() => {
+        if (isLoggedIn) {
+            navigate('/')
+        }
+    }, [isLoggedIn,handleSubmit])
+
+
     useEffect(() => {
         if (auth?.token) {
-            location.pathname!=='/'?navigate(location.pathname):navigate('/home')
+            location.pathname !== '/' ? navigate(location.pathname) : navigate('/home')
         }
-      }, [auth?.token, navigate])
+    }, [auth?.token, navigate, isLoggedIn])
 
-    
+
 
     return (
         <div className="bg-light min-vh-100 d-flex flex-row align-items-center">

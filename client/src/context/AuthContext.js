@@ -9,6 +9,7 @@ const AuthProvider = ({ children }) => {
         user: null,
         token: ""
     })
+    const [isLoggedIn,setIsLoggedIn]=useState(false)
 
     //default axios
     axios.defaults.headers.common["Authorization"] = auth?.token
@@ -18,6 +19,7 @@ const AuthProvider = ({ children }) => {
             const res = await axios.post(`/user/login`, { email, password })
 
             if (res.data.error === false) {
+                setIsLoggedIn(true)
                 setAuth({
                     ...auth,
                     user: res.data.user,
@@ -40,6 +42,7 @@ const AuthProvider = ({ children }) => {
                     user: null,
                     token: ""
                 })
+                setIsLoggedIn(false)
             }
 
         } catch (error) {
@@ -60,7 +63,7 @@ const AuthProvider = ({ children }) => {
     }, [])
 
     return (
-        <AuthContext.Provider value={{ auth, login, logout }}>
+        <AuthContext.Provider value={{ auth, login, logout,isLoggedIn }}>
             {children}
         </AuthContext.Provider>
     )
