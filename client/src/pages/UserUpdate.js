@@ -120,7 +120,9 @@ const UserUpdate = () => {
                                 id="inputEmployeeNo"
                                 label="Employee Number"
                                 value={employeeNumber}
-                                onChange={(e) => setEmployeeNumber(e.target.value)} />
+                                onChange={(e) => setEmployeeNumber(e.target.value)} 
+                                disabled
+                            />
                         </CCol>
                     </CRow>
                     <CCol md={6}>
@@ -146,6 +148,7 @@ const UserUpdate = () => {
                             label="Email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            disabled
                         />
                     </CCol>
                     <CCol md={6}>
