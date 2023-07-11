@@ -38,12 +38,12 @@ const DepartmentProvider = ({ children }) => {
 
   //delete department
   const deleteDepartment = async (id) => {
-      try {
-          const res = await axios.delete(`/department/deleteDepartment/${id}`, {headers})
-          getDepartment()
-      } catch (error) {
-          console.log(error);
-      }
+    try {
+      const res = await axios.delete(`/department/deleteDepartment/${id}`, {headers})
+      getDepartment()
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   //update department

@@ -13,7 +13,7 @@ const UserProvider = ({ children }) => {
         Authorization: auth.token
     };
 
-
+    //get users
     const fetchUsers = async () => {
         try {
             const res = await axios.get("/user/userList", { headers });
@@ -29,8 +29,7 @@ const UserProvider = ({ children }) => {
         fetchUsers();
     }, [auth?.token]);
 
-
-
+    //add user
     const createUser = async (addUser) => {
         try {
             const {employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining } = addUser
@@ -42,7 +41,7 @@ const UserProvider = ({ children }) => {
         }
     }
 
-
+    //update user
     const updateUser = async (updateUsers, id) => {
         try {
             let {employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining, photo } = updateUsers
@@ -65,7 +64,7 @@ const UserProvider = ({ children }) => {
         }
     }
 
-
+    //delete user
     const deleteUser = async (id) => {
         try {
             const res = await axios.delete(`/user/deleteProfile/${id}`, { headers });
@@ -75,7 +74,7 @@ const UserProvider = ({ children }) => {
         }
     }
 
-
+    //get single user
     const getUserProfile = async (id) => {
         try {
             const { data } = await axios.get(`/user/getUserProfile/${id}`, { headers });
@@ -84,7 +83,6 @@ const UserProvider = ({ children }) => {
             console.log(error);
         }
     }
-
 
     return (
         <UserContext.Provider value={{ users, createUser, updateUser, deleteUser, getUserProfile }}>

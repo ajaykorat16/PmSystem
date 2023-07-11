@@ -39,7 +39,8 @@ const LeaveCreate = () => {
             </div>
             <CForm className="row g-3" onSubmit={handleSubmit}>
                 <CCol md={6}>
-                    <CFormSelect id="inputUserName" label="User Name" onChange={(e) => setUserId(e.target.value)}>
+                    <CFormSelect id="inputUserName" label="User Name" value={userId} onChange={(e) => setUserId(e.target.value)}>
+                        <option value="" disabled>Select User</option>
                         {users.map((u) => (
                             <option key={u._id} value={u._id}>{`${u.firstname} ${u.lastname}`}</option>
                         ))}
@@ -50,6 +51,7 @@ const LeaveCreate = () => {
                 </CCol>
                 <CCol md={6}>
                     <CFormSelect id="inputStatus" label="Status" value={status} onChange={(e) => setStatus(e.target.value)}>
+                        <option value="" disabled>Select a Status</option>
                         {statusList.map((s) => (
                             <option key={s} value={s}>{s}</option>
                         ))}
@@ -63,6 +65,7 @@ const LeaveCreate = () => {
                 </CCol>
                 <CCol md={6}>
                     <CFormSelect id="inputType" label="Type" value={type} onChange={(e) => setType(e.target.value)}>
+                        <option value="" disabled>Select a Type</option>
                         {typeList.map((t) => (
                             <option key={t} value={t}>{t}</option>
                         ))}

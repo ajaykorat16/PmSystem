@@ -34,15 +34,16 @@ const UserCreate = () => {
                 const data = await createUser(addUser)
                 if (data.error) {
                     toast.error(data.message)
+                    
                 } else {
                     navigate('/dashboard/user/list')
                 }
             }
-        } catch (error) {
-            console.log(error)
+        } catch(error) {
+            console.log(error.message)
         }
     }
-
+    
     return (
         <Layout>
             <div className="mb-3">
@@ -74,7 +75,8 @@ const UserCreate = () => {
                     <CFormInput id="inputAddress" label="Address" placeholder="1234 Main St" value={address} onChange={(e) => setAddress(e.target.value)} />
                 </CCol>
                 <CCol md={4}>
-                    <CFormSelect id="inputDepartment" label="Department" onChange={(e) => setDepartments(e.target.value)}>
+                    <CFormSelect id="inputDepartment" label="Department" value={departments} onChange={(e) => setDepartments(e.target.value)}>
+                        <option value="" disabled>Select a department</option>
                         {department.map((d) => (
                             <option key={d._id} value={d._id}>{d.name}</option>
                         ))}
@@ -91,7 +93,6 @@ const UserCreate = () => {
                 </CCol>
             </CForm>
         </Layout>
-
     )
 }
 
