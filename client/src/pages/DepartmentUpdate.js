@@ -53,7 +53,10 @@ const DepartmentUpdate = () => {
             />
           </CCol>
           <CCol xs="auto">
-            <CButton type="submit">Edit</CButton>
+            <CButton type="submit" className="me-md-2">Submit</CButton>
+            <CButton onClick={()=> navigate("/dashboard/department/list")}>
+              Back
+            </CButton>
           </CCol>
         </CForm>
       </>}

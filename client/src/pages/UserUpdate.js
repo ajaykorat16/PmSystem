@@ -214,6 +214,9 @@ const UserUpdate = () => {
                         <CButton type="submit" className="me-md-2">
                             Submit
                         </CButton>
+                        <CButton className="me-md-2" onClick={()=> navigate("/dashboard/user/list")}>
+                            Back
+                        </CButton>
                     </CCol>
                 </CForm>
             </>}

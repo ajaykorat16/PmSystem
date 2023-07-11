@@ -94,7 +94,12 @@ const LeaveUpdate = () => {
                         </CFormSelect>
                     </CCol>
                     <CCol xs={12}>
-                        <CButton type="submit" className="me-md-2">Submit</CButton>
+                        <CButton type="submit" className="me-md-2">
+                            Submit
+                        </CButton>
+                        <CButton className="me-md-2" onClick={()=> navigate("/dashboard/leave/list")}>
+                            Back
+                        </CButton>
                     </CCol>
                 </CForm>
             </>}
