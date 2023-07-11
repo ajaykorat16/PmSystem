@@ -19,8 +19,11 @@ const UserList = () => {
     const navigate = useNavigate();
 
     const handleDelete = async (id) => {
-        await deleteUser(id)
-    }
+        const confirmDelete = window.confirm('Are you sure you want to delete this user?');
+        if (confirmDelete) {
+          await deleteUser(id);
+        }
+      }
 
     const handleUpdate = async (id) => {
         navigate(`/dashboard/user/update/${id}`)

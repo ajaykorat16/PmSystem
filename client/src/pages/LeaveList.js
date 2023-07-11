@@ -26,7 +26,10 @@ const LeaveList = () => {
     }, [leave])
 
     const handleDelete = async (id) => {
-        await deleteLeave(id)
+        const confirmDelete = window.confirm("Are you sure you want to delete this leave")
+        if(confirmDelete){
+            await deleteLeave(id)
+        }  
     }
 
     const handleUpdate = async (id) => {

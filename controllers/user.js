@@ -36,8 +36,15 @@ const createUser = asyncHandler(async (req, res) => {
     try {
         const {employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining } = req.body
 
-        const existingUser = await Users.findOne({ email })
+        const existingEmployeeNumber = await Users.findOne({employeeNumber})
+        if (existingEmployeeNumber){
+            return res.status(200).json({
+                error: true,
+                message: "Employee Number should be unique"
+            })
+        }
 
+        const existingUser = await Users.findOne({ email })
         if (existingUser) {
             return res.status(200).json({
                 error: true,
@@ -130,7 +137,6 @@ const updateUser = asyncHandler(async (req, res) => {
             dateOfJoining: dateOfJoining || user.dateOfJoining,
             photo: photo || user.photo
         };
-        console.log(updatedFields);
 
         if (photo) {
             updatedFields.photo = {

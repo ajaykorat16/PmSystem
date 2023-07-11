@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext, createContext } from "react";
 import axios from 'axios';
 import { useAuth } from "./AuthContext";
+import toast from "react-hot-toast";
 
 const UserContext = createContext();
 
@@ -33,7 +34,9 @@ const UserProvider = ({ children }) => {
     const createUser = async (addUser) => {
         try {
             const {employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining } = addUser
-            const res = await axios.post("/user/addUser", {employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining }, { headers });
+            const {data} = await axios.post("/user/addUser", {employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining }, { headers });
+            fetchUsers()
+            return data;
         } catch (error) {
             console.log(error);
         }

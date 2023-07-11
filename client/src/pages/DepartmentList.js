@@ -15,7 +15,10 @@ const DepartmentList = () => {
     const navigate = useNavigate()
 
     const handleDelete = async (id) => {
-        await deleteDepartment(id)
+        const confirmDelete = window.confirm("Are you sure you want to delete this department")
+        if(confirmDelete){
+            await deleteDepartment(id)
+        }
     }
 
     const handleUpdate = async (id) => {

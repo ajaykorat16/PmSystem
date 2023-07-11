@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '../context/UserContext';
 import { useDepartment } from '../context/DepartmentContext';
-
+import toast, {Toaster} from "react-hot-toast"
 
 const UserCreate = () => {
     const [employeeNumber, setEmployeeNumber] = useState("")
@@ -22,14 +22,17 @@ const UserCreate = () => {
     const { createUser } = useUser()
     const { department } = useDepartment()
     const navigate = useNavigate();
-
+    
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
             let addUser = {employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth, department: departments, dateOfJoining }
-            await createUser(addUser)
-            console.log(createUser);
-            navigate('/dashboard/user/list')
+            const data = await createUser(addUser)
+            if(data.error){
+                toast.error(data.message)
+            }else{
+                navigate('/dashboard/user/list')
+            }
         } catch (error) {
             console.log(error)
         }
@@ -40,6 +43,7 @@ const UserCreate = () => {
             <AppSidebar />
             <div className="wrapper d-flex flex-column min-vh-100 bg-light">
                 <AppHeader />
+                <Toaster/>
                 <div className="body flex-grow-1 px-3">
                     <div className="mb-3">
                         <h2 className='mb-5 mt-2'>Create User</h2>
