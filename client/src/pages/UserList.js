@@ -75,8 +75,8 @@ const UserList = () => {
                                 <CTableDataCell>{moment(u.dateOfBirth).format('DD/MM/YYYY')}</CTableDataCell>
                                 <CTableDataCell>{moment(u.dateOfJoining).format('DD/MM/YYYY')}</CTableDataCell>
                                 <CTableDataCell>
-                                    <AiTwotoneEdit color="success" variant="outline" onClick={() => { handleUpdate(u._id) }} className='edit' />
-                                    <AiTwotoneDelete color="danger" variant="outline" onClick={() => { handleDelete(u._id); }} className='delete' />
+                                    {u.role === "user" && <AiTwotoneEdit color="success" variant="outline" onClick={() => { handleUpdate(u._id) }} className='edit' />}
+                                    {u.role === "user" && <AiTwotoneDelete color="danger" variant="outline" onClick={() => { handleDelete(u._id); }} className='delete' />}
                                 </CTableDataCell>
                             </CTableRow>
                         ))}
