@@ -14,6 +14,7 @@ const UserCreate = () => {
     const [lastname, setLastname] = useState("")
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [phone, setPhone] = useState("");
     const [address, setAddress] = useState("");
     const [departments, setDepartments] = useState("");
@@ -26,13 +27,17 @@ const UserCreate = () => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            let addUser = {employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth, department: departments, dateOfJoining }
-            const data = await createUser(addUser)
-            if(data.error){
-                toast.error(data.message)
+            if (password !== confirmPassword) {
+                toast.error("Password and Confirm Password must be same");
             }else{
-                navigate('/dashboard/user/list')
-            }
+                let addUser = {employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth, department: departments, dateOfJoining }
+                const data = await createUser(addUser)
+                if(data.error){
+                    toast.error(data.message)
+                }else{
+                    navigate('/dashboard/user/list')
+                }
+            }    
         } catch (error) {
             console.log(error)
         }
@@ -49,11 +54,12 @@ const UserCreate = () => {
                         <h2 className='mb-5 mt-2'>Create User</h2>
                     </div>
                     <CForm className="row g-3" onSubmit={handleSubmit}>
-                        <CRow>
-                            <CCol md={4}>
-                                <CFormInput id="inputEmployeeNo" label="Employee Number" value={employeeNumber} onChange={(e) => setEmployeeNumber(e.target.value)} />
-                            </CCol>
-                        </CRow>
+                        <CCol md={6}>
+                            <CFormInput id="inputEmployeeNo" label="Employee Number" value={employeeNumber} onChange={(e) => setEmployeeNumber(e.target.value)} />
+                        </CCol>
+                        <CCol md={6}>
+                            <CFormInput type="email" id="inputEmail4" label="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                        </CCol>
                         <CCol md={6}>
                             <CFormInput id="inputFirstName" label="First Name" value={firstname} onChange={(e) => setFirstname(e.target.value)} />
                         </CCol>
@@ -61,10 +67,10 @@ const UserCreate = () => {
                             <CFormInput id="inputLastName" label="Last Name" value={lastname} onChange={(e) => setLastname(e.target.value)} />
                         </CCol>
                         <CCol md={6}>
-                            <CFormInput type="email" id="inputEmail4" label="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                            <CFormInput type="password" id="inputPassword4" label="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
                         </CCol>
                         <CCol md={6}>
-                            <CFormInput type="password" id="inputPassword4" label="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                            <CFormInput type="password" id="inputConfirmPassword" label="Confirm Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
                         </CCol>
                         <CCol md={6}>
                             <CFormInput type="number" id="inputPhone" label="Phone Number" value={phone} onChange={(e) => setPhone(e.target.value)} />
