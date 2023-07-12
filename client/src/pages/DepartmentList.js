@@ -25,11 +25,9 @@ const DepartmentList = () => {
     }
 
     useEffect(() => {
-        if (department) {
+        if (department.length > 0) {
             setDepartmentList(department)
-            setTimeout(function () {
-                setIsLoading(false)
-            }, 1000);
+            setIsLoading(false)
         }
     }, [department])
 
