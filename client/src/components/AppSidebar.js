@@ -42,6 +42,7 @@ const AppSidebar = () => {
         <SimpleBar>
           {role && role === "admin" && <AppSidebarNav items={adminNavigatiion} />}
           {role && role === "user" && <AppSidebarNav items={userNavigation} />}
+          {role=="" && <AppSidebarNav items={userNavigation} />}
         </SimpleBar>
       </CSidebarNav>
       <CSidebarToggler
