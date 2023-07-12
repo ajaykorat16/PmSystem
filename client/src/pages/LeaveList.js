@@ -15,11 +15,9 @@ const LeaveList = () => {
     const navigate = useNavigate()
 
     useEffect(() => {
-        if (leave) {
+        if (leave.length > 0) {
             setLeaveList(leave)
-            setTimeout(function () {
-                setIsLoading(false)
-            }, 1000);
+            setIsLoading(false)
         }
 
     }, [leave])

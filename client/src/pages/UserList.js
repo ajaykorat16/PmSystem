@@ -29,10 +29,8 @@ const UserList = () => {
     }
 
     useEffect(() => {
-        if (users) {
-            setTimeout(function () {
-                setIsLoading(false)
-            }, 1500);
+        if (users.length > 0) {
+            setIsLoading(false)
         }
     }, [users])
 
