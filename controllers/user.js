@@ -8,7 +8,6 @@ const asyncHandler = require('express-async-handler');
 const { Console } = require("console");
 
 const saltRounds = 10
-
 const hashPassword = async (password) => {
     try {
         const hashedPassword = await bcrypt.hash(password, saltRounds)
@@ -26,9 +25,7 @@ const comparePassword = async (password, hashPassword) => {
     }
 }
 
-
 const createUser = asyncHandler(async (req, res) => {
-
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -43,7 +40,6 @@ const createUser = asyncHandler(async (req, res) => {
                 message: "Employee Number should be unique"
             })
         }
-
         const existingUser = await Users.findOne({ email })
         if (existingUser) {
             return res.status(200).json({
@@ -51,10 +47,16 @@ const createUser = asyncHandler(async (req, res) => {
                 message: "User already register with this email"
             })
         }
+        const existingPhone = await Users.findOne({phone})
+        if(existingPhone){
+            return res.status(200).json({
+                error:true,
+                message: "Phone Number should be unique"
+            })
+        }
         const hashedPassword = await hashPassword(password)
 
         const newUser = await new Users({employeeNumber, firstname, lastname, email, password: hashedPassword, phone, address, dateOfBirth, department, dateOfJoining }).save()
-
         return res.status(201).json({
             error: false,
             message: "User Register successfully !!",
@@ -67,12 +69,10 @@ const createUser = asyncHandler(async (req, res) => {
 })
 
 const loginUser = asyncHandler(async (req, res) => {
-
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
-
     try {
         const { email, password } = req.body;
 
@@ -83,7 +83,6 @@ const loginUser = asyncHandler(async (req, res) => {
                 message: "Invalid Email, Please Sigup first."
             })
         }
-
         const match = await comparePassword(password, user.password)
         if (!match) {
             return res.status(400).json({
@@ -91,16 +90,13 @@ const loginUser = asyncHandler(async (req, res) => {
                 message: "Invalid Password"
             })
         }
-
         const token = await jwt.sign({ user }, process.env.JWT_SECRET_KEY, { expiresIn: '5 days' });
-
         return res.status(200).send({
             error: false,
             message: "User login successfully!!",
             user,
             token
         })
-
     } catch (error) {
         console.log(error.message)
         res.status(500).send('Server error');
@@ -112,17 +108,23 @@ const updateUser = asyncHandler(async (req, res) => {
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
-
     try {
         const {employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining } = req.fields;
         const { photo } = req.files;
         const { id } = req.params;
         let user;
-
         if (id) {
             user = await Users.findById(id);
         } else {
             user = await Users.findById(req.user._id);
+        }
+
+        const existingPhone = await Users.findOne({phone, _id: { $ne: user._id } })
+        if(existingPhone !== null){
+            return res.status(200).json({
+                error:true,
+                message: "Phone Number should be unique"
+            })
         }
 
         const updatedFields = {
@@ -137,21 +139,18 @@ const updateUser = asyncHandler(async (req, res) => {
             dateOfJoining: dateOfJoining || user.dateOfJoining,
             photo: photo || user.photo
         };
-
         if (photo) {
             updatedFields.photo = {
                 data: fs.readFileSync(photo.path),
                 contentType: photo.type
             };
         }
-
         const updateUser = await Users.findByIdAndUpdate(user._id, updatedFields, { new: true });
         return res.status(201).send({
             error: false,
             message: "Profile Updated Successfully !!",
             updateUser
         });
-
     } catch (error) {
         console.log(error.message)
         res.status(500).send('Server error');

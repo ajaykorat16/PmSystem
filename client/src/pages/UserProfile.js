@@ -10,7 +10,7 @@ import { useEffect } from 'react';
 import { CImage } from '@coreui/react'
 import Loader from '../components/Loader'
 import Layout from './Layout';
-import toast  from 'react-hot-toast';
+import toast from 'react-hot-toast';
 
 
 const UserUpdate = () => {
@@ -65,7 +65,7 @@ const UserUpdate = () => {
             if(data.error){
                 toast.error(data.message)
             }else{
-                navigate('/dashboard/user/list')
+                navigate('/')
             }
         } catch (error) {
             console.log(error)
@@ -180,6 +180,7 @@ const UserUpdate = () => {
                             label="Department"
                             value={departments}
                             onChange={(e) => setDepartments(e.target.value)}
+                            disabled
                         >
                             {department.map((d) => (
                                 <option key={d._id} value={d._id}>
@@ -195,6 +196,7 @@ const UserUpdate = () => {
                             label="Date Of Joining"
                             value={dateOfJoining}
                             onChange={(e) => setDateOfJoining(e.target.value)}
+                            disabled
                         />
                     </CCol>
                     <CCol xs={6}>
@@ -222,7 +224,7 @@ const UserUpdate = () => {
                         <CButton type="submit" className="me-md-2">
                             Submit
                         </CButton>
-                        <CButton className="me-md-2" onClick={()=> navigate("/dashboard/user/list")}>
+                        <CButton className="me-md-2" onClick={()=> navigate("/")}>
                             Back
                         </CButton>
                     </CCol>

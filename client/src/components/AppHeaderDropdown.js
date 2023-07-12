@@ -22,7 +22,7 @@ const AppHeaderDropdown = () => {
       console.log(error);
     }
   };
-
+  
   const handleLogin = () => {
     try {
       navigate('/login');
@@ -34,7 +34,7 @@ const AppHeaderDropdown = () => {
   const fetchData = async () => {
     try {
       if (getAuth && getAuth.user) {
-        const { getProfile } = await getUserProfile(getAuth?.user._id);
+        const { getProfile } = await getUserProfile(auth.user._id);
         setPhoto(getProfile.photo);
         setIsPhoto(true)
       }
@@ -53,7 +53,7 @@ const AppHeaderDropdown = () => {
       fetchData();
     }
   }, [getAuth]);
-
+  
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
@@ -69,11 +69,15 @@ const AppHeaderDropdown = () => {
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
         <CDropdownHeader className="bg-light fw-semibold py-2">Settings</CDropdownHeader>
-        <CDropdownItem href="#">
-          <CIcon icon={cilUser} className="me-2" />
-          Profile
-        </CDropdownItem>
-        <CDropdownDivider />
+        {getAuth && 
+          <>
+            <CDropdownItem onClick={()=>navigate(`/dashboard/user/user-profile/${getAuth?.user._id}`)}>
+              <CIcon icon={cilUser} className="me-2" />
+              Profile
+            </CDropdownItem>
+            <CDropdownDivider />
+          </>
+        }
         {getAuth ?
           <CDropdownItem onClick={handleLogout}>
             <CIcon icon={cilLockLocked} className="me-2" />
@@ -83,7 +87,7 @@ const AppHeaderDropdown = () => {
             <CIcon icon={cilLockLocked} className="me-2" />
             Login
           </CDropdownItem>
-        }
+        } 
       </CDropdownMenu>
     </CDropdown>
   );
