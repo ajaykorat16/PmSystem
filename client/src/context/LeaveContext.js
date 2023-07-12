@@ -6,6 +6,7 @@ const LeaveContext = createContext();
 
 const LeaveProvider = ({ children }) => {
   const [leave, setLeave] = useState([]);
+  const [userLeaves, setUserLeaves] = useState([])
   const { auth } = useAuth();
   const headers = {
     Authorization: auth?.token,
@@ -80,9 +81,40 @@ const LeaveProvider = ({ children }) => {
     }
   };
 
+  //get user leave
+  const getUserLeave = async () => {
+    try {
+      const {data} = await axios.get(`/leaves/userLeaves`,{headers})
+      if(data.error === false) {
+        setUserLeaves(data.leaves)
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  useEffect(()=>{
+    getUserLeave()
+  }, [auth?.token])
+
+  //add user leave
+  const addUserLeave = async (leaveData) => {
+    try {
+      const { reason, startDate, endDate, type, status } = leaveData;
+
+      await axios.post(
+        `/leaves/createLeave`,
+        { reason, startDate, endDate, type, status },
+        { headers }
+      );
+      getUserLeave()
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <LeaveContext.Provider
-      value={{ leave, addLeave, deleteLeave, updateLeave, getLeaveById }}
+      value={{ leave, addLeave, deleteLeave, updateLeave, getLeaveById, userLeaves, addUserLeave }}
     >
       {children}
     </LeaveContext.Provider>

@@ -24,18 +24,6 @@ const LeaveUpdate = () => {
     const navigate = useNavigate()
     const { id } = useParams()
 
-    const handleSubmit = async (e) => {
-        e.preventDefault()
-        try {
-            const leaveData = { reason, startDate, endDate, type, userId, status }
-            await updateLeave(leaveData, id)
-            navigate('/dashboard/leave/list')
-
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
     useEffect(() => {
         const setValues = async () => {
             const data = await getLeaveById(id)
@@ -48,12 +36,24 @@ const LeaveUpdate = () => {
                 setType(data.type)
                 setIsLoading(false)
             }
-
         }
         setValues()
 
     }, [getLeaveById, id])
+    
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        try {
+            const leaveData = { reason, startDate, endDate, type, userId, status }
+            await updateLeave(leaveData, id)
+            navigate('/dashboard/leave/list')
 
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    
 
     return (
         <Layout>

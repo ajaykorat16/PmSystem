@@ -65,6 +65,29 @@ const UserProvider = ({ children }) => {
         }
     }
 
+    //update user
+    const updateProfile = async (updateUsers) => {
+        try {
+            let {employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining, photo } = updateUsers
+            const editUser = new FormData()
+            editUser.append("employeeNumber", employeeNumber)
+            editUser.append("firstname", firstname)
+            editUser.append("lastname", lastname)
+            editUser.append("email", email)
+            editUser.append("phone", phone)
+            editUser.append("address", address)
+            editUser.append("department", department)
+            editUser.append("dateOfJoining", dateOfJoining)
+            editUser.append("dateOfBirth", dateOfBirth)
+            photo && editUser.append("photo", photo);
+
+            const {data} = await axios.put(`/user/updateProfile`, editUser, { headers });
+            return data;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     //delete user
     const deleteUser = async (id) => {
         try {
@@ -86,7 +109,7 @@ const UserProvider = ({ children }) => {
     }
 
     return (
-        <UserContext.Provider value={{ users, createUser, updateUser, deleteUser, getUserProfile }}>
+        <UserContext.Provider value={{ users, createUser, updateUser, deleteUser, getUserProfile, updateProfile }}>
             {children}
         </UserContext.Provider>
     );

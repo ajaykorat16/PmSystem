@@ -26,7 +26,7 @@ const UserUpdate = () => {
     const [dateOfJoining, setDateOfJoining] = useState("");
     const [photo, setPhoto] = useState("");
     const [isLoading, setIsLoading] = useState(true)
-    const { updateUser, getUserProfile } = useUser()
+    const { updateProfile, getUserProfile } = useUser()
     const { department } = useDepartment()
     const navigate = useNavigate();
     const params = useParams();
@@ -60,8 +60,7 @@ const UserUpdate = () => {
         e.preventDefault()
         try {
             let updateUsers = { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department: departments, dateOfJoining, photo: newPhoto || photo }
-            let id = params.id
-            const data = await updateUser(updateUsers, id)
+            const data = await updateProfile(updateUsers)
             if(data.error){
                 toast.error(data.message)
             }else{

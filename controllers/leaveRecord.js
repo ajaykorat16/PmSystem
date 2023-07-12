@@ -10,8 +10,14 @@ const createLeave = asyncHandler(async (req, res) => {
     }
     try {
         const { reason, startDate, endDate, type, userId, status } = req.body
+        let uId
+        if(userId){
+            uId = userId
+        }else{
+            uId = req.user._id
+        }
 
-        const createLeaves = await new Leaves({ userId, reason, startDate, endDate, type, status }).save();
+        const createLeaves = await new Leaves({ userId:uId, reason, startDate, endDate, type, status }).save();
         return res.status(201).json({
             error: false,
             message: "Your Leave Create successfully !!",
@@ -47,7 +53,7 @@ const getAllLeaves = asyncHandler(async (req, res) => {
 
 const userGetLeave = asyncHandler(async (req, res) => {
     try {
-        const leaves = await Leaves.find({ userId: req.user._id })
+        const leaves = await Leaves.find({ userId: req.user._id }).populate("userId").lean()
         return res.status(200).json({
             error: false,
             message: "Get All Leave successfully !!",
@@ -95,6 +101,7 @@ const updateLeave = asyncHandler(async (req, res) => {
         const updatedFields = {
             userId: userId || userLeave.userId,
             reason: reason || userLeave.reason,
+            status: status || userLeave.status,
             startDate: startDate || userLeave.startDate,
             endDate: endDate || userLeave.endDate,
             type: type || userLeave.type,
