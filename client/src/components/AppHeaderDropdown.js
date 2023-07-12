@@ -71,7 +71,7 @@ const AppHeaderDropdown = () => {
         <CDropdownHeader className="bg-light fw-semibold py-2">Settings</CDropdownHeader>
         {getAuth && 
           <>
-            <CDropdownItem onClick={()=>navigate(`/dashboard/user/user-profile/${getAuth?.user._id}`)}>
+            <CDropdownItem onClick={()=>navigate(`/dashboard-user/user/user-profile/${auth?.user._id}`)}>
               <CIcon icon={cilUser} className="me-2" />
               Profile
             </CDropdownItem>

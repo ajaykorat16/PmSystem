@@ -81,7 +81,7 @@ const UserUpdate = () => {
             {isLoading === true && <Loader />}
             {isLoading === false && <>
                 <div className="mb-3">
-                    <h2 className='mb-5 mt-2'>Update User</h2>
+                    <h2 className='mb-5 mt-2'>{`${firstname} ${lastname}`}</h2>
                 </div>
                 <CForm className="row g-3" onSubmit={handleSubmit}>
                     {photo && !newPhoto && (

@@ -15,6 +15,10 @@ router.get('/admin-auth',auth,isAdmin,(req,res)=>{
     res.status(200).json({ok:true})
 })
 
+router.get('/user-auth', auth, (req,res)=>{
+    res.status(200).json({ok:true})
+})
+
 router.post("/register",
     check('employeeNumber', 'Employee Number is reruired').notEmpty(),
     check('firstname', 'Name is required').notEmpty(),
@@ -53,7 +57,7 @@ router.put("/updateProfile", auth, formidableMiddleware(), updateUser)
 
 router.put("/updateProfile/:id", auth, isAdmin, formidableMiddleware(), updateUser)
 
-router.get("/getUserProfile/:id", auth, isAdmin, formidableMiddleware(), getUserProfile)
+router.get("/getUserProfile/:id", auth, formidableMiddleware(), getUserProfile)
 
 router.delete("/deleteProfile/:id", auth, isAdmin, deleteUserProfile)
 
