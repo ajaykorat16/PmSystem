@@ -26,8 +26,7 @@ const UserUpdate = () => {
     const [dateOfJoining, setDateOfJoining] = useState("");
     const [photo, setPhoto] = useState("");
     const [isLoading, setIsLoading] = useState(true)
-    const { updateUser, getUserProfile } = useUser()
-    const { department } = useDepartment()
+    const { updateProfile, getUserProfile } = useUser()
     const navigate = useNavigate();
     const params = useParams();
 
@@ -42,7 +41,7 @@ const UserUpdate = () => {
                     setEmail(getProfile.email);
                     setAddress(getProfile.address)
                     setPhone(getProfile.phone)
-                    setDepartments(getProfile.department ? getProfile.department._id : "")
+                    setDepartments(getProfile.department ? getProfile.department.name : "")
                     setDateOfBirth(getProfile.dateOfBirth)
                     setDateOfJoining(getProfile.dateOfJoining)
                     setPhoto(getProfile.photo)
@@ -60,8 +59,7 @@ const UserUpdate = () => {
         e.preventDefault()
         try {
             let updateUsers = { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department: departments, dateOfJoining, photo: newPhoto || photo }
-            let id = params.id
-            const data = await updateUser(updateUsers, id)
+            const data = await updateProfile(updateUsers)
             if(data.error){
                 toast.error(data.message)
             }else{
@@ -175,19 +173,14 @@ const UserUpdate = () => {
                         />
                     </CCol>
                     <CCol md={6}>
-                        <CFormSelect
+                        <CFormInput
                             id="inputDepartment"
                             label="Department"
                             value={departments}
                             onChange={(e) => setDepartments(e.target.value)}
                             disabled
                         >
-                            {department.map((d) => (
-                                <option key={d._id} value={d._id}>
-                                    {d.name}
-                                </option>
-                            ))}
-                        </CFormSelect>
+                        </CFormInput>
                     </CCol>
                     <CCol xs={6}>
                         <CFormInput

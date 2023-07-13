@@ -34,7 +34,6 @@ const UserCreate = () => {
                 const data = await createUser(addUser)
                 if (data.error) {
                     toast.error(data.message)
-                    
                 } else {
                     navigate('/dashboard/user/list')
                 }
