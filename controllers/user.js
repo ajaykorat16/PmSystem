@@ -31,10 +31,10 @@ const createUser = asyncHandler(async (req, res) => {
         return res.status(400).json({ errors: errors.array() });
     }
     try {
-        const {employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining } = req.body
+        const { employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining } = req.body
 
-        const existingEmployeeNumber = await Users.findOne({employeeNumber})
-        if (existingEmployeeNumber){
+        const existingEmployeeNumber = await Users.findOne({ employeeNumber })
+        if (existingEmployeeNumber) {
             return res.status(200).json({
                 error: true,
                 message: "Employee Number should be unique"
@@ -47,16 +47,16 @@ const createUser = asyncHandler(async (req, res) => {
                 message: "User already register with this email"
             })
         }
-        const existingPhone = await Users.findOne({phone})
-        if(existingPhone){
+        const existingPhone = await Users.findOne({ phone })
+        if (existingPhone) {
             return res.status(200).json({
-                error:true,
+                error: true,
                 message: "Phone Number should be unique"
             })
         }
         const hashedPassword = await hashPassword(password)
 
-        const newUser = await new Users({employeeNumber, firstname, lastname, email, password: hashedPassword, phone, address, dateOfBirth, department, dateOfJoining }).save()
+        const newUser = await new Users({ employeeNumber, firstname, lastname, email, password: hashedPassword, phone, address, dateOfBirth, department, dateOfJoining }).save()
         return res.status(201).json({
             error: false,
             message: "User Register successfully !!",
@@ -71,37 +71,38 @@ const createUser = asyncHandler(async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+        return res.status(400).json({ error:true,errors: errors.array() });
     }
     try {
         const { email, password } = req.body;
 
-        const user = await Users.findOne({ email }).select("-photo").populate("department")
+        const user = await Users.findOne({ email }).select("-photo").populate("department");
         if (!user) {
-            return res.status(400).json({
+            return res.status(401).json({
                 error: true,
-                message: "Invalid Email, Please Sigup first."
-            })
+                message: "Invalid Email. Please sign up first."
+            });
         }
-        const match = await comparePassword(password, user.password)
+        const match = await comparePassword(password, user.password);
         if (!match) {
-            return res.status(400).json({
-                success: false,
+            return res.status(401).json({
+                error: true,
                 message: "Invalid Password"
-            })
+            });
         }
         const token = await jwt.sign({ user }, process.env.JWT_SECRET_KEY, { expiresIn: '5 days' });
         return res.status(200).send({
             error: false,
-            message: "User login successfully!!",
+            message: "User login successful!",
             user,
             token
-        })
+        });
     } catch (error) {
-        console.log(error.message)
-        res.status(500).send('Server error');
+        console.log(error.message);
+        return res.status(500).send('Server error');
     }
-})
+});
+
 
 const updateUser = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
@@ -109,7 +110,7 @@ const updateUser = asyncHandler(async (req, res) => {
         return res.status(400).json({ errors: errors.array() });
     }
     try {
-        const {employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining } = req.fields;
+        const { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining } = req.fields;
         const { photo } = req.files;
         const { id } = req.params;
         let user;
@@ -119,10 +120,10 @@ const updateUser = asyncHandler(async (req, res) => {
             user = await Users.findById(req.user._id);
         }
 
-        const existingPhone = await Users.findOne({phone, _id: { $ne: user._id } })
-        if(existingPhone !== null){
+        const existingPhone = await Users.findOne({ phone, _id: { $ne: user._id } })
+        if (existingPhone !== null) {
             return res.status(200).json({
-                error:true,
+                error: true,
                 message: "Phone Number should be unique"
             })
         }

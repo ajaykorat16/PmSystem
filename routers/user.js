@@ -48,8 +48,8 @@ router.post("/addUser",
 )
 
 router.post("/login",
-    check('email', 'Please include a valid email').isEmail(),
-    check('password', 'Password is required').exists(),
+    check('email', 'Email is required').isEmail(),
+    check('password', 'Password is required').notEmpty(),
     loginUser
 )
 

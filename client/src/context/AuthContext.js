@@ -1,5 +1,7 @@
 import { useState, useEffect, useContext, createContext } from "react";
 import axios from 'axios'
+import toast from "react-hot-toast"
+
 
 const AuthContext = createContext()
 
@@ -9,27 +11,44 @@ const AuthProvider = ({ children }) => {
         user: null,
         token: ""
     })
-    const [isLoggedIn,setIsLoggedIn]=useState(false)
+    const [isLoggedIn, setIsLoggedIn] = useState(false)
 
     //default axios
     axios.defaults.headers.common["Authorization"] = auth?.token
 
     const login = async (email, password) => {
         try {
-            const res = await axios.post(`/user/login`, { email, password })
+            const { data } = await axios.post('/user/login', { email, password });
 
-            if (res.data.error === false) {
+            if (data.error === false) {
                 setIsLoggedIn(true)
+                toast.success('Login successful');
                 setAuth({
                     ...auth,
-                    user: res.data.user,
-                    token: res.data.token
+                    user: data.user,
+                    token: data.token
                 })
-                localStorage.setItem('auth', JSON.stringify(res.data))
+                localStorage.setItem('auth', JSON.stringify(data))
             }
+            // else {
+            //     toast.error(data.message);
+            // }
         } catch (error) {
-            console.log(error)
+            if (error.response) {
+                const errors = error.response.data.errors;
+                if (errors && Array.isArray(errors) && errors.length > 0) {
+                    errors.forEach((error) => {
+                        toast.error(error.msg);
+                    });
+                } else {
+                    const errorMessage = error.response.data.message;
+                    toast.error(errorMessage);
+                }
+            } else {
+                toast.error('An error occurred. Please try again later.');
+            }
         }
+
     };
 
     // Function to handle logout
@@ -63,7 +82,7 @@ const AuthProvider = ({ children }) => {
     }, [])
 
     return (
-        <AuthContext.Provider value={{ auth, login, logout,isLoggedIn }}>
+        <AuthContext.Provider value={{ auth, login, logout, isLoggedIn }}>
             {children}
         </AuthContext.Provider>
     )
