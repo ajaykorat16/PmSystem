@@ -250,4 +250,28 @@ const getUserProfile = asyncHandler(async (req, res) => {
     }
 })
 
-module.exports = { createUser, loginUser, updateUser, deleteUserProfile, getAllUser, getUserProfile }
+//changePasswordController
+
+const changePasswordController = asyncHandler(async (req, res) => {
+    try {
+        console.log(req.user._id);
+        const user = req.user._id
+        const {password} = req.body
+        const hashed = await hashPassword(password);
+        console.log(hashed);
+        await Users.findByIdAndUpdate(user, { password: hashed });
+        res.status(200).send({
+            error: false,
+            message: "Password Reset Successfully",
+      });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({
+            error: true,
+            message: "Something went wrong",
+            error,
+        });
+    }
+});
+
+module.exports = { createUser, loginUser, updateUser, deleteUserProfile, getAllUser, getUserProfile, changePasswordController }

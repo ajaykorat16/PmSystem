@@ -5,6 +5,7 @@ import CIcon from '@coreui/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useUser } from '../context/UserContext';
+import { MdOutlineLockReset } from 'react-icons/md';
 
 const AppHeaderDropdown = () => {
   const [photo, setPhoto] = useState('');
@@ -74,6 +75,10 @@ const AppHeaderDropdown = () => {
             <CDropdownItem onClick={()=>navigate(`/dashboard-user/user/user-profile/${auth?.user._id}`)}>
               <CIcon icon={cilUser} className="me-2" />
               Profile
+            </CDropdownItem>
+            <CDropdownItem>
+              <MdOutlineLockReset className="me-2" fontSize={20}/>
+              Reset Password
             </CDropdownItem>
             <CDropdownDivider />
           </>

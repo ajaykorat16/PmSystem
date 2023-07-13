@@ -5,7 +5,7 @@ const {auth, isAdmin} = require("../middleware/auth")
 const formidableMiddleware = require('express-formidable');
 
 
-const { createUser, loginUser, updateUser, deleteUserProfile, getAllUser, getUserProfile } = require("../controllers/user")
+const { createUser, loginUser, updateUser, deleteUserProfile, getAllUser, getUserProfile, changePasswordController } = require("../controllers/user")
 
 router.get("/userList", auth, isAdmin, getAllUser)
 
@@ -60,5 +60,7 @@ router.put("/updateProfile/:id", auth, isAdmin, formidableMiddleware(), updateUs
 router.get("/getUserProfile/:id", auth, formidableMiddleware(), getUserProfile)
 
 router.delete("/deleteProfile/:id", auth, isAdmin, deleteUserProfile)
+
+router.put("/resetPassword", auth, changePasswordController)
 
 module.exports = router    
