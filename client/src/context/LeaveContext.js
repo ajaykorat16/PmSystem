@@ -85,7 +85,7 @@ const LeaveProvider = ({ children }) => {
         { reason, startDate, endDate, type, userId, status },
         { headers }
       );
-      
+
       if(data.error===false){
         getLeave();
         setTimeout(function(){
@@ -134,7 +134,13 @@ const LeaveProvider = ({ children }) => {
         { reason, startDate, endDate, type, status },
         { headers }
       );
-      getUserLeave()
+
+      if(data.error===false){
+        getUserLeave()
+        setTimeout(function(){
+          toast.success("Leave created successfully")
+        }, 1000);
+      }
       return data;
     } catch (error) {
       if (error.response) {

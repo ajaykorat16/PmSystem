@@ -41,12 +41,6 @@ const LeaveCreate = () => {
                 <CCol md={6}>
                     <CFormInput id="inputReason" label="Reason" value={reason} onChange={(e) => setReason(e.target.value)} />
                 </CCol>
-                <CCol xs={6}>
-                    <CFormInput type="date" id="inputstartDate" label="Leave Start" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-                </CCol>
-                <CCol xs={6}>
-                    <CFormInput type="date" id="inputendDate" label="Leave End" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-                </CCol>
                 <CCol md={6}>
                     <CFormSelect id="inputType" label="Type" value={type} onChange={(e) => setType(e.target.value)}>
                         <option value="" disabled>Select a Type</option>
@@ -54,6 +48,12 @@ const LeaveCreate = () => {
                             <option key={t} value={t}>{t}</option>
                         ))}
                     </CFormSelect>
+                </CCol>
+                <CCol xs={6}>
+                    <CFormInput type="date" id="inputstartDate" label="Leave Start" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                </CCol>
+                <CCol xs={6}>
+                    <CFormInput type="date" id="inputendDate" label="Leave End" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
                 </CCol>
                 <CCol xs={12}>
                     <CButton type="submit" className="me-md-2">Submit</CButton>
