@@ -7,7 +7,6 @@ const UserContext = createContext();
 
 const UserProvider = ({ children }) => {
     const [users, setUsers] = useState([]);
-    const [getUser, setGetUsers] = useState([])
     const { auth } = useAuth();
     const headers = {
         Authorization: auth.token
@@ -34,16 +33,19 @@ const UserProvider = ({ children }) => {
         try {
             const {employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining } = addUser
             const {data} = await axios.post("/user/addUser", {employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining }, { headers });
-            fetchUsers()
+            
+            if(data.error===false){
+                fetchUsers()
+                setTimeout(function(){
+                    toast.success("User created successfully")
+                  }, 1000);
+            }
             return data;
         } catch (error) {
             if (error.response) {
                 const errors = error.response.data.errors;
                 if (errors && Array.isArray(errors) && errors.length > 0) {
                     toast.error("Please fill all fields")
-                    // errors.forEach((error) => {
-                    //     toast.error(error.msg);
-                    // });
                 } else {
                     const errorMessage = error.response.data.message;
                     toast.error(errorMessage);
@@ -71,7 +73,13 @@ const UserProvider = ({ children }) => {
             photo && editUser.append("photo", photo);
 
             const {data} = await axios.put(`/user/updateProfile/${id}`, editUser, { headers });
-            fetchUsers()
+
+            if(data.error===false){
+                fetchUsers()
+                setTimeout(function(){
+                    toast.success("User updated successfully")
+                  }, 1000);
+            }
             return data;
         } catch (error) {
             console.log(error);
@@ -94,6 +102,10 @@ const UserProvider = ({ children }) => {
             photo && editUser.append("photo", photo);
 
             const {data} = await axios.put(`/user/updateProfile`, editUser, { headers });
+
+            if(data.error===false){
+                toast.success("Profile updated successfully")
+            }
             return data;
         } catch (error) {
             console.log(error);
@@ -103,8 +115,12 @@ const UserProvider = ({ children }) => {
     //delete user
     const deleteUser = async (id) => {
         try {
-            const res = await axios.delete(`/user/deleteProfile/${id}`, { headers });
-            fetchUsers()
+            const {data} = await axios.delete(`/user/deleteProfile/${id}`, { headers });
+
+            if(data.error===false){
+                fetchUsers()
+                toast.success("User deleted successfully")
+            }
         } catch (error) {
             console.log(error);
         }

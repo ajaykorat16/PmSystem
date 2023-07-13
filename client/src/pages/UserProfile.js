@@ -1,11 +1,8 @@
 import React from 'react'
-import AppSidebar from '../components/AppSidebar'
-import AppHeader from '../components/AppHeader'
-import { CForm, CCol, CFormInput, CFormSelect, CButton, CRow } from '@coreui/react';
+import { CForm, CCol, CFormInput, CButton, CRow } from '@coreui/react';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom'
 import { useUser } from '../context/UserContext';
-import { useDepartment } from '../context/DepartmentContext';
 import { useEffect } from 'react';
 import { CImage } from '@coreui/react'
 import Loader from '../components/Loader'
@@ -62,8 +59,6 @@ const UserUpdate = () => {
             const data = await updateProfile(updateUsers)
             if(data.error){
                 toast.error(data.message)
-            }else{
-                navigate('/')
             }
         } catch (error) {
             console.log(error)

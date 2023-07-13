@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { CTable, CTableHead, CTableRow, CTableHeaderCell, CTableDataCell, CTableBody, CButton } from '@coreui/react';
+import { CTable, CTableHead, CTableRow, CTableHeaderCell, CTableDataCell, CTableBody } from '@coreui/react';
 import { useDepartment } from '../context/DepartmentContext';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../components/Loader'
