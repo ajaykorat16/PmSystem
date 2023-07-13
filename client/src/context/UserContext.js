@@ -104,9 +104,7 @@ const UserProvider = ({ children }) => {
             const {data} = await axios.put(`/user/updateProfile`, editUser, { headers });
 
             if(data.error===false){
-                setTimeout(function(){
-                    toast.success("Profile updated successfully")
-                  }, 1000);
+                toast.success("Profile updated successfully")
             }
             return data;
         } catch (error) {

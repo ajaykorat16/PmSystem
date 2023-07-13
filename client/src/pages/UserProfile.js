@@ -59,8 +59,6 @@ const UserUpdate = () => {
             const data = await updateProfile(updateUsers)
             if(data.error){
                 toast.error(data.message)
-            }else{
-                navigate('/')
             }
         } catch (error) {
             console.log(error)
