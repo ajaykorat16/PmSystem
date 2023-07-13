@@ -44,7 +44,7 @@ const DepartmentUpdate = () => {
           <h2 className="mb-5 mt-2">Update Department</h2>
         </div>
         <CForm className="row g-3" onSubmit={handleSubmit}>
-          <CCol sm={4}>
+          <CCol sm={12}>
             <CFormInput
               placeholder="Department"
               aria-label="Department"
@@ -54,9 +54,6 @@ const DepartmentUpdate = () => {
           </CCol>
           <CCol xs="auto">
             <CButton type="submit" className="me-md-2">Submit</CButton>
-            <CButton onClick={()=> navigate("/dashboard/department/list")}>
-              Back
-            </CButton>
           </CCol>
         </CForm>
       </>}

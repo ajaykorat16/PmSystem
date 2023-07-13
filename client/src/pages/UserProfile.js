@@ -58,7 +58,7 @@ const UserUpdate = () => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            let updateUsers = { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department: departments, dateOfJoining, photo: newPhoto || photo }
+            let updateUsers = { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, dateOfJoining, photo: newPhoto || photo }
             const data = await updateProfile(updateUsers)
             if(data.error){
                 toast.error(data.message)
@@ -216,9 +216,6 @@ const UserUpdate = () => {
                     <CCol xs={12}>
                         <CButton type="submit" className="me-md-2">
                             Submit
-                        </CButton>
-                        <CButton className="me-md-2" onClick={()=> navigate("/")}>
-                            Back
                         </CButton>
                     </CCol>
                 </CForm>

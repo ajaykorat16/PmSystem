@@ -30,9 +30,6 @@ const AuthProvider = ({ children }) => {
                 })
                 localStorage.setItem('auth', JSON.stringify(data))
             }
-            // else {
-            //     toast.error(data.message);
-            // }
         } catch (error) {
             if (error.response) {
                 const errors = error.response.data.errors;

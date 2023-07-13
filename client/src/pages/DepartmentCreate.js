@@ -3,6 +3,7 @@ import { CCol, CFormInput, CButton, CForm } from "@coreui/react";
 import { useDepartment } from "../context/DepartmentContext";
 import { useNavigate } from "react-router-dom";
 import Layout from "./Layout";
+import toast from "react-hot-toast";
 
 const DepartmentCreate = () => {
   const navigate = useNavigate();
@@ -12,8 +13,12 @@ const DepartmentCreate = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await addDepartment(name);
-      navigate("/dashboard/department/list");
+      const data = await addDepartment(name);
+      if(data.error){
+        toast.error(data.message)
+      }else{
+        navigate("/dashboard/department/list");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -25,7 +30,7 @@ const DepartmentCreate = () => {
         <h2 className="mb-5 mt-2">Create Department</h2>
       </div>
       <CForm className="row g-3" onSubmit={handleSubmit}>
-        <CCol sm={4}>
+        <CCol sm={12}>
           <CFormInput
             placeholder="Department"
             value={name}

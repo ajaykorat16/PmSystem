@@ -3,6 +3,7 @@ import { CForm, CCol, CFormInput, CFormSelect, CButton } from '@coreui/react';
 import { useLeave } from '../../context/LeaveContext';
 import { useNavigate } from 'react-router-dom';
 import Layout from '.././Layout';
+import { toast } from 'react-hot-toast';
 
 
 const LeaveCreate = () => {
@@ -20,8 +21,12 @@ const LeaveCreate = () => {
         e.preventDefault()
         try {
             const leaveData = { reason, startDate, endDate, type }
-            await addUserLeave(leaveData)
-            navigate('/dashboard-user/leave/list')
+            const data = await addUserLeave(leaveData)
+            if(data.error){
+                toast.error(data.message)
+            }else{
+                navigate('/dashboard-user/leave/list')
+            }
         } catch (error) {
             console.log(error)
         }

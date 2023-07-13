@@ -1,6 +1,7 @@
 import { useState, useContext, createContext, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "./AuthContext";
+import toast from "react-hot-toast";
 
 const DepartmentContext = createContext();
 
@@ -29,10 +30,24 @@ const DepartmentProvider = ({ children }) => {
   //add department
   const addDepartment = async (name) => {
     try {
-      await axios.post("/department/createDepartment", { name }, { headers });
+      const {data} = await axios.post("/department/createDepartment", { name }, { headers });
       getDepartment()
+      return data;
     } catch (error) {
-      console.log(error);
+      if (error.response) {
+        const errors = error.response.data.errors;
+        if (errors && Array.isArray(errors) && errors.length > 0) {
+            // toast.error("Please fill all fields")
+            errors.forEach((error) => {
+                toast.error(error.msg);
+            });
+        } else {
+            const errorMessage = error.response.data.message;
+            toast.error(errorMessage);
+        }
+      } else {
+        toast.error('An error occurred. Please try again later.');
+      }
     }
   };
 

@@ -97,9 +97,6 @@ const LeaveUpdate = () => {
                         <CButton type="submit" className="me-md-2">
                             Submit
                         </CButton>
-                        <CButton className="me-md-2" onClick={()=> navigate("/dashboard/leave/list")}>
-                            Back
-                        </CButton>
                     </CCol>
                 </CForm>
             </>}

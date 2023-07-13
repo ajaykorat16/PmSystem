@@ -1,6 +1,7 @@
 import { useState, useContext, createContext, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "./AuthContext";
+import toast from "react-hot-toast";
 
 const LeaveContext = createContext();
 
@@ -32,14 +33,28 @@ const LeaveProvider = ({ children }) => {
     try {
       const { reason, startDate, endDate, type, userId, status } = leaveData;
 
-      await axios.post(
+      const {data} = await axios.post(
         `/leaves/createLeaveAdmin`,
         { reason, startDate, endDate, type, userId, status },
         { headers }
       );
       getLeave();
+      return data;
     } catch (error) {
-      console.log(error);
+      if (error.response) {
+        const errors = error.response.data.errors;
+        if (errors && Array.isArray(errors) && errors.length > 0) {
+            toast.error("Please fill all fields")
+            // errors.forEach((error) => {
+            //     toast.error(error.msg);
+            // });
+        } else {
+            const errorMessage = error.response.data.message;
+            toast.error(errorMessage);
+        }
+      } else {
+        toast.error('An error occurred. Please try again later.');
+      }
     }
   };
 
@@ -101,14 +116,28 @@ const LeaveProvider = ({ children }) => {
     try {
       const { reason, startDate, endDate, type, status } = leaveData;
 
-      await axios.post(
+      const {data} = await axios.post(
         `/leaves/createLeave`,
         { reason, startDate, endDate, type, status },
         { headers }
       );
       getUserLeave()
+      return data;
     } catch (error) {
-      console.log(error);
+      if (error.response) {
+        const errors = error.response.data.errors;
+        if (errors && Array.isArray(errors) && errors.length > 0) {
+            toast.error("Please fill all fields")
+            // errors.forEach((error) => {
+            //     toast.error(error.msg);
+            // });
+        } else {
+            const errorMessage = error.response.data.message;
+            toast.error(errorMessage);
+        }
+      } else {
+        toast.error('An error occurred. Please try again later.');
+      }
     }
   };
 

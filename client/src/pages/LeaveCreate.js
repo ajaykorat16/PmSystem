@@ -4,6 +4,7 @@ import { useLeave } from '../context/LeaveContext';
 import { useUser } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 import Layout from './Layout';
+import toast from 'react-hot-toast';
 
 
 const LeaveCreate = () => {
@@ -25,8 +26,12 @@ const LeaveCreate = () => {
         e.preventDefault()
         try {
             const leaveData = { reason, startDate, endDate, type, userId, status }
-            await addLeave(leaveData)
-            navigate('/dashboard/leave/list')
+            const data = await addLeave(leaveData)
+            if(data.error){
+                toast.error(data.message)
+            }else{
+                navigate('/dashboard/leave/list')
+            }
         } catch (error) {
             console.log(error)
         }

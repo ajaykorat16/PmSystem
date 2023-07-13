@@ -37,7 +37,20 @@ const UserProvider = ({ children }) => {
             fetchUsers()
             return data;
         } catch (error) {
-            console.log(error);
+            if (error.response) {
+                const errors = error.response.data.errors;
+                if (errors && Array.isArray(errors) && errors.length > 0) {
+                    toast.error("Please fill all fields")
+                    // errors.forEach((error) => {
+                    //     toast.error(error.msg);
+                    // });
+                } else {
+                    const errorMessage = error.response.data.message;
+                    toast.error(errorMessage);
+                }
+            } else {
+                toast.error('An error occurred. Please try again later.');
+            }
         }
     }
 
@@ -68,7 +81,7 @@ const UserProvider = ({ children }) => {
     //update user
     const updateProfile = async (updateUsers) => {
         try {
-            let {employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining, photo } = updateUsers
+            let {employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, dateOfJoining, photo } = updateUsers
             const editUser = new FormData()
             editUser.append("employeeNumber", employeeNumber)
             editUser.append("firstname", firstname)
@@ -76,7 +89,6 @@ const UserProvider = ({ children }) => {
             editUser.append("email", email)
             editUser.append("phone", phone)
             editUser.append("address", address)
-            editUser.append("department", department)
             editUser.append("dateOfJoining", dateOfJoining)
             editUser.append("dateOfBirth", dateOfBirth)
             photo && editUser.append("photo", photo);
