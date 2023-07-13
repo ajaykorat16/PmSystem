@@ -31,13 +31,18 @@ const DepartmentProvider = ({ children }) => {
   const addDepartment = async (name) => {
     try {
       const {data} = await axios.post("/department/createDepartment", { name }, { headers });
-      getDepartment()
+
+      if(data.error===false){
+        getDepartment()
+        setTimeout(function(){
+          toast.success("Department created successfully")
+        }, 1000);
+      }
       return data;
     } catch (error) {
       if (error.response) {
         const errors = error.response.data.errors;
         if (errors && Array.isArray(errors) && errors.length > 0) {
-            // toast.error("Please fill all fields")
             errors.forEach((error) => {
                 toast.error(error.msg);
             });
@@ -55,7 +60,11 @@ const DepartmentProvider = ({ children }) => {
   const deleteDepartment = async (id) => {
     try {
       const res = await axios.delete(`/department/deleteDepartment/${id}`, {headers})
-      getDepartment()
+
+      if(res.data.error===false){
+        getDepartment()
+        toast.success("Department deleted successfully")
+      }
     } catch (error) {
       console.log(error);
     }
@@ -64,8 +73,15 @@ const DepartmentProvider = ({ children }) => {
   //update department
   const updateDepartment = async (name,id) => {
     try {
-      await axios.put(`/department/updateDepartment/${id}`, {name}, {headers})
-      getDepartment()
+      const {data} = await axios.put(`/department/updateDepartment/${id}`, {name}, {headers})
+      
+      if(data.error===false){
+        getDepartment()
+        setTimeout(function(){
+          toast.success("Department updated successfully")
+        }, 1000);
+
+      }
     } catch (error) {
       console.log(error);
     }

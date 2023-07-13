@@ -1,6 +1,4 @@
 import React from 'react'
-import AppSidebar from '../components/AppSidebar'
-import AppHeader from '../components/AppHeader'
 import { CForm, CCol, CFormInput, CFormSelect, CButton, CRow } from '@coreui/react';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom'

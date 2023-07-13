@@ -38,16 +38,19 @@ const LeaveProvider = ({ children }) => {
         { reason, startDate, endDate, type, userId, status },
         { headers }
       );
-      getLeave();
+
+      if(data.error===false){
+        getLeave();
+        setTimeout(function(){
+          toast.success("Leave created successfully")
+        }, 1000);
+      }
       return data;
     } catch (error) {
       if (error.response) {
         const errors = error.response.data.errors;
         if (errors && Array.isArray(errors) && errors.length > 0) {
             toast.error("Please fill all fields")
-            // errors.forEach((error) => {
-            //     toast.error(error.msg);
-            // });
         } else {
             const errorMessage = error.response.data.message;
             toast.error(errorMessage);
@@ -62,7 +65,11 @@ const LeaveProvider = ({ children }) => {
   const deleteLeave = async (id) => {
     try {
       const res = await axios.delete(`/leaves/deleteLeave/${id}`, { headers });
-      getLeave();
+
+      if(res.data.error===false){
+        getLeave();
+        toast.success("Leave deleted successfully")
+      }
     } catch (error) {
       console.log(error);
     }
@@ -73,12 +80,18 @@ const LeaveProvider = ({ children }) => {
     try {
       const { reason, startDate, endDate, type, userId, status } = leaveData;
 
-      await axios.put(
+      const {data} = await axios.put(
         `/leaves/updateLeave/${id}`,
         { reason, startDate, endDate, type, userId, status },
         { headers }
       );
-      getLeave();
+      
+      if(data.error===false){
+        getLeave();
+        setTimeout(function(){
+          toast.success("Leave updated successfully")
+        }, 1000);
+      }
     } catch (error) {
       console.log(error);
     }
