@@ -136,8 +136,36 @@ const UserProvider = ({ children }) => {
         }
     }
 
+    //reset password
+    const resetPassword = async (password) => {
+        try {
+            const {data} = await axios.put(`/user/resetPassword`, {password}, {headers})
+            if(data.error===false){
+                setTimeout(function(){
+                    toast.success("Password updated successfully")
+                  }, 500);
+            }
+            return data;
+        } catch (error) {
+            if (error.response) {
+                const errors = error.response.data.errors;
+                if (errors && Array.isArray(errors) && errors.length > 0) {
+                    // toast.error("Please fill all fields")
+                    errors.forEach((error) => {
+                        toast.error(error.msg);
+                    });
+                } else {
+                    const errorMessage = error.response.data.message;
+                    toast.error(errorMessage);
+                }
+            } else {
+                toast.error('An error occurred. Please try again later.');
+            }
+        }
+    }
+
     return (
-        <UserContext.Provider value={{ users, createUser, updateUser, deleteUser, getUserProfile, updateProfile }}>
+        <UserContext.Provider value={{ users, createUser, updateUser, deleteUser, getUserProfile, updateProfile, resetPassword }}>
             {children}
         </UserContext.Provider>
     );

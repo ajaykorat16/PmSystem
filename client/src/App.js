@@ -12,10 +12,11 @@ import UserList from './pages/UserList';
 import UserUpdate from './pages/UserUpdate';
 import UserProfile from './pages/UserProfile'
 import './scss/style.scss';
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom';
 import UserRoutes from './components/Routes/UserRoutes';
-import UserLeaveList from './pages/User/UserLeaveList'
-import UserLeaveCreate from './pages/User/UserLeaveCreate'
+import UserLeaveList from './pages/User/UserLeaveList';
+import UserLeaveCreate from './pages/User/UserLeaveCreate';
+import ResetPassword from './pages/ResetPassword';
 
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
           <Route path="user/create" element={<UserCreate />} />
           <Route path="user/update/:id" element={<UserUpdate />} />
           <Route path="user/user-profile/:id" element={<UserProfile />} />
+          <Route path="user/resetPassword" element={<ResetPassword />} />
           <Route path="leave/list" element={<LeaveList />} />
           <Route path="leave/create" element={<LeaveCreate />} />
           <Route path="leave/update/:id" element={<LeaveUpdate />} />
@@ -41,6 +43,7 @@ function App() {
           <Route path="leave/create" element={<UserLeaveCreate />} />
           <Route path="leave/update/:id" element={<LeaveUpdate />} />
           <Route path="user/user-profile/:id" element={<UserProfile />} />
+          <Route path="user/resetPassword" element={<ResetPassword />} />
         </Route>
       </Routes>
     </>

@@ -61,6 +61,9 @@ router.get("/getUserProfile/:id", auth, formidableMiddleware(), getUserProfile)
 
 router.delete("/deleteProfile/:id", auth, isAdmin, deleteUserProfile)
 
-router.put("/resetPassword", auth, changePasswordController)
+router.put("/resetPassword", 
+    check('password', 'Please enter a password with 6 or more characters').isLength({ min: 6 }),
+    auth, changePasswordController
+)
 
 module.exports = router    

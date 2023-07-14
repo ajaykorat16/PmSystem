@@ -253,6 +253,10 @@ const getUserProfile = asyncHandler(async (req, res) => {
 //changePasswordController
 
 const changePasswordController = asyncHandler(async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ error:true,errors: errors.array() });
+    }
     try {
         console.log(req.user._id);
         const user = req.user._id

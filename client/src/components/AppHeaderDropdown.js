@@ -76,7 +76,7 @@ const AppHeaderDropdown = () => {
               <CIcon icon={cilUser} className="me-2" />
               Profile
             </CDropdownItem>
-            <CDropdownItem>
+            <CDropdownItem onClick={() => navigate(`/dashboard-user/user/resetPassword`)}>
               <MdOutlineLockReset className="me-2" fontSize={20}/>
               Reset Password
             </CDropdownItem>
