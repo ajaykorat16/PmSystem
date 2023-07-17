@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { CForm, CCol, CFormInput, CFormSelect, CButton } from '@coreui/react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom'
@@ -6,6 +6,7 @@ import { useUser } from '../context/UserContext';
 import { useDepartment } from '../context/DepartmentContext';
 import Layout from './Layout';
 import toast from "react-hot-toast"
+
 
 
 const UserCreate = () => {
@@ -18,10 +19,11 @@ const UserCreate = () => {
     const [phone, setPhone] = useState("");
     const [address, setAddress] = useState("");
     const [departments, setDepartments] = useState("");
+    const [departmentsList, setDepartmentsList] = useState([]);
     const [dateOfBirth, setDateOfBirth] = useState("");
     const [dateOfJoining, setDateOfJoining] = useState("");
     const { createUser } = useUser()
-    const { department } = useDepartment()
+    const { getDepartmentList } = useDepartment()
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -38,11 +40,22 @@ const UserCreate = () => {
                     navigate('/dashboard/user/list')
                 }
             }
-        } catch(error) {
+        } catch (error) {
             console.log(error.message)
         }
     }
-    
+
+    const fetchDepartment = async () => {
+        const { departments } = await getDepartmentList()
+        setDepartmentsList(departments)
+    }
+
+    useEffect(() => {
+        fetchDepartment()
+
+    }, [])
+
+
     return (
         <Layout>
             <div className="mb-3">
@@ -76,7 +89,7 @@ const UserCreate = () => {
                 <CCol md={4}>
                     <CFormSelect id="inputDepartment" label="Department" value={departments} onChange={(e) => setDepartments(e.target.value)}>
                         <option value="" disabled>Select a department</option>
-                        {department.map((d) => (
+                        {departmentsList.map((d) => (
                             <option key={d._id} value={d._id}>{d.name}</option>
                         ))}
                     </CFormSelect>

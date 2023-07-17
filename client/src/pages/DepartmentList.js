@@ -26,6 +26,12 @@ const DepartmentList = () => {
 
   };
 
+  useEffect(() => {
+    if (globalFilterValue.trim() === '') {
+      fetchDepartments();
+    }
+  }, [globalFilterValue])
+
   const renderHeader = () => {
     return (
       <div className="flex justify-content-end">

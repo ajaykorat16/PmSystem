@@ -110,6 +110,24 @@ const getAllDepartment = asyncHandler(async (req, res) => {
 });
 
 
+const getDepartmentList = asyncHandler(async (req, res) => {
+  
+
+    try {
+        const departments = await Department.find()
+
+        return res.status(200).json({
+            error: false,
+            message: "Departments retrieved successfully",
+            departments,
+        });
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send('Server error');
+    }
+});
+
+
 
 const getSingleDepartment = asyncHandler(async (req, res) => {
     try {
@@ -136,4 +154,4 @@ const getSingleDepartment = asyncHandler(async (req, res) => {
 })
 
 
-module.exports = { createDepartment, updateDepartment, deleteDepartment, getAllDepartment, getSingleDepartment }
+module.exports = { createDepartment, updateDepartment, deleteDepartment, getAllDepartment, getSingleDepartment, getDepartmentList }

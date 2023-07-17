@@ -31,9 +31,20 @@ const DepartmentProvider = ({ children }) => {
       console.log(error);
     }
   };
-  useEffect(() => {
-    getDepartment();
-  }, [auth?.token]);
+
+  const getDepartmentList = async () => {
+    try {
+     
+
+      const res = await axios.get(`/department/departmentlist`, { headers });
+      if (res.data.error === false) {
+        setDepartment(res.data.departments);
+        return res.data
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   //add department
   const addDepartment = async (name) => {
@@ -106,7 +117,7 @@ const DepartmentProvider = ({ children }) => {
   }
 
   return (
-    <DepartmentContext.Provider value={{ department, getDepartment, addDepartment, deleteDepartment, updateDepartment, getSingleDepartment}}>
+    <DepartmentContext.Provider value={{ department, getDepartment, addDepartment, deleteDepartment, updateDepartment,getDepartmentList, getSingleDepartment}}>
       {children}
     </DepartmentContext.Provider>
   );
