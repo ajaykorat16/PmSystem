@@ -13,11 +13,19 @@ const DepartmentProvider = ({ children }) => {
   };
 
   //getDepartments
-  const getDepartment = async () => {
+  const getDepartment = async (page,limit,query) => {
     try {
-      const res = await axios.get(`/department`, { headers });
+      let queryUrl=''
+      console.log("query",query)
+
+      if(query){
+        queryUrl=`&query=${query}`
+      }
+
+      const res = await axios.get(`/department?page=${page}&limit=${limit}${queryUrl}`, { headers });
       if (res.data.error === false) {
         setDepartment(res.data.getAllDepartments);
+        return res.data
       }
     } catch (error) {
       console.log(error);
@@ -98,7 +106,7 @@ const DepartmentProvider = ({ children }) => {
   }
 
   return (
-    <DepartmentContext.Provider value={{ department, addDepartment, deleteDepartment, updateDepartment, getSingleDepartment}}>
+    <DepartmentContext.Provider value={{ department, getDepartment, addDepartment, deleteDepartment, updateDepartment, getSingleDepartment}}>
       {children}
     </DepartmentContext.Provider>
   );

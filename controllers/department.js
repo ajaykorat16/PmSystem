@@ -80,18 +80,36 @@ const deleteDepartment = asyncHandler(async (req, res) => {
 })
 
 const getAllDepartment = asyncHandler(async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const filter = req.query.query || '';
+
     try {
-        const getAllDepartments = await Department.find()
+        const query = {
+            name: { $regex: filter, $options: 'i' }
+        };
+
+        const totalDepartments = await Department.countDocuments(query);
+
+        const skip = (page - 1) * limit;
+
+        const departments = await Department.find(query).skip(skip).limit(limit);
+
         return res.status(200).json({
             error: false,
-            message: "All Department get successfully!!",
-            getAllDepartments
-        })
+            message: "Departments retrieved successfully",
+            departments,
+            currentPage: page,
+            totalPages: Math.ceil(totalDepartments / limit),
+            totalDepartments
+        });
     } catch (error) {
-        console.log(error.message)
+        console.log(error.message);
         res.status(500).send('Server error');
     }
-})
+});
+
+
 
 const getSingleDepartment = asyncHandler(async (req, res) => {
     try {

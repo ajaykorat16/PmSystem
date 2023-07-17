@@ -1,70 +1,162 @@
-import React, { useEffect, useState } from 'react'
-import { CTable, CTableHead, CTableRow, CTableHeaderCell, CTableDataCell, CTableBody } from '@coreui/react';
+import React, { useEffect, useState } from 'react';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
 import { useDepartment } from '../context/DepartmentContext';
 import { useNavigate } from 'react-router-dom';
-import Loader from '../components/Loader'
 import { AiTwotoneDelete, AiTwotoneEdit } from 'react-icons/ai';
 import Layout from './Layout';
+import Loader from '../components/Loader';
+import { InputText } from 'primereact/inputtext';
+import { Button } from 'primereact/button';
+import { Dropdown } from 'primereact/dropdown';
+
 
 
 const DepartmentList = () => {
-    const { department, deleteDepartment } = useDepartment()
-    const [departmentList, setDepartmentList] = useState([])
-    const [isLoading, setIsLoading] = useState(true)
-    const navigate = useNavigate()
+  const { getDepartment, deleteDepartment } = useDepartment();
+  const [isLoading, setIsLoading] = useState(true);
+  const [departmentList, setDepartmentList] = useState([])
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [globalFilterValue, setGlobalFilterValue] = useState('');
+  const navigate = useNavigate();
 
-    const handleDelete = async (id) => {
-        const confirmDelete = window.confirm("Are you sure you want to delete this department")
-        if (confirmDelete) {
-            await deleteDepartment(id)
-        }
-    }
+  const onGlobalFilterChange = async (e) => {
+    const value = e.target.value;
+    setGlobalFilterValue(value);
+    console.log(value);
+    fetchDepartments(value)
 
-    const handleUpdate = async (id) => {
-        navigate(`/dashboard/department/update/${id}`)
-    }
+  };
 
-    useEffect(() => {
-        if (department.length > 0) {
-            setDepartmentList(department)
-            setIsLoading(false)
-        }
-    }, [department])
-
-
+  const renderHeader = () => {
     return (
-        <Layout>
-            {isLoading === true && <Loader />}
-            {isLoading === false && departmentList && <>
-                <div className="mb-3">
-                    <h2 className='mb-5 mt-2'>Department List</h2>
-                </div>
-                <CTable>
-                    <CTableHead color="dark">
-                        <CTableRow>
-                            <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                            <CTableHeaderCell scope="col">Name</CTableHeaderCell>
-                            <CTableHeaderCell scope="col">Action</CTableHeaderCell>
-                        </CTableRow>
-                    </CTableHead>
-                    <CTableBody>
-                        {departmentList && departmentList.map((list, index) => (
-                            <CTableRow key={list._id}>
-                                <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
-                                <CTableDataCell>{list.name}</CTableDataCell>
-                                <CTableDataCell>
-                                    <AiTwotoneEdit color="success" variant="outline" onClick={() => { handleUpdate(list._id) }} className='edit' />
-                                    <AiTwotoneDelete color="danger" variant="outline" onClick={() => { handleDelete(list._id); }} className='delete' />
-                                </CTableDataCell>
-                            </CTableRow>
-                        ))}
+      <div className="flex justify-content-end">
+        <span className="p-input-icon-left">
+          <i className="pi pi-search" />
+          <InputText
+            value={globalFilterValue}
+            onChange={(e) => onGlobalFilterChange(e)}
+            placeholder="Keyword Search"
+          />
+        </span>
+      </div>
+    );
+  };
 
-                    </CTableBody>
-                </CTable>
-            </>}
-        </Layout>
+  const header = renderHeader();
 
-    )
-}
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(
+      'Are you sure you want to delete this department?'
+    );
+    if (confirmDelete) {
+      await deleteDepartment(id);
+      fetchDepartments();
+    }
+  };
 
-export default DepartmentList
+  const handleUpdate = async (id) => {
+    navigate(`/dashboard/department/update/${id}`);
+  };
+
+  useEffect(() => {
+    fetchDepartments();
+  }, [currentPage, rowsPerPage]);
+
+  const fetchDepartments = async (query) => {
+    setIsLoading(true);
+
+    let departmentData = {}
+    if (query) {
+      departmentData = await getDepartment(currentPage, rowsPerPage, query)
+    }
+    else {
+      departmentData = await getDepartment(currentPage, rowsPerPage)
+    }
+
+    // Simulating API request delay
+    const totalRecordsCount = departmentData.totalDepartments;
+
+    setTotalRecords(totalRecordsCount);
+    setDepartmentList(departmentData.departments)
+    setIsLoading(false);
+  };
+
+  const actionTemplate = (rowData) => (
+    <div>
+      <AiTwotoneEdit
+        color="success"
+        variant="outline"
+        onClick={() => handleUpdate(rowData._id)}
+        className="edit"
+      />
+      <AiTwotoneDelete
+        color="danger"
+        variant="outline"
+        onClick={() => handleDelete(rowData._id)}
+        className="delete"
+      />
+    </div>
+  );
+
+  const onPageChange = (event) => {
+    const currentPage = Math.floor(event.first / event.rows) + 1;
+    setCurrentPage(currentPage);
+    const newRowsPerPage = event.rows;
+    setRowsPerPage(newRowsPerPage);
+  };
+
+  return (
+    <Layout>
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <>
+          <div className="mb-3">
+            <h2 className="mb-5 mt-2">Department List</h2>
+          </div>
+          <div className="card">
+            <DataTable
+              totalRecords={totalRecords}
+              lazy
+              paginator
+              rows={rowsPerPage}
+              value={departmentList}
+              first={(currentPage - 1) * rowsPerPage}
+              onPage={onPageChange}
+              dataKey="_id"
+              header={header}
+              filterDisplay="row"
+              emptyMessage="No departments found."
+              paginatorLeft={
+                <Dropdown
+                  value={rowsPerPage}
+                  options={[5, 10, 25, 50]}
+                  onChange={(e) => setRowsPerPage(e.value)}
+                />
+              }
+            >
+              <Column
+                field="name"
+                header="Name"
+                filterField="name"
+                filterMenuStyle={{ width: '14rem' }}
+                style={{ minWidth: '12rem' }}
+              />
+              <Column
+                field="action"
+                header="Action"
+                body={actionTemplate}
+                style={{ textAlign: 'center', width: '8rem' }}
+              />
+            </DataTable>
+          </div>
+        </>
+      )}
+    </Layout>
+  );
+};
+
+export default DepartmentList;
