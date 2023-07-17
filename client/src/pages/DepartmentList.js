@@ -23,7 +23,6 @@ const DepartmentList = () => {
 
   const handleSubmit = async () => {
     fetchDepartments(globalFilterValue)
-
   };
 
   useEffect(() => {
