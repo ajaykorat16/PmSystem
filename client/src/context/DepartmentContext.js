@@ -1,4 +1,4 @@
-import { useState, useContext, createContext, useEffect } from "react";
+import { useState, useContext, createContext } from "react";
 import axios from "axios";
 import { useAuth } from "./AuthContext";
 import toast from "react-hot-toast";
@@ -16,7 +16,6 @@ const DepartmentProvider = ({ children }) => {
   const getDepartment = async (page,limit,query) => {
     try {
       let queryUrl=''
-      console.log("query",query)
 
       if(query){
         queryUrl=`&query=${query}`

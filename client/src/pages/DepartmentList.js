@@ -30,19 +30,27 @@ const DepartmentList = () => {
       fetchDepartments();
     }
   }, [globalFilterValue])
-
+  
   const renderHeader = () => {
     return (
-      <div className="flex justify-content-end">
-        <span className="p-input-icon-left">
+      <div className="d-flex align-items-center justify-content-between">
+        <div>
+          <h4>Departments</h4>
+        </div>
+        <div>
           <form onSubmit={handleSubmit}>
-          <InputText
-            value={globalFilterValue}
-            onChange={(e) =>  setGlobalFilterValue(e.target.value)}
-            placeholder="Keyword Search"
-          />
+            <div className="p-inputgroup ">
+              <span className="p-inputgroup-addon">
+                <i className="pi pi-search" />
+              </span>
+              <InputText
+                value={globalFilterValue}
+                onChange={(e) =>  setGlobalFilterValue(e.target.value)}
+                placeholder="Keyword Search"
+              />
+            </div>
           </form>
-        </span>
+        </div>
       </div>
     );
   };
@@ -116,10 +124,7 @@ const DepartmentList = () => {
         <Loader />
       ) : (
         <>
-          <div className="mb-3">
-            <h2 className="mb-5 mt-2">Department List</h2>
-          </div>
-          <div className="card">
+          <div className="card mb-5">
             <DataTable
               totalRecords={totalRecords}
               lazy
@@ -150,7 +155,7 @@ const DepartmentList = () => {
                 field="action"
                 header="Action"
                 body={actionTemplate}
-                style={{ textAlign: 'center', width: '8rem' }}
+                style={{width: '8rem' }}
               />
             </DataTable>
           </div>
