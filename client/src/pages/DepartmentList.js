@@ -23,13 +23,8 @@ const DepartmentList = () => {
 
   const handleSubmit = async () => {
     fetchDepartments(globalFilterValue)
-  };
 
-  useEffect(() => {
-    if (globalFilterValue.trim() === '') {
-      fetchDepartments();
-    }
-  }, [globalFilterValue])
+  };
 
   const renderHeader = () => {
     return (
