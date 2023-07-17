@@ -7,7 +7,6 @@ import { AiTwotoneDelete, AiTwotoneEdit } from 'react-icons/ai';
 import Layout from './Layout';
 import Loader from '../components/Loader';
 import { InputText } from 'primereact/inputtext';
-import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
 
 
@@ -22,11 +21,8 @@ const DepartmentList = () => {
   const [globalFilterValue, setGlobalFilterValue] = useState('');
   const navigate = useNavigate();
 
-  const onGlobalFilterChange = async (e) => {
-    const value = e.target.value;
-    setGlobalFilterValue(value);
-    console.log(value);
-    fetchDepartments(value)
+  const handleSubmit = async () => {
+    fetchDepartments(globalFilterValue)
 
   };
 
@@ -34,12 +30,13 @@ const DepartmentList = () => {
     return (
       <div className="flex justify-content-end">
         <span className="p-input-icon-left">
-          <i className="pi pi-search" />
+          <form onSubmit={handleSubmit}>
           <InputText
             value={globalFilterValue}
-            onChange={(e) => onGlobalFilterChange(e)}
+            onChange={(e) =>  setGlobalFilterValue(e.target.value)}
             placeholder="Keyword Search"
           />
+          </form>
         </span>
       </div>
     );
@@ -128,7 +125,6 @@ const DepartmentList = () => {
               onPage={onPageChange}
               dataKey="_id"
               header={header}
-              filterDisplay="row"
               emptyMessage="No departments found."
               paginatorLeft={
                 <Dropdown
