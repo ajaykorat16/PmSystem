@@ -190,6 +190,52 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
     }
 })
 
+const getUsers = asyncHandler(async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const filter = req.query.query || '';
+
+    try {
+        const query = {
+            firstname: { $regex: filter, $options: 'i' }
+        };
+
+        const totalUsers = await Users.countDocuments(query);
+
+        const skip = (page - 1) * limit;
+
+        const users = await Users.find(query).skip(skip).limit(limit).populate("department").lean();
+
+        const formattedUsers = users.map(user => {
+            const photoUrl = user.photo && user.photo.contentType
+                ? `data:${user.photo.contentType};base64,${user.photo.data.toString("base64")}`
+                : null;
+            
+            const name = user.firstname + " " + user.lastname
+
+            return {
+                ...user,
+                name: name,
+                department: user.department.name,
+                dateOfBirth: user.dateOfBirth.toISOString().split('T')[0],
+                dateOfJoining: user.dateOfJoining.toISOString().split('T')[0],
+                photo: photoUrl,
+            };
+        });
+        return res.status(200).json({
+            error: false,
+            message: "Users retrieved successfully",
+            users: formattedUsers,
+            currentPage: page,
+            totalPages: Math.ceil(totalUsers / limit),
+            totalUsers
+        });
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({ error: true, message: "Server error" });
+    }
+});
+
 const getAllUser = asyncHandler(async (req, res) => {
     try {
         const getAllUsers = await Users.find().populate("department").lean();
@@ -278,4 +324,4 @@ const changePasswordController = asyncHandler(async (req, res) => {
     }
 });
 
-module.exports = { createUser, loginUser, updateUser, deleteUserProfile, getAllUser, getUserProfile, changePasswordController }
+module.exports = { createUser, loginUser, updateUser, deleteUserProfile, getAllUser, getUserProfile, changePasswordController, getUsers }

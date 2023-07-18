@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, createContext } from "react";
+import React, { useState, useContext, createContext } from "react";
 import axios from 'axios';
 import { useAuth } from "./AuthContext";
 import toast from "react-hot-toast";
@@ -18,15 +18,30 @@ const UserProvider = ({ children }) => {
             const res = await axios.get("/user/userList", { headers });
             if (res.data.error === false) {
                 setUsers(res.data.getAllUsers);
+                return res.data
             }
         } catch (error) {
             console.log(error);
         }
     };
 
-    useEffect(() => {
-        fetchUsers();
-    }, [auth?.token]);
+    //get All Users
+    const getAllUsers = async (page, limit, query) => {
+        try {
+            let queryUrl=''
+            if(query){
+                queryUrl=`&query=${query}`
+            }
+
+            const res = await axios.get(`/user?page=${page}&limit=${limit}${queryUrl}`, { headers });
+            if (res.data.error === false) {
+              setUsers(res.data.users);
+              return res.data
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     //add user
     const createUser = async (addUser) => {
@@ -165,7 +180,7 @@ const UserProvider = ({ children }) => {
     }
 
     return (
-        <UserContext.Provider value={{ users, createUser, updateUser, deleteUser, getUserProfile, updateProfile, resetPassword }}>
+        <UserContext.Provider value={{ users, fetchUsers, createUser, updateUser, deleteUser, getUserProfile, updateProfile, resetPassword, getAllUsers}}>
             {children}
         </UserContext.Provider>
     );

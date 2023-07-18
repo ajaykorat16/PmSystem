@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { CForm, CCol, CFormInput, CFormSelect, CButton } from '@coreui/react';
 import { useLeave } from '../context/LeaveContext';
 import { useUser } from '../context/UserContext';
@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 
 const LeaveCreate = () => {
 
+    const [users, setUsers] = useState([])
     const [userId, setUserId] = useState("")
     const [reason, setReason] = useState("")
     const [status, setStatus] = useState("")
@@ -17,7 +18,7 @@ const LeaveCreate = () => {
     const [type, setType] = useState("")
 
     const { addLeave } = useLeave()
-    const { users } = useUser()
+    const { fetchUsers } = useUser()
     const statusList = ["Pending", "Approved", "Rejected"]
     const typeList = ["Paid", "LWP"]
     const navigate = useNavigate()
@@ -36,6 +37,14 @@ const LeaveCreate = () => {
             console.log(error)
         }
     }
+
+    const getUsers = async () => {
+        const { getAllUsers } = await fetchUsers()
+        setUsers(getAllUsers)
+    }
+    useEffect(() => {
+        getUsers()
+    }, [])
 
     return (
         <Layout>
