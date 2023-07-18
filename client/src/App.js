@@ -17,7 +17,7 @@ import UserRoutes from './components/Routes/UserRoutes';
 import UserLeaveList from './pages/User/UserLeaveList';
 import UserLeaveCreate from './pages/User/UserLeaveCreate';
 import ResetPassword from './pages/ResetPassword';
-import "primereact/resources/themes/lara-light-indigo/theme.css"; 
+import "primereact/resources/themes/rhea/theme.css"; 
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 

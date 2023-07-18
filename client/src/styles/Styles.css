@@ -10,3 +10,7 @@
 .dropdown{
     cursor: pointer;
 }
+
+.p-datatable .p-paginator-bottom {
+    height: 62px !important;
+}
