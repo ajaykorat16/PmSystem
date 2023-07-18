@@ -81,27 +81,34 @@ const deleteDepartment = asyncHandler(async (req, res) => {
 
 const getAllDepartment = asyncHandler(async (req, res) => {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 5;
+    const limit = parseInt(req.query.limit) || 10;
     const filter = req.query.query || '';
+    const sortField = req.query.sortField || 'name';
+    const sortOrder = req.query.sortOrder || 1
+
+    console.log("req----", req.query)
 
     try {
         const query = {
-            name: { $regex: filter, $options: 'i' }
+            name: { $regex: filter, $options: 'i' },
         };
 
         const totalDepartments = await Department.countDocuments(query);
 
         const skip = (page - 1) * limit;
 
-        const departments = await Department.find(query).skip(skip).limit(limit);
+        const departments = await Department.find(query)
+            .sort({ [sortField]: sortOrder })
+            .skip(skip)
+            .limit(limit);
 
         return res.status(200).json({
             error: false,
-            message: "Departments retrieved successfully",
+            message: 'Departments retrieved successfully',
             departments,
             currentPage: page,
             totalPages: Math.ceil(totalDepartments / limit),
-            totalDepartments
+            totalDepartments,
         });
     } catch (error) {
         console.log(error.message);
@@ -111,7 +118,7 @@ const getAllDepartment = asyncHandler(async (req, res) => {
 
 
 const getDepartmentList = asyncHandler(async (req, res) => {
-  
+
 
     try {
         const departments = await Department.find()
@@ -131,7 +138,7 @@ const getDepartmentList = asyncHandler(async (req, res) => {
 
 const getSingleDepartment = asyncHandler(async (req, res) => {
     try {
-        const {id} = req.params
+        const { id } = req.params
 
         const existingDepartment = await Department.findById({ _id: id })
         if (!existingDepartment) {
@@ -141,7 +148,7 @@ const getSingleDepartment = asyncHandler(async (req, res) => {
             })
         }
 
-        const getSingle = await Department.findById({_id: id})
+        const getSingle = await Department.findById({ _id: id })
         return res.status(200).json({
             error: false,
             message: "Single Department getting successfull !",
