@@ -7,11 +7,12 @@ import Loader from "../components/Loader";
 import { AiTwotoneDelete, AiTwotoneEdit } from "react-icons/ai";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
-import "../styles/Styles.css";
 import Layout from "./Layout";
+import moment from "moment";
+import { CAvatar } from "@coreui/react";
 
 const UserList = () => {
-  const { users, deleteUser, getAllUsers } = useUser();
+  const { deleteUser, getAllUsers } = useUser();
   const [isLoading, setIsLoading] = useState(true);
   const [userList, setUserList] = useState([]);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -118,15 +119,34 @@ const UserList = () => {
   const photo = (rowData) => {
     return (
       <div className="flex align-items-center gap-2">
-        <img
-          alt={rowData.name}
-          src={`${rowData.photo}`}
-          height="50"
-          width="50"
-        />
+        {rowData.photo ? (
+          <img
+            alt={rowData.name}
+            src={`${rowData.photo}`}
+            height="50"
+            width="50"
+          />
+        ) : (
+          <CAvatar color="success" textColor="white" size="lg">{rowData.avatar}</CAvatar>
+        )}
       </div>
     );
   };
+
+  const DOB = (rowData) => {
+    return (
+      <div>
+        {moment(rowData.dateOfBirth).format('DD/MM/YYYY')}
+      </div>
+    )
+  }
+  const DOJ = (rowData) => {
+    return (
+      <div>
+        {moment(rowData.dateOfJoining).format('DD/MM/YYYY')}
+      </div>
+    )
+  }
 
   return (
     <Layout>
@@ -164,12 +184,12 @@ const UserList = () => {
               <Column field="email" header="Email" filterField="email" />
               <Column field="phone" header="Phone" filterField="phone" />
               <Column
-                field="dateOfBirth"
+                body={DOB}
                 header="DOB"
                 filterField="dateOfBirth"
               />
               <Column
-                field="dateOfJoining"
+                body={DOJ}
                 header="DOJ"
                 filterField="dateOfJoining"
               />

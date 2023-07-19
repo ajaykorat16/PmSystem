@@ -71,7 +71,7 @@ const createUser = asyncHandler(async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({ error:true,errors: errors.array() });
+        return res.status(400).json({ error: true, errors: errors.array() });
     }
     try {
         const { email, password } = req.body;
@@ -196,10 +196,48 @@ const getUsers = asyncHandler(async (req, res) => {
     const filter = req.query.query || '';
 
     try {
-        const query = {
-            firstname: { $regex: filter, $options: 'i' }
+        // const isNumericFilter = isNaN(filter) // Check if the filter is a valid number
+
+        // console.log("isNumericFilter----", isNumericFilter);
+
+        // console.log(typeof isNumericFilter)
+        // let query;
+        // if (isNumericFilter) {
+        //     query = {
+        //         $or: [
+        //             { firstname: { $regex: filter } },
+        //             { lastname: { $regex: filter } },
+        //             { email: { $regex: filter } },
+        //             { dateOfBirth: { $regex: filter } }, 
+        //             { dateOfJoining: { $regex: filter } },
+        //         ]
+        //     };
+        // } else {
+        //     let convertToNumber = parseInt(filter)
+        //     console.log("Number", typeof convertToNumber)
+        //     query = {
+        //         $or: [
+        //             { phone: { $regex: convertToNumber } }
+        //         ]
+        //     };
+        //     // query = { phone: convertToNumber}
+        // }
+
+        let query = {
+            $or: [
+                { firstname: { $regex: filter } },
+                { lastname: { $regex: filter } },
+                { email: { $regex: filter } },
+                { $expr: { $eq: [{ $month: "$dateOfBirth" }, filter] } },
+                { $expr: { $eq: [{ $year: "$dateOfBirth" }, filter] } },
+                { $expr: { $eq: [{ $month: "$dateOfJoining" }, filter] } },
+                { $expr: { $eq: [{ $year: "$dateOfJoining" }, filter] } },
+                // { employeeNumber : {$eq: parseInt(filter)}},
+                // { phone : {$eq: parseInt(filter)}}
+            ]
         };
 
+        console.log(query)
         const totalUsers = await Users.countDocuments(query);
 
         const skip = (page - 1) * limit;
@@ -210,11 +248,13 @@ const getUsers = asyncHandler(async (req, res) => {
             const photoUrl = user.photo && user.photo.contentType
                 ? `data:${user.photo.contentType};base64,${user.photo.data.toString("base64")}`
                 : null;
-            
+
             const name = user.firstname + " " + user.lastname
+            const avatar = user.firstname.charAt(0) + user.lastname.charAt(0)
 
             return {
                 ...user,
+                avatar: avatar,
                 name: name,
                 department: user.department.name,
                 dateOfBirth: user.dateOfBirth.toISOString().split('T')[0],
@@ -231,7 +271,7 @@ const getUsers = asyncHandler(async (req, res) => {
             totalUsers
         });
     } catch (error) {
-        console.log(error.message);
+        console.log(error);
         res.status(500).json({ error: true, message: "Server error" });
     }
 });
@@ -301,19 +341,19 @@ const getUserProfile = asyncHandler(async (req, res) => {
 const changePasswordController = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({ error:true,errors: errors.array() });
+        return res.status(400).json({ error: true, errors: errors.array() });
     }
     try {
         console.log(req.user._id);
         const user = req.user._id
-        const {password} = req.body
+        const { password } = req.body
         const hashed = await hashPassword(password);
         console.log(hashed);
         await Users.findByIdAndUpdate(user, { password: hashed });
         res.status(200).send({
             error: false,
             message: "Password Reset Successfully",
-      });
+        });
     } catch (error) {
         console.log(error);
         res.status(500).send({
