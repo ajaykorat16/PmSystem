@@ -138,7 +138,8 @@ const updateUser = asyncHandler(async (req, res) => {
             dateOfBirth: dateOfBirth || user.dateOfBirth,
             department: department || user.department,
             dateOfJoining: dateOfJoining || user.dateOfJoining,
-            photo: photo || user.photo
+            photo: photo || user.photo,
+            fullName: firstname + " " + lastname
         };
         if (photo) {
             updatedFields.photo = {
@@ -192,7 +193,9 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
 
 const getUsers = asyncHandler(async (req, res) => {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 5;
+    const limit = parseInt(req.query.limit) || 10;
+    const sortField = req.query.sortField || 'createdAt';
+    const sortOrder = req.query.sortOrder || -1
     const { filter } = req.body;
 
     try {
@@ -206,24 +209,25 @@ const getUsers = asyncHandler(async (req, res) => {
 
             let dateSearch;
             if (typeof filter === "string" && isValidDate(filter)) {
-                dateSearch = new Date(filter.split("-").reverse().join("-"))
+                dateSearch = new Date(filter.split("-").reverse().join("-"));
             } else {
-                dateSearch = null
+                dateSearch = null;
             }
 
             let department = [];
             let searchdepartment = await Department.find({ name: { $regex: filter, $options: 'i' } })
             if (searchdepartment.length !== 0) {
                 department = searchdepartment.map((d) => {
-                    return d._id
-                })
+                    return d._id;
+                });
             }
 
             query = {
                 $or: [
-                    { firstname: { $regex: filter } },
-                    { lastname: { $regex: filter } },
-                    { email: { $regex: filter } },
+                    { firstname: { $regex: filter, $options: "i" } },
+                    { lastname: { $regex: filter, $options: "i" } },
+                    { fullName: { $regex: filter, $options: "i" } },
+                    { email: { $regex: filter, $options: "i" } },
                     { $expr: { $eq: [{ $month: "$dateOfBirth" }, isNaN(filter) ? null : filter] } },
                     { $expr: { $eq: [{ $year: "$dateOfBirth" }, isNaN(filter) ? null : filter] } },
                     { $expr: { $eq: [{ $month: "$dateOfJoining" }, isNaN(filter) ? null : filter] } },
@@ -232,7 +236,7 @@ const getUsers = asyncHandler(async (req, res) => {
                     { phone: { $eq: isNaN(filter) ? null : parseInt(filter) } },
                     { department: { $in: department } },
                     { dateOfBirth: { $eq: dateSearch } },
-                    { dateOfJoining: { $eq: dateSearch } }
+                    { dateOfJoining: { $eq: dateSearch } },
                 ],
             };
         }
@@ -241,39 +245,41 @@ const getUsers = asyncHandler(async (req, res) => {
 
         const skip = (page - 1) * limit;
 
-        const users = await Users.find(query).skip(skip).limit(limit).populate("department").lean();
+        const users = await Users.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate("department").lean();
 
-        const formattedUsers = users.map(user => {
+        const formattedUsers = users.map((user) => {
             const photoUrl = user.photo && user.photo.contentType
                 ? `data:${user.photo.contentType};base64,${user.photo.data.toString("base64")}`
                 : null;
 
-            const name = user.firstname + " " + user.lastname
-            const avatar = user.firstname.charAt(0) + user.lastname.charAt(0)
+            const name = user.firstname + " " + user.lastname;
+            const avatar = user.firstname.charAt(0) + user.lastname.charAt(0);
 
             return {
                 ...user,
                 avatar: avatar,
                 name: name,
                 department: user.department.name,
-                dateOfBirth: user.dateOfBirth.toISOString().split('T')[0],
-                dateOfJoining: user.dateOfJoining.toISOString().split('T')[0],
+                dateOfBirth: user.dateOfBirth.toISOString().split("T")[0],
+                dateOfJoining: user.dateOfJoining.toISOString().split("T")[0],
                 photo: photoUrl,
             };
         });
+
         return res.status(200).json({
             error: false,
             message: "Users retrieved successfully",
             users: formattedUsers,
             currentPage: page,
             totalPages: Math.ceil(totalUsers / limit),
-            totalUsers
+            totalUsers,
         });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: true, message: "Server error" });
     }
 });
+
 
 const getAllUser = asyncHandler(async (req, res) => {
     try {

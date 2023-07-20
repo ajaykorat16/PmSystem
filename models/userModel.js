@@ -1,4 +1,4 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
     employeeNumber:{
@@ -14,7 +14,10 @@ const userSchema = new mongoose.Schema({
     lastname: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
+    },
+    fullName: {
+        type: String,
     },
     email: {
         type: String,
@@ -71,9 +74,13 @@ const userSchema = new mongoose.Schema({
         default: "user"
     }
 }, {
-    timestamps: true
-})
+    timestamps: true,
+});
 
-const Users = mongoose.model("User", userSchema)
+userSchema.pre("save", function (next) {
+    this.fullName = this.firstname + " " + this.lastname;
+    next();
+});
+const Users = mongoose.model("User", userSchema);
 
-module.exports = Users
+module.exports = Users;
