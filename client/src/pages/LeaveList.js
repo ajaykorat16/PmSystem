@@ -18,24 +18,26 @@ const LeaveList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [globalFilterValue, setGlobalFilterValue] = useState("");
+  const [sortField, setSortField] = useState('createdAt');
+  const [sortOrder, setSortOrder] = useState(-1);
   const navigate = useNavigate();
 
   const fetchLeaves = async (query) => {
     setIsLoading(true);
-    let leaveData = {};
-    if (query) {
-      leaveData = await getLeave(currentPage, rowsPerPage, query);
-    } else {
-      leaveData = await getLeave(currentPage, rowsPerPage);
-    }
+    let leaveData = await getLeave(currentPage, rowsPerPage, query, sortField, sortOrder);
+    // if (query) {
+    //   leaveData = await getLeave(currentPage, rowsPerPage, query, sortField, sortOrder);
+    // } else {
+    //   leaveData = await getLeave(currentPage, rowsPerPage, sortField, sortOrder);
+    // }
     const totalRecordsCount = leaveData.totalLeaves;
     setTotalRecords(totalRecordsCount);
     setLeaveList(leaveData.leaves);
     setIsLoading(false);
   };
-  useEffect(() => {
-    fetchLeaves();
-  }, [currentPage, rowsPerPage]);
+  // useEffect(() => {
+  //   fetchLeaves();
+  // }, [currentPage, rowsPerPage, sortOrder]);
 
   const handleSubmit = async () => {
     fetchLeaves(globalFilterValue);
@@ -45,7 +47,7 @@ const LeaveList = () => {
     if (globalFilterValue.trim() === "") {
       fetchLeaves();
     }
-  }, [globalFilterValue]);
+  }, [globalFilterValue, currentPage, rowsPerPage, sortOrder]);
 
   const renderHeader = () => {
     return (
@@ -57,7 +59,7 @@ const LeaveList = () => {
           <form onSubmit={handleSubmit}>
             <div className="p-inputgroup ">
               <span className="p-inputgroup-addon">
-                <i className="pi pi-search" />
+                <i className="pi pi-lo" />
               </span>
               <InputText
                 type="search"
@@ -115,6 +117,15 @@ const LeaveList = () => {
     return <div>{moment(rowData.endDate).format("DD-MM-YYYY")}</div>;
   };
 
+  const hanldeSorting = async (e) => {
+    const field = e.sortField;
+    const order = e.sortOrder;
+
+    setSortField(field);
+    setSortOrder(order);
+    fetchLeaves()
+  };
+
   return (
     <Layout>
       {isLoading ? (
@@ -126,6 +137,9 @@ const LeaveList = () => {
               totalRecords={totalRecords}
               lazy
               paginator
+              sortField={sortField}
+              sortOrder={sortOrder}
+              onSort={hanldeSorting}
               rows={rowsPerPage}
               value={leaveList}
               first={(currentPage - 1) * rowsPerPage}
@@ -146,9 +160,10 @@ const LeaveList = () => {
               <Column
                 field="reason"
                 header="Reason"
+                sortable
                 filterField="employeeNumber"
               />
-              <Column body={start} header="Start Date" filterField="start" />
+              <Column field="startDate" body={start} header="Start Date" sortable filterField="start" />
               <Column body={end} header="End Date" filterField="end" />
               <Column field="type" header="Type" filterField="type" />
               <Column field="status" header="Status" filterField="status" />

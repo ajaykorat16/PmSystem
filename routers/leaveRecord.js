@@ -9,6 +9,8 @@ router.get("/", auth, isAdmin, getAllLeaves)
 
 router.get("/leavelist", auth, isAdmin, getLeaves)
 
+router.post("/leavelist-search", auth, isAdmin, getLeaves)
+
 router.get("/userLeaves", auth, userGetLeave)
 
 router.get("/getLeaveById/:id", auth, getLeaveById)

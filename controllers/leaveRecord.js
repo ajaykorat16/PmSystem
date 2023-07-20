@@ -1,4 +1,5 @@
 const Leaves = require("../models/leaveModel")
+const Users = require("../models/userModel")
 const { validationResult } = require('express-validator');
 const asyncHandler = require('express-async-handler')
 
@@ -51,22 +52,47 @@ const getAllLeaves = asyncHandler(async (req, res) => {
     }
 })
 
+function capitalizeFLetter(string) {
+    return string[0].toUpperCase() + string.slice(1);
+}
+
 const getLeaves = asyncHandler(async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 5;
-    const filter = req.query.query || '';
+    const { filter } = req.body;
+    const sortField = req.query.sortField || 'createdAt';
+    const sortOrder = req.query.sortOrder || -1
+
     try {
-        const query = {
-            reason: { $regex: filter, $options: 'i' },
-        };
+        let query = {};
+        if (filter) {
+            let fullName = [];
+            let searchUser = await Users.find({ fullName: { $regex: filter, $options: 'i' } })
+            if (searchUser.length !== 0) {
+                fullName = searchUser.map((u) => {
+                    return u._id
+                })
+            }
+            query = {
+                $or: [
+                    { type: { $regex: filter.toLowerCase() } },
+                    { status: { $regex: filter.toLowerCase() } },
+                    { userId: { $in: fullName } },
+                ]}
+        }
+        
         const totalLeaves = await Leaves.countDocuments(query)
         const skip = (page - 1) * limit;
-        const leaves = await Leaves.find(query).skip(skip).limit(limit).populate("userId").lean()
+        const leaves = await Leaves.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate("userId").lean()
         const formattedLeaves = leaves.map((leave, i) => {
             const index = i + 1
             const name = leave.userId.firstname + " " + leave.userId.lastname
+            const type = capitalizeFLetter(leave.type)
+            const status = capitalizeFLetter(leave.status)
             return {
                 ...leave,
+                type: capitalizeFLetter(leave.type),
+                status: capitalizeFLetter(leave.status),
                 name: name,
                 index: index,
                 startDate: leave.startDate.toISOString().split('T')[0],

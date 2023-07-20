@@ -21,13 +21,13 @@ const leaveSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["Pending", "Approved", "Rejected"],
-        default: "Pending"
+        enum: ["pending", "approved", "rejected"],
+        default: "pending"
     },
     type: {
         type: String,
-        enum: ["Paid", "LWP"],
-        default: "LWP"
+        enum: ["paid", "lwp"],
+        default: "lwp"
     },
 }, {
     timestamps: true

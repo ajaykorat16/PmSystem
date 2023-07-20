@@ -7,23 +7,40 @@ const LeaveContext = createContext();
 
 const LeaveProvider = ({ children }) => {
   const [leave, setLeave] = useState([]);
-  const [userLeaves, setUserLeaves] = useState([])
+  const [userLeaves, setUserLeaves] = useState([]);
   const { auth } = useAuth();
   const headers = {
     Authorization: auth?.token,
   };
 
   //get leave
-  const getLeave = async (page, limit, query) => {
+  const getLeave = async (page, limit, query, sortField, sortOrder) => {
     try {
-      let queryUrl=''
-      if(query){
-          queryUrl=`&query=${query}`
+      let res;
+      if (query) {
+        console.log("query-----", query);
+        res = await axios.post(
+          `/leaves/leavelist-search?page=${page}&limit=${limit}`,
+          { filter: query },
+          { headers }
+        );
+      } else {
+        res = await axios.get(
+          `/leaves/leavelist`,
+          {
+            params: {
+              page: page,
+              limit: limit,
+              sortField: sortField,
+              sortOrder: sortOrder,
+            },
+          },
+          { headers }
+        );
       }
-      const res = await axios.get(`/leaves/leavelist?page=${page}&limit=${limit}${queryUrl}`, { headers });
       if (res.data.error === false) {
         setLeave(res.data.leaves);
-        return res.data
+        return res.data;
       }
     } catch (error) {
       console.log(error);
@@ -38,16 +55,16 @@ const LeaveProvider = ({ children }) => {
     try {
       const { reason, startDate, endDate, type, userId, status } = leaveData;
 
-      const {data} = await axios.post(
+      const { data } = await axios.post(
         `/leaves/createLeaveAdmin`,
         { reason, startDate, endDate, type, userId, status },
         { headers }
       );
 
-      if(data.error===false){
+      if (data.error === false) {
         getLeave();
-        setTimeout(function(){
-          toast.success("Leave created successfully")
+        setTimeout(function () {
+          toast.success("Leave created successfully");
         }, 1000);
       }
       return data;
@@ -55,13 +72,13 @@ const LeaveProvider = ({ children }) => {
       if (error.response) {
         const errors = error.response.data.errors;
         if (errors && Array.isArray(errors) && errors.length > 0) {
-            toast.error("Please fill all fields")
+          toast.error("Please fill all fields");
         } else {
-            const errorMessage = error.response.data.message;
-            toast.error(errorMessage);
+          const errorMessage = error.response.data.message;
+          toast.error(errorMessage);
         }
       } else {
-        toast.error('An error occurred. Please try again later.');
+        toast.error("An error occurred. Please try again later.");
       }
     }
   };
@@ -71,9 +88,9 @@ const LeaveProvider = ({ children }) => {
     try {
       const res = await axios.delete(`/leaves/deleteLeave/${id}`, { headers });
 
-      if(res.data.error===false){
+      if (res.data.error === false) {
         getLeave();
-        toast.success("Leave deleted successfully")
+        toast.success("Leave deleted successfully");
       }
     } catch (error) {
       console.log(error);
@@ -85,16 +102,16 @@ const LeaveProvider = ({ children }) => {
     try {
       const { reason, startDate, endDate, type, userId, status } = leaveData;
 
-      const {data} = await axios.put(
+      const { data } = await axios.put(
         `/leaves/updateLeave/${id}`,
         { reason, startDate, endDate, type, userId, status },
         { headers }
       );
 
-      if(data.error===false){
+      if (data.error === false) {
         getLeave();
-        setTimeout(function(){
-          toast.success("Leave updated successfully")
+        setTimeout(function () {
+          toast.success("Leave updated successfully");
         }, 1000);
       }
     } catch (error) {
@@ -117,33 +134,33 @@ const LeaveProvider = ({ children }) => {
   //get user leave
   const getUserLeave = async () => {
     try {
-      const {data} = await axios.get(`/leaves/userLeaves`,{headers})
-      if(data.error === false) {
-        setUserLeaves(data.leaves)
+      const { data } = await axios.get(`/leaves/userLeaves`, { headers });
+      if (data.error === false) {
+        setUserLeaves(data.leaves);
       }
     } catch (error) {
       console.log(error);
     }
-  }
-  useEffect(()=>{
-    getUserLeave()
-  }, [auth?.token])
+  };
+  useEffect(() => {
+    getUserLeave();
+  }, [auth?.token]);
 
   //add user leave
   const addUserLeave = async (leaveData) => {
     try {
       const { reason, startDate, endDate, type, status } = leaveData;
 
-      const {data} = await axios.post(
+      const { data } = await axios.post(
         `/leaves/createLeave`,
         { reason, startDate, endDate, type, status },
         { headers }
       );
 
-      if(data.error===false){
-        getUserLeave()
-        setTimeout(function(){
-          toast.success("Leave created successfully")
+      if (data.error === false) {
+        getUserLeave();
+        setTimeout(function () {
+          toast.success("Leave created successfully");
         }, 1000);
       }
       return data;
@@ -151,23 +168,32 @@ const LeaveProvider = ({ children }) => {
       if (error.response) {
         const errors = error.response.data.errors;
         if (errors && Array.isArray(errors) && errors.length > 0) {
-            toast.error("Please fill all fields")
-            // errors.forEach((error) => {
-            //     toast.error(error.msg);
-            // });
+          toast.error("Please fill all fields");
+          // errors.forEach((error) => {
+          //     toast.error(error.msg);
+          // });
         } else {
-            const errorMessage = error.response.data.message;
-            toast.error(errorMessage);
+          const errorMessage = error.response.data.message;
+          toast.error(errorMessage);
         }
       } else {
-        toast.error('An error occurred. Please try again later.');
+        toast.error("An error occurred. Please try again later.");
       }
     }
   };
 
   return (
     <LeaveContext.Provider
-      value={{ getLeave, leave, addLeave, deleteLeave, updateLeave, getLeaveById, userLeaves, addUserLeave }}
+      value={{
+        getLeave,
+        leave,
+        addLeave,
+        deleteLeave,
+        updateLeave,
+        getLeaveById,
+        userLeaves,
+        addUserLeave,
+      }}
     >
       {children}
     </LeaveContext.Provider>

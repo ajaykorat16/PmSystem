@@ -19,8 +19,8 @@ const LeaveCreate = () => {
 
     const { addLeave } = useLeave()
     const { fetchUsers } = useUser()
-    const statusList = ["Pending", "Approved", "Rejected"]
-    const typeList = ["Paid", "LWP"]
+    const statusList = ["pending", "approved", "rejected"]
+    const typeList = ["paid", "lwp"]
     const navigate = useNavigate()
 
     const handleSubmit = async (e) => {

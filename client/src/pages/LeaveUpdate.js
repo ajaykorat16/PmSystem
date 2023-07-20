@@ -19,8 +19,8 @@ const LeaveUpdate = () => {
 
     const { updateLeave, getLeaveById } = useLeave()
     const { users } = useUser()
-    const statusList = ["Pending", "Approved", "Rejected"]
-    const typeList = ["Paid", "LWP"]
+    const statusList = ["pending", "approved", "rejected"]
+    const typeList = ["paid", "lwp"]
     const navigate = useNavigate()
     const { id } = useParams()
 
