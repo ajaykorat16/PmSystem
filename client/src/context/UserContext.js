@@ -28,15 +28,15 @@ const UserProvider = ({ children }) => {
     //get All Users
     const getAllUsers = async (page, limit, query) => {
         try {
-            let queryUrl=''
-            if(query){
-                queryUrl=`&query=${query}`
+            let res;
+            if (query) {
+                res = await axios.post(`/user/user-search?page=${page}&limit=${limit}`, { filter: query }, { headers });
+            } else {
+                res = await axios.get(`/user?page=${page}&limit=${limit}`, { headers });
             }
-
-            const res = await axios.get(`/user?page=${page}&limit=${limit}${queryUrl}`, { headers });
             if (res.data.error === false) {
-              setUsers(res.data.users);
-              return res.data
+                setUsers(res.data.users);
+                return res.data
             }
         } catch (error) {
             console.log(error);
@@ -46,14 +46,14 @@ const UserProvider = ({ children }) => {
     //add user
     const createUser = async (addUser) => {
         try {
-            const {employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining } = addUser
-            const {data} = await axios.post("/user/addUser", {employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining }, { headers });
-            
-            if(data.error===false){
+            const { employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining } = addUser
+            const { data } = await axios.post("/user/addUser", { employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining }, { headers });
+
+            if (data.error === false) {
                 fetchUsers()
-                setTimeout(function(){
+                setTimeout(function () {
                     toast.success("User created successfully")
-                  }, 1000);
+                }, 1000);
             }
             return data;
         } catch (error) {
@@ -74,7 +74,7 @@ const UserProvider = ({ children }) => {
     //update user
     const updateUser = async (updateUsers, id) => {
         try {
-            let {employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining, photo } = updateUsers
+            let { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining, photo } = updateUsers
             const editUser = new FormData()
             editUser.append("employeeNumber", employeeNumber)
             editUser.append("firstname", firstname)
@@ -87,13 +87,13 @@ const UserProvider = ({ children }) => {
             editUser.append("dateOfBirth", dateOfBirth)
             photo && editUser.append("photo", photo);
 
-            const {data} = await axios.put(`/user/updateProfile/${id}`, editUser, { headers });
+            const { data } = await axios.put(`/user/updateProfile/${id}`, editUser, { headers });
 
-            if(data.error===false){
+            if (data.error === false) {
                 fetchUsers()
-                setTimeout(function(){
+                setTimeout(function () {
                     toast.success("User updated successfully")
-                  }, 1000);
+                }, 1000);
             }
             return data;
         } catch (error) {
@@ -104,7 +104,7 @@ const UserProvider = ({ children }) => {
     //update user
     const updateProfile = async (updateUsers) => {
         try {
-            let {employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, dateOfJoining, photo } = updateUsers
+            let { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, dateOfJoining, photo } = updateUsers
             const editUser = new FormData()
             editUser.append("employeeNumber", employeeNumber)
             editUser.append("firstname", firstname)
@@ -116,9 +116,9 @@ const UserProvider = ({ children }) => {
             editUser.append("dateOfBirth", dateOfBirth)
             photo && editUser.append("photo", photo);
 
-            const {data} = await axios.put(`/user/updateProfile`, editUser, { headers });
+            const { data } = await axios.put(`/user/updateProfile`, editUser, { headers });
 
-            if(data.error===false){
+            if (data.error === false) {
                 toast.success("Profile updated successfully")
             }
             return data;
@@ -130,9 +130,9 @@ const UserProvider = ({ children }) => {
     //delete user
     const deleteUser = async (id) => {
         try {
-            const {data} = await axios.delete(`/user/deleteProfile/${id}`, { headers });
+            const { data } = await axios.delete(`/user/deleteProfile/${id}`, { headers });
 
-            if(data.error===false){
+            if (data.error === false) {
                 fetchUsers()
                 toast.success("User deleted successfully")
             }
@@ -154,11 +154,11 @@ const UserProvider = ({ children }) => {
     //reset password
     const resetPassword = async (password) => {
         try {
-            const {data} = await axios.put(`/user/resetPassword`, {password}, {headers})
-            if(data.error===false){
-                setTimeout(function(){
+            const { data } = await axios.put(`/user/resetPassword`, { password }, { headers })
+            if (data.error === false) {
+                setTimeout(function () {
                     toast.success("Password updated successfully")
-                  }, 500);
+                }, 500);
             }
             return data;
         } catch (error) {
@@ -180,7 +180,7 @@ const UserProvider = ({ children }) => {
     }
 
     return (
-        <UserContext.Provider value={{ users, fetchUsers, createUser, updateUser, deleteUser, getUserProfile, updateProfile, resetPassword, getAllUsers}}>
+        <UserContext.Provider value={{ users, fetchUsers, createUser, updateUser, deleteUser, getUserProfile, updateProfile, resetPassword, getAllUsers }}>
             {children}
         </UserContext.Provider>
     );
