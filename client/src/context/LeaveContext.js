@@ -14,19 +14,24 @@ const LeaveProvider = ({ children }) => {
   };
 
   //get leave
-  const getLeave = async () => {
+  const getLeave = async (page, limit, query) => {
     try {
-      const res = await axios.get(`/leaves`, { headers });
+      let queryUrl=''
+      if(query){
+          queryUrl=`&query=${query}`
+      }
+      const res = await axios.get(`/leaves/leavelist?page=${page}&limit=${limit}${queryUrl}`, { headers });
       if (res.data.error === false) {
         setLeave(res.data.leaves);
+        return res.data
       }
     } catch (error) {
       console.log(error);
     }
   };
-  useEffect(() => {
-    getLeave();
-  }, [auth?.token]);
+  // useEffect(() => {
+  //   getLeave();
+  // }, [auth?.token]);
 
   //add leave
   const addLeave = async (leaveData) => {
@@ -162,7 +167,7 @@ const LeaveProvider = ({ children }) => {
 
   return (
     <LeaveContext.Provider
-      value={{ leave, addLeave, deleteLeave, updateLeave, getLeaveById, userLeaves, addUserLeave }}
+      value={{ getLeave, leave, addLeave, deleteLeave, updateLeave, getLeaveById, userLeaves, addUserLeave }}
     >
       {children}
     </LeaveContext.Provider>

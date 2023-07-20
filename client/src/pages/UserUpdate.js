@@ -25,7 +25,8 @@ const UserUpdate = () => {
     const [photo, setPhoto] = useState("");
     const [isLoading, setIsLoading] = useState(true)
     const { updateUser, getUserProfile } = useUser()
-    const { department } = useDepartment()
+    const { getDepartmentList } = useDepartment()
+    const [departmentsList, setDepartmentsList] = useState([]);
     const navigate = useNavigate();
     const params = useParams();
 
@@ -52,6 +53,15 @@ const UserUpdate = () => {
         };
         fetchData();
     }, [params.id, getUserProfile]);
+
+    const fetchDepartment = async () => {
+        const { departments } = await getDepartmentList()
+        setDepartmentsList(departments)
+    }
+
+    useEffect(() => {
+        fetchDepartment()
+    }, [])
 
 
     const handleSubmit = async (e) => {
@@ -179,7 +189,7 @@ const UserUpdate = () => {
                             value={departments}
                             onChange={(e) => setDepartments(e.target.value)}
                         >
-                            {department.map((d) => (
+                            {departmentsList.map((d) => (
                                 <option key={d._id} value={d._id}>
                                     {d.name}
                                 </option>

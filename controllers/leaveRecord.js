@@ -51,6 +51,41 @@ const getAllLeaves = asyncHandler(async (req, res) => {
     }
 })
 
+const getLeaves = asyncHandler(async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const filter = req.query.query || '';
+    try {
+        const query = {
+            reason: { $regex: filter, $options: 'i' },
+        };
+        const totalLeaves = await Leaves.countDocuments(query)
+        const skip = (page - 1) * limit;
+        const leaves = await Leaves.find(query).skip(skip).limit(limit).populate("userId").lean()
+        const formattedLeaves = leaves.map((leave, i) => {
+            const index = i + 1
+            const name = leave.userId.firstname + " " + leave.userId.lastname
+            return {
+                ...leave,
+                name: name,
+                index: index,
+                startDate: leave.startDate.toISOString().split('T')[0],
+                endDate: leave.endDate.toISOString().split('T')[0]
+            };
+        });
+        return res.status(200).json({
+            error: false,
+            message: "Leaves retrieved successfully !!",
+            leaves: formattedLeaves,
+            currentPage: page,
+            totalPages: Math.ceil(totalLeaves / limit),
+            totalLeaves,
+        })
+    } catch (error) {
+        console.log(error);
+    }
+})
+
 const userGetLeave = asyncHandler(async (req, res) => {
     try {
         const leaves = await Leaves.find({ userId: req.user._id }).populate("userId").lean()
@@ -139,4 +174,4 @@ const deleteLeave = asyncHandler(async (req, res) => {
     }
 })
 
-module.exports = { createLeave, getAllLeaves, updateLeave, deleteLeave, userGetLeave, getLeaveById }
+module.exports = { createLeave, getAllLeaves, updateLeave, deleteLeave, userGetLeave, getLeaveById, getLeaves }

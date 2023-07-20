@@ -3,9 +3,11 @@ const router = express.Router();
 const { check } = require('express-validator');
 const { auth, isAdmin } = require("../middleware/auth")
 
-const { createLeave, getAllLeaves, updateLeave, deleteLeave, userGetLeave, getLeaveById } = require("../controllers/leaveRecord")
+const { createLeave, getAllLeaves, updateLeave, deleteLeave, userGetLeave, getLeaveById, getLeaves } = require("../controllers/leaveRecord")
 
 router.get("/", auth, isAdmin, getAllLeaves)
+
+router.get("/leavelist", auth, isAdmin, getLeaves)
 
 router.get("/userLeaves", auth, userGetLeave)
 
