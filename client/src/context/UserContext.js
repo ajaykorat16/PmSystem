@@ -26,13 +26,20 @@ const UserProvider = ({ children }) => {
     };
 
     //get All Users
-    const getAllUsers = async (page, limit, query) => {
+    const getAllUsers = async (page, limit, query, sortField, sortOrder) => {
         try {
             let res;
             if (query) {
-                res = await axios.post(`/user/user-search?page=${page}&limit=${limit}`, { filter: query }, { headers });
+                res = await axios.post(`/user/user-search?page=${page}&limit=${limit}&sortField=${sortField}&sortOrder=${sortOrder}`, { filter: query }, { headers });
             } else {
-                res = await axios.get(`/user?page=${page}&limit=${limit}`, { headers });
+                res = await axios.get(`/user`, {
+                    params: {
+                        page: page,
+                        limit: limit,
+                        sortField: sortField,
+                        sortOrder: sortOrder
+                    }
+                }, { headers });
             }
             if (res.data.error === false) {
                 setUsers(res.data.users);

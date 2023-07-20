@@ -138,7 +138,8 @@ const updateUser = asyncHandler(async (req, res) => {
             dateOfBirth: dateOfBirth || user.dateOfBirth,
             department: department || user.department,
             dateOfJoining: dateOfJoining || user.dateOfJoining,
-            photo: photo || user.photo
+            photo: photo || user.photo,
+            fullName: firstname + " " + lastname
         };
         if (photo) {
             updatedFields.photo = {
@@ -192,7 +193,9 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
 
 const getUsers = asyncHandler(async (req, res) => {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 5;
+    const limit = parseInt(req.query.limit) || 10;
+    const sortField = req.query.sortField || 'createdAt';
+    const sortOrder = req.query.sortOrder || -1
     const { filter } = req.body;
 
     try {
@@ -242,7 +245,7 @@ const getUsers = asyncHandler(async (req, res) => {
 
         const skip = (page - 1) * limit;
 
-        const users = await Users.find(query).skip(skip).limit(limit).populate("department").lean();
+        const users = await Users.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate("department").lean();
 
         const formattedUsers = users.map((user) => {
             const photoUrl = user.photo && user.photo.contentType

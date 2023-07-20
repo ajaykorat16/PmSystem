@@ -76,9 +76,6 @@ const userSchema = new mongoose.Schema({
 }, {
     timestamps: true,
 });
-// userSchema.virtual("fullName").get(function () {
-//     return this.firstname + " " + this.lastname;
-// });
 
 userSchema.pre("save", function (next) {
     this.fullName = this.firstname + " " + this.lastname;

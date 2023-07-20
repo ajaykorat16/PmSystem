@@ -20,27 +20,19 @@ const UserList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [globalFilterValue, setGlobalFilterValue] = useState("");
-  const [sortField, setSortField] = useState('');
-  const [sortOrder, setSortOrder] = useState(1);
+  const [sortField, setSortField] = useState('createdAt');
+  const [sortOrder, setSortOrder] = useState(-1);
   const navigate = useNavigate();
 
   const fetchUsers = async (query) => {
     setIsLoading(true);
-    let usertData = {};
-    if (query) {
-      usertData = await getAllUsers(currentPage, rowsPerPage, query);
-    } else {
-      usertData = await getAllUsers(currentPage, rowsPerPage);
-    }
+    let usertData = await getAllUsers(currentPage, rowsPerPage, query, sortField, sortOrder);
+
     const totalRecordsCount = usertData.totalUsers;
     setTotalRecords(totalRecordsCount);
     setUserList(usertData.users);
     setIsLoading(false);
   };
-
-  useEffect(() => {
-    fetchUsers();
-  }, [currentPage, rowsPerPage, sortOrder]);
 
   const handleSubmit = async () => {
     fetchUsers(globalFilterValue);
@@ -50,7 +42,7 @@ const UserList = () => {
     if (globalFilterValue.trim() === "") {
       fetchUsers();
     }
-  }, [globalFilterValue]);
+  }, [globalFilterValue, currentPage, rowsPerPage, sortOrder]);
 
   const renderHeader = () => {
     return (
@@ -154,6 +146,15 @@ const UserList = () => {
     )
   }
 
+  const hanldeSorting = async (e) => {
+    const field = e.sortField;
+    const order = e.sortOrder;
+
+    setSortField(field);
+    setSortOrder(order);
+    fetchUsers()
+  };
+
   return (
     <Layout>
       {isLoading ? (
@@ -165,6 +166,9 @@ const UserList = () => {
               totalRecords={totalRecords}
               lazy
               paginator
+              sortField={sortField}
+              sortOrder={sortOrder}
+              onSort={hanldeSorting}
               rows={rowsPerPage}
               value={userList}
               first={(currentPage - 1) * rowsPerPage}
@@ -184,10 +188,11 @@ const UserList = () => {
               <Column
                 field="employeeNumber"
                 header="Emp. ID."
+                sortable
                 filterField="employeeNumber"
               />
-              <Column field="name" header="Name" filterField="firstname" />
-              <Column field="email" header="Email" filterField="email" />
+              <Column field="fullName" sortable header="Name" filterField="firstname" />
+              <Column field="email" sortable header="Email" filterField="email" />
               <Column field="phone" header="Phone" filterField="phone" />
               <Column
                 body={DOB}
