@@ -10,6 +10,7 @@ import { Dropdown } from "primereact/dropdown";
 import Layout from "./Layout";
 import moment from "moment";
 import { CAvatar } from "@coreui/react";
+import "../styles/Styles.css"
 
 const UserList = () => {
   const { deleteUser, getAllUsers } = useUser();
@@ -19,6 +20,8 @@ const UserList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [globalFilterValue, setGlobalFilterValue] = useState("");
+  const [sortField, setSortField] = useState('');
+  const [sortOrder, setSortOrder] = useState(1);
   const navigate = useNavigate();
 
   const fetchUsers = async (query) => {
@@ -34,9 +37,10 @@ const UserList = () => {
     setUserList(usertData.users);
     setIsLoading(false);
   };
+
   useEffect(() => {
     fetchUsers();
-  }, [currentPage, rowsPerPage]);
+  }, [currentPage, rowsPerPage, sortOrder]);
 
   const handleSubmit = async () => {
     fetchUsers(globalFilterValue);
@@ -72,6 +76,7 @@ const UserList = () => {
       </div>
     );
   };
+
   const header = renderHeader();
 
   const handleDelete = async (id) => {
@@ -136,14 +141,15 @@ const UserList = () => {
   const DOB = (rowData) => {
     return (
       <div>
-        {moment(rowData.dateOfBirth).format('DD/MM/YYYY')}
+        {moment(rowData.dateOfBirth).format('DD-MM-YYYY')}
       </div>
     )
   }
+
   const DOJ = (rowData) => {
     return (
       <div>
-        {moment(rowData.dateOfJoining).format('DD/MM/YYYY')}
+        {moment(rowData.dateOfJoining).format('DD-MM-YYYY')}
       </div>
     )
   }
@@ -169,7 +175,7 @@ const UserList = () => {
               paginatorLeft={
                 <Dropdown
                   value={rowsPerPage}
-                  options={[5, 10, 25, 50]}
+                  options={[10, 25, 50]}
                   onChange={(e) => setRowsPerPage(e.value)}
                 />
               }

@@ -1,13 +1,13 @@
 const Users = require("../models/userModel")
 const Leaves = require("../models/leaveModel")
+const Department = require("../models/departmentModel")
 const { validationResult } = require('express-validator');
 const fs = require("fs")
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const asyncHandler = require('express-async-handler');
-const { Console } = require("console");
-
 const saltRounds = 10
+
 const hashPassword = async (password) => {
     try {
         const hashedPassword = await bcrypt.hash(password, saltRounds)
@@ -193,51 +193,50 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
 const getUsers = asyncHandler(async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 5;
-    const filter = req.query.query || '';
+    const { filter } = req.body;
 
     try {
-        // const isNumericFilter = isNaN(filter) // Check if the filter is a valid number
+        let query = {};
 
-        // console.log("isNumericFilter----", isNumericFilter);
+        if (filter) {
+            function isValidDate(filter) {
+                const dateRegex = /^(0?[1-9]|[1-2]\d|3[0-1])-(0?[1-9]|1[0-2])-\d{4}$/;
+                return dateRegex.test(filter);
+            }
 
-        // console.log(typeof isNumericFilter)
-        // let query;
-        // if (isNumericFilter) {
-        //     query = {
-        //         $or: [
-        //             { firstname: { $regex: filter } },
-        //             { lastname: { $regex: filter } },
-        //             { email: { $regex: filter } },
-        //             { dateOfBirth: { $regex: filter } }, 
-        //             { dateOfJoining: { $regex: filter } },
-        //         ]
-        //     };
-        // } else {
-        //     let convertToNumber = parseInt(filter)
-        //     console.log("Number", typeof convertToNumber)
-        //     query = {
-        //         $or: [
-        //             { phone: { $regex: convertToNumber } }
-        //         ]
-        //     };
-        //     // query = { phone: convertToNumber}
-        // }
+            let dateSearch;
+            if (typeof filter === "string" && isValidDate(filter)) {
+                dateSearch = new Date(filter.split("-").reverse().join("-"))
+            } else {
+                dateSearch = null
+            }
 
-        let query = {
-            $or: [
-                { firstname: { $regex: filter } },
-                { lastname: { $regex: filter } },
-                { email: { $regex: filter } },
-                { $expr: { $eq: [{ $month: "$dateOfBirth" }, filter] } },
-                { $expr: { $eq: [{ $year: "$dateOfBirth" }, filter] } },
-                { $expr: { $eq: [{ $month: "$dateOfJoining" }, filter] } },
-                { $expr: { $eq: [{ $year: "$dateOfJoining" }, filter] } },
-                // { employeeNumber : {$eq: parseInt(filter)}},
-                // { phone : {$eq: parseInt(filter)}}
-            ]
-        };
+            let department = [];
+            let searchdepartment = await Department.find({ name: { $regex: filter, $options: 'i' } })
+            if (searchdepartment.length !== 0) {
+                department = searchdepartment.map((d) => {
+                    return d._id
+                })
+            }
 
-        console.log(query)
+            query = {
+                $or: [
+                    { firstname: { $regex: filter } },
+                    { lastname: { $regex: filter } },
+                    { email: { $regex: filter } },
+                    { $expr: { $eq: [{ $month: "$dateOfBirth" }, isNaN(filter) ? null : filter] } },
+                    { $expr: { $eq: [{ $year: "$dateOfBirth" }, isNaN(filter) ? null : filter] } },
+                    { $expr: { $eq: [{ $month: "$dateOfJoining" }, isNaN(filter) ? null : filter] } },
+                    { $expr: { $eq: [{ $year: "$dateOfJoining" }, isNaN(filter) ? null : filter] } },
+                    { employeeNumber: { $eq: isNaN(filter) ? null : parseInt(filter) } },
+                    { phone: { $eq: isNaN(filter) ? null : parseInt(filter) } },
+                    { department: { $in: department } },
+                    { dateOfBirth: { $eq: dateSearch } },
+                    { dateOfJoining: { $eq: dateSearch } }
+                ],
+            };
+        }
+
         const totalUsers = await Users.countDocuments(query);
 
         const skip = (page - 1) * limit;

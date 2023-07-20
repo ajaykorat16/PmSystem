@@ -11,6 +11,8 @@ router.get("/userList", auth, isAdmin, getAllUser)
 
 router.get("/", auth, isAdmin, getUsers)
 
+router.post("/user-search", auth, isAdmin, getUsers)
+
 router.get("/profile", auth, getUserProfile)
 
 router.get('/admin-auth',auth,isAdmin,(req,res)=>{

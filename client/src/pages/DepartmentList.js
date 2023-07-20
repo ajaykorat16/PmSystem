@@ -80,7 +80,6 @@ const DepartmentList = () => {
 
   const fetchDepartments = async (query) => {
     setIsLoading(true);
-    console.log(sortField, sortOrder)
     let departmentData = {};
     if (query) {
       departmentData = await getDepartment(
