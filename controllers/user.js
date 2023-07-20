@@ -206,24 +206,25 @@ const getUsers = asyncHandler(async (req, res) => {
 
             let dateSearch;
             if (typeof filter === "string" && isValidDate(filter)) {
-                dateSearch = new Date(filter.split("-").reverse().join("-"))
+                dateSearch = new Date(filter.split("-").reverse().join("-"));
             } else {
-                dateSearch = null
+                dateSearch = null;
             }
 
             let department = [];
             let searchdepartment = await Department.find({ name: { $regex: filter, $options: 'i' } })
             if (searchdepartment.length !== 0) {
                 department = searchdepartment.map((d) => {
-                    return d._id
-                })
+                    return d._id;
+                });
             }
 
             query = {
                 $or: [
-                    { firstname: { $regex: filter } },
-                    { lastname: { $regex: filter } },
-                    { email: { $regex: filter } },
+                    { firstname: { $regex: filter, $options: "i" } },
+                    { lastname: { $regex: filter, $options: "i" } },
+                    { fullName: { $regex: filter, $options: "i" } },
+                    { email: { $regex: filter, $options: "i" } },
                     { $expr: { $eq: [{ $month: "$dateOfBirth" }, isNaN(filter) ? null : filter] } },
                     { $expr: { $eq: [{ $year: "$dateOfBirth" }, isNaN(filter) ? null : filter] } },
                     { $expr: { $eq: [{ $month: "$dateOfJoining" }, isNaN(filter) ? null : filter] } },
@@ -232,7 +233,7 @@ const getUsers = asyncHandler(async (req, res) => {
                     { phone: { $eq: isNaN(filter) ? null : parseInt(filter) } },
                     { department: { $in: department } },
                     { dateOfBirth: { $eq: dateSearch } },
-                    { dateOfJoining: { $eq: dateSearch } }
+                    { dateOfJoining: { $eq: dateSearch } },
                 ],
             };
         }
@@ -243,37 +244,39 @@ const getUsers = asyncHandler(async (req, res) => {
 
         const users = await Users.find(query).skip(skip).limit(limit).populate("department").lean();
 
-        const formattedUsers = users.map(user => {
+        const formattedUsers = users.map((user) => {
             const photoUrl = user.photo && user.photo.contentType
                 ? `data:${user.photo.contentType};base64,${user.photo.data.toString("base64")}`
                 : null;
 
-            const name = user.firstname + " " + user.lastname
-            const avatar = user.firstname.charAt(0) + user.lastname.charAt(0)
+            const name = user.firstname + " " + user.lastname;
+            const avatar = user.firstname.charAt(0) + user.lastname.charAt(0);
 
             return {
                 ...user,
                 avatar: avatar,
                 name: name,
                 department: user.department.name,
-                dateOfBirth: user.dateOfBirth.toISOString().split('T')[0],
-                dateOfJoining: user.dateOfJoining.toISOString().split('T')[0],
+                dateOfBirth: user.dateOfBirth.toISOString().split("T")[0],
+                dateOfJoining: user.dateOfJoining.toISOString().split("T")[0],
                 photo: photoUrl,
             };
         });
+
         return res.status(200).json({
             error: false,
             message: "Users retrieved successfully",
             users: formattedUsers,
             currentPage: page,
             totalPages: Math.ceil(totalUsers / limit),
-            totalUsers
+            totalUsers,
         });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: true, message: "Server error" });
     }
 });
+
 
 const getAllUser = asyncHandler(async (req, res) => {
     try {
