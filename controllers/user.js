@@ -25,6 +25,10 @@ const comparePassword = async (password, hashPassword) => {
     }
 }
 
+function capitalizeFLetter(string) {
+    return string[0].toUpperCase() + string.slice(1);
+}
+
 const createUser = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -56,7 +60,10 @@ const createUser = asyncHandler(async (req, res) => {
         }
         const hashedPassword = await hashPassword(password)
 
-        const newUser = await new Users({ employeeNumber, firstname, lastname, email, password: hashedPassword, phone, address, dateOfBirth, department, dateOfJoining }).save()
+        let fname = capitalizeFLetter(firstname)
+        let lname = capitalizeFLetter(lastname)
+
+        const newUser = await new Users({ employeeNumber, firstname: fname, lastname: lname, email, password: hashedPassword, phone, address, dateOfBirth, department, dateOfJoining }).save()
         return res.status(201).json({
             error: false,
             message: "User Register successfully !!",
@@ -130,8 +137,8 @@ const updateUser = asyncHandler(async (req, res) => {
 
         const updatedFields = {
             employeeNumber: employeeNumber || user.employeeNumber,
-            firstname: firstname || user.firstname,
-            lastname: lastname || user.lastname,
+            firstname: capitalizeFLetter(firstname) || user.firstname,
+            lastname: capitalizeFLetter(lastname) || user.lastname,
             email: email || user.email,
             phone: phone || user.phone,
             address: address || user.address,

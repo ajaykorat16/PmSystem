@@ -19,8 +19,8 @@ const DepartmentList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [globalFilterValue, setGlobalFilterValue] = useState('');
-  const [sortField, setSortField] = useState('');
-  const [sortOrder, setSortOrder] = useState(1);
+  const [sortField, setSortField] = useState('createdAt');
+  const [sortOrder, setSortOrder] = useState(-1);
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
@@ -31,7 +31,7 @@ const DepartmentList = () => {
     if (globalFilterValue.trim() === '') {
       fetchDepartments();
     }
-  }, [globalFilterValue])
+  }, [globalFilterValue, currentPage, rowsPerPage])
 
   const renderHeader = () => {
     return (
@@ -74,30 +74,10 @@ const DepartmentList = () => {
     navigate(`/dashboard/department/update/${id}`);
   };
 
-  useEffect(() => {
-    fetchDepartments();
-  }, [currentPage, rowsPerPage, sortOrder]);
-
-  const fetchDepartments = async (query) => {
+  const fetchDepartments = async (query, sortField, sortOrder) => {
     setIsLoading(true);
     let departmentData = {};
-    if (query) {
-      departmentData = await getDepartment(
-        currentPage,
-        rowsPerPage,
-        query,
-        sortField,
-        sortOrder
-      );
-    } else {
-      departmentData = await getDepartment(
-        currentPage,
-        rowsPerPage,
-        null,
-        sortField,
-        sortOrder
-      );
-    }
+    departmentData = await getDepartment(currentPage, rowsPerPage, query, sortField, sortOrder);
 
     // Simulating API request delay
     const totalRecordsCount = departmentData.totalDepartments;
@@ -132,13 +112,12 @@ const DepartmentList = () => {
   };
 
   const hanldeSorting = async (e) => {
-    console.log("hyyy", e)
     const field = e.sortField;
     const order = e.sortOrder;
 
     setSortField(field);
     setSortOrder(order);
-    fetchDepartments()
+    fetchDepartments(null, field, order)
   };
 
   return (
