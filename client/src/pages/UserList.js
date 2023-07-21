@@ -24,7 +24,7 @@ const UserList = () => {
   const [sortOrder, setSortOrder] = useState(-1);
   const navigate = useNavigate();
 
-  const fetchUsers = async (query) => {
+  const fetchUsers = async (query, sortField, sortOrder) => {
     setIsLoading(true);
     let usertData = await getAllUsers(currentPage, rowsPerPage, query, sortField, sortOrder);
 
@@ -42,7 +42,7 @@ const UserList = () => {
     if (globalFilterValue.trim() === "") {
       fetchUsers();
     }
-  }, [globalFilterValue, currentPage, rowsPerPage, sortOrder]);
+  }, [globalFilterValue, currentPage, rowsPerPage]);
 
   const renderHeader = () => {
     return (
@@ -152,7 +152,7 @@ const UserList = () => {
 
     setSortField(field);
     setSortOrder(order);
-    fetchUsers()
+    fetchUsers(null, field, order)
   };
 
   return (

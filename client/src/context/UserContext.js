@@ -30,7 +30,7 @@ const UserProvider = ({ children }) => {
         try {
             let res;
             if (query) {
-                res = await axios.post(`/user/user-search?page=${page}&limit=${limit}&sortField=${sortField}&sortOrder=${sortOrder}`, { filter: query }, { headers });
+                res = await axios.post(`/user/user-search`, { filter: query }, { params: { page: page, limit: limit, sortField: sortField, sortOrder: sortOrder }, headers: headers });
             } else {
                 res = await axios.get(`/user`, {
                     params: {
