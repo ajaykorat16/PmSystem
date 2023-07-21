@@ -2,6 +2,10 @@ const Department = require("../models/departmentModel")
 const { validationResult } = require('express-validator');
 const asyncHandler = require('express-async-handler')
 
+function capitalizeFLetter(string) {
+    return string[0].toUpperCase() + string.slice(1);
+}
+
 const createDepartment = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -19,7 +23,7 @@ const createDepartment = asyncHandler(async (req, res) => {
             })
         }
 
-        const newDepartment = await new Department({ name }).save()
+        const newDepartment = await new Department({ name: capitalizeFLetter(name) }).save()
         res.status(201).send({
             error: false,
             message: "Department Create Successfully !!",
@@ -44,7 +48,7 @@ const updateDepartment = asyncHandler(async (req, res) => {
             })
         }
 
-        const updateDepartment = await Department.findByIdAndUpdate({ _id: id }, { name }, { new: true })
+        const updateDepartment = await Department.findByIdAndUpdate({ _id: id }, { name: capitalizeFLetter(name) }, { new: true })
         return res.status(201).json({
             error: false,
             message: "Department update successfully!!",
@@ -83,10 +87,8 @@ const getAllDepartment = asyncHandler(async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const filter = req.query.query || '';
-    const sortField = req.query.sortField || 'name';
-    const sortOrder = req.query.sortOrder || 1
-
-    console.log("req----", req.query)
+    const sortField = req.query.sortField || 'createdAt';
+    const sortOrder = parseInt(req.query.sortOrder) || -1
 
     try {
         const query = {
