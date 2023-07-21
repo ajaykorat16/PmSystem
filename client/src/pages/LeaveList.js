@@ -36,6 +36,10 @@ const LeaveList = () => {
   };
 
   useEffect(() => {
+    fetchLeaves();
+  }, [currentPage, rowsPerPage]);
+
+  useEffect(() => {
     if (globalFilterValue.trim() === "") {
       fetchLeaves();
     }
