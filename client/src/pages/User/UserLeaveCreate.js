@@ -14,7 +14,7 @@ const LeaveCreate = () => {
     const [type, setType] = useState("")
 
     const { addUserLeave } = useLeave()
-    const typeList = ["Paid", "LWP"]
+    const typeList = ["paid", "lwp"]
     const navigate = useNavigate()
 
     const handleSubmit = async (e) => {

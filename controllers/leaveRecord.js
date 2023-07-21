@@ -142,9 +142,11 @@ const userGetLeave = asyncHandler(async (req, res) => {
             const index = i + 1
             return {
                 ...leave,
+                type: capitalizeFLetter(leave.type),
+                status: capitalizeFLetter(leave.status),
                 index: index,
                 startDate: leave.startDate.toISOString().split('T')[0],
-                endDate: leave.endDate.toISOString().split('T')[0]
+                endDate: leave.endDate.toISOString().split('T')[0],
             };
         });
         return res.status(200).json({
