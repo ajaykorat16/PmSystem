@@ -77,6 +77,7 @@ const LeaveList = () => {
     );
     if (confirmDelete) {
       await deleteLeave(id);
+      fetchLeaves();
     }
   };
   const handleUpdate = async (id) => {

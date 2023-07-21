@@ -83,7 +83,6 @@ const LeaveProvider = ({ children }) => {
   const deleteLeave = async (id) => {
     try {
       const res = await axios.delete(`/leaves/deleteLeave/${id}`, { headers });
-
       if (res.data.error === false) {
         getLeave();
         toast.success("Leave deleted successfully");
