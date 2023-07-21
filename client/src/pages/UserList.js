@@ -44,6 +44,10 @@ const UserList = () => {
     }
   }, [globalFilterValue, currentPage, rowsPerPage]);
 
+  useEffect(() => {
+    fetchUsers();
+  }, [currentPage, rowsPerPage]);
+
   const renderHeader = () => {
     return (
       <div className="d-flex align-items-center justify-content-between">

@@ -33,6 +33,10 @@ const DepartmentList = () => {
     }
   }, [globalFilterValue, currentPage, rowsPerPage])
 
+  useEffect(() => {
+    fetchDepartments();
+  }, [currentPage, rowsPerPage]);
+
   const renderHeader = () => {
     return (
       <div className="d-flex align-items-center justify-content-between">
