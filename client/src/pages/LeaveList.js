@@ -22,7 +22,7 @@ const LeaveList = () => {
   const [sortOrder, setSortOrder] = useState(-1);
   const navigate = useNavigate();
 
-  const fetchLeaves = async (query) => {
+  const fetchLeaves = async (query, sortField, sortOrder) => {
     setIsLoading(true);
     let leaveData = await getLeave(currentPage, rowsPerPage, query, sortField, sortOrder);
     // if (query) {
@@ -47,7 +47,7 @@ const LeaveList = () => {
     if (globalFilterValue.trim() === "") {
       fetchLeaves();
     }
-  }, [globalFilterValue, currentPage, rowsPerPage, sortOrder]);
+  }, [globalFilterValue, currentPage, rowsPerPage]);
 
   const renderHeader = () => {
     return (
@@ -123,7 +123,7 @@ const LeaveList = () => {
 
     setSortField(field);
     setSortOrder(order);
-    fetchLeaves()
+    fetchLeaves(null, field, order)
   };
 
   return (
@@ -156,12 +156,11 @@ const LeaveList = () => {
               }
             >
               <Column field="index" header="#" filterField="index" />
-              <Column field="name" header="Name" filterField="name" />
+              <Column field="userId.fullName" sortable header="Name" filterField="name" />
               <Column
                 field="reason"
                 header="Reason"
-                sortable
-                filterField="employeeNumber"
+                filterField="reason"
               />
               <Column field="startDate" body={start} header="Start Date" sortable filterField="start" />
               <Column body={end} header="End Date" filterField="end" />

@@ -16,9 +16,9 @@ const LeaveUpdate = () => {
     const [endDate, setEndDate] = useState("")
     const [type, setType] = useState("")
     const [isLoading, setIsLoading] = useState(true)
-
+    const [users, setUsers] = useState([])
     const { updateLeave, getLeaveById } = useLeave()
-    const { users } = useUser()
+    const { fetchUsers } = useUser()
     const statusList = ["pending", "approved", "rejected"]
     const typeList = ["paid", "lwp"]
     const navigate = useNavigate()
@@ -53,7 +53,13 @@ const LeaveUpdate = () => {
         }
     }
 
-    
+    const getUsers = async () => {
+        const { getAllUsers } = await fetchUsers()
+        setUsers(getAllUsers)
+    }
+    useEffect(() => {
+        getUsers()
+    }, [])
 
     return (
         <Layout>

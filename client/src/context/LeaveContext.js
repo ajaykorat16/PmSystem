@@ -18,7 +18,6 @@ const LeaveProvider = ({ children }) => {
     try {
       let res;
       if (query) {
-        console.log("query-----", query);
         res = await axios.post(
           `/leaves/leavelist-search?page=${page}&limit=${limit}`,
           { filter: query },

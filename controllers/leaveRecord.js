@@ -83,17 +83,41 @@ const getLeaves = asyncHandler(async (req, res) => {
         
         const totalLeaves = await Leaves.countDocuments(query)
         const skip = (page - 1) * limit;
-        const leaves = await Leaves.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate("userId").lean()
+        let leaves;
+        if (sortField === 'userId.fullName') {
+
+            leaves = await Leaves.find(query)
+                .populate({
+                    path: 'userId',
+                    select: 'fullName',
+                })
+                .skip(skip)
+                .limit(limit)
+                .lean();
+
+            leaves.sort((a, b) => {
+                const nameA = a.userId?.fullName || '';
+                const nameB = b.userId?.fullName || '';
+                return sortOrder * nameA.localeCompare(nameB);
+            });
+        } else {
+            leaves = await Leaves.find(query)
+                .sort({ [sortField]: sortOrder })
+                .skip(skip)
+                .limit(limit)
+                .populate({
+                    path: 'userId',
+                    select: 'fullName',
+                })
+                .lean();
+                
+        }
         const formattedLeaves = leaves.map((leave, i) => {
             const index = i + 1
-            const name = leave.userId.firstname + " " + leave.userId.lastname
-            const type = capitalizeFLetter(leave.type)
-            const status = capitalizeFLetter(leave.status)
             return {
                 ...leave,
                 type: capitalizeFLetter(leave.type),
                 status: capitalizeFLetter(leave.status),
-                name: name,
                 index: index,
                 startDate: leave.startDate.toISOString().split('T')[0],
                 endDate: leave.endDate.toISOString().split('T')[0]
