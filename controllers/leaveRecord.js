@@ -3,7 +3,6 @@ const Users = require("../models/userModel")
 const { validationResult } = require('express-validator');
 const asyncHandler = require('express-async-handler')
 
-
 const createLeave = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -139,17 +138,25 @@ const getLeaves = asyncHandler(async (req, res) => {
 const userGetLeave = asyncHandler(async (req, res) => {
     try {
         const leaves = await Leaves.find({ userId: req.user._id }).populate("userId").lean()
+        const formattedLeaves = leaves.map((leave, i) => {
+            const index = i + 1
+            return {
+                ...leave,
+                index: index,
+                startDate: leave.startDate.toISOString().split('T')[0],
+                endDate: leave.endDate.toISOString().split('T')[0]
+            };
+        });
         return res.status(200).json({
             error: false,
             message: "Get All Leave successfully !!",
-            leaves
+            leaves: formattedLeaves
         })
     } catch (error) {
         console.log(error.message)
         res.status(500).send('Server error');
     }
 })
-
 
 const getLeaveById = asyncHandler(async (req, res) => {
     try {
@@ -168,7 +175,6 @@ const getLeaveById = asyncHandler(async (req, res) => {
         res.status(500).send('Server error');
     }
 })
-
 
 const updateLeave = asyncHandler(async (req, res) => {
     try {

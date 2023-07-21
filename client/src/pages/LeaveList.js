@@ -25,19 +25,11 @@ const LeaveList = () => {
   const fetchLeaves = async (query, sortField, sortOrder) => {
     setIsLoading(true);
     let leaveData = await getLeave(currentPage, rowsPerPage, query, sortField, sortOrder);
-    // if (query) {
-    //   leaveData = await getLeave(currentPage, rowsPerPage, query, sortField, sortOrder);
-    // } else {
-    //   leaveData = await getLeave(currentPage, rowsPerPage, sortField, sortOrder);
-    // }
     const totalRecordsCount = leaveData.totalLeaves;
     setTotalRecords(totalRecordsCount);
     setLeaveList(leaveData.leaves);
     setIsLoading(false);
   };
-  // useEffect(() => {
-  //   fetchLeaves();
-  // }, [currentPage, rowsPerPage, sortOrder]);
 
   const handleSubmit = async () => {
     fetchLeaves(globalFilterValue);
@@ -59,7 +51,7 @@ const LeaveList = () => {
           <form onSubmit={handleSubmit}>
             <div className="p-inputgroup ">
               <span className="p-inputgroup-addon">
-                <i className="pi pi-lo" />
+                <i className="pi pi-search" />
               </span>
               <InputText
                 type="search"

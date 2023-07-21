@@ -45,9 +45,6 @@ const LeaveProvider = ({ children }) => {
       console.log(error);
     }
   };
-  // useEffect(() => {
-  //   getLeave();
-  // }, [auth?.token]);
 
   //add leave
   const addLeave = async (leaveData) => {
@@ -133,17 +130,15 @@ const LeaveProvider = ({ children }) => {
   //get user leave
   const getUserLeave = async () => {
     try {
-      const { data } = await axios.get(`/leaves/userLeaves`, { headers });
-      if (data.error === false) {
-        setUserLeaves(data.leaves);
+      const res = await axios.get(`/leaves/userLeaves`, { headers });
+      if (res.data.error === false) {
+        setUserLeaves(res.data.leaves);
+        return res.data;
       }
     } catch (error) {
       console.log(error);
     }
   };
-  useEffect(() => {
-    getUserLeave();
-  }, [auth?.token]);
 
   //add user leave
   const addUserLeave = async (leaveData) => {
@@ -192,6 +187,7 @@ const LeaveProvider = ({ children }) => {
         getLeaveById,
         userLeaves,
         addUserLeave,
+        getUserLeave,
       }}
     >
       {children}
