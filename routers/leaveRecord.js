@@ -3,7 +3,7 @@ const router = express.Router();
 const { check } = require('express-validator');
 const { auth, isAdmin } = require("../middleware/auth")
 
-const { createLeave, getAllLeaves, updateLeave, deleteLeave, userGetLeave, getLeaveById, getLeaves } = require("../controllers/leaveRecord")
+const { createLeave, getAllLeaves, updateLeave, deleteLeave, userGetLeave, getLeaveById, getLeaves, updateStatus } = require("../controllers/leaveRecord")
 
 router.get("/", auth, isAdmin, getAllLeaves)
 
@@ -34,7 +34,8 @@ router.put("/updateLeave", auth, updateLeave)
 
 router.put("/updateLeave/:id", auth, isAdmin, updateLeave)
 
-router.delete("/deleteLeave/:id", auth, isAdmin, deleteLeave)
+router.put("/updateStatus/:id", auth, isAdmin, updateStatus);
 
+router.delete("/deleteLeave/:id", auth, isAdmin, deleteLeave)
 
 module.exports = router

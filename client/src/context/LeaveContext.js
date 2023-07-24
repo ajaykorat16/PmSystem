@@ -114,6 +114,18 @@ const LeaveProvider = ({ children }) => {
     }
   };
 
+  //update status
+  const updateStatus = async (status, id) => {
+    try {
+      const {data} = await axios.put(`/leaves/updateStatus/${id}`, {status}, {headers})
+      if (data.error === false)  {
+        getLeave()
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   //get single leave
   const getLeaveById = async (id) => {
     try {
@@ -199,6 +211,7 @@ const LeaveProvider = ({ children }) => {
         userLeaves,
         addUserLeave,
         getUserLeave,
+        updateStatus,
       }}
     >
       {children}

@@ -10,9 +10,12 @@ import { Dropdown } from "primereact/dropdown";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { useAuth } from "../context/AuthContext";
+import { Tag } from 'primereact/tag';
+import { Button } from 'primereact/button';
+import { toast } from "react-hot-toast";
 
 const LeaveList = () => {
-  const { getLeave, deleteLeave, getUserLeave } = useLeave();
+  const { getLeave, deleteLeave, getUserLeave, updateStatus } = useLeave();
   const [leaveList, setLeaveList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -90,20 +93,33 @@ const LeaveList = () => {
   const handleUpdate = async (id) => {
     navigate(`/dashboard/leave/update/${id}`);
   };
+
+  const handleUpdateStatus = async (id, status) => {
+    try {
+      await updateStatus(status, id);
+      toast.success(`${status} successfully!!`)
+      fetchLeaves();
+    } catch (error) {
+      console.log(error);
+    }
+  }
   const actionTemplate = (rowData) => (
     <div>
+      <Button label="Approved" severity="success" style={{ minWidth: '10px' }} onClick={(e) => handleUpdateStatus(rowData._id, "Approved")} />
+      <Button label="Rejected" severity="danger" style={{ minWidth: '10px' }} onClick={(e) => handleUpdateStatus(rowData._id, "Rejected")} className="ms-2" />
+
       <AiTwotoneEdit
         color="success"
         variant="outline"
         onClick={() => handleUpdate(rowData._id)}
         className="edit"
       />
-      <AiTwotoneDelete
+      {/*<AiTwotoneDelete
         color="danger"
         variant="outline"
         onClick={() => handleDelete(rowData._id)}
         className="delete"
-      />
+      /> */}
     </div>
   );
 
@@ -128,6 +144,26 @@ const LeaveList = () => {
     setSortField(field);
     setSortOrder(order);
     fetchLeaves(null, field, order)
+  };
+
+  const getSeverity = (status) => {
+    switch (status) {
+      case 'Approved':
+        return 'success';
+
+      case 'Pending':
+        return 'warning';
+
+      case 'Rejected':
+        return 'danger';
+
+      default:
+        return null;
+    }
+  };
+
+  const statusBodyTemplate = (rowData) => {
+    return <Tag value={rowData.status} severity={getSeverity(rowData.status)} />;
   };
 
   return (
@@ -173,7 +209,7 @@ const LeaveList = () => {
               <Column field="startDate" body={start} header="Start Date" sortable filterField="start" />
               <Column body={end} header="End Date" filterField="end" />
               <Column field="type" header="Type" filterField="type" />
-              <Column field="status" header="Status" filterField="status" />
+              <Column field="status" header="Status" body={statusBodyTemplate} filterField="status" />
               {auth.user.role === "admin" && <Column field="action" header="Action" body={actionTemplate} />}
             </DataTable>
           </div>

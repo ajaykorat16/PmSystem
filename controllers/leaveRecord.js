@@ -261,4 +261,21 @@ const deleteLeave = asyncHandler(async (req, res) => {
     }
 })
 
-module.exports = { createLeave, getAllLeaves, updateLeave, deleteLeave, userGetLeave, getLeaveById, getLeaves }
+const updateStatus = asyncHandler(async (req, res) => {
+    try {
+        const { status } = req.body
+        const { id } = req.params;
+
+        const updateLeave = await Leaves.findByIdAndUpdate({ _id: id }, {status}, { new: true });
+        return res.status(201).send({
+            error: false,
+            message: "Status Updated Successfully !!",
+            leave: updateLeave
+        });
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).send('Server error');
+    }
+})
+
+module.exports = { createLeave, getAllLeaves, updateLeave, deleteLeave, userGetLeave, getLeaveById, getLeaves, updateStatus }
