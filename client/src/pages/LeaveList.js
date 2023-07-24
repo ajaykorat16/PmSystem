@@ -9,9 +9,10 @@ import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
+import { useAuth } from "../context/AuthContext";
 
 const LeaveList = () => {
-  const { getLeave, deleteLeave } = useLeave();
+  const { getLeave, deleteLeave, getUserLeave } = useLeave();
   const [leaveList, setLeaveList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -21,10 +22,16 @@ const LeaveList = () => {
   const [sortField, setSortField] = useState('createdAt');
   const [sortOrder, setSortOrder] = useState(-1);
   const navigate = useNavigate();
+  const { auth } = useAuth()
 
   const fetchLeaves = async (query, sortField, sortOrder) => {
     setIsLoading(true);
-    let leaveData = await getLeave(currentPage, rowsPerPage, query, sortField, sortOrder);
+    let leaveData;
+    if (auth.user.role === "admin") {
+      leaveData = await getLeave(currentPage, rowsPerPage, query, sortField, sortOrder);
+    } else {
+      leaveData = await getUserLeave(currentPage, rowsPerPage, query, sortField, sortOrder);
+    }
     const totalRecordsCount = leaveData.totalLeaves;
     setTotalRecords(totalRecordsCount);
     setLeaveList(leaveData.leaves);
@@ -147,13 +154,17 @@ const LeaveList = () => {
               paginatorLeft={
                 <Dropdown
                   value={rowsPerPage}
-                  options={[5, 10, 25, 50]}
+                  options={[10, 25, 50]}
                   onChange={(e) => setRowsPerPage(e.value)}
                 />
               }
             >
               <Column field="index" header="#" filterField="index" />
-              <Column field="userId.fullName" sortable header="Name" filterField="name" />
+              {auth.user.role === "admin" ?
+                (<Column field="userId.fullName" sortable header="Name" filterField="name" />)
+                :
+                (<Column field="userId.fullName" header="Name" filterField="name" />)
+              }
               <Column
                 field="reason"
                 header="Reason"
@@ -163,7 +174,7 @@ const LeaveList = () => {
               <Column body={end} header="End Date" filterField="end" />
               <Column field="type" header="Type" filterField="type" />
               <Column field="status" header="Status" filterField="status" />
-              <Column field="action" header="Action" body={actionTemplate} />
+              {auth.user.role === "admin" && <Column field="action" header="Action" body={actionTemplate} />}
             </DataTable>
           </div>
         </>

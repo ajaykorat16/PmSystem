@@ -11,13 +11,13 @@ const createLeave = asyncHandler(async (req, res) => {
     try {
         const { reason, startDate, endDate, type, userId, status } = req.body
         let uId
-        if(userId){
+        if (userId) {
             uId = userId
-        }else{
+        } else {
             uId = req.user._id
         }
 
-        const createLeaves = await new Leaves({ userId:uId, reason, startDate, endDate, type, status }).save();
+        const createLeaves = await new Leaves({ userId: uId, reason, startDate, endDate, type, status }).save();
         return res.status(201).json({
             error: false,
             message: "Your Leave Create successfully !!",
@@ -77,9 +77,10 @@ const getLeaves = asyncHandler(async (req, res) => {
                     { type: { $regex: filter.toLowerCase() } },
                     { status: { $regex: filter.toLowerCase() } },
                     { userId: { $in: fullName } },
-                ]}
+                ]
+            }
         }
-        
+
         const totalLeaves = await Leaves.countDocuments(query)
         const skip = (page - 1) * limit;
         let leaves;
@@ -109,7 +110,7 @@ const getLeaves = asyncHandler(async (req, res) => {
                     select: 'fullName',
                 })
                 .lean();
-                
+
         }
         const formattedLeaves = leaves.map((leave, i) => {
             const index = i + 1
@@ -137,7 +138,32 @@ const getLeaves = asyncHandler(async (req, res) => {
 
 const userGetLeave = asyncHandler(async (req, res) => {
     try {
-        const leaves = await Leaves.find({ userId: req.user._id }).populate("userId").lean()
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 5;
+        const { filter } = req.body;
+        const sortField = req.query.sortField || 'createdAt';
+        const sortOrder = req.query.sortOrder || -1
+        let query = { userId: req.user._id };
+        if (filter) {
+            query = {
+                userId: req.user._id,
+                $or: [
+                    { type: { $regex: filter.toLowerCase() } },
+                    { status: { $regex: filter.toLowerCase() } }
+                ]
+            }
+        }
+        const totalLeaves = await Leaves.countDocuments(query)
+        const skip = (page - 1) * limit;
+        const leaves = await Leaves.find(query)
+            .sort({ [sortField]: sortOrder })
+            .skip(skip)
+            .limit(limit)
+            .populate({
+                path: 'userId',
+                select: 'fullName',
+            })
+            .lean();
         const formattedLeaves = leaves.map((leave, i) => {
             const index = i + 1
             return {
@@ -152,7 +178,10 @@ const userGetLeave = asyncHandler(async (req, res) => {
         return res.status(200).json({
             error: false,
             message: "Get All Leave successfully !!",
-            leaves: formattedLeaves
+            leaves: formattedLeaves,
+            currentPage: page,
+            totalPages: Math.ceil(totalLeaves / limit),
+            totalLeaves
         })
     } catch (error) {
         console.log(error.message)
@@ -166,10 +195,10 @@ const getLeaveById = asyncHandler(async (req, res) => {
         return res.status(200).json({
             error: false,
             message: "Get Leave successfully !!",
-            leaves:{
+            leaves: {
                 ...leaves,
-                startDate:leaves.startDate.toISOString().split('T')[0],
-                endDate:leaves.endDate.toISOString().split('T')[0],
+                startDate: leaves.startDate.toISOString().split('T')[0],
+                endDate: leaves.endDate.toISOString().split('T')[0],
             }
         })
     } catch (error) {

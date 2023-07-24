@@ -14,8 +14,6 @@ import UserProfile from './pages/UserProfile'
 import './scss/style.scss';
 import { Routes, Route } from 'react-router-dom';
 import UserRoutes from './components/Routes/UserRoutes';
-import UserLeaveList from './pages/User/UserLeaveList';
-import UserLeaveCreate from './pages/User/UserLeaveCreate';
 import ResetPassword from './pages/ResetPassword';
 import "primereact/resources/themes/rhea/theme.css"; 
 import "primereact/resources/primereact.min.css";
@@ -43,9 +41,8 @@ function App() {
           <Route path="department/update/:id" element={<DepartmentUpdate />} />
         </Route>
         <Route path='/dashboard-user' element={<UserRoutes />}>
-          <Route path="leave/list" element={<UserLeaveList/>} />
-          <Route path="leave/create" element={<UserLeaveCreate />} />
-          <Route path="leave/update/:id" element={<LeaveUpdate />} />
+          <Route path="leave/list" element={<LeaveList/>} />
+          <Route path="leave/create" element={<LeaveCreate />} />
           <Route path="user/user-profile/:id" element={<UserProfile />} />
           <Route path="user/resetPassword" element={<ResetPassword />} />
         </Route>

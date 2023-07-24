@@ -13,6 +13,8 @@ router.post("/leavelist-search", auth, isAdmin, getLeaves)
 
 router.get("/userLeaves", auth, userGetLeave)
 
+router.post("/userLeaves-search", auth, userGetLeave)
+
 router.get("/getLeaveById/:id", auth, getLeaveById)
 
 router.post("/createLeave",

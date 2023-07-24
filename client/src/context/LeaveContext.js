@@ -127,9 +127,21 @@ const LeaveProvider = ({ children }) => {
   };
 
   //get user leave
-  const getUserLeave = async () => {
+  const getUserLeave = async (page, limit, query, sortField, sortOrder) => {
     try {
-      const res = await axios.get(`/leaves/userLeaves`, { headers });
+      let res;
+      if (query) {
+        res = await axios.post(`/leaves/userLeaves-search?page=${page}&limit=${limit}`, { filter: query }, { headers });
+      } else {
+        res = await axios.get(`/leaves/userLeaves`, {
+          params: {
+            page: page,
+            limit: limit,
+            sortField: sortField,
+            sortOrder: sortOrder,
+          },
+        }, { headers });
+      }
       if (res.data.error === false) {
         setUserLeaves(res.data.leaves);
         return res.data;
