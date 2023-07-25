@@ -186,32 +186,36 @@ const UserList = () => {
                 />
               }
             >
-              <Column header="#" filterField="representative" body={photo} />
+              <Column header="#" filterField="representative" body={photo} align="center"/>
               <Column
                 field="employeeNumber"
                 header="Emp. ID."
                 sortable
                 filterField="employeeNumber"
+                align="center"
               />
-              <Column field="fullName" sortable header="Name" filterField="firstname" />
-              <Column field="email" sortable header="Email" filterField="email" />
-              <Column field="phone" header="Phone" filterField="phone" />
+              <Column field="fullName" sortable header="Name" filterField="firstname" align="center" />
+              <Column field="email" sortable header="Email" filterField="email" align="center" />
+              <Column field="phone" header="Phone" filterField="phone" align="center" />
               <Column
                 body={DOB}
                 header="DOB"
                 filterField="dateOfBirth"
+                align="center"
               />
               <Column
                 body={DOJ}
                 header="DOJ"
                 filterField="dateOfJoining"
+                align="center"
               />
               <Column
                 field="department"
                 header="Department"
                 filterField="department"
+                align="center"
               />
-              <Column field="action" header="Action" body={actionTemplate} />
+              <Column field="action" header="Action" body={actionTemplate} align="center"/>
             </DataTable>
           </div>
         </>

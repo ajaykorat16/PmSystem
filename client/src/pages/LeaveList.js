@@ -9,8 +9,8 @@ import { Dropdown } from "primereact/dropdown";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { useAuth } from "../context/AuthContext";
-import { Tag } from 'primereact/tag';
-import { Button } from 'primereact/button';
+import { Tag } from "primereact/tag";
+import { Button } from "primereact/button";
 import { toast } from "react-hot-toast";
 
 const LeaveList = () => {
@@ -21,18 +21,30 @@ const LeaveList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [globalFilterValue, setGlobalFilterValue] = useState("");
-  const [sortField, setSortField] = useState('createdAt');
+  const [sortField, setSortField] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState(-1);
   const navigate = useNavigate();
-  const { auth } = useAuth()
+  const { auth } = useAuth();
 
   const fetchLeaves = async (query, sortField, sortOrder) => {
     setIsLoading(true);
     let leaveData;
     if (auth.user.role === "admin") {
-      leaveData = await getLeave(currentPage, rowsPerPage, query, sortField, sortOrder);
+      leaveData = await getLeave(
+        currentPage,
+        rowsPerPage,
+        query,
+        sortField,
+        sortOrder
+      );
     } else {
-      leaveData = await getUserLeave(currentPage, rowsPerPage, query, sortField, sortOrder);
+      leaveData = await getUserLeave(
+        currentPage,
+        rowsPerPage,
+        query,
+        sortField,
+        sortOrder
+      );
     }
     const totalRecordsCount = leaveData.totalLeaves;
     setTotalRecords(totalRecordsCount);
@@ -80,15 +92,6 @@ const LeaveList = () => {
   };
   const header = renderHeader();
 
-  const handleDelete = async (id) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this leave"
-    );
-    if (confirmDelete) {
-      await deleteLeave(id);
-      fetchLeaves();
-    }
-  };
   const handleUpdate = async (id) => {
     navigate(`/dashboard/leave/update/${id}`);
   };
@@ -96,32 +99,45 @@ const LeaveList = () => {
   const handleUpdateStatus = async (id, status) => {
     try {
       await updateStatus(status, id);
-      toast.success(`${status} successfully!!`)
+      toast.success(`${status} successfully!!`);
       fetchLeaves();
     } catch (error) {
       console.log(error);
     }
-  }
+  };
   const actionTemplate = (rowData) => (
     <div>
-      <Button label="Approve" severity="success" onClick={(e) => handleUpdateStatus(rowData._id, "Approved")} style={{ maxWidth: "6rem", fontSize: "15px", height: "30px", fontWeight: "bolder" }} raised />
-      <Button label="Rejecte" severity="danger" onClick={(e) => handleUpdateStatus(rowData._id, "Rejected")} style={{ maxWidth: "6rem", fontSize: "15px", height: "30px", fontWeight: "bolder" }} className="ms-2" raised />
-      <Button label="Edit" severity="info" onClick={() => handleUpdate(rowData._id)} style={{ maxWidth: "6rem", fontSize: "15px", height: "30px", fontWeight: "bolder" }} className="ms-2" raised />
+      {rowData.status === "Pending" && (
+        <>
+          <Button
+            icon="pi pi-check"
+            title="Approve"
+            rounded
+            severity="success"
+            onClick={() => handleUpdateStatus(rowData._id, "approved")}
+            raised
+          />
+          <Button
+            icon="pi pi-times"
+            title="Reject"
+            rounded
+            severity="danger"
+            onClick={() => handleUpdateStatus(rowData._id, "rejected")}
+            className="ms-2"
+            raised
+          />
+        </>
+      )}
 
-      {/* <Button icon="pi pi-pencil" color="success" rounded outlined className="ms-2" onClick={() => handleUpdate(rowData._id)} /> */}
-
-      {/* <AiTwotoneEdit
-        color="success"
-        variant="outline"
+      <Button
+        icon="pi pi-pencil"
+        rounded
+        severity="info"
+        className="ms-2"
+        title="Edit"
         onClick={() => handleUpdate(rowData._id)}
-        className="edit"
-      /> */}
-      {/*<AiTwotoneDelete
-        color="danger"
-        variant="outline"
-        onClick={() => handleDelete(rowData._id)}
-        className="delete"
-      /> */}
+        raised
+      />
     </div>
   );
 
@@ -145,19 +161,19 @@ const LeaveList = () => {
 
     setSortField(field);
     setSortOrder(order);
-    fetchLeaves(null, field, order)
+    fetchLeaves(null, field, order);
   };
 
   const getSeverity = (status) => {
     switch (status) {
-      case 'Approved':
-        return 'success';
+      case "Approved":
+        return "success";
 
-      case 'Pending':
-        return 'warning';
+      case "Pending":
+        return "warning";
 
-      case 'Rejected':
-        return 'danger';
+      case "Rejected":
+        return "danger";
 
       default:
         return null;
@@ -165,7 +181,9 @@ const LeaveList = () => {
   };
 
   const statusBodyTemplate = (rowData) => {
-    return <Tag value={rowData.status} severity={getSeverity(rowData.status)} />;
+    return (
+      <Tag value={rowData.status} severity={getSeverity(rowData.status)} />
+    );
   };
 
   return (
@@ -198,22 +216,66 @@ const LeaveList = () => {
                 />
               }
             >
-              <Column field="index" header="#" filterField="index" />
-              {auth.user.role === "admin" &&
-                <Column field="userId.fullName" sortable header="Name" filterField="name" />
-
-              }
+              <Column
+                field="index"
+                header="#"
+                filterField="index"
+                align="center"
+              />
+              {auth.user.role === "admin" && (
+                <Column
+                  field="userId.fullName"
+                  sortable
+                  header="Name"
+                  filterField="name"
+                  align="center"
+                />
+              )}
               <Column
                 field="reason"
                 header="Reason"
                 filterField="reason"
-                style={{ minWidth: "10rem", maxWidth: "10rem" }}
+                alignHeader="center"
+                style={{ minWidth: "15rem", maxWidth: "15rem" }}
               />
-              <Column field="startDate" body={start} header="Start Date" sortable filterField="start" />
-              <Column body={end} header="End Date" filterField="end" />
-              <Column field="type" header="Type" filterField="type" />
-              <Column field="status" header="Status" body={statusBodyTemplate} filterField="status" style={{ textAlign: "center" }} />
-              {auth.user.role === "admin" && <Column field="action" header="Action" body={actionTemplate} style={{ textAlign: "center" }} />}
+              <Column
+                field="startDate"
+                body={start}
+                header="Start Date"
+                sortable
+                filterField="start"
+                align="center"
+              />
+              <Column
+                body={end}
+                header="End Date"
+                filterField="end"
+                align="center"
+              />
+              <Column
+                field="type"
+                header="Type"
+                filterField="type"
+                align="center"
+              />
+              <Column
+                field="status"
+                header="Status"
+                alignHeader="center"
+                body={statusBodyTemplate}
+                filterField="status"
+                align="center"
+              />
+              {auth.user.role === "admin" && (
+                <Column
+                  field="action"
+                  header="Action"
+                  body={actionTemplate}
+                  align="right"
+                  alignHeader="center"
+                  style={{ maxWidth: "8rem"}}
+                />
+              )}
             </DataTable>
           </div>
         </>
