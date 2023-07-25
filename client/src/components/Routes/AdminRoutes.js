@@ -11,14 +11,12 @@ const AdminRoutes = () => {
   useEffect(() => {
     const authCheck = async () => {
       const res = await axios.get(`/user/admin-auth`);
-
       if (res.data.ok) {
         setOk(true);
       } else {
         setOk(false);
       }
     };
-
     if (auth?.token) authCheck();
   }, [auth?.token]);
 
