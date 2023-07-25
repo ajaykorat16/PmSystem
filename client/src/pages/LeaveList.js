@@ -3,7 +3,6 @@ import { useLeave } from "../context/LeaveContext";
 import { useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
 import moment from "moment";
-import { AiTwotoneDelete, AiTwotoneEdit } from "react-icons/ai";
 import Layout from "./Layout";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
@@ -105,15 +104,18 @@ const LeaveList = () => {
   }
   const actionTemplate = (rowData) => (
     <div>
-      <Button label="Approved" severity="success" style={{ minWidth: '10px' }} onClick={(e) => handleUpdateStatus(rowData._id, "Approved")} />
-      <Button label="Rejected" severity="danger" style={{ minWidth: '10px' }} onClick={(e) => handleUpdateStatus(rowData._id, "Rejected")} className="ms-2" />
+      <Button label="Approve" severity="success" onClick={(e) => handleUpdateStatus(rowData._id, "Approved")} style={{ maxWidth: "6rem", fontSize: "15px", height: "30px", fontWeight: "bolder" }} raised />
+      <Button label="Rejecte" severity="danger" onClick={(e) => handleUpdateStatus(rowData._id, "Rejected")} style={{ maxWidth: "6rem", fontSize: "15px", height: "30px", fontWeight: "bolder" }} className="ms-2" raised />
+      <Button label="Edit" severity="info" onClick={() => handleUpdate(rowData._id)} style={{ maxWidth: "6rem", fontSize: "15px", height: "30px", fontWeight: "bolder" }} className="ms-2" raised />
 
-      <AiTwotoneEdit
+      {/* <Button icon="pi pi-pencil" color="success" rounded outlined className="ms-2" onClick={() => handleUpdate(rowData._id)} /> */}
+
+      {/* <AiTwotoneEdit
         color="success"
         variant="outline"
         onClick={() => handleUpdate(rowData._id)}
         className="edit"
-      />
+      /> */}
       {/*<AiTwotoneDelete
         color="danger"
         variant="outline"
@@ -176,6 +178,7 @@ const LeaveList = () => {
             <DataTable
               totalRecords={totalRecords}
               lazy
+              className="text-center"
               paginator
               sortField={sortField}
               sortOrder={sortOrder}
@@ -196,21 +199,21 @@ const LeaveList = () => {
               }
             >
               <Column field="index" header="#" filterField="index" />
-              {auth.user.role === "admin" ?
-                (<Column field="userId.fullName" sortable header="Name" filterField="name" />)
-                :
-                (<Column field="userId.fullName" header="Name" filterField="name" />)
+              {auth.user.role === "admin" &&
+                <Column field="userId.fullName" sortable header="Name" filterField="name" />
+
               }
               <Column
                 field="reason"
                 header="Reason"
                 filterField="reason"
+                style={{ minWidth: "10rem", maxWidth: "10rem" }}
               />
               <Column field="startDate" body={start} header="Start Date" sortable filterField="start" />
               <Column body={end} header="End Date" filterField="end" />
               <Column field="type" header="Type" filterField="type" />
-              <Column field="status" header="Status" body={statusBodyTemplate} filterField="status" />
-              {auth.user.role === "admin" && <Column field="action" header="Action" body={actionTemplate} />}
+              <Column field="status" header="Status" body={statusBodyTemplate} filterField="status" style={{ textAlign: "center" }} />
+              {auth.user.role === "admin" && <Column field="action" header="Action" body={actionTemplate} style={{ textAlign: "center" }} />}
             </DataTable>
           </div>
         </>

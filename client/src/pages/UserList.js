@@ -4,13 +4,13 @@ import { Column } from "primereact/column";
 import { useUser } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
-import { AiTwotoneDelete, AiTwotoneEdit } from "react-icons/ai";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import Layout from "./Layout";
 import moment from "moment";
-import { CAvatar } from "@coreui/react";
 import "../styles/Styles.css"
+import { Button } from "primereact/button";
+import { Avatar } from 'primereact/avatar';
 
 const UserList = () => {
   const { deleteUser, getAllUsers } = useUser();
@@ -92,7 +92,10 @@ const UserList = () => {
       <div>
         {rowData.role === "user" && (
           <>
-            <AiTwotoneEdit
+            <Button icon="pi pi-pencil" rounded severity="success" aria-label="edit" onClick={() => handleUpdate(rowData._id)} />
+            <Button icon="pi pi-trash" rounded severity="danger" className="ms-2" aria-label="Cancel" onClick={() => handleDelete(rowData._id)} />
+
+            {/* <AiTwotoneEdit
               color="success"
               variant="outline"
               onClick={() => handleUpdate(rowData._id)}
@@ -103,7 +106,7 @@ const UserList = () => {
               variant="outline"
               onClick={() => handleDelete(rowData._id)}
               className="delete"
-            />
+            /> */}
           </>
         )}
       </div>
@@ -121,14 +124,9 @@ const UserList = () => {
     return (
       <div className="flex align-items-center gap-2">
         {rowData.photo ? (
-          <img
-            alt={rowData.name}
-            src={`${rowData.photo}`}
-            height="50"
-            width="50"
-          />
+          <Avatar image={`${rowData.photo}`} size="large" shape="circle" />
         ) : (
-          <CAvatar color="success" textColor="white" size="lg">{rowData.avatar}</CAvatar>
+          <Avatar icon="pi pi-user" style={{ backgroundColor: '#2196F3', color: '#ffffff' }} size="large" shape="circle" />
         )}
       </div>
     );
