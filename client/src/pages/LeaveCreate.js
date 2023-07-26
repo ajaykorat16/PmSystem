@@ -72,7 +72,7 @@ const LeaveCreate = () => {
     if (auth.user.role === "admin") {
       getUsers();
     }
-  }, []);
+  }, [auth.user.role]);
 
   return (
     <Layout>

@@ -49,12 +49,9 @@ const UserCreate = () => {
         const { departments } = await getDepartmentList()
         setDepartmentsList(departments)
     }
-
     useEffect(() => {
         fetchDepartment()
-
     }, [])
-
 
     return (
         <Layout>

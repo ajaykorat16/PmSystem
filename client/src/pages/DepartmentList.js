@@ -3,7 +3,6 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { useDepartment } from '../context/DepartmentContext';
 import { useNavigate } from 'react-router-dom';
-import { AiTwotoneDelete, AiTwotoneEdit } from 'react-icons/ai';
 import Layout from './Layout';
 import Loader from '../components/Loader';
 import { InputText } from 'primereact/inputtext';
@@ -96,19 +95,6 @@ const DepartmentList = () => {
     <div>
       <Button icon="pi pi-pencil" rounded severity="success" aria-label="edit" onClick={() => handleUpdate(rowData._id)} />
       <Button icon="pi pi-trash" rounded severity="danger" className="ms-2" aria-label="Cancel" onClick={() => handleDelete(rowData._id)} />
-
-      {/* <AiTwotoneEdit
-        color="success"
-        variant="outline"
-        onClick={() => handleUpdate(rowData._id)}
-        className="edit"
-      />
-      <AiTwotoneDelete
-        color="danger"
-        variant="outline"
-        onClick={() => handleDelete(rowData._id)}
-        className="delete"
-      /> */}
     </div>
   );
 
