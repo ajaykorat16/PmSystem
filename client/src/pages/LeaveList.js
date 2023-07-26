@@ -29,7 +29,7 @@ const LeaveList = () => {
   const fetchLeaves = async (query, sortField, sortOrder) => {
     setIsLoading(true);
     let leaveData;
-    if (auth.user.role === "admin") {
+    if (auth.user.role === "admin") { 
       leaveData = await getLeave(
         currentPage,
         rowsPerPage,

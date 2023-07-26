@@ -2,6 +2,38 @@ const Leaves = require("../models/leaveModel")
 const Users = require("../models/userModel")
 const { validationResult } = require('express-validator');
 const asyncHandler = require('express-async-handler')
+const nodemailer = require('nodemailer');
+
+const sendMailForLeave = async (email, status) => {
+    try {
+        const transporter = nodemailer.createTransport({
+            host: process.env.MAIL_HOST,
+            port: 465,
+            secure: true,
+            auth: {
+                user: process.env.MAIL_AUTH_USER,
+                pass: process.env.MAIL_AUTH_PASS,
+            },
+        });
+
+        const mailOption = {
+            from: process.env.MAIL_FROM_EMAIL,
+            to: email,
+            subject: "Leave Status",
+            text: `Your leave is ${status}`,
+        };
+
+        const info = await transporter.sendMail(mailOption);
+        console.log("Mail sent successfully!!!", info);
+        return { status: true, message: "Email sent successfully!" };
+    } catch (error) {
+        console.error("Error sending email:", error);
+        return { status: false, message: "Failed to send email." };
+    }
+};
+
+
+
 
 const createLeave = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
@@ -18,6 +50,8 @@ const createLeave = asyncHandler(async (req, res) => {
         }
 
         const createLeaves = await new Leaves({ userId: uId, reason, startDate, endDate, type, status }).save();
+        const user = await Users.find({ _id: uId }).select("email")
+        await sendMailForLeave(user[0].email, reason)
         return res.status(201).json({
             error: false,
             message: "Your Leave Create successfully !!",
@@ -266,7 +300,9 @@ const updateStatus = asyncHandler(async (req, res) => {
         const { status } = req.body
         const { id } = req.params;
 
-        const updateLeave = await Leaves.findByIdAndUpdate({ _id: id }, {status}, { new: true });
+        const updateLeave = await Leaves.findByIdAndUpdate({ _id: id }, { status }, { new: true }).populate({ path: "userId", select: "email" });
+        let email = updateLeave.userId.email
+        await sendMailForLeave(email, status)
         return res.status(201).send({
             error: false,
             message: "Status Updated Successfully !!",
