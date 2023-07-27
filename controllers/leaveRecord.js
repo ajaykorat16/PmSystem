@@ -14,13 +14,14 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-const sendMailForLeaveStatus = async (email, status) => {
+const sendMailForLeaveStatus = async (user, status) => {
     try {
+        const { fullName, email } = user
         const mailOptions = {
             from: process.env.MAIL_FROM_EMAIL,
             to: email,
             subject: "Leave Status",
-            text: `Your leave is ${status}`,
+            text: `${fullName}, Your leave is ${status}`,
         };
 
         transporter.sendMail(mailOptions, function (err, info) {
@@ -38,13 +39,20 @@ const sendMailForLeaveStatus = async (email, status) => {
     }
 };
 
-const sendMailForLeaveRequest = async (email, data) => {
+const sendMailForLeaveRequest = async (user, data) => {
     try {
+        const { reason, startDate, endDate, type } = data;
+        const { fullName, email } = user
         const mailOptions = {
             from: email,
             to: process.env.MAIL_FROM_EMAIL,
             subject: "Leave Request",
-            text: `Leave Request From ${data}`,
+            text: `
+            Leave Request from: ${fullName}
+            Reason: ${reason}
+            Start Date: ${startDate}
+            End Date: ${endDate}
+            Type: ${type}`,
         };
 
         transporter.sendMail(mailOptions, function (err, info) {
@@ -77,8 +85,8 @@ const createLeave = asyncHandler(async (req, res) => {
         }
 
         const createLeaves = await new Leaves({ userId: uId, reason, startDate, endDate, type, status }).save();
-        const user = await Users.find({ _id: uId }).select("email")
-        await sendMailForLeaveRequest(user[0].email, reason)
+        const user = await Users.find({ _id: uId }).select("-photo")
+        await sendMailForLeaveRequest(user[0], createLeaves)
         return res.status(201).json({
             error: false,
             message: "Your Leave Create successfully !!",
@@ -327,9 +335,9 @@ const updateStatus = asyncHandler(async (req, res) => {
         const { status } = req.body
         const { id } = req.params;
 
-        const updateLeave = await Leaves.findByIdAndUpdate({ _id: id }, { status }, { new: true }).populate({ path: "userId", select: "email" });
-        let email = updateLeave.userId.email
-        await sendMailForLeaveStatus(email, status)
+        const updateLeave = await Leaves.findByIdAndUpdate({ _id: id }, { status }, { new: true }).populate({ path: "userId", select: "-photo" });
+        let user = updateLeave.userId
+        await sendMailForLeaveStatus(user, status)
         return res.status(201).send({
             error: false,
             message: "Status Updated Successfully !!",
