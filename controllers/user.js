@@ -9,62 +9,6 @@ const bcrypt = require('bcrypt');
 const asyncHandler = require('express-async-handler');
 const saltRounds = 10
 
-const carryForwardLeaves = async () => {
-    try {
-        const allUsers = await Users.find().select("_id, fullName, carryForward")
-        allUsers.map(async (e) => {
-            const getLeaves = await Leaves.aggregate([
-                {
-                    $match: { userId: e._id, status: "approved" }
-                },
-                {
-                    $group: {
-                        _id: '$userId',
-                        totalLeaves: { $sum: '$totalDays' },
-                    },
-                },
-            ]);
-
-            const previousYearLeaves = await LeaveManagement.aggregate([
-                {
-                    $match: { user: e._id }
-                },
-                {
-                    $group: {
-                        _id: '$user',
-                        leave: { $sum: '$leave' },
-                    },
-                },
-            ]);
-
-            for (const lastLeaves of previousYearLeaves) {
-                for (const leave of getLeaves) {
-                    const finalTotal = (e.carryForward + lastLeaves.leave) - leave.totalLeaves
-                    // await Users.findByIdAndUpdate({_id:leave.userId}, {$set:{carryForward:finalTotal}})
-                }
-            }
-        })
-    } catch (error) {
-        console.log(error);
-    }
-}
-// carryForwardLeaves()
-
-const createMonthly = async (req, res) => {
-    try {
-        let today = new Date();
-        let leave = "1.5"
-        const allUsers = await Users.find().select("_id, fullName, carryForward")
-        allUsers.map(async (e) => {
-            await new LeaveManagement({ user: e._id, monthly: today, leave }).save()
-        })
-    } catch (error) {
-        console.log(error);
-    }
-
-}
-// createMonthly()
-
 const hashPassword = async (password) => {
     try {
         const hashedPassword = await bcrypt.hash(password, saltRounds)
