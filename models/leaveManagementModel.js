@@ -13,7 +13,7 @@ const leaveManagementSchema = new mongoose.Schema(
       trim: true,
     },
     leave: {
-      type: String,
+      type: Number,
       require: true,
     },
   },

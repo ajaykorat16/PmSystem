@@ -11,46 +11,59 @@ const saltRounds = 10
 
 const carryForwardLeaves = async () => {
     try {
-        let carryForward = 0;
         const allUsers = await Users.find().select("_id, fullName, carryForward")
         allUsers.map(async (e) => {
-            const getLeaves = await Leaves.find({ userId: e._id, status:"approved" })
-            // console.log(getLeaves);
-            let totalLeaves = 0;
-            for (const leave of getLeaves) {
-                totalLeaves += leave.totalDays;
-                // console.log(e.carryForward);
-                const finalTotal = (e.carryForward + 18) - totalLeaves
-                console.log(finalTotal);
-                
-                // await Users.findByIdAndUpdate({_id:leave.userId}, {$set:{carryForward:finalTotal}})
-                // console.log(leave.userId);
+            const getLeaves = await Leaves.aggregate([
+                {
+                    $match: { userId: e._id, status: "approved" }
+                },
+                {
+                    $group: {
+                        _id: '$userId',
+                        totalLeaves: { $sum: '$totalDays' },
+                    },
+                },
+            ]);
+
+            const previousYearLeaves = await LeaveManagement.aggregate([
+                {
+                    $match: { user: e._id }
+                },
+                {
+                    $group: {
+                        _id: '$user',
+                        leave: { $sum: '$leave' },
+                    },
+                },
+            ]);
+
+            for (const lastLeaves of previousYearLeaves) {
+                for (const leave of getLeaves) {
+                    const finalTotal = (e.carryForward + lastLeaves.leave) - leave.totalLeaves
+                    // await Users.findByIdAndUpdate({_id:leave.userId}, {$set:{carryForward:finalTotal}})
+                }
             }
-            // console.log(`User ${e._id} has a total of ${totalLeaves} leaves.`);
         })
-        // console.log(allUsers)
     } catch (error) {
         console.log(error);
     }
 }
-carryForwardLeaves()
+// carryForwardLeaves()
 
 const createMonthly = async (req, res) => {
     try {
         let today = new Date();
         let leave = "1.5"
         const allUsers = await Users.find().select("_id, fullName, carryForward")
-        // console.log(allUsers);
         allUsers.map(async (e) => {
-            const users = await new LeaveManagement({user: e._id, monthly: today, leave}).save()
-            console.log("users-----", users);
+            await new LeaveManagement({ user: e._id, monthly: today, leave }).save()
         })
     } catch (error) {
         console.log(error);
     }
-    
+
 }
-createMonthly()
+// createMonthly()
 
 const hashPassword = async (password) => {
     try {
