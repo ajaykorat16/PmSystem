@@ -14,6 +14,7 @@ const LeaveCreate = () => {
   const [status, setStatus] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [totalDays, setTotalDays] = useState("")
   const [type, setType] = useState("");
 
   const { auth } = useAuth();
@@ -36,6 +37,7 @@ const LeaveCreate = () => {
               type,
               userId,
               status,
+              totalDays
             };
             const data = await addLeave(leaveData);
             if (data.error) {
@@ -50,7 +52,7 @@ const LeaveCreate = () => {
       : (handleSubmit = async (e) => {
           e.preventDefault();
           try {
-            const leaveData = { reason, startDate, endDate, type };
+            const leaveData = { reason, startDate, endDate, type, totalDays};
             const data = await addUserLeave(leaveData);
             if (data.error) {
               toast.error(data.message);
@@ -74,6 +76,27 @@ const LeaveCreate = () => {
     }
   }, [auth.user.role]);
 
+  const leaveDaysCount = (startDate, endDate) => {
+    const eDate = new Date(endDate);
+  
+    let currentDate = new Date(startDate);
+    let totalDays = 0;
+  
+    while (currentDate <= eDate) {
+      const dayOfWeek = currentDate.getDay();
+      // 0 = Sunday, 6 = Saturday
+      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+        totalDays++;
+      }
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    setTotalDays(totalDays)
+  };
+  useEffect(() => {
+    leaveDaysCount(startDate, endDate)
+  },[startDate, endDate])
+
+  
   return (
     <Layout>
       <div className="mb-3">
@@ -160,6 +183,14 @@ const LeaveCreate = () => {
             label="Leave End"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
+          />
+        </CCol><CCol xs={6}>
+          <CFormInput
+            id="inputendDate"
+            label="Total Days"
+            value={totalDays}
+            onChange={(e) => setTotalDays(e.target.value)}
+            disabled
           />
         </CCol>
 

@@ -1,12 +1,56 @@
 const Users = require("../models/userModel")
 const Leaves = require("../models/leaveModel")
 const Department = require("../models/departmentModel")
+const LeaveManagement = require("../models/leaveManagementModel")
 const { validationResult } = require('express-validator');
 const fs = require("fs")
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const asyncHandler = require('express-async-handler');
 const saltRounds = 10
+
+const carryForwardLeaves = async () => {
+    try {
+        let carryForward = 0;
+        const allUsers = await Users.find().select("_id, fullName, carryForward")
+        allUsers.map(async (e) => {
+            const getLeaves = await Leaves.find({ userId: e._id, status:"approved" })
+            // console.log(getLeaves);
+            let totalLeaves = 0;
+            for (const leave of getLeaves) {
+                totalLeaves += leave.totalDays;
+                // console.log(e.carryForward);
+                const finalTotal = (e.carryForward + 18) - totalLeaves
+                console.log(finalTotal);
+                
+                // await Users.findByIdAndUpdate({_id:leave.userId}, {$set:{carryForward:finalTotal}})
+                // console.log(leave.userId);
+            }
+            // console.log(`User ${e._id} has a total of ${totalLeaves} leaves.`);
+        })
+        // console.log(allUsers)
+    } catch (error) {
+        console.log(error);
+    }
+}
+carryForwardLeaves()
+
+const createMonthly = async (req, res) => {
+    try {
+        let today = new Date();
+        let leave = "1.5"
+        const allUsers = await Users.find().select("_id, fullName, carryForward")
+        // console.log(allUsers);
+        allUsers.map(async (e) => {
+            const users = await new LeaveManagement({user: e._id, monthly: today, leave}).save()
+            console.log("users-----", users);
+        })
+    } catch (error) {
+        console.log(error);
+    }
+    
+}
+createMonthly()
 
 const hashPassword = async (password) => {
     try {

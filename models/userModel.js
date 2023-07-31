@@ -72,6 +72,10 @@ const userSchema = new mongoose.Schema({
     role: {
         type: String,
         default: "user"
+    },
+    carryForward: {
+        type: Number,
+        default: 5
     }
 }, {
     timestamps: true,

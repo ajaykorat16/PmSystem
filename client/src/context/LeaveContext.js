@@ -49,11 +49,11 @@ const LeaveProvider = ({ children }) => {
   //add leave
   const addLeave = async (leaveData) => {
     try {
-      const { reason, startDate, endDate, type, userId, status } = leaveData;
+      const { reason, startDate, endDate, type, userId, status, totalDays } = leaveData;
 
       const { data } = await axios.post(
         `/leaves/createLeaveAdmin`,
-        { reason, startDate, endDate, type, userId, status },
+        { reason, startDate, endDate, type, userId, status, totalDays },
         { headers }
       );
 
@@ -95,11 +95,11 @@ const LeaveProvider = ({ children }) => {
   //update leave
   const updateLeave = async (leaveData, id) => {
     try {
-      const { reason, startDate, endDate, type, userId, status } = leaveData;
+      const { reason, startDate, endDate, type, userId, status, totalDays } = leaveData;
 
       const { data } = await axios.put(
         `/leaves/updateLeave/${id}`,
-        { reason, startDate, endDate, type, userId, status },
+        { reason, startDate, endDate, type, userId, status, totalDays },
         { headers }
       );
 
@@ -166,11 +166,11 @@ const LeaveProvider = ({ children }) => {
   //add user leave
   const addUserLeave = async (leaveData) => {
     try {
-      const { reason, startDate, endDate, type, status } = leaveData;
+      const { reason, startDate, endDate, type, status, totalDays } = leaveData;
 
       const { data } = await axios.post(
         `/leaves/createLeave`,
-        { reason, startDate, endDate, type, status },
+        { reason, startDate, endDate, type, status, totalDays },
         { headers }
       );
 

@@ -14,6 +14,25 @@ const transporter = nodemailer.createTransport({
     },
 });
 
+    const leaveDaysCount =  (startDate, endDate) => {
+    const sDate = new Date(startDate);
+    const eDate = new Date(endDate);
+  
+    let currentDate = new Date(startDate);
+    let totalDays = 0;
+  
+    while (currentDate <= eDate) {
+      const dayOfWeek = currentDate.getDay();
+      // 0 = Sunday, 6 = Saturday
+      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+        totalDays++;
+      }
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    return totalDays
+    // this.totalDaysExcludingWeekends = totalDays;
+  };
+
 const sendMailForLeaveStatus = async (user, status) => {
     try {
         const { fullName, email } = user
@@ -42,10 +61,11 @@ const sendMailForLeaveStatus = async (user, status) => {
 const sendMailForLeaveRequest = async (user, data) => {
     try {
         const { reason, startDate, endDate, type } = data;
-        const { fullName, email } = user
+        const { fullName } = user
+        const adminUser = await Users.findOne({ role: 'admin' }).select("email");
         const mailOptions = {
-            from: email,
-            to: process.env.MAIL_FROM_EMAIL,
+            from: process.env.MAIL_FROM_EMAIL,
+            to: adminUser.email,
             subject: "Leave Request",
             text: `
             Leave Request from: ${fullName}
@@ -54,7 +74,6 @@ const sendMailForLeaveRequest = async (user, data) => {
             End Date: ${endDate}
             Type: ${type}`,
         };
-
         transporter.sendMail(mailOptions, function (err, info) {
             if (err) {
                 console.log("Mail.sendEmail [ERROR: " + err + "]");
@@ -76,15 +95,14 @@ const createLeave = asyncHandler(async (req, res) => {
         return res.status(400).json({ errors: errors.array() });
     }
     try {
-        const { reason, startDate, endDate, type, userId, status } = req.body
+        const { reason, startDate, endDate, type, userId, status, totalDays } = req.body
         let uId
         if (userId) {
             uId = userId
         } else {
             uId = req.user._id
         }
-
-        const createLeaves = await new Leaves({ userId: uId, reason, startDate, endDate, type, status }).save();
+        const createLeaves = await new Leaves({ userId: uId, reason, startDate, endDate, type, status, totalDays }).save();
         const user = await Users.find({ _id: uId }).select("-photo")
         await sendMailForLeaveRequest(user[0], createLeaves)
         return res.status(201).json({
@@ -278,7 +296,7 @@ const getLeaveById = asyncHandler(async (req, res) => {
 
 const updateLeave = asyncHandler(async (req, res) => {
     try {
-        const { reason, startDate, endDate, type, status, userId } = req.body
+        const { reason, startDate, endDate, type, status, userId, totalDays } = req.body
         const { id } = req.params;
 
         let userLeave;
@@ -296,6 +314,7 @@ const updateLeave = asyncHandler(async (req, res) => {
             startDate: startDate || userLeave.startDate,
             endDate: endDate || userLeave.endDate,
             type: type || userLeave.type,
+            totalDays: totalDays || userLeave.totalDays
         }
 
         if (req.user.role === 1) {
