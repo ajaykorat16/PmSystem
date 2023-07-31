@@ -1,7 +1,6 @@
 const Users = require("../models/userModel")
 const Leaves = require("../models/leaveModel")
 const Department = require("../models/departmentModel")
-const LeaveManagement = require("../models/leaveManagementModel")
 const { validationResult } = require('express-validator');
 const fs = require("fs")
 const jwt = require('jsonwebtoken');

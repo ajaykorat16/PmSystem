@@ -50,10 +50,9 @@ const carryForwardLeaves = async () => {
         console.log(error);
     }
 }
-
 //carryForwardLeaves()
 
-const createMonthly = async (req, res) => {
+const createMonthly = async () => {
     try {
         let today = new Date();
         let leave = 1.5

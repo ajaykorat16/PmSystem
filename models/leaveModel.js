@@ -40,26 +40,6 @@ const leaveSchema = new mongoose.Schema(
   }
 );
 
-// leaveSchema.pre("save", function (next) {
-//   const startDate = new Date(this.startDate);
-//   const endDate = new Date(this.endDate);
-
-//   let currentDate = new Date(startDate);
-//   let totalDays = 0;
-
-//   while (currentDate <= endDate) {
-//     const dayOfWeek = currentDate.getDay();
-//     // 0 = Sunday, 6 = Saturday
-//     if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-//       totalDays++;
-//     }
-//     currentDate.setDate(currentDate.getDate() + 1);
-//   }
-
-//   this.totalDaysExcludingWeekends = totalDays;
-//   next();
-// });
-
 const Leaves = mongoose.model("Leave", leaveSchema);
 
 module.exports = Leaves;
