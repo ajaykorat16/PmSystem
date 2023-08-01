@@ -31,6 +31,8 @@ const LeaveManagementList = () => {
   const [leave, setLeave] = useState("");
   const [leaveId, setLeaveId] = useState(null);
   const [fullName, setFullName] = useState(null);
+  const [month, setMonth] = useState(null)
+  const date = new Date()
 
   const singleDepartment = async () => {
     const data = await getSingleLeave(leaveId);
@@ -49,9 +51,11 @@ const LeaveManagementList = () => {
     e.preventDefault();
     try {
       const id = leaveId;
+      const getMonth = new Date(month)
+      const m = getMonth.getMonth() + 1 ;
       await updateLeave(leave, id);
       setVisible(false)
-      fetchLeaves()
+      fetchLeaves(m)
     } catch (error) {
       console.log(error);
     }
@@ -118,10 +122,11 @@ const LeaveManagementList = () => {
     setRowsPerPage(newRowsPerPage);
   };
 
-  const handleUpdate = async (id, fullName) => {
+  const handleUpdate = async (id, fullName, monthly) => {
     setVisible(!visible);
     setLeaveId(id);
     setFullName(fullName)
+    setMonth(monthly)
     // console.log(id);
   };
   const actionTemplate = (rowData) => {
@@ -133,7 +138,7 @@ const LeaveManagementList = () => {
         severity="info"
         className="ms-2"
         title="Edit"
-        onClick={() => handleUpdate(rowData._id,  rowData.user.fullName)}
+        onClick={() => handleUpdate(rowData._id,  rowData.user.fullName, rowData.monthly)}
         raised
       />
     </div>
@@ -145,33 +150,32 @@ const LeaveManagementList = () => {
         <Loader />
       ) : (
         <>
-        <CModal
-        alignment="center"
-        visible={visible}
-        onClose={() => setVisible(false)}
-      >
-        <CModalHeader>
-          <CModalTitle>{fullName}</CModalTitle>
-        </CModalHeader>
-        <CForm onSubmit={handleChange}>
-          <CModalBody>
-            <CFormInput
-              type="number"
-              id="leave"
-              label="Manage Leave"
-              value={leave}
-              onChange={(e) => setLeave(e.target.value) }
-            ></CFormInput>
-          </CModalBody>
-          <CModalFooter>
-            <CButton color="secondary" onClick={() => setVisible(false)}>
-              Close
-            </CButton>
-            <CButton color="primary" type="submit">Save changes</CButton>
-          </CModalFooter>
-        </CForm>
-      </CModal>
-
+          <CModal
+          alignment="center"
+          visible={visible}
+          onClose={() => setVisible(false)}
+          >
+            <CModalHeader>
+              <CModalTitle>{fullName}</CModalTitle>
+            </CModalHeader>
+            <CForm onSubmit={handleChange}>
+              <CModalBody>
+                <CFormInput
+                  type="number"
+                  id="leave"
+                  label="Manage Leave"
+                  value={leave}
+                  onChange={(e) => setLeave(e.target.value) }
+                />
+              </CModalBody>
+              <CModalFooter>
+                <CButton color="secondary" onClick={() => setVisible(false)}>
+                  Close
+                </CButton>
+                <CButton color="primary" type="submit">Save changes</CButton>
+              </CModalFooter>
+            </CForm>
+          </CModal>
           <div className="card mb-5">
             <DataTable
               totalRecords={totalRecords}
