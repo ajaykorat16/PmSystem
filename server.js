@@ -6,6 +6,7 @@ const PORT = process.env.PORT
 const user = require("./routers/user")
 const department = require("./routers/department")
 const leaveRecord = require("./routers/leaveRecord")
+const leaveManagement = require("./routers/leaveManagement")
 const app = express()
 var cors = require('cors')
 app.use(cors())
@@ -18,6 +19,7 @@ app.get('/', function (req, res) {
 app.use("/user", user)
 app.use("/department", department)
 app.use("/leaves", leaveRecord)
+app.use("/leaveManagement", leaveManagement)
 
 app.listen(PORT, () => {
   console.log(`Server running in http://localhost:${PORT}`);

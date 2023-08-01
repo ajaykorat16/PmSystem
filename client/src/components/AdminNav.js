@@ -43,6 +43,11 @@ const _nav = [
         name: 'Create Leave',
         to: '/dashboard/leave/create',
       },
+      {
+        component: CNavItem,
+        name: 'Manage Leave',
+        to: '/dashboard/leaveManagement/list',
+      },
     ],
   },
   {

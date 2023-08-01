@@ -18,8 +18,7 @@ import ResetPassword from './pages/ResetPassword';
 import "primereact/resources/themes/rhea/theme.css"; 
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
-
-
+import LeaveManagementList from './pages/LeavemanagementList';
 
 function App() {
   return (
@@ -36,9 +35,11 @@ function App() {
           <Route path="leave/list" element={<LeaveList />} />
           <Route path="leave/create" element={<LeaveCreate />} />
           <Route path="leave/update/:id" element={<LeaveUpdate />} />
+          <Route path="leaveManagement/list" element={<LeaveManagementList />} />
           <Route path="department/list" element={<DepartmentList />} />
           <Route path="department/create" element={<DepartmentCreate />} />
           <Route path="department/update/:id" element={<DepartmentUpdate />} />
+          
         </Route>
         <Route path='/dashboard-user' element={<UserRoutes />}>
           <Route path="leave/list" element={<LeaveList/>} />

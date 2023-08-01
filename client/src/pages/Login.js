@@ -21,8 +21,8 @@ import {Toaster} from "react-hot-toast"
 
 
 const Login = () => {
-    const [email, setEmail] = useState("ajaykorat204@gmail.com");
-    const [password, setPassword] = useState("ajay@2208");
+    const [email, setEmail] = useState("jasminkorat204@gmail.com");
+    const [password, setPassword] = useState("123456");
     const { auth, login, isLoggedIn } = useAuth()
     const navigate = useNavigate()
     const location = useLocation()

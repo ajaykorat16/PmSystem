@@ -8,6 +8,7 @@ import { UserProvider } from './context/UserContext';
 import { BrowserRouter } from 'react-router-dom';
 import { LeaveProvider } from './context/LeaveContext';
 import { DepartmentProvider } from './context/DepartmentContext';
+import { LeaveManagementProvider } from './context/LeaveManagementContext';
 
 
 
@@ -17,13 +18,15 @@ root.render(
     <DepartmentProvider>
       <UserProvider>
         <LeaveProvider>
-          <Provider store={store}>
-            <React.StrictMode>
-              <BrowserRouter>
-                <App />
-              </BrowserRouter>
-            </React.StrictMode>
-          </Provider>
+          <LeaveManagementProvider>
+            <Provider store={store}>
+              <React.StrictMode>
+                <BrowserRouter>
+                  <App />
+                </BrowserRouter>
+              </React.StrictMode>
+            </Provider>
+          </LeaveManagementProvider>
         </LeaveProvider>
       </UserProvider>
     </DepartmentProvider>
