@@ -57,7 +57,7 @@ const getSingleLeave = asyncHandler(async (req, res) => {
     //         message: "Leave is not existing"
     //     })
     // }
-    const getLeave = await LeaveManagement.findById({ _id: id }).populate("user").select("fullName");
+    const getLeave = await LeaveManagement.findById({ _id: id }).populate({path: "user", select: "fullName"});
     return res.status(200).json({
       error: false,
       message: "Single Leave getting successfully !",

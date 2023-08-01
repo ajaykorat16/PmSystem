@@ -62,7 +62,7 @@ const LeaveManagementProvider = ({ children }) => {
       if (data.error === false) {
         getLeavesMonthWise()
         setTimeout(function () {
-          toast.success("Department updated successfully")
+          toast.success("Leave updated successfully")
         }, 1000);
 
       }

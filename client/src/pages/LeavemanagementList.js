@@ -17,7 +17,6 @@ import {
   CModalHeader,
   CModalTitle,
 } from "@coreui/react";
-import { useNavigate } from "react-router-dom";
 
 const LeaveManagementList = () => {
   const { getLeavesMonthWise, getSingleLeave, updateLeave } =
@@ -31,7 +30,7 @@ const LeaveManagementList = () => {
   const [visible, setVisible] = useState(false);
   const [leave, setLeave] = useState("");
   const [leaveId, setLeaveId] = useState(null);
-  const navigate = useNavigate();
+  const [fullName, setFullName] = useState(null);
 
   const singleDepartment = async () => {
     const data = await getSingleLeave(leaveId);
@@ -53,7 +52,6 @@ const LeaveManagementList = () => {
       await updateLeave(leave, id);
       setVisible(false)
       fetchLeaves()
-      // navigate("/dashboard/leaveManagement/list");
     } catch (error) {
       console.log(error);
     }
@@ -120,13 +118,13 @@ const LeaveManagementList = () => {
     setRowsPerPage(newRowsPerPage);
   };
 
-  const handleUpdate = async (id) => {
+  const handleUpdate = async (id, fullName) => {
     setVisible(!visible);
     setLeaveId(id);
+    setFullName(fullName)
     // console.log(id);
   };
   const actionTemplate = (rowData) => {
-    console.log(rowData);
     return(
     <div>
       <Button
@@ -135,24 +133,32 @@ const LeaveManagementList = () => {
         severity="info"
         className="ms-2"
         title="Edit"
-        onClick={() => handleUpdate(rowData._id)}
+        onClick={() => handleUpdate(rowData._id,  rowData.user.fullName)}
         raised
       />
-      <CModal
+    </div>
+  )};
+
+  return (
+    <Layout>
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <>
+        <CModal
         alignment="center"
         visible={visible}
         onClose={() => setVisible(false)}
       >
         <CModalHeader>
-          <CModalTitle>Update Leave</CModalTitle>
+          <CModalTitle>{fullName}</CModalTitle>
         </CModalHeader>
         <CForm onSubmit={handleChange}>
           <CModalBody>
-            <h5>{rowData.user.fullName}</h5>
             <CFormInput
               type="number"
               id="leave"
-              label="Leave"
+              label="Manage Leave"
               value={leave}
               onChange={(e) => setLeave(e.target.value) }
             ></CFormInput>
@@ -165,15 +171,7 @@ const LeaveManagementList = () => {
           </CModalFooter>
         </CForm>
       </CModal>
-    </div>
-  )};
 
-  return (
-    <Layout>
-      {isLoading ? (
-        <Loader />
-      ) : (
-        <>
           <div className="card mb-5">
             <DataTable
               totalRecords={totalRecords}
