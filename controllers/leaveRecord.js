@@ -2,92 +2,7 @@ const Leaves = require("../models/leaveModel")
 const Users = require("../models/userModel")
 const { validationResult } = require('express-validator');
 const asyncHandler = require('express-async-handler')
-const nodemailer = require('nodemailer');
-
-const transporter = nodemailer.createTransport({
-    host: process.env.MAIL_HOST,
-    port: 465,
-    secure: true,
-    auth: {
-        user: process.env.MAIL_AUTH_USER,
-        pass: process.env.MAIL_AUTH_PASS,
-    },
-});
-
-    const leaveDaysCount =  (startDate, endDate) => {
-    const sDate = new Date(startDate);
-    const eDate = new Date(endDate);
-  
-    let currentDate = new Date(startDate);
-    let totalDays = 0;
-  
-    while (currentDate <= eDate) {
-      const dayOfWeek = currentDate.getDay();
-      // 0 = Sunday, 6 = Saturday
-      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-        totalDays++;
-      }
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
-    return totalDays
-    // this.totalDaysExcludingWeekends = totalDays;
-  };
-
-const sendMailForLeaveStatus = async (user, status) => {
-    try {
-        const { fullName, email } = user
-        const mailOptions = {
-            from: process.env.MAIL_FROM_EMAIL,
-            to: email,
-            subject: "Leave Status",
-            text: `${fullName}, Your leave is ${status}`,
-        };
-
-        transporter.sendMail(mailOptions, function (err, info) {
-            if (err) {
-                console.log("Mail.sendEmail [ERROR: " + err + "]");
-                return { error: true, message: err };
-            }
-            console.log("Mail.sendEmail [SUCCESS]");
-            return { error: false, message: "Email sent successfully!" };
-
-        });
-    } catch (error) {
-        console.error("Error sending email:", error);
-        return { status: false, message: "Failed to send email." };
-    }
-};
-
-const sendMailForLeaveRequest = async (user, data) => {
-    try {
-        const { reason, startDate, endDate, type } = data;
-        const { fullName } = user
-        const adminUser = await Users.findOne({ role: 'admin' }).select("email");
-        const mailOptions = {
-            from: process.env.MAIL_FROM_EMAIL,
-            to: adminUser.email,
-            subject: "Leave Request",
-            text: `
-            Leave Request from: ${fullName}
-            Reason: ${reason}
-            Start Date: ${startDate}
-            End Date: ${endDate}
-            Type: ${type}`,
-        };
-        transporter.sendMail(mailOptions, function (err, info) {
-            if (err) {
-                console.log("Mail.sendEmail [ERROR: " + err + "]");
-                return { error: true, message: err };
-            }
-            console.log("Mail.sendEmail [SUCCESS]");
-            return { error: false, message: "Email sent successfully!" };
-
-        });
-    } catch (error) {
-        console.error("Error sending email:", error);
-        return { status: false, message: "Failed to send email." };
-    }
-};
+const { sendMailForLeaveStatus, sendMailForLeaveRequest } = require("../helper/mail")
 
 const createLeave = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
@@ -103,8 +18,7 @@ const createLeave = asyncHandler(async (req, res) => {
             uId = req.user._id
         }
         const createLeaves = await new Leaves({ userId: uId, reason, startDate, endDate, type, status, totalDays }).save();
-        const user = await Users.find({ _id: uId }).select("-photo")
-        await sendMailForLeaveRequest(user[0], createLeaves)
+        await sendMailForLeaveRequest(createLeaves)
         return res.status(201).json({
             error: false,
             message: "Your Leave Create successfully !!",
