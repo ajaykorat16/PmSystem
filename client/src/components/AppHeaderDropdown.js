@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { CImage, CAvatar, CDropdown, CDropdownDivider, CDropdownHeader, CDropdownItem, CDropdownMenu, CDropdownToggle } from '@coreui/react';
+import { CImage, CAvatar, CDropdown, CDropdownDivider, CDropdownHeader, CDropdownItem, CDropdownMenu, CDropdownToggle, CForm, CFormInput } from '@coreui/react';
 import { cilLockLocked, cilUser } from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useUser } from '../context/UserContext';
 import { MdOutlineLockReset } from 'react-icons/md';
+
+const LeaveBalanceDisplay = ({ leaveBalance }) => {
+  return (
+    <div className='balance text-info'>
+      Leave Balance: {leaveBalance || 'Loading...'}
+    </div>
+  );
+};
 
 const AppHeaderDropdown = () => {
   const [photo, setPhoto] = useState('');
@@ -14,6 +22,7 @@ const AppHeaderDropdown = () => {
   const [getAuth, setGetAuth] = useState(null);
   const [isPhoto, setIsPhoto] = useState(false)
   const navigate = useNavigate();
+  const [leaveBalance, setLeaveBalance] = useState(null);
 
   const handleLogout = () => {
     try {
@@ -38,6 +47,7 @@ const AppHeaderDropdown = () => {
         const { getProfile } = await getUserProfile(auth.user._id);
         setPhoto(getProfile.photo);
         setIsPhoto(true)
+        setLeaveBalance(getProfile.leaveBalance);
       }
     } catch (error) {
       console.error('Error fetching user profile:', error);
@@ -56,6 +66,8 @@ const AppHeaderDropdown = () => {
   }, [getAuth]);
   
   return (
+    <>
+    <LeaveBalanceDisplay leaveBalance={leaveBalance} />
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
         {isPhoto &&
@@ -95,6 +107,7 @@ const AppHeaderDropdown = () => {
         } 
       </CDropdownMenu>
     </CDropdown>
+    </>
   );
 };
 

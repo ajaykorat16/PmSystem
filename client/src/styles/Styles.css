@@ -14,3 +14,9 @@
 .p-datatable .p-paginator-bottom {
     height: 62px !important;
 }
+
+.balance{
+    margin-right: 50px;
+    font-weight: bold;
+    font-size: 20px;
+}
