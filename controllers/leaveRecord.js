@@ -235,6 +235,10 @@ const updateLeave = asyncHandler(async (req, res) => {
             updatedFields.status = status || userLeave.status
         }
 
+        if (updatedFields.status === "approved") {
+                await Users.findByIdAndUpdate(updatedFields.userId, { $inc: { leaveBalance: -updatedFields.totalDays } }, { new: true })
+        }
+
         const updateLeave = await Leaves.findByIdAndUpdate({ _id: userLeave._id }, updatedFields, { new: true });
         return res.status(201).send({
             error: false,
@@ -269,6 +273,11 @@ const updateStatus = asyncHandler(async (req, res) => {
         const { id } = req.params;
 
         const updateLeave = await Leaves.findByIdAndUpdate({ _id: id }, { status }, { new: true }).populate({ path: "userId", select: "-photo" });
+
+        if (status === 'approved') {
+            await Users.findByIdAndUpdate(updateLeave.userId, { $inc: { leaveBalance: -updateLeave.totalDays } }, { new: true })
+        }
+
         let user = updateLeave.userId
         await sendMailForLeaveStatus(user, status)
         return res.status(201).send({

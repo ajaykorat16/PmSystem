@@ -29,7 +29,7 @@ const LeaveList = () => {
   const fetchLeaves = async (query, sortField, sortOrder) => {
     setIsLoading(true);
     let leaveData;
-    if (auth.user.role === "admin") { 
+    if (auth.user.role === "admin") {
       leaveData = await getLeave(
         currentPage,
         rowsPerPage,
@@ -129,15 +129,29 @@ const LeaveList = () => {
         </>
       )}
 
-      <Button
-        icon="pi pi-pencil"
-        rounded
-        severity="info"
-        className="ms-2"
-        title="Edit"
-        onClick={() => handleUpdate(rowData._id)}
-        raised
-      />
+      {rowData.status === "Approved" ? (
+        <Button
+          icon="pi pi-pencil"
+          rounded
+          severity="info"
+          className="ms-2"
+          title="Edit"
+          onClick={() => handleUpdate(rowData._id)}
+          raised
+          disabled
+        />
+      ) : (
+        <Button
+          icon="pi pi-pencil"
+          rounded
+          severity="info"
+          className="ms-2"
+          title="Edit"
+          onClick={() => handleUpdate(rowData._id)}
+          raised
+        />
+      )}
+
     </div>
   );
 
@@ -273,7 +287,7 @@ const LeaveList = () => {
                   body={actionTemplate}
                   align="right"
                   alignHeader="center"
-                  style={{ maxWidth: "8rem"}}
+                  style={{ maxWidth: "8rem" }}
                 />
               )}
             </DataTable>
