@@ -42,7 +42,7 @@ const carryForwardLeaves = async () => {
                 for (const leave of getLeaves) {
                     const finalTotal = (user.carryForward + lastLeaves.leave) - leave.totalLeaves;
                     const carryForwardLeave = finalTotal >= 5 ? 5 : (finalTotal >= 0 ? finalTotal : 0);
-                    await Users.findByIdAndUpdate(user._id, { $set: { carryForward: carryForwardLeave } });
+                    await Users.findByIdAndUpdate(user._id, { $set: { carryForward: carryForwardLeave, leaveBalance: carryForwardLeave } });
                 }
             }
         }
@@ -50,7 +50,7 @@ const carryForwardLeaves = async () => {
         console.log(error);
     }
 }
-//carryForwardLeaves()
+// carryForwardLeaves()
 
 const createMonthly = async () => {
     try {
@@ -59,6 +59,7 @@ const createMonthly = async () => {
         const allUsers = await Users.find().select("_id, fullName, carryForward")
         allUsers.map(async (e) => {
             await new LeaveManagement({ user: e._id, monthly: today, leave }).save()
+            await Users.findByIdAndUpdate(e._id,{ $inc: { leaveBalance: leave } }, { new: true })
         })
     } catch (error) {
         console.log(error);

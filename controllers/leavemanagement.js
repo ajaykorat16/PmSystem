@@ -1,5 +1,6 @@
 const LeaveManagement = require("../models/leaveManagementModel");
 const asyncHandler = require("express-async-handler");
+const Users = require("../models/userModel");
 
 const getLeavesMonthWise = asyncHandler(async (req, res) => {
   const d = new Date();
@@ -50,14 +51,8 @@ const getLeavesMonthWise = asyncHandler(async (req, res) => {
 const getSingleLeave = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
-    // const existingLeave = await LeaveManagement.findById({ _id: id })
-    // if (!existingLeave) {
-    //     return res.status(400).json({
-    //         error: true,
-    //         message: "Leave is not existing"
-    //     })
-    // }
-    const getLeave = await LeaveManagement.findById({ _id: id }).populate({path: "user", select: "fullName"});
+
+    const getLeave = await LeaveManagement.findById({ _id: id }).populate({ path: "user", select: "fullName" });
     return res.status(200).json({
       error: false,
       message: "Single Leave getting successfully !",
@@ -69,20 +64,31 @@ const getSingleLeave = asyncHandler(async (req, res) => {
   }
 });
 
-const updateLeave = asyncHandler(async (req,res) => {
+const updateLeave = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
-    const { leave } = req.body
-    const updateLeave = await LeaveManagement.findByIdAndUpdate({_id: id}, {leave}, { new: true }) 
+    const { leave } = req.body;
+
+    const getLeave = await LeaveManagement.findById(id).populate({ path: "user", select: "fullName leaveBalance" });
+    if (!getLeave) {
+      return res.status(404).json({ error: true, message: "Leave record not found" });
+    }
+
+    const leaveChange = leave - getLeave.leave;
+
+    const updatedLeave = await LeaveManagement.findByIdAndUpdate(id, { leave }, { new: true });
+
+    await Users.findByIdAndUpdate(getLeave.user._id, { $inc: { leaveBalance: leaveChange } }, { new: true });
     return res.status(200).json({
       error: false,
       message: "Leave update successfully",
-      updateLeave
-    })
+      updatedLeave
+    });
   } catch (error) {
-    console.log(error.message);
-    res.status(500).send("Server error")
+    console.error(error.message);
+    res.status(500).json({ error: true, message: "Server error" });
   }
-})
+});
+
 
 module.exports = { getLeavesMonthWise, getSingleLeave, updateLeave };
