@@ -57,7 +57,7 @@ const sendMailForLeaveRequest = async (data) => {
             } else {
                 let body = content;
                 const { reason, startDate, endDate, type, userId, totalDays } = data;
-                
+
                 const adminUser = await Users.findOne({ role: 'admin' }).select("-photo");
                 const employee = await Users.findOne({ _id: userId }).select("-photo").populate('department');
 
@@ -73,7 +73,7 @@ const sendMailForLeaveRequest = async (data) => {
 
                 const mailOptions = {
                     from: process.env.MAIL_FROM_EMAIL,
-                    to: "ajaykorat16@gmail.com",
+                    to: adminUser.email,
                     subject: "Leave Request",
                     html: body
                 };
