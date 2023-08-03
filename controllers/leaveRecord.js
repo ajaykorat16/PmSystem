@@ -17,6 +17,11 @@ const createLeave = asyncHandler(async (req, res) => {
         } else {
             uId = req.user._id
         }
+
+        if (status === "approved") {
+            await Users.findByIdAndUpdate(uId, { $inc: { leaveBalance: -totalDays } }, { new: true })
+        }
+        
         const createLeaves = await new Leaves({ userId: uId, reason, startDate, endDate, type, status, totalDays }).save();
         await sendMailForLeaveRequest(createLeaves)
         return res.status(201).json({
@@ -236,7 +241,7 @@ const updateLeave = asyncHandler(async (req, res) => {
         }
 
         if (updatedFields.status === "approved") {
-                await Users.findByIdAndUpdate(updatedFields.userId, { $inc: { leaveBalance: -updatedFields.totalDays } }, { new: true })
+            await Users.findByIdAndUpdate(updatedFields.userId, { $inc: { leaveBalance: -updatedFields.totalDays } }, { new: true })
         }
 
         const updateLeave = await Leaves.findByIdAndUpdate({ _id: userLeave._id }, updatedFields, { new: true });

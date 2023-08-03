@@ -32,7 +32,7 @@ const AppHeaderDropdown = () => {
       console.log(error);
     }
   };
-  
+
   const handleLogin = () => {
     try {
       navigate('/login');
@@ -64,49 +64,51 @@ const AppHeaderDropdown = () => {
       fetchData();
     }
   }, [getAuth]);
-  
+
   return (
     <>
-    <LeaveBalanceDisplay leaveBalance={leaveBalance} />
-    <CDropdown variant="nav-item">
-      <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
-        {isPhoto &&
-          <CImage align="start" rounded src={photo} width={30} height={30} alt="User Avatar" />
-        }
-        {isPhoto === false &&
-          <CAvatar color="success" textColor="white" shape="rounded">
-            PM
-          </CAvatar>
-        }
+      {auth?.user?.role === "user" &&
+        <LeaveBalanceDisplay leaveBalance={leaveBalance} />
+      }
+      <CDropdown variant="nav-item">
+        <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
+          {isPhoto &&
+            <CImage align="start" rounded src={photo} width={30} height={30} alt="User Avatar" />
+          }
+          {isPhoto === false &&
+            <CAvatar color="success" textColor="white" shape="rounded">
+              PM
+            </CAvatar>
+          }
 
-      </CDropdownToggle>
-      <CDropdownMenu className="pt-0 dropdown" placement="bottom-end">
-        <CDropdownHeader className="bg-light fw-semibold py-2">Settings</CDropdownHeader>
-        {getAuth && 
-          <>
-            <CDropdownItem onClick={()=>navigate(`/dashboard-user/user/user-profile/${auth?.user._id}`)}>
-              <CIcon icon={cilUser} className="me-2" />
-              Profile
+        </CDropdownToggle>
+        <CDropdownMenu className="pt-0 dropdown" placement="bottom-end">
+          <CDropdownHeader className="bg-light fw-semibold py-2">Settings</CDropdownHeader>
+          {getAuth &&
+            <>
+              <CDropdownItem onClick={() => navigate(`/dashboard-user/user/user-profile/${auth?.user._id}`)}>
+                <CIcon icon={cilUser} className="me-2" />
+                Profile
+              </CDropdownItem>
+              <CDropdownItem onClick={() => navigate(`/dashboard-user/user/resetPassword`)}>
+                <MdOutlineLockReset className="me-2" fontSize={20} />
+                Reset Password
+              </CDropdownItem>
+              <CDropdownDivider />
+            </>
+          }
+          {getAuth ?
+            <CDropdownItem onClick={handleLogout}>
+              <CIcon icon={cilLockLocked} className="me-2" />
+              Logout
+            </CDropdownItem> :
+            <CDropdownItem onClick={handleLogin}>
+              <CIcon icon={cilLockLocked} className="me-2" />
+              Login
             </CDropdownItem>
-            <CDropdownItem onClick={() => navigate(`/dashboard-user/user/resetPassword`)}>
-              <MdOutlineLockReset className="me-2" fontSize={20}/>
-              Reset Password
-            </CDropdownItem>
-            <CDropdownDivider />
-          </>
-        }
-        {getAuth ?
-          <CDropdownItem onClick={handleLogout}>
-            <CIcon icon={cilLockLocked} className="me-2" />
-            Logout
-          </CDropdownItem> :
-          <CDropdownItem onClick={handleLogin}>
-            <CIcon icon={cilLockLocked} className="me-2" />
-            Login
-          </CDropdownItem>
-        } 
-      </CDropdownMenu>
-    </CDropdown>
+          }
+        </CDropdownMenu>
+      </CDropdown>
     </>
   );
 };
