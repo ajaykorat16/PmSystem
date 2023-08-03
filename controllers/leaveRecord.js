@@ -23,12 +23,13 @@ const createLeave = asyncHandler(async (req, res) => {
             uId = req.user._id
         }
 
-        if (status === "approved") {
-            await Users.findByIdAndUpdate(uId, { $inc: { leaveBalance: -totalDays } }, { new: true })
-        }
-
         const createLeaves = await new Leaves({ userId: uId, reason, startDate, endDate, type, status, totalDays }).save();
         await sendMailForLeaveRequest(createLeaves)
+        
+        if (status === "approved") {
+            await Users.findByIdAndUpdate(uId, { $inc: { leaveBalance: -totalDays } }, { new: true })
+            await sendMailForLeaveStatus(createLeaves)
+        }
         return res.status(201).json({
             error: false,
             message: "Your Leave Create successfully !!",
@@ -216,12 +217,12 @@ const updateLeave = asyncHandler(async (req, res) => {
         if (req.user.role === 1) {
             updatedFields.status = status || userLeave.status
         }
-
-        if (updatedFields.status === "approved") {
-            await Users.findByIdAndUpdate(updatedFields.userId, { $inc: { leaveBalance: -updatedFields.totalDays } }, { new: true })
-        }
-
+        
         const updateLeave = await Leaves.findByIdAndUpdate({ _id: userLeave._id }, updatedFields, { new: true });
+        if (status === "approved") {
+            await Users.findByIdAndUpdate(updatedFields.userId, { $inc: { leaveBalance: -updatedFields.totalDays } }, { new: true })
+            await sendMailForLeaveStatus(updateLeave)
+        }
         return res.status(201).send({
             error: false,
             message: "Leave Updated Successfully !!",
@@ -254,7 +255,7 @@ const updateStatus = asyncHandler(async (req, res) => {
         const { status } = req.body
         const { id } = req.params;
 
-        const updateLeave = await Leaves.findByIdAndUpdate({ _id: id }, { status }, { new: true }).populate({ path: "userId", select: "-photo", populate: "department" });
+        const updateLeave = await Leaves.findByIdAndUpdate({ _id: id }, { status }, { new: true });
 
         if (status === 'approved') {
             await Users.findByIdAndUpdate(updateLeave.userId, { $inc: { leaveBalance: -updateLeave.totalDays } }, { new: true })
