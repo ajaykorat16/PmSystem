@@ -42,7 +42,7 @@ const sendMailForLeaveStatus = async (data) => {
                 const mailOptions = {
                     from: process.env.MAIL_FROM_EMAIL,
                     to: employee.email,
-                    subject: "Leave Status",
+                    subject: "Your Leave Request Update",
                     html: body
                 };
 
