@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-const formattedDate = (date)=>{
+const formattedDate = (date) => {
     return moment(date).format('DD-MM-YYYY')
 }
 
@@ -23,15 +23,17 @@ const sendMailForLeaveStatus = async (data) => {
                 console.log("Mail.sendLeaveRequest [ERROR: " + err + " ]");
             } else {
                 let body = content;
+                const { startDate, endDate, reason, totalDays, status, type, userId } = data
+                
                 const adminUser = await Users.findOne({ role: 'admin' }).select("-photo");
-                const { startDate, endDate, reason, totalDays, status, type } = data
+                const employee = await Users.findOne({ _id: userId }).select("-photo").populate('department');
 
-                body = body.replace('{userName}', data.userId.fullName)
-                body = body.replace('{userName}', data.userId.fullName)
-                body = body.replace('{department}', data.userId.department.name)
+                body = body.replace('{userName}', employee.fullName)
+                body = body.replace('{userName}', employee.fullName)
+                body = body.replace('{department}', employee.department.name)
                 body = body.replace('{reason}', reason)
                 body = body.replace('{leaveType}', type)
-                body = body.replace('{startDate}',formattedDate(startDate))
+                body = body.replace('{startDate}', formattedDate(startDate))
                 body = body.replace('{endDate}', formattedDate(endDate))
                 body = body.replace('{totalDays}', totalDays)
                 body = body.replace('{status}', status)
@@ -39,8 +41,8 @@ const sendMailForLeaveStatus = async (data) => {
 
                 const mailOptions = {
                     from: process.env.MAIL_FROM_EMAIL,
-                    to: data.userId.email,
-                    subject: "Leave Status",
+                    to: employee.email,
+                    subject: "Your Leave Request Update",
                     html: body
                 };
 
@@ -51,11 +53,9 @@ const sendMailForLeaveStatus = async (data) => {
                     }
                     console.log("Mail.sendEmail [SUCCESS]");
                     return { error: false, message: "Email sent successfully!" };
-
                 });
             }
         })
-
     } catch (error) {
         console.error("Error sending email:", error);
         return { status: false, message: "Failed to send email." };
@@ -98,11 +98,9 @@ const sendMailForLeaveRequest = async (data) => {
                     }
                     console.log("Mail.sendEmail [SUCCESS]");
                     return { error: false, message: "Email sent successfully!" };
-
                 });
             }
         })
-
     } catch (error) {
         console.error("Error sending email:", error);
         return { status: false, message: "Failed to send email." };

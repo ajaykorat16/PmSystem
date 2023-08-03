@@ -4,6 +4,11 @@ const { validationResult } = require('express-validator');
 const asyncHandler = require('express-async-handler')
 const { sendMailForLeaveStatus, sendMailForLeaveRequest, formattedDate } = require("../helper/mail")
 
+
+function capitalizeFLetter(string) {
+    return string[0].toUpperCase() + string.slice(1);
+}
+
 const createLeave = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -18,18 +23,18 @@ const createLeave = asyncHandler(async (req, res) => {
             uId = req.user._id
         }
 
-        if (status === "approved") {
-            await Users.findByIdAndUpdate(uId, { $inc: { leaveBalance: -totalDays } }, { new: true })
-        }
-
         const createLeaves = await new Leaves({ userId: uId, reason, startDate, endDate, type, status, totalDays }).save();
         await sendMailForLeaveRequest(createLeaves)
+        
+        if (status === "approved") {
+            await Users.findByIdAndUpdate(uId, { $inc: { leaveBalance: -totalDays } }, { new: true })
+            await sendMailForLeaveStatus(createLeaves)
+        }
         return res.status(201).json({
             error: false,
             message: "Your Leave Create successfully !!",
             leave: createLeaves
         })
-
     } catch (error) {
         console.log(error.message)
         res.status(500).send('Server error');
@@ -56,10 +61,6 @@ const getAllLeaves = asyncHandler(async (req, res) => {
         res.status(500).send('Server error');
     }
 })
-
-function capitalizeFLetter(string) {
-    return string[0].toUpperCase() + string.slice(1);
-}
 
 const getLeaves = asyncHandler(async (req, res) => {
     const page = parseInt(req.query.page) || 1;
@@ -90,34 +91,18 @@ const getLeaves = asyncHandler(async (req, res) => {
         const totalLeaves = await Leaves.countDocuments(query)
         const skip = (page - 1) * limit;
         let leaves;
+
         if (sortField === 'userId.fullName') {
-
-            leaves = await Leaves.find(query)
-                .populate({
-                    path: 'userId',
-                    select: 'fullName',
-                })
-                .skip(skip)
-                .limit(limit)
-                .lean();
-
+            leaves = await Leaves.find(query).populate({ path: 'userId', select: 'fullName' }).skip(skip).limit(limit).lean();
             leaves.sort((a, b) => {
                 const nameA = a.userId?.fullName || '';
                 const nameB = b.userId?.fullName || '';
                 return sortOrder * nameA.localeCompare(nameB);
             });
         } else {
-            leaves = await Leaves.find(query)
-                .sort({ [sortField]: sortOrder })
-                .skip(skip)
-                .limit(limit)
-                .populate({
-                    path: 'userId',
-                    select: 'fullName',
-                })
-                .lean();
-
+            leaves = await Leaves.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate({ path: 'userId', select: 'fullName' }).lean();
         }
+
         const formattedLeaves = leaves.map((leave, i) => {
             const index = i + 1
             return {
@@ -161,15 +146,9 @@ const userGetLeave = asyncHandler(async (req, res) => {
         }
         const totalLeaves = await Leaves.countDocuments(query)
         const skip = (page - 1) * limit;
-        const leaves = await Leaves.find(query)
-            .sort({ [sortField]: sortOrder })
-            .skip(skip)
-            .limit(limit)
-            .populate({
-                path: 'userId',
-                select: 'fullName',
-            })
-            .lean();
+
+        const leaves = await Leaves.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate({ path: 'userId', select: 'fullName' }).lean();
+
         const formattedLeaves = leaves.map((leave, i) => {
             const index = i + 1
             return {
@@ -219,7 +198,6 @@ const updateLeave = asyncHandler(async (req, res) => {
         const { id } = req.params;
 
         let userLeave;
-
         if (id) {
             userLeave = await Leaves.findOne({ _id: id });
         } else {
@@ -239,12 +217,12 @@ const updateLeave = asyncHandler(async (req, res) => {
         if (req.user.role === 1) {
             updatedFields.status = status || userLeave.status
         }
-
-        if (updatedFields.status === "approved") {
-            await Users.findByIdAndUpdate(updatedFields.userId, { $inc: { leaveBalance: -updatedFields.totalDays } }, { new: true })
-        }
-
+        
         const updateLeave = await Leaves.findByIdAndUpdate({ _id: userLeave._id }, updatedFields, { new: true });
+        if (status === "approved") {
+            await Users.findByIdAndUpdate(updatedFields.userId, { $inc: { leaveBalance: -updatedFields.totalDays } }, { new: true })
+            await sendMailForLeaveStatus(updateLeave)
+        }
         return res.status(201).send({
             error: false,
             message: "Leave Updated Successfully !!",
@@ -277,7 +255,7 @@ const updateStatus = asyncHandler(async (req, res) => {
         const { status } = req.body
         const { id } = req.params;
 
-        const updateLeave = await Leaves.findByIdAndUpdate({ _id: id }, { status }, { new: true }).populate({ path: "userId", select: "-photo", populate: "department" });
+        const updateLeave = await Leaves.findByIdAndUpdate({ _id: id }, { status }, { new: true });
 
         if (status === 'approved') {
             await Users.findByIdAndUpdate(updateLeave.userId, { $inc: { leaveBalance: -updateLeave.totalDays } }, { new: true })

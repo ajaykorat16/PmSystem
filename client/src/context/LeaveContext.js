@@ -1,4 +1,4 @@
-import { useState, useContext, createContext, useEffect } from "react";
+import { useContext, createContext } from "react";
 import axios from "axios";
 import { useAuth } from "./AuthContext";
 import toast from "react-hot-toast";
@@ -6,8 +6,6 @@ import toast from "react-hot-toast";
 const LeaveContext = createContext();
 
 const LeaveProvider = ({ children }) => {
-  const [leave, setLeave] = useState([]);
-  const [userLeaves, setUserLeaves] = useState([]);
   const { auth } = useAuth();
   const headers = {
     Authorization: auth?.token,
@@ -18,27 +16,11 @@ const LeaveProvider = ({ children }) => {
     try {
       let res;
       if (query) {
-        res = await axios.post(
-          `/leaves/leavelist-search?page=${page}&limit=${limit}`,
-          { filter: query },
-          { headers }
-        );
+        res = await axios.post(`/leaves/leavelist-search?page=${page}&limit=${limit}`, { filter: query }, { headers });
       } else {
-        res = await axios.get(
-          `/leaves/leavelist`,
-          {
-            params: {
-              page: page,
-              limit: limit,
-              sortField: sortField,
-              sortOrder: sortOrder,
-            },
-          },
-          { headers }
-        );
+        res = await axios.get(`/leaves/leavelist`, { params: { page, limit, sortField, sortOrder } }, { headers });
       }
       if (res.data.error === false) {
-        setLeave(res.data.leaves);
         return res.data;
       }
     } catch (error) {
@@ -51,12 +33,7 @@ const LeaveProvider = ({ children }) => {
     try {
       const { reason, startDate, endDate, type, userId, status, totalDays } = leaveData;
 
-      const { data } = await axios.post(
-        `/leaves/createLeaveAdmin`,
-        { reason, startDate, endDate, type, userId, status, totalDays },
-        { headers }
-      );
-
+      const { data } = await axios.post(`/leaves/createLeaveAdmin`, { reason, startDate, endDate, type, userId, status, totalDays }, { headers });
       if (data.error === false) {
         getLeave();
         setTimeout(function () {
@@ -97,12 +74,7 @@ const LeaveProvider = ({ children }) => {
     try {
       const { reason, startDate, endDate, type, userId, status, totalDays } = leaveData;
 
-      const { data } = await axios.put(
-        `/leaves/updateLeave/${id}`,
-        { reason, startDate, endDate, type, userId, status, totalDays },
-        { headers }
-      );
-
+      const { data } = await axios.put(`/leaves/updateLeave/${id}`, { reason, startDate, endDate, type, userId, status, totalDays }, { headers });
       if (data.error === false) {
         getLeave();
         setTimeout(function () {
@@ -117,8 +89,8 @@ const LeaveProvider = ({ children }) => {
   //update status
   const updateStatus = async (status, id) => {
     try {
-      const {data} = await axios.put(`/leaves/updateStatus/${id}`, {status}, {headers})
-      if (data.error === false)  {
+      const { data } = await axios.put(`/leaves/updateStatus/${id}`, { status }, { headers })
+      if (data.error === false) {
         getLeave()
       }
     } catch (error) {
@@ -129,9 +101,7 @@ const LeaveProvider = ({ children }) => {
   //get single leave
   const getLeaveById = async (id) => {
     try {
-      const { data } = await axios.get(`/leaves/getLeaveById/${id}`, {
-        headers,
-      });
+      const { data } = await axios.get(`/leaves/getLeaveById/${id}`, { headers });
       return data.leaves;
     } catch (error) {
       console.log(error);
@@ -145,17 +115,9 @@ const LeaveProvider = ({ children }) => {
       if (query) {
         res = await axios.post(`/leaves/userLeaves-search?page=${page}&limit=${limit}`, { filter: query }, { headers });
       } else {
-        res = await axios.get(`/leaves/userLeaves`, {
-          params: {
-            page: page,
-            limit: limit,
-            sortField: sortField,
-            sortOrder: sortOrder,
-          },
-        }, { headers });
+        res = await axios.get(`/leaves/userLeaves`, { params: { page, limit, sortField, sortOrder } }, { headers });
       }
       if (res.data.error === false) {
-        setUserLeaves(res.data.leaves);
         return res.data;
       }
     } catch (error) {
@@ -168,12 +130,7 @@ const LeaveProvider = ({ children }) => {
     try {
       const { reason, startDate, endDate, type, status, totalDays } = leaveData;
 
-      const { data } = await axios.post(
-        `/leaves/createLeave`,
-        { reason, startDate, endDate, type, status, totalDays },
-        { headers }
-      );
-
+      const { data } = await axios.post(`/leaves/createLeave`, { reason, startDate, endDate, type, status, totalDays }, { headers });
       if (data.error === false) {
         getUserLeave();
         setTimeout(function () {
@@ -186,9 +143,6 @@ const LeaveProvider = ({ children }) => {
         const errors = error.response.data.errors;
         if (errors && Array.isArray(errors) && errors.length > 0) {
           toast.error("Please fill all fields");
-          // errors.forEach((error) => {
-          //     toast.error(error.msg);
-          // });
         } else {
           const errorMessage = error.response.data.message;
           toast.error(errorMessage);
@@ -200,20 +154,7 @@ const LeaveProvider = ({ children }) => {
   };
 
   return (
-    <LeaveContext.Provider
-      value={{
-        getLeave,
-        leave,
-        addLeave,
-        deleteLeave,
-        updateLeave,
-        getLeaveById,
-        userLeaves,
-        addUserLeave,
-        getUserLeave,
-        updateStatus,
-      }}
-    >
+    <LeaveContext.Provider value={{ getLeave, addLeave, deleteLeave, updateLeave, getLeaveById, addUserLeave, getUserLeave, updateStatus, }}>
       {children}
     </LeaveContext.Provider>
   );

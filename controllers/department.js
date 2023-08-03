@@ -94,16 +94,10 @@ const getAllDepartment = asyncHandler(async (req, res) => {
         const query = {
             name: { $regex: filter, $options: 'i' },
         };
-
         const totalDepartments = await Department.countDocuments(query);
-
         const skip = (page - 1) * limit;
 
-        const departments = await Department.find(query)
-            .sort({ [sortField]: sortOrder })
-            .skip(skip)
-            .limit(limit);
-
+        const departments = await Department.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit);
         return res.status(200).json({
             error: false,
             message: 'Departments retrieved successfully',
@@ -118,13 +112,9 @@ const getAllDepartment = asyncHandler(async (req, res) => {
     }
 });
 
-
 const getDepartmentList = asyncHandler(async (req, res) => {
-
-
     try {
         const departments = await Department.find()
-
         return res.status(200).json({
             error: false,
             message: "Departments retrieved successfully",
@@ -135,8 +125,6 @@ const getDepartmentList = asyncHandler(async (req, res) => {
         res.status(500).send('Server error');
     }
 });
-
-
 
 const getSingleDepartment = asyncHandler(async (req, res) => {
     try {

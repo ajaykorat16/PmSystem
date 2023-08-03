@@ -15,7 +15,6 @@ router.post("/createDepartment",
     check('name', 'Department name is required').notEmpty(),
     auth, isAdmin, createDepartment)
 
-
 router.put("/updateDepartment/:id",auth, isAdmin, updateDepartment)
 
 router.delete("/deleteDepartment/:id",auth, isAdmin, deleteDepartment)
