@@ -1,4 +1,4 @@
-import React, { useState, useContext, createContext } from "react";
+import React, { useContext, createContext } from "react";
 import axios from 'axios';
 import { useAuth } from "./AuthContext";
 import toast from "react-hot-toast";
@@ -6,7 +6,6 @@ import toast from "react-hot-toast";
 const UserContext = createContext();
 
 const UserProvider = ({ children }) => {
-    const [users, setUsers] = useState([]);
     const { auth } = useAuth();
     const headers = {
         Authorization: auth.token
@@ -17,7 +16,6 @@ const UserProvider = ({ children }) => {
         try {
             const res = await axios.get("/user/userList", { headers });
             if (res.data.error === false) {
-                setUsers(res.data.getAllUsers);
                 return res.data
             }
         } catch (error) {
@@ -30,19 +28,11 @@ const UserProvider = ({ children }) => {
         try {
             let res;
             if (query) {
-                res = await axios.post(`/user/user-search`, { filter: query }, { params: { page: page, limit: limit, sortField: sortField, sortOrder: sortOrder }, headers: headers });
+                res = await axios.post(`/user/user-search`, { filter: query }, { params: { page, limit, sortField, sortOrder }, headers: headers });
             } else {
-                res = await axios.get(`/user`, {
-                    params: {
-                        page: page,
-                        limit: limit,
-                        sortField: sortField,
-                        sortOrder: sortOrder
-                    }
-                }, { headers });
+                res = await axios.get(`/user`, { params: { page, limit, sortField, sortOrder } }, { headers });
             }
             if (res.data.error === false) {
-                setUsers(res.data.users);
                 return res.data
             }
         } catch (error) {
@@ -54,8 +44,8 @@ const UserProvider = ({ children }) => {
     const createUser = async (addUser) => {
         try {
             const { employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining } = addUser
-            const { data } = await axios.post("/user/addUser", { employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining }, { headers });
 
+            const { data } = await axios.post("/user/addUser", { employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining }, { headers });
             if (data.error === false) {
                 fetchUsers()
                 setTimeout(function () {
@@ -95,7 +85,6 @@ const UserProvider = ({ children }) => {
             photo && editUser.append("photo", photo);
 
             const { data } = await axios.put(`/user/updateProfile/${id}`, editUser, { headers });
-
             if (data.error === false) {
                 fetchUsers()
                 setTimeout(function () {
@@ -112,6 +101,7 @@ const UserProvider = ({ children }) => {
     const updateProfile = async (updateUsers) => {
         try {
             let { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, dateOfJoining, photo } = updateUsers
+
             const editUser = new FormData()
             editUser.append("employeeNumber", employeeNumber)
             editUser.append("firstname", firstname)
@@ -124,7 +114,6 @@ const UserProvider = ({ children }) => {
             photo && editUser.append("photo", photo);
 
             const { data } = await axios.put(`/user/updateProfile`, editUser, { headers });
-
             if (data.error === false) {
                 toast.success("Profile updated successfully")
             }
@@ -138,7 +127,6 @@ const UserProvider = ({ children }) => {
     const deleteUser = async (id) => {
         try {
             const { data } = await axios.delete(`/user/deleteProfile/${id}`, { headers });
-
             if (data.error === false) {
                 fetchUsers()
                 toast.success("User deleted successfully")
@@ -172,7 +160,6 @@ const UserProvider = ({ children }) => {
             if (error.response) {
                 const errors = error.response.data.errors;
                 if (errors && Array.isArray(errors) && errors.length > 0) {
-                    // toast.error("Please fill all fields")
                     errors.forEach((error) => {
                         toast.error(error.msg);
                     });
@@ -187,13 +174,12 @@ const UserProvider = ({ children }) => {
     }
 
     return (
-        <UserContext.Provider value={{ users, fetchUsers, createUser, updateUser, deleteUser, getUserProfile, updateProfile, resetPassword, getAllUsers }}>
+        <UserContext.Provider value={{ fetchUsers, createUser, updateUser, deleteUser, getUserProfile, updateProfile, resetPassword, getAllUsers }}>
             {children}
         </UserContext.Provider>
     );
 };
 
-// Custom hook
 const useUser = () => useContext(UserContext);
 
 export { useUser, UserProvider };

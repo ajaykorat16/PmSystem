@@ -1,4 +1,4 @@
-import { useState, useContext, createContext } from "react";
+import { useContext, createContext } from "react";
 import axios from "axios";
 import { useAuth } from "./AuthContext";
 import toast from "react-hot-toast";
@@ -6,7 +6,6 @@ import toast from "react-hot-toast";
 const DepartmentContext = createContext();
 
 const DepartmentProvider = ({ children }) => {
-  const [department, setDepartment] = useState([]);
   const { auth } = useAuth();
   const headers = {
     Authorization: auth?.token,
@@ -23,7 +22,6 @@ const DepartmentProvider = ({ children }) => {
 
       const res = await axios.get(`/department?page=${page}&limit=${limit}${queryUrl}&sortField=${sortField}&sortOrder=${sortOrder}`, { headers });
       if (res.data.error === false) {
-        setDepartment(res.data.getAllDepartments);
         return res.data
       }
     } catch (error) {
@@ -33,11 +31,8 @@ const DepartmentProvider = ({ children }) => {
 
   const getDepartmentList = async () => {
     try {
-
-
       const res = await axios.get(`/department/departmentlist`, { headers });
       if (res.data.error === false) {
-        setDepartment(res.data.departments);
         return res.data
       }
     } catch (error) {
@@ -49,13 +44,13 @@ const DepartmentProvider = ({ children }) => {
   const addDepartment = async (name) => {
     try {
       const { data } = await axios.post("/department/createDepartment", { name }, { headers });
-
       if (data.error === false) {
         getDepartment()
         setTimeout(function () {
           toast.success("Department created successfully")
         }, 1000);
       }
+
       return data;
     } catch (error) {
       if (error.response) {
@@ -78,7 +73,6 @@ const DepartmentProvider = ({ children }) => {
   const deleteDepartment = async (id) => {
     try {
       const res = await axios.delete(`/department/deleteDepartment/${id}`, { headers })
-
       if (res.data.error === false) {
         getDepartment()
         toast.success("Department deleted successfully")
@@ -92,7 +86,6 @@ const DepartmentProvider = ({ children }) => {
   const updateDepartment = async (name, id) => {
     try {
       const { data } = await axios.put(`/department/updateDepartment/${id}`, { name }, { headers })
-
       if (data.error === false) {
         getDepartment()
         setTimeout(function () {
@@ -116,7 +109,7 @@ const DepartmentProvider = ({ children }) => {
   }
 
   return (
-    <DepartmentContext.Provider value={{ department, getDepartment, addDepartment, deleteDepartment, updateDepartment, getDepartmentList, getSingleDepartment }}>
+    <DepartmentContext.Provider value={{ getDepartment, addDepartment, deleteDepartment, updateDepartment, getDepartmentList, getSingleDepartment }}>
       {children}
     </DepartmentContext.Provider>
   );

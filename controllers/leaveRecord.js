@@ -4,6 +4,11 @@ const { validationResult } = require('express-validator');
 const asyncHandler = require('express-async-handler')
 const { sendMailForLeaveStatus, sendMailForLeaveRequest, formattedDate } = require("../helper/mail")
 
+
+function capitalizeFLetter(string) {
+    return string[0].toUpperCase() + string.slice(1);
+}
+
 const createLeave = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -29,7 +34,6 @@ const createLeave = asyncHandler(async (req, res) => {
             message: "Your Leave Create successfully !!",
             leave: createLeaves
         })
-
     } catch (error) {
         console.log(error.message)
         res.status(500).send('Server error');
@@ -56,10 +60,6 @@ const getAllLeaves = asyncHandler(async (req, res) => {
         res.status(500).send('Server error');
     }
 })
-
-function capitalizeFLetter(string) {
-    return string[0].toUpperCase() + string.slice(1);
-}
 
 const getLeaves = asyncHandler(async (req, res) => {
     const page = parseInt(req.query.page) || 1;
@@ -90,34 +90,18 @@ const getLeaves = asyncHandler(async (req, res) => {
         const totalLeaves = await Leaves.countDocuments(query)
         const skip = (page - 1) * limit;
         let leaves;
+
         if (sortField === 'userId.fullName') {
-
-            leaves = await Leaves.find(query)
-                .populate({
-                    path: 'userId',
-                    select: 'fullName',
-                })
-                .skip(skip)
-                .limit(limit)
-                .lean();
-
+            leaves = await Leaves.find(query).populate({ path: 'userId', select: 'fullName' }).skip(skip).limit(limit).lean();
             leaves.sort((a, b) => {
                 const nameA = a.userId?.fullName || '';
                 const nameB = b.userId?.fullName || '';
                 return sortOrder * nameA.localeCompare(nameB);
             });
         } else {
-            leaves = await Leaves.find(query)
-                .sort({ [sortField]: sortOrder })
-                .skip(skip)
-                .limit(limit)
-                .populate({
-                    path: 'userId',
-                    select: 'fullName',
-                })
-                .lean();
-
+            leaves = await Leaves.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate({ path: 'userId', select: 'fullName' }).lean();
         }
+
         const formattedLeaves = leaves.map((leave, i) => {
             const index = i + 1
             return {
@@ -161,15 +145,9 @@ const userGetLeave = asyncHandler(async (req, res) => {
         }
         const totalLeaves = await Leaves.countDocuments(query)
         const skip = (page - 1) * limit;
-        const leaves = await Leaves.find(query)
-            .sort({ [sortField]: sortOrder })
-            .skip(skip)
-            .limit(limit)
-            .populate({
-                path: 'userId',
-                select: 'fullName',
-            })
-            .lean();
+
+        const leaves = await Leaves.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate({ path: 'userId', select: 'fullName' }).lean();
+
         const formattedLeaves = leaves.map((leave, i) => {
             const index = i + 1
             return {
@@ -219,7 +197,6 @@ const updateLeave = asyncHandler(async (req, res) => {
         const { id } = req.params;
 
         let userLeave;
-
         if (id) {
             userLeave = await Leaves.findOne({ _id: id });
         } else {

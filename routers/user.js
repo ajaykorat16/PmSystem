@@ -4,7 +4,6 @@ const { check } = require('express-validator');
 const {auth, isAdmin} = require("../middleware/auth")
 const formidableMiddleware = require('express-formidable');
 
-
 const { createUser, loginUser, updateUser, deleteUserProfile, getAllUser, getUserProfile, changePasswordController, getUsers } = require("../controllers/user")
 
 router.get("/userList", auth, isAdmin, getAllUser)

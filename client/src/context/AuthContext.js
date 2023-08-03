@@ -13,13 +13,11 @@ const AuthProvider = ({ children }) => {
     })
     const [isLoggedIn, setIsLoggedIn] = useState(false)
 
-    //default axios
     axios.defaults.headers.common["Authorization"] = auth?.token
 
     const login = async (email, password) => {
         try {
             const { data } = await axios.post('/user/login', { email, password });
-
             if (data.error === false) {
                 setIsLoggedIn(true)
                 toast.success('Login successful');
@@ -48,7 +46,7 @@ const AuthProvider = ({ children }) => {
 
     };
 
-    // Function to handle logout
+
     const logout = () => {
         try {
             const data = localStorage.getItem('auth')
@@ -60,11 +58,11 @@ const AuthProvider = ({ children }) => {
                 })
                 setIsLoggedIn(false)
             }
-
         } catch (error) {
-
+            console.log(error);
         }
     };
+
 
     useEffect(() => {
         const data = localStorage.getItem('auth')
@@ -78,15 +76,14 @@ const AuthProvider = ({ children }) => {
         }
     }, [])
 
+
     return (
         <AuthContext.Provider value={{ auth, login, logout, isLoggedIn }}>
             {children}
         </AuthContext.Provider>
     )
-
 }
 
-//custom hook 
 const useAuth = () => useContext(AuthContext)
 
 export { useAuth, AuthProvider }

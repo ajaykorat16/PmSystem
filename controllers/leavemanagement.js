@@ -3,37 +3,30 @@ const asyncHandler = require("express-async-handler");
 const Users = require("../models/userModel");
 
 const getLeavesMonthWise = asyncHandler(async (req, res) => {
-  const d = new Date();
-  let month = d.getMonth() + 1;
-
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
-  const filter = req.body.filter || month;
-
-  let query;
-  if (filter) {
-    query = {
-      $or: [
-        {
-          $expr: {
-            $eq: [{ $month: "$monthly" }, isNaN(filter) ? null : filter],
-          },
-        },
-      ],
-    };
-  }
-
-  const totalLeaves = await LeaveManagement.countDocuments(query);
-
-  const skip = (page - 1) * limit;
-
   try {
-    const leaves = await LeaveManagement.find(query)
-      .skip(skip)
-      .limit(limit)
-      .populate({ path: "user", select: "fullName" })
-      .lean();
+    const d = new Date();
+    let month = d.getMonth() + 1;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const filter = req.body.filter || month;
 
+    let query;
+    if (filter) {
+      query = {
+        $or: [
+          {
+            $expr: {
+              $eq: [{ $month: "$monthly" }, isNaN(filter) ? null : filter],
+            },
+          },
+        ],
+      };
+    }
+
+    const totalLeaves = await LeaveManagement.countDocuments(query);
+    const skip = (page - 1) * limit;
+
+    const leaves = await LeaveManagement.find(query).skip(skip).limit(limit).populate({ path: "user", select: "fullName" }).lean();
     return res.status(200).json({
       error: false,
       message: "Leaves getting successfully",

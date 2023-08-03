@@ -45,6 +45,7 @@ const createUser = asyncHandler(async (req, res) => {
                 message: "Employee Number should be unique"
             })
         }
+
         const existingUser = await Users.findOne({ email })
         if (existingUser) {
             return res.status(200).json({
@@ -52,6 +53,7 @@ const createUser = asyncHandler(async (req, res) => {
                 message: "User already register with this email"
             })
         }
+
         const existingPhone = await Users.findOne({ phone })
         if (existingPhone) {
             return res.status(200).json({
@@ -59,12 +61,10 @@ const createUser = asyncHandler(async (req, res) => {
                 message: "Phone Number should be unique"
             })
         }
+
         const hashedPassword = await hashPassword(password)
 
-        let fname = capitalizeFLetter(firstname)
-        let lname = capitalizeFLetter(lastname)
-
-        const newUser = await new Users({ employeeNumber, firstname: fname, lastname: lname, email, password: hashedPassword, phone, address, dateOfBirth, department, dateOfJoining }).save()
+        const newUser = await new Users({ employeeNumber, firstname: capitalizeFLetter(firstname), lastname: capitalizeFLetter(lastname), email, password: hashedPassword, phone, address, dateOfBirth, department, dateOfJoining }).save()
         return res.status(201).json({
             error: false,
             message: "User Register successfully !!",
@@ -91,6 +91,7 @@ const loginUser = asyncHandler(async (req, res) => {
                 message: "Invalid Email. Please sign up first."
             });
         }
+
         const match = await comparePassword(password, user.password);
         if (!match) {
             return res.status(401).json({
@@ -98,6 +99,7 @@ const loginUser = asyncHandler(async (req, res) => {
                 message: "Invalid Password"
             });
         }
+
         const token = await jwt.sign({ user }, process.env.JWT_SECRET_KEY, { expiresIn: '5 days' });
         return res.status(200).send({
             error: false,
@@ -149,12 +151,14 @@ const updateUser = asyncHandler(async (req, res) => {
             photo: photo || user.photo,
             fullName: firstname + " " + lastname
         };
+
         if (photo) {
             updatedFields.photo = {
                 data: fs.readFileSync(photo.path),
                 contentType: photo.type
             };
         }
+
         const updateUser = await Users.findByIdAndUpdate(user._id, updatedFields, { new: true });
         return res.status(201).send({
             error: false,
@@ -192,7 +196,6 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
             error: false,
             message: "Profile Delete Successfully !!",
         })
-
     } catch (error) {
         console.log(error.message)
         res.status(500).send('Server error');
@@ -250,23 +253,18 @@ const getUsers = asyncHandler(async (req, res) => {
         }
 
         const totalUsers = await Users.countDocuments(query);
-
         const skip = (page - 1) * limit;
 
         const users = await Users.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate("department").lean();
-
         const formattedUsers = users.map((user) => {
             const photoUrl = user.photo && user.photo.contentType
                 ? `data:${user.photo.contentType};base64,${user.photo.data.toString("base64")}`
                 : null;
-
-            const name = user.firstname + " " + user.lastname;
             const avatar = user.firstname.charAt(0) + user.lastname.charAt(0);
 
             return {
                 ...user,
                 avatar: avatar,
-                name: name,
                 department: user.department.name,
                 dateOfBirth: formattedDate(user.dateOfBirth),
                 dateOfJoining: formattedDate(user.dateOfJoining),
@@ -317,7 +315,6 @@ const getAllUser = asyncHandler(async (req, res) => {
     }
 });
 
-
 const getUserProfile = asyncHandler(async (req, res) => {
     try {
         const { id } = req.params
@@ -349,19 +346,16 @@ const getUserProfile = asyncHandler(async (req, res) => {
     }
 })
 
-//changePasswordController
-
 const changePasswordController = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ error: true, errors: errors.array() });
     }
     try {
-        console.log(req.user._id);
         const user = req.user._id
         const { password } = req.body
+
         const hashed = await hashPassword(password);
-        console.log(hashed);
         await Users.findByIdAndUpdate(user, { password: hashed });
         res.status(200).send({
             error: false,
