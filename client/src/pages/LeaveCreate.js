@@ -58,7 +58,6 @@ const LeaveCreate = () => {
               toast.error(data.message);
             } else {
               navigate("/dashboard-user/leave/list");
-              console.log("create user");
             }
           } catch (error) {
             console.log(error);

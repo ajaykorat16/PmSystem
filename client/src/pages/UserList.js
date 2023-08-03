@@ -7,10 +7,9 @@ import Loader from "../components/Loader";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import Layout from "./Layout";
-import moment from "moment";
-import "../styles/Styles.css"
 import { Button } from "primereact/button";
 import { Avatar } from 'primereact/avatar';
+import "../styles/Styles.css"
 
 const UserList = () => {
   const { deleteUser, getAllUsers } = useUser();
@@ -94,19 +93,6 @@ const UserList = () => {
           <>
             <Button icon="pi pi-pencil" rounded severity="success" aria-label="edit" onClick={() => handleUpdate(rowData._id)} />
             <Button icon="pi pi-trash" rounded severity="danger" className="ms-2" aria-label="Cancel" onClick={() => handleDelete(rowData._id)} />
-
-            {/* <AiTwotoneEdit
-              color="success"
-              variant="outline"
-              onClick={() => handleUpdate(rowData._id)}
-              className="edit"
-            />
-            <AiTwotoneDelete
-              color="danger"
-              variant="outline"
-              onClick={() => handleDelete(rowData._id)}
-              className="delete"
-            /> */}
           </>
         )}
       </div>
@@ -131,22 +117,6 @@ const UserList = () => {
       </div>
     );
   };
-
-  const DOB = (rowData) => {
-    return (
-      <div>
-        {moment(rowData.dateOfBirth).format('DD-MM-YYYY')}
-      </div>
-    )
-  }
-
-  const DOJ = (rowData) => {
-    return (
-      <div>
-        {moment(rowData.dateOfJoining).format('DD-MM-YYYY')}
-      </div>
-    )
-  }
 
   const hanldeSorting = async (e) => {
     const field = e.sortField;
@@ -186,7 +156,7 @@ const UserList = () => {
                 />
               }
             >
-              <Column header="#" filterField="representative" body={photo} align="center"/>
+              <Column header="#" filterField="representative" body={photo} align="center" />
               <Column
                 field="employeeNumber"
                 header="Emp. ID."
@@ -198,13 +168,13 @@ const UserList = () => {
               <Column field="email" sortable header="Email" filterField="email" align="center" />
               <Column field="phone" header="Phone" filterField="phone" align="center" />
               <Column
-                body={DOB}
+                field="dateOfBirth"
                 header="DOB"
                 filterField="dateOfBirth"
                 align="center"
               />
               <Column
-                body={DOJ}
+                field="dateOfJoining"
                 header="DOJ"
                 filterField="dateOfJoining"
                 align="center"
@@ -215,7 +185,7 @@ const UserList = () => {
                 filterField="department"
                 align="center"
               />
-              <Column field="action" header="Action" body={actionTemplate} align="center"/>
+              <Column field="action" header="Action" body={actionTemplate} align="center" />
             </DataTable>
           </div>
         </>

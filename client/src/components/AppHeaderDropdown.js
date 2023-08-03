@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CImage, CAvatar, CDropdown, CDropdownDivider, CDropdownHeader, CDropdownItem, CDropdownMenu, CDropdownToggle, CForm, CFormInput } from '@coreui/react';
+import { CImage, CAvatar, CDropdown, CDropdownDivider, CDropdownHeader, CDropdownItem, CDropdownMenu, CDropdownToggle } from '@coreui/react';
 import { cilLockLocked, cilUser } from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
 import { useNavigate } from 'react-router-dom';
@@ -10,7 +10,7 @@ import { MdOutlineLockReset } from 'react-icons/md';
 const LeaveBalanceDisplay = ({ leaveBalance }) => {
   return (
     <div className='balance'>
-      Leave Balance: {leaveBalance || 'Loading...'}
+      Leave Balance: {leaveBalance}
     </div>
   );
 };

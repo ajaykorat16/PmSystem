@@ -88,7 +88,6 @@
                                         </table>
                                     </td>
                                 </tr>
-
                                 <tr>
                                     <td align="center" valign="top">
                                         <table width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -105,47 +104,101 @@
                                                                             cellspacing="0" width="100%">
                                                                             <tbody>
                                                                                 <tr>
-                                                                                    <td align="center">
+                                                                                    <td align="justify">
                                                                                         <table width="100%" border="0"
                                                                                             cellspacing="0"
                                                                                             cellpadding="8">
                                                                                             <tbody>
-                                                                                                <tr>
-                                                                                                    <td
-                                                                                                        style="font-size:16px;font-weight:400 !important;padding:0px 0 15px 0;color:#000;">
-                                                                                                        Hello
-                                                                                                        <b>{userName}</b>,
-                                                                                                    </td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td
-                                                                                                        style="font-size:16px;font-weight:400 !important;padding:0px 0 15px 0;color:#000;">
-                                                                                                        Your request for
-                                                                                                        leave is
-                                                                                                        <b>{status}</b>.
-                                                                                                    </td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td
-                                                                                                        style="font-size:16px;font-weight:400 !important;padding:15px 0 10px 0;color:#000;">
-                                                                                                        <b>{adminName}</b>
-                                                                                                    </td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td
-                                                                                                        style="font-size:16px;font-weight:400 !important;padding:0px 0 30px 0;color:#000;">
-                                                                                                        Thank You!
-                                                                                                    </td>
-                                                                                                </tr>
-                                                                                                <tr>
-                                                                                                    <td
-                                                                                                        style="font-size:14px;line-height:25px;font-weight:900 !important;padding:0px 0px 0;color:#667085; text-align: center;">
-                                                                                                        © 2023 KRIVA
-                                                                                                        TECHNOLABS LLP
-                                                                                                    </td>
-                                                                                                </tr>
-                                                                                            </tbody>
-                                                                                        </table>
+                                                                                                <td
+                                                                                                    style="font-size:16px;font-weight:400 !important;padding:0px 0 20px 0;color:#000;">
+                                                                                                    Dear
+                                                                                                    <b>{userName},</b>
+                                                                                                </td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td
+                                                                                        style="font-size:16px;font-weight:400 !important;padding:0px 0 20px 0;color:#000; text-align: justify;">
+                                                                                        I trust this email finds you well. I am writing to inform you about the status of your recent leave request. Your application has been reviewed and a decision has been made.
+                                                                                    </td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td
+                                                                                        style="font-size:16px;font-weight:400 !important;padding:0px 0 20px 0;color:#000; text-align: justify;">
+                                                                                        Here are the details of your leave request:
+                                                                                    </td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td
+                                                                                        style="font-size:16px;font-weight:400 !important;padding:7px 0 7px 0;color:#000;">
+                                                                                        Name: <b>{userName}</b> </td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td
+                                                                                        style="font-size:16px;font-weight:400 !important;padding:7px 0 7px 0;color:#000;">
+                                                                                        Department: <b>{department}</b>
+                                                                                    </td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td
+                                                                                        style="font-size:16px;font-weight:400 !important;padding:7px 0 7px 0;color:#000;">
+                                                                                        Reason: <b>{reason}</b></td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td
+                                                                                        style="font-size:16px;font-weight:400 !important;padding:7px 0 7px 0;color:#000;">
+                                                                                        Leave Type: <b>{leaveType}</b>
+                                                                                    </td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td
+                                                                                        style="font-size:16px;font-weight:400 !important;padding:7px 0 7px 0;color:#000;">
+                                                                                        Leave Start From: <b>{startDate}</b> </td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td
+                                                                                        style="font-size:16px;font-weight:400 !important;padding:7px 0 7px 0;color:#000;">
+                                                                                        Leave End to: <b>{endDate}</b>
+                                                                                    </td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td
+                                                                                        style="font-size:16px;font-weight:400 !important;padding:7px 0 25px 0;color:#000;">
+                                                                                        Days: <b>{totalDays}</b>
+                                                                                    </td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td
+                                                                                        style="font-size:16px;font-weight:400 !important;padding:0px 0 20px 0;color:#000; text-align: justify;">
+                                                                                        I want to inform you that your leave request has been <b>{status}</b>
+                                                                                    </td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td
+                                                                                        style="font-size:16px;font-weight:400 !important;padding:0px 0 20px 0;color:#000; text-align: justify;">
+                                                                                        We understand the importance of maintaining a balance between work and personal life, and we appreciate your understanding of the decision made. If you have any questions, need clarification, or wish to discuss this further, please feel free to contact us.
+                                                                                    </td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td
+                                                                                        style="font-size:16px;font-weight:400 !important;padding:0px 0 20px 0;color:#000; text-align: justify;">
+                                                                                        Thank you for your commitment and contributions to the team.                                                                                </td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td
+                                                                                        style="font-size:16px;font-weight:400 !important;padding:0px 0 30px 0;color:#000;">
+                                                                                        Best regards,
+                                                                                    </td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td
+                                                                                        style="font-size:16px;font-weight:700 !important;padding:0px 0 10px 0;color:#000;">
+                                                                                        {adminName}
+                                                                                    </td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td
+                                                                                        style="font-size:14px;line-height:25px;font-weight:900 !important;padding:0px 0px 0;color:#667085; text-align: center;">
+                                                                                        © 2023 KRIVA TECHNOLABS LLP
                                                                                     </td>
                                                                                 </tr>
                                                                             </tbody>
@@ -165,6 +218,10 @@
                     </td>
                 </tr>
             </tbody>
+        </table>
+        </td>
+        </tr>
+        </tbody>
         </table>
     </center>
 </body>

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useLeave } from "../context/LeaveContext";
 import { useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
-import moment from "moment";
 import Layout from "./Layout";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
@@ -162,13 +161,6 @@ const LeaveList = () => {
     setRowsPerPage(newRowsPerPage);
   };
 
-  const start = (rowData) => {
-    return <div>{moment(rowData.startDate).format("DD-MM-YYYY")}</div>;
-  };
-  const end = (rowData) => {
-    return <div>{moment(rowData.endDate).format("DD-MM-YYYY")}</div>;
-  };
-
   const hanldeSorting = async (e) => {
     const field = e.sortField;
     const order = e.sortOrder;
@@ -254,14 +246,13 @@ const LeaveList = () => {
               />
               <Column
                 field="startDate"
-                body={start}
                 header="Start Date"
                 sortable
                 filterField="start"
                 align="center"
               />
               <Column
-                body={end}
+                field="endDate"
                 header="End Date"
                 filterField="end"
                 align="center"

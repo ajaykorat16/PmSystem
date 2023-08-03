@@ -2,6 +2,7 @@ const Users = require("../models/userModel")
 const Leaves = require("../models/leaveModel")
 const Department = require("../models/departmentModel")
 const { validationResult } = require('express-validator');
+const { formattedDate } = require("../helper/mail")
 const fs = require("fs")
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
@@ -267,8 +268,8 @@ const getUsers = asyncHandler(async (req, res) => {
                 avatar: avatar,
                 name: name,
                 department: user.department.name,
-                dateOfBirth: user.dateOfBirth.toISOString().split("T")[0],
-                dateOfJoining: user.dateOfJoining.toISOString().split("T")[0],
+                dateOfBirth: formattedDate(user.dateOfBirth),
+                dateOfJoining: formattedDate(user.dateOfJoining),
                 photo: photoUrl,
             };
         });
@@ -299,8 +300,8 @@ const getAllUser = asyncHandler(async (req, res) => {
 
             return {
                 ...user,
-                dateOfBirth: user.dateOfBirth.toISOString().split('T')[0],
-                dateOfJoining: user.dateOfJoining.toISOString().split('T')[0],
+                dateOfBirth: formattedDate(user.dateOfBirth),
+                dateOfJoining: formattedDate(user.dateOfJoining),
                 photo: photoUrl,
             };
         });

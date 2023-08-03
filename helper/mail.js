@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer');
 const Users = require("../models/userModel")
 var fs = require("fs");
+const moment = require('moment');
 const transporter = nodemailer.createTransport({
     host: process.env.MAIL_HOST,
     port: 465,
@@ -11,22 +12,34 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-const sendMailForLeaveStatus = async (user, status) => {
+const formattedDate = (date)=>{
+    return moment(date).format('DD-MM-YYYY')
+}
+
+const sendMailForLeaveStatus = async (data) => {
     try {
-        const { fullName, email } = user
         fs.readFile('./templates/email_leaveResponse.html', 'utf8', async function (err, content) {
             if (err) {
                 console.log("Mail.sendLeaveRequest [ERROR: " + err + " ]");
             } else {
                 let body = content;
                 const adminUser = await Users.findOne({ role: 'admin' }).select("-photo");
-                body = body.replace('{userName}', fullName)
+                const { startDate, endDate, reason, totalDays, status, type } = data
+
+                body = body.replace('{userName}', data.userId.fullName)
+                body = body.replace('{userName}', data.userId.fullName)
+                body = body.replace('{department}', data.userId.department.name)
+                body = body.replace('{reason}', reason)
+                body = body.replace('{leaveType}', type)
+                body = body.replace('{startDate}',formattedDate(startDate))
+                body = body.replace('{endDate}', formattedDate(endDate))
+                body = body.replace('{totalDays}', totalDays)
                 body = body.replace('{status}', status)
                 body = body.replace('{adminName}', adminUser.fullName)
 
                 const mailOptions = {
                     from: process.env.MAIL_FROM_EMAIL,
-                    to: email,
+                    to: data.userId.email,
                     subject: "Leave Status",
                     html: body
                 };
@@ -56,7 +69,7 @@ const sendMailForLeaveRequest = async (data) => {
                 console.log("Mail.sendLeaveRequest [ERROR: " + err + " ]");
             } else {
                 let body = content;
-                const { reason, startDate, endDate, type, userId, totalDays } = data;
+                const { reason, startDate, endDate, userId, totalDays } = data;
 
                 const adminUser = await Users.findOne({ role: 'admin' }).select("-photo");
                 const employee = await Users.findOne({ _id: userId }).select("-photo").populate('department');
@@ -64,8 +77,8 @@ const sendMailForLeaveRequest = async (data) => {
                 body = body.replace('{adminName}', adminUser.fullName)
                 body = body.replace('{userName}', employee.fullName)
                 body = body.replace('{department}', employee.department.name)
-                body = body.replace('{startDate}', startDate.toISOString().split('T')[0])
-                body = body.replace('{endDate}', endDate.toISOString().split('T')[0])
+                body = body.replace('{startDate}', formattedDate(startDate))
+                body = body.replace('{endDate}', formattedDate(endDate))
                 body = body.replace('{reason}', reason)
                 body = body.replace('{totalDays}', totalDays)
                 body = body.replace('{userName}', employee.fullName)
@@ -96,4 +109,4 @@ const sendMailForLeaveRequest = async (data) => {
     }
 };
 
-module.exports = { sendMailForLeaveStatus, sendMailForLeaveRequest }
+module.exports = { sendMailForLeaveStatus, sendMailForLeaveRequest, formattedDate }

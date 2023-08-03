@@ -2,7 +2,7 @@ const Leaves = require("../models/leaveModel")
 const Users = require("../models/userModel")
 const { validationResult } = require('express-validator');
 const asyncHandler = require('express-async-handler')
-const { sendMailForLeaveStatus, sendMailForLeaveRequest } = require("../helper/mail")
+const { sendMailForLeaveStatus, sendMailForLeaveRequest, formattedDate } = require("../helper/mail")
 
 const createLeave = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
@@ -21,7 +21,7 @@ const createLeave = asyncHandler(async (req, res) => {
         if (status === "approved") {
             await Users.findByIdAndUpdate(uId, { $inc: { leaveBalance: -totalDays } }, { new: true })
         }
-        
+
         const createLeaves = await new Leaves({ userId: uId, reason, startDate, endDate, type, status, totalDays }).save();
         await sendMailForLeaveRequest(createLeaves)
         return res.status(201).json({
@@ -42,8 +42,8 @@ const getAllLeaves = asyncHandler(async (req, res) => {
         const formattedLeaves = leaves.map(leave => {
             return {
                 ...leave,
-                startDate: leave.startDate.toISOString().split('T')[0],
-                endDate: leave.endDate.toISOString().split('T')[0]
+                startDate: formattedDate(leave.startDate),
+                endDate: formattedDate(leave.endDate)
             };
         });
         return res.status(200).json({
@@ -125,8 +125,8 @@ const getLeaves = asyncHandler(async (req, res) => {
                 type: capitalizeFLetter(leave.type),
                 status: capitalizeFLetter(leave.status),
                 index: index,
-                startDate: leave.startDate.toISOString().split('T')[0],
-                endDate: leave.endDate.toISOString().split('T')[0]
+                startDate: formattedDate(leave.startDate),
+                endDate: formattedDate(leave.endDate)
             };
         });
         return res.status(200).json({
@@ -177,8 +177,8 @@ const userGetLeave = asyncHandler(async (req, res) => {
                 type: capitalizeFLetter(leave.type),
                 status: capitalizeFLetter(leave.status),
                 index: index,
-                startDate: leave.startDate.toISOString().split('T')[0],
-                endDate: leave.endDate.toISOString().split('T')[0],
+                startDate: formattedDate(leave.startDate),
+                endDate: formattedDate(leave.endDate)
             };
         });
         return res.status(200).json({
@@ -277,14 +277,12 @@ const updateStatus = asyncHandler(async (req, res) => {
         const { status } = req.body
         const { id } = req.params;
 
-        const updateLeave = await Leaves.findByIdAndUpdate({ _id: id }, { status }, { new: true }).populate({ path: "userId", select: "-photo" });
+        const updateLeave = await Leaves.findByIdAndUpdate({ _id: id }, { status }, { new: true }).populate({ path: "userId", select: "-photo", populate: "department" });
 
         if (status === 'approved') {
             await Users.findByIdAndUpdate(updateLeave.userId, { $inc: { leaveBalance: -updateLeave.totalDays } }, { new: true })
         }
-
-        let user = updateLeave.userId
-        await sendMailForLeaveStatus(user, status)
+        await sendMailForLeaveStatus(updateLeave)
         return res.status(201).send({
             error: false,
             message: "Status Updated Successfully !!",
