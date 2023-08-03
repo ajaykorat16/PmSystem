@@ -24,46 +24,26 @@ const LeaveCreate = () => {
   const typeList = ["paid", "lwp"];
   const navigate = useNavigate();
 
-  let handleSubmit;
-  {
-    auth.user.role === "admin"
-      ? (handleSubmit = async (e) => {
-          e.preventDefault();
-          try {
-            const leaveData = {
-              reason,
-              startDate,
-              endDate,
-              type,
-              userId,
-              status,
-              totalDays
-            };
-            const data = await addLeave(leaveData);
-            if (data.error) {
-              toast.error(data.message);
-            } else {
-              navigate("/dashboard/leave/list");
-            }
-          } catch (error) {
-            console.log(error);
-          }
-        })
-      : (handleSubmit = async (e) => {
-          e.preventDefault();
-          try {
-            const leaveData = { reason, startDate, endDate, type, totalDays};
-            const data = await addUserLeave(leaveData);
-            if (data.error) {
-              toast.error(data.message);
-            } else {
-              navigate("/dashboard-user/leave/list");
-            }
-          } catch (error) {
-            console.log(error);
-          }
-        });
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      let leaveData;
+      if(auth.user.role === "admin"){
+        leaveData = { reason, startDate, endDate, type, totalDays, userId, status }
+      }else{
+        leaveData = { reason, startDate, endDate, type, totalDays }
+      }
+      const data = auth.user.role === "admin" ? await addLeave(leaveData) : await addUserLeave(leaveData);
+      if (data.error) {
+        toast.error(data.message);
+      } else {
+        const redirectPath = auth.user.role === "admin" ? "/dashboard/leave/list" : "/dashboard-user/leave/list";
+        navigate(redirectPath);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const getUsers = async () => {
     const { getAllUsers } = await fetchUsers();
@@ -77,25 +57,22 @@ const LeaveCreate = () => {
 
   const leaveDaysCount = (startDate, endDate) => {
     const eDate = new Date(endDate);
-  
     let currentDate = new Date(startDate);
     let totalDays = 0;
-  
     while (currentDate <= eDate) {
       const dayOfWeek = currentDate.getDay();
-      // 0 = Sunday, 6 = Saturday
       if (dayOfWeek !== 0 && dayOfWeek !== 6) {
         totalDays++;
       }
       currentDate.setDate(currentDate.getDate() + 1);
     }
-    setTotalDays(totalDays)
+    setTotalDays(totalDays);
   };
-  useEffect(() => {
-    leaveDaysCount(startDate, endDate)
-  },[startDate, endDate])
 
-  
+  useEffect(() => {
+    leaveDaysCount(startDate, endDate);
+  }, [startDate, endDate]);
+
   return (
     <Layout>
       <div className="mb-3">

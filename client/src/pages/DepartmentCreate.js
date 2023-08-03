@@ -42,7 +42,6 @@ const DepartmentCreate = () => {
         </CCol>
       </CForm>
     </Layout>
-
   );
 };
 

@@ -47,33 +47,6 @@ const UserList = () => {
     fetchUsers();
   }, [currentPage, rowsPerPage]);
 
-  const renderHeader = () => {
-    return (
-      <div className="d-flex align-items-center justify-content-between">
-        <div>
-          <h4>Users</h4>
-        </div>
-        <div>
-          <form onSubmit={handleSubmit}>
-            <div className="p-inputgroup ">
-              <span className="p-inputgroup-addon">
-                <i className="pi pi-search" />
-              </span>
-              <InputText
-                type="search"
-                value={globalFilterValue}
-                onChange={(e) => setGlobalFilterValue(e.target.value)}
-                placeholder="Keyword Search"
-              />
-            </div>
-          </form>
-        </div>
-      </div>
-    );
-  };
-
-  const header = renderHeader();
-
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this user?"
@@ -134,6 +107,26 @@ const UserList = () => {
       ) : (
         <>
           <div className="card mb-5">
+            <div className="mainHeader d-flex align-items-center justify-content-between">
+             <div>
+               <h4>Users</h4>
+             </div>
+             <div>
+               <form onSubmit={handleSubmit}>
+                 <div className="p-inputgroup ">
+                   <span className="p-inputgroup-addon">
+                     <i className="pi pi-search" />
+                   </span>
+                   <InputText
+                     type="search"
+                     value={globalFilterValue}
+                     onChange={(e) => setGlobalFilterValue(e.target.value)}
+                     placeholder="Keyword Search"
+                   />
+                 </div>
+               </form>
+             </div>
+            </div>
             <DataTable
               totalRecords={totalRecords}
               lazy
@@ -146,7 +139,6 @@ const UserList = () => {
               first={(currentPage - 1) * rowsPerPage}
               onPage={onPageChange}
               dataKey="_id"
-              header={header}
               emptyMessage="No user found."
               paginatorLeft={
                 <Dropdown

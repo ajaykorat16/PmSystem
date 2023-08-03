@@ -13,7 +13,7 @@ import { Button } from "primereact/button";
 import { toast } from "react-hot-toast";
 
 const LeaveList = () => {
-  const { getLeave, deleteLeave, getUserLeave, updateStatus } = useLeave();
+  const { getLeave, getUserLeave, updateStatus } = useLeave();
   const [leaveList, setLeaveList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -64,32 +64,6 @@ const LeaveList = () => {
       fetchLeaves();
     }
   }, [globalFilterValue, currentPage, rowsPerPage]);
-
-  const renderHeader = () => {
-    return (
-      <div className="d-flex align-items-center justify-content-between">
-        <div>
-          <h4>Leaves</h4>
-        </div>
-        <div>
-          <form onSubmit={handleSubmit}>
-            <div className="p-inputgroup ">
-              <span className="p-inputgroup-addon">
-                <i className="pi pi-search" />
-              </span>
-              <InputText
-                type="search"
-                value={globalFilterValue}
-                onChange={(e) => setGlobalFilterValue(e.target.value)}
-                placeholder="Keyword Search"
-              />
-            </div>
-          </form>
-        </div>
-      </div>
-    );
-  };
-  const header = renderHeader();
 
   const handleUpdate = async (id) => {
     navigate(`/dashboard/leave/update/${id}`);
@@ -150,7 +124,6 @@ const LeaveList = () => {
           raised
         />
       )}
-
     </div>
   );
 
@@ -199,6 +172,26 @@ const LeaveList = () => {
       ) : (
         <>
           <div className="card mb-5">
+            <div className="mainHeader d-flex align-items-center justify-content-between">
+              <div>
+                <h4>Leaves</h4>
+              </div>
+              <div>
+                <form onSubmit={handleSubmit}>
+                  <div className="p-inputgroup ">
+                    <span className="p-inputgroup-addon">
+                      <i className="pi pi-search" />
+                    </span>
+                    <InputText
+                      type="search"
+                      value={globalFilterValue}
+                      onChange={(e) => setGlobalFilterValue(e.target.value)}
+                      placeholder="Keyword Search"
+                    />
+                  </div>
+                </form>
+              </div>
+            </div>
             <DataTable
               totalRecords={totalRecords}
               lazy
@@ -212,7 +205,6 @@ const LeaveList = () => {
               first={(currentPage - 1) * rowsPerPage}
               onPage={onPageChange}
               dataKey="_id"
-              header={header}
               emptyMessage="No leave found."
               paginatorLeft={
                 <Dropdown

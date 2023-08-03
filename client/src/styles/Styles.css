@@ -21,3 +21,12 @@
     font-size: 20px;
     color: black;
 }
+
+.mainHeader{
+    background: #7B95A3;
+    color: #ffffff;
+    border: 1px solid #7B95A3;
+    border-width: 1px 1px 0 1px;
+    padding: 0.857rem 1rem;
+    font-weight: 700;
+}

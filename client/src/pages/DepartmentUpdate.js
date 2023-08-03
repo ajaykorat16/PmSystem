@@ -5,7 +5,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import Loader from '../components/Loader'
 import Layout from "./Layout";
 
-
 const DepartmentUpdate = () => {
   const navigate = useNavigate();
   const params = useParams();
@@ -20,7 +19,6 @@ const DepartmentUpdate = () => {
       setIsLoading(false)
     }
   }
-
   useEffect(() => {
     singleDepartment()
   }, [params.id])
@@ -58,7 +56,6 @@ const DepartmentUpdate = () => {
         </CForm>
       </>}
     </Layout>
-
   );
 };
 

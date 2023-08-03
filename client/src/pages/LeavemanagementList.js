@@ -7,20 +7,10 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { useLeaveManagement } from "../context/LeaveManagementContext";
-import {
-  CButton,
-  CForm,
-  CFormInput,
-  CModal,
-  CModalBody,
-  CModalFooter,
-  CModalHeader,
-  CModalTitle,
-} from "@coreui/react";
+import { CButton, CForm, CFormInput, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from "@coreui/react";
 
 const LeaveManagementList = () => {
-  const { getLeavesMonthWise, getSingleLeave, updateLeave } =
-    useLeaveManagement();
+  const { getLeavesMonthWise, getSingleLeave, updateLeave } = useLeaveManagement();
   const [isLoading, setIsLoading] = useState(true);
   const [leavelist, setLeaveList] = useState([]);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -32,7 +22,23 @@ const LeaveManagementList = () => {
   const [leaveId, setLeaveId] = useState(null);
   const [fullName, setFullName] = useState(null);
   const [month, setMonth] = useState(null)
-  const date = new Date()
+  
+  const fetchLeaves = async (query) => {
+    setIsLoading(true);
+    let leaveManagementData = await getLeavesMonthWise(
+      currentPage,
+      rowsPerPage,
+      query
+    );
+
+    const totalRecordsCount = leaveManagementData.totalLeaves;
+    setTotalRecords(totalRecordsCount);
+    setLeaveList(leaveManagementData.leaves);
+    setIsLoading(false);
+  };
+  useEffect(() => {
+    fetchLeaves();
+  }, [currentPage, rowsPerPage]);
 
   const singleDepartment = async () => {
     const data = await getSingleLeave(leaveId);
@@ -61,20 +67,6 @@ const LeaveManagementList = () => {
     }
   };
 
-  const fetchLeaves = async (query) => {
-    setIsLoading(true);
-    let leaveManagementData = await getLeavesMonthWise(
-      currentPage,
-      rowsPerPage,
-      query
-    );
-
-    const totalRecordsCount = leaveManagementData.totalLeaves;
-    setTotalRecords(totalRecordsCount);
-    setLeaveList(leaveManagementData.leaves);
-    setIsLoading(false);
-  };
-
   const handleSubmit = async () => {
     fetchLeaves(globalFilterValue);
   };
@@ -84,36 +76,6 @@ const LeaveManagementList = () => {
       fetchLeaves();
     }
   }, [globalFilterValue, currentPage, rowsPerPage]);
-
-  useEffect(() => {
-    fetchLeaves();
-  }, [currentPage, rowsPerPage]);
-
-  const renderHeader = () => {
-    return (
-      <div className="d-flex align-items-center justify-content-between">
-        <div>
-          <h4>Manage Leave</h4>
-        </div>
-        <div>
-          <form onSubmit={handleSubmit}>
-            <div className="p-inputgroup ">
-              <span className="p-inputgroup-addon">
-                <i className="pi pi-search" />
-              </span>
-              <InputText
-                type="search"
-                value={globalFilterValue}
-                onChange={(e) => setGlobalFilterValue(e.target.value)}
-                placeholder="Keyword Search"
-              />
-            </div>
-          </form>
-        </div>
-      </div>
-    );
-  };
-  const header = renderHeader();
 
   const onPageChange = (event) => {
     const currentPage = Math.floor(event.first / event.rows) + 1;
@@ -127,8 +89,8 @@ const LeaveManagementList = () => {
     setLeaveId(id);
     setFullName(fullName)
     setMonth(monthly)
-    // console.log(id);
   };
+
   const actionTemplate = (rowData) => {
     return(
     <div>
@@ -177,6 +139,27 @@ const LeaveManagementList = () => {
             </CForm>
           </CModal>
           <div className="card mb-5">
+            {/* Header section */}
+            <div className="mainHeader d-flex align-items-center justify-content-between ">
+              <div>
+                <h4>Manage Leave</h4>
+              </div>
+              <div>
+                <form onSubmit={handleSubmit}>
+                  <div className="p-inputgroup ">
+                    <span className="p-inputgroup-addon">
+                      <i className="pi pi-search" />
+                    </span>
+                    <InputText
+                      type="search"
+                      value={globalFilterValue}
+                      onChange={(e) => setGlobalFilterValue(e.target.value)}
+                      placeholder="Keyword Search"
+                    />
+                  </div>
+                </form>
+              </div>
+            </div>
             <DataTable
               totalRecords={totalRecords}
               lazy
@@ -186,7 +169,6 @@ const LeaveManagementList = () => {
               first={(currentPage - 1) * rowsPerPage}
               onPage={onPageChange}
               dataKey="_id"
-              header={header}
               emptyMessage="No user found."
               paginatorLeft={
                 <Dropdown

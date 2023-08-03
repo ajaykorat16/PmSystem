@@ -3,7 +3,6 @@ import AppSidebar from '../components/AppSidebar'
 import AppHeader from '../components/AppHeader'
 import {Toaster} from "react-hot-toast"
 
-
 const Layout = ({children}) => {
   return (
     <div>

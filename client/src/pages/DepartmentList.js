@@ -9,8 +9,6 @@ import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
 
-
-
 const DepartmentList = () => {
   const { getDepartment, deleteDepartment } = useDepartment();
   const [isLoading, setIsLoading] = useState(true);
@@ -23,46 +21,31 @@ const DepartmentList = () => {
   const [sortOrder, setSortOrder] = useState(-1);
   const navigate = useNavigate();
 
-  const handleSubmit = async () => {
-    fetchDepartments(globalFilterValue)
+  const fetchDepartments = async (query, sortField, sortOrder) => {
+    setIsLoading(true);
+    let departmentData = {};
+    departmentData = await getDepartment(currentPage, rowsPerPage, query, sortField, sortOrder);
+
+    const totalRecordsCount = departmentData.totalDepartments;
+
+    setTotalRecords(totalRecordsCount);
+    setDepartmentList(departmentData.departments)
+    setIsLoading(false);
   };
+  
+  useEffect(() => {
+    fetchDepartments();
+  }, [currentPage, rowsPerPage]);
 
   useEffect(() => {
     if (globalFilterValue.trim() === '') {
       fetchDepartments();
     }
   }, [globalFilterValue, currentPage, rowsPerPage])
-
-  useEffect(() => {
-    fetchDepartments();
-  }, [currentPage, rowsPerPage]);
-
-  const renderHeader = () => {
-    return (
-      <div className="d-flex align-items-center justify-content-between">
-        <div>
-          <h4>Departments</h4>
-        </div>
-        <div>
-          <form onSubmit={handleSubmit}>
-            <div className="p-inputgroup ">
-              <span className="p-inputgroup-addon">
-                <i className="pi pi-search" />
-              </span>
-              <InputText
-                type='search'
-                value={globalFilterValue}
-                onChange={(e) => setGlobalFilterValue(e.target.value)}
-                placeholder="Keyword Search"
-              />
-            </div>
-          </form>
-        </div>
-      </div>
-    );
+   
+  const handleSubmit = async () => {
+    fetchDepartments(globalFilterValue)
   };
-
-  const header = renderHeader();
 
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm(
@@ -78,17 +61,20 @@ const DepartmentList = () => {
     navigate(`/dashboard/department/update/${id}`);
   };
 
-  const fetchDepartments = async (query, sortField, sortOrder) => {
-    setIsLoading(true);
-    let departmentData = {};
-    departmentData = await getDepartment(currentPage, rowsPerPage, query, sortField, sortOrder);
+  const onPageChange = (event) => {
+    const currentPage = Math.floor(event.first / event.rows) + 1;
+    setCurrentPage(currentPage);
+    const newRowsPerPage = event.rows;
+    setRowsPerPage(newRowsPerPage);
+  };
 
-    // Simulating API request delay
-    const totalRecordsCount = departmentData.totalDepartments;
+  const handleSorting = async (e) => {
+    const field = e.sortField;
+    const order = e.sortOrder;
 
-    setTotalRecords(totalRecordsCount);
-    setDepartmentList(departmentData.departments)
-    setIsLoading(false);
+    setSortField(field);
+    setSortOrder(order);
+    fetchDepartments(null, field, order)
   };
 
   const actionTemplate = (rowData) => (
@@ -98,22 +84,6 @@ const DepartmentList = () => {
     </div>
   );
 
-  const onPageChange = (event) => {
-    const currentPage = Math.floor(event.first / event.rows) + 1;
-    setCurrentPage(currentPage);
-    const newRowsPerPage = event.rows;
-    setRowsPerPage(newRowsPerPage);
-  };
-
-  const hanldeSorting = async (e) => {
-    const field = e.sortField;
-    const order = e.sortOrder;
-
-    setSortField(field);
-    setSortOrder(order);
-    fetchDepartments(null, field, order)
-  };
-
   return (
     <Layout>
       {isLoading ? (
@@ -121,19 +91,38 @@ const DepartmentList = () => {
       ) : (
         <>
           <div className="card mb-5">
+            <div className="mainHeader d-flex align-items-center justify-content-between">
+              <div>
+                <h4>Departments</h4>
+              </div>
+              <div>
+                <form onSubmit={handleSubmit}>
+                  <div className="p-inputgroup ">
+                    <span className="p-inputgroup-addon">
+                      <i className="pi pi-search" />
+                    </span>
+                    <InputText
+                      type='search'
+                      value={globalFilterValue}
+                      onChange={(e) => setGlobalFilterValue(e.target.value)}
+                      placeholder="Keyword Search"
+                    />
+                  </div>
+                </form>
+              </div>
+            </div>
             <DataTable
               totalRecords={totalRecords}
               lazy
               sortField={sortField}
               sortOrder={sortOrder}
-              onSort={hanldeSorting}
+              onSort={handleSorting}
               paginator
               rows={rowsPerPage}
               value={departmentList}
               first={(currentPage - 1) * rowsPerPage}
               onPage={onPageChange}
               dataKey="_id"
-              header={header}
               emptyMessage="No departments found."
               paginatorLeft={
                 <Dropdown
@@ -144,8 +133,8 @@ const DepartmentList = () => {
               }
             >
               <Column
-                field="name"
-                header="Name"
+                field = "name"
+                header = "Name"
                 sortable
                 filterField="name"
                 filterMenuStyle={{ width: '14rem' }}
