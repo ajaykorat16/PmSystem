@@ -9,7 +9,7 @@ import { MdOutlineLockReset } from 'react-icons/md';
 
 const LeaveBalanceDisplay = ({ leaveBalance }) => {
   return (
-    <div className='balance text-info'>
+    <div className='balance'>
       Leave Balance: {leaveBalance || 'Loading...'}
     </div>
   );
