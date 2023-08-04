@@ -83,5 +83,23 @@ const updateLeave = asyncHandler(async (req, res) => {
   }
 });
 
+const getUserLeaves = asyncHandler(async (req, res) => {
+  try {
+    const userId = req.user._id;
 
-module.exports = { getLeavesMonthWise, getSingleLeave, updateLeave };
+    const leaves = await LeaveManagement.find({ user: userId })
+      .populate({ path: "user", select: "fullName" })
+      .lean();
+
+    return res.status(200).json({
+      error: false,
+      message: "User's Leaves getting successfully",
+      leaves,
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send("Server error");
+  }
+});
+
+module.exports = { getLeavesMonthWise, getSingleLeave, updateLeave, getUserLeaves };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { CForm, CCol, CFormInput, CFormSelect, CButton } from "@coreui/react";
+import { CForm, CCol, CFormInput, CFormSelect, CButton, CFormCheck } from "@coreui/react";
 import { useLeave } from "../context/LeaveContext";
 import { useUser } from "../context/UserContext";
 import { useNavigate, useParams } from "react-router-dom";
@@ -18,8 +18,8 @@ const LeaveUpdate = () => {
   const [users, setUsers] = useState([]);
   const { updateLeave, getLeaveById } = useLeave();
   const { fetchUsers } = useUser();
-  const statusList = ["pending", "approved", "rejected"];
   const typeList = ["paid", "lwp"];
+  const [isHalfDay, setIsHalfDay] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -81,8 +81,18 @@ const LeaveUpdate = () => {
     setTotalDays(totalDays);
   };
   useEffect(() => {
-    leaveDaysCount(startDate, endDate);
+    if(!isHalfDay){
+      leaveDaysCount(startDate, endDate);
+    }
   }, [startDate, endDate]);
+
+  const handleIsHalfDayChange = (e) => {
+    setIsHalfDay(e.target.checked);
+    if (e.target.checked) {
+      setEndDate(startDate); 
+      setTotalDays(0.5); 
+    }
+  };
 
   return (
     <Layout>
@@ -117,18 +127,13 @@ const LeaveUpdate = () => {
               />
             </CCol>
             <CCol md={6}>
-              <CFormSelect
+              <CFormInput
                 id="inputStatus"
                 label="Status"
                 value={status}
-                onChange={(e) => setStatus(e.target.value)}
-              >
-                {statusList.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
-              </CFormSelect>
+                disabled
+                // onChange={(e) => setStatus(e.target.value)}
+              />
             </CCol>
             <CCol md={6}>
               <CFormSelect
@@ -151,6 +156,16 @@ const LeaveUpdate = () => {
                 label="Leave Start"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
+              />
+            </CCol>
+            <CCol xs={6}>
+              <CFormCheck
+                className="mt-4"
+                type="checkbox"
+                id="inputIsHalfDay"
+                label="Half Day"
+                checked={isHalfDay}
+                onChange={handleIsHalfDayChange}
               />
             </CCol>
             <CCol xs={6}>

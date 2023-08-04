@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { CForm, CCol, CFormInput, CFormSelect, CButton } from "@coreui/react";
+import { CForm, CCol, CFormInput, CFormSelect, CButton, CFormCheck } from "@coreui/react";
 import { useLeave } from "../context/LeaveContext";
 import { useUser } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
@@ -11,16 +11,15 @@ const LeaveCreate = () => {
   const [users, setUsers] = useState([]);
   const [userId, setUserId] = useState("");
   const [reason, setReason] = useState("");
-  const [status, setStatus] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [totalDays, setTotalDays] = useState("")
   const [type, setType] = useState("");
+  const [isHalfDay, setIsHalfDay] = useState(false);
 
   const { auth } = useAuth();
   const { addLeave, addUserLeave } = useLeave();
   const { fetchUsers } = useUser();
-  const statusList = ["pending", "approved", "rejected"];
   const typeList = ["paid", "lwp"];
   const navigate = useNavigate();
 
@@ -29,7 +28,7 @@ const LeaveCreate = () => {
     try {
       let leaveData;
       if(auth.user.role === "admin"){
-        leaveData = { reason, startDate, endDate, type, totalDays, userId, status }
+        leaveData = { reason, startDate, endDate, type, totalDays, userId, status: "approved" }
       }else{
         leaveData = { reason, startDate, endDate, type, totalDays }
       }
@@ -70,8 +69,18 @@ const LeaveCreate = () => {
   };
 
   useEffect(() => {
-    leaveDaysCount(startDate, endDate);
+    if(!isHalfDay){
+      leaveDaysCount(startDate, endDate);
+    }
   }, [startDate, endDate]);
+
+  const handleIsHalfDayChange = (e) => {
+    setIsHalfDay(e.target.checked);
+    if (e.target.checked) {
+      setEndDate(startDate); 
+      setTotalDays(0.5); 
+    }
+  };
 
   return (
     <Layout>
@@ -109,21 +118,12 @@ const LeaveCreate = () => {
         </CCol>
         {auth.user.role === "admin" && (
           <CCol md={6}>
-            <CFormSelect
+            <CFormInput
               id="inputStatus"
               label="Status"
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-            >
-              <option value="" disabled>
-                Select a Status
-              </option>
-              {statusList.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </CFormSelect>
+              placeholder="Approved"
+              disabled
+            />
           </CCol>
         )}
         <CCol md={6}>
@@ -153,12 +153,23 @@ const LeaveCreate = () => {
           />
         </CCol>
         <CCol xs={6}>
+          <CFormCheck
+            className="mt-4"
+            type="checkbox"
+            id="inputIsHalfDay"
+            label="Half Day"
+            checked={isHalfDay}
+            onChange={handleIsHalfDayChange}
+          />
+        </CCol>
+        <CCol xs={6}>
           <CFormInput
             type="date"
             id="inputendDate"
             label="Leave End"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
+            disabled={isHalfDay}
           />
         </CCol><CCol xs={6}>
           <CFormInput
