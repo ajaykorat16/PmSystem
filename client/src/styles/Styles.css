@@ -30,3 +30,19 @@
     padding: 0.857rem 1rem;
     font-weight: 700;
 }
+
+.image-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.userInfo p{
+    font-size: 28px;
+}
+
+.mainBody{
+    margin-left: 20px;
+}
+

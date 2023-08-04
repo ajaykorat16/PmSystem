@@ -1,5 +1,5 @@
 import React from 'react'
-import { CForm, CCol, CFormInput, CButton, CRow } from '@coreui/react';
+import { CForm, CCol, CFormInput, CButton, CRow, CTable, CTableHead, CTableRow, CTableHeaderCell, CTableBody, CTableDataCell } from '@coreui/react';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom'
 import { useUser } from '../context/UserContext';
@@ -8,6 +8,7 @@ import { CImage } from '@coreui/react'
 import Loader from '../components/Loader'
 import Layout from './Layout';
 import toast from 'react-hot-toast';
+import { Avatar } from 'primereact/avatar';
 
 
 const UserUpdate = () => {
@@ -57,7 +58,7 @@ const UserUpdate = () => {
         try {
             let updateUsers = { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, dateOfJoining, photo: newPhoto || photo }
             const data = await updateProfile(updateUsers)
-            if(data.error){
+            if (data.error) {
                 toast.error(data.message)
             }
         } catch (error) {
@@ -73,149 +74,212 @@ const UserUpdate = () => {
         <Layout>
             {isLoading === true && <Loader />}
             {isLoading === false && <>
-                <div className="mb-3">
-                    <h2 className='mb-5 mt-2'>{`${firstname} ${lastname}`}</h2>
-                </div>
-                <CForm className="row g-3" onSubmit={handleSubmit}>
-                    {photo && !newPhoto && (
-                        <CCol xs={12}>
-                            <CImage
-                                align="start"
-                                rounded
-                                src={photo}
-                                width={200}
-                                height={200}
-                            />
-                        </CCol>
-                    )}
-
-                    {!photo && newPhoto && (
-                        <CCol xs={12}>
-                            <CImage
-                                align="left"
-                                rounded
-                                src={URL.createObjectURL(newPhoto)}
-                                width={200}
-                                height={200}
-                            />
-                        </CCol>
-                    )}
-
-                    {photo && newPhoto && (
-                        <CCol xs={12}>
-                            <CImage
-                                align="left"
-                                rounded
-                                src={URL.createObjectURL(newPhoto)}
-                                width={200}
-                                height={200}
-                            />
-                        </CCol>
-                    )}
-                    <CRow>
-                        <CCol md={4}>
-                            <CFormInput
-                                id="inputEmployeeNo"
-                                label="Employee Number"
-                                value={employeeNumber}
-                                onChange={(e) => setEmployeeNumber(e.target.value)} 
-                                disabled
-                            />
-                        </CCol>
-                    </CRow>
-                    <CCol md={6}>
-                        <CFormInput
-                            id="inputFirstName"
-                            label="First Name"
-                            value={firstname}
-                            onChange={(e) => setFirstname(e.target.value)}
-                        />
-                    </CCol>
-                    <CCol md={6}>
-                        <CFormInput
-                            id="inputLastName"
-                            label="Last Name"
-                            value={lastname}
-                            onChange={(e) => setLastname(e.target.value)}
-                        />
-                    </CCol>
-                    <CCol md={6}>
-                        <CFormInput
-                            type="email"
-                            id="inputEmail4"
-                            label="Email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            disabled
-                        />
-                    </CCol>
-                    <CCol md={6}>
-                        <CFormInput
-                            type="number"
-                            id="inputPhone"
-                            label="Phone Number"
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                        />
-                    </CCol>
-                    <CCol xs={6}>
-                        <CFormInput
-                            id="inputAddress"
-                            label="Address"
-                            placeholder="Enter your address"
-                            value={address}
-                            onChange={(e) => setAddress(e.target.value)}
-                        />
-                    </CCol>
-                    <CCol md={6}>
-                        <CFormInput
-                            id="inputDepartment"
-                            label="Department"
-                            value={departments}
-                            onChange={(e) => setDepartments(e.target.value)}
-                            disabled
-                        >
-                        </CFormInput>
-                    </CCol>
-                    <CCol xs={6}>
-                        <CFormInput
-                            type="date"
-                            id="inputJoining"
-                            label="Date Of Joining"
-                            value={dateOfJoining}
-                            onChange={(e) => setDateOfJoining(e.target.value)}
-                            disabled
-                        />
-                    </CCol>
-                    <CCol xs={6}>
-                        <CFormInput
-                            type="date"
-                            id="inputBirth"
-                            label="Date Of Birth"
-                            value={dateOfBirth}
-                            onChange={(e) => setDateOfBirth(e.target.value)}
-                        />
-                    </CCol>
-                    <CCol xs={12}>
-                        <CFormInput
-                            type="file"
-                            className="form-control"
-                            label={photo ? photo.name : "Upload Photo"}
-                            id="inputGroupFile04"
-                            accept="image/*"
-                            aria-describedby="inputGroupFileAddon04"
-                            aria-label="Upload"
-                            onChange={handlePhoto}
-                        />
-                    </CCol>
-                    <CCol xs={12}>
-                        <CButton type="submit" className="me-md-2">
-                            Submit
-                        </CButton>
-                    </CCol>
+                <CForm onSubmit={handleSubmit}>
+                    <div className='mainBody'>
+                        <div className='row'>
+                            <div className='col'>
+                                <CCol className="mb-3">
+                                    <div className="d-flex justify-content">
+                                        {photo && !newPhoto && (
+                                            <Avatar
+                                                image={`${photo}`}
+                                                shape="circle"
+                                                style={{ width: '370px', height: '400px', fontSize: '40px' }}
+                                            />
+                                        )}
+                                        {!photo && newPhoto && (
+                                            <CImage
+                                                align="start"
+                                                rounded
+                                                src={URL.createObjectURL(newPhoto)}
+                                                width={200}
+                                                height={200}
+                                            />
+                                        )}
+                                        {photo && newPhoto && (
+                                            <CImage
+                                                align="start"
+                                                rounded
+                                                src={URL.createObjectURL(newPhoto)}
+                                                width={200}
+                                                height={200}
+                                            />
+                                        )}
+                                    </div>
+                                </CCol>
+                                <div className="userInfo mb-3">
+                                    <p> <strong> Employee Id : </strong> {employeeNumber}</p>
+                                    <p> <strong> Name : </strong> {firstname} {lastname}</p>
+                                    <p> <strong> Department : </strong> {departments}</p>
+                                    <p> <strong> Email : </strong> {email}</p>
+                                    <p> <strong> Date Of Joining : </strong> {dateOfJoining}</p>
+                                </div>
+                            </div>
+                            <div className='col'>
+                                <CTable>
+                                    <CTableHead>
+                                        <CTableRow color="dark">
+                                            <CTableHeaderCell scope="col">#</CTableHeaderCell>
+                                            <CTableHeaderCell scope="col">Month</CTableHeaderCell>
+                                            <CTableHeaderCell scope="col">Leave</CTableHeaderCell>
+                                        </CTableRow>
+                                    </CTableHead>
+                                    <CTableBody>
+                                        <CTableRow>
+                                            <CTableHeaderCell scope="row">1</CTableHeaderCell>
+                                            <CTableDataCell>Mark</CTableDataCell>
+                                            <CTableDataCell>Otto</CTableDataCell>
+                                        </CTableRow>
+                                        <CTableRow>
+                                            <CTableHeaderCell scope="row">2</CTableHeaderCell>
+                                            <CTableDataCell>Jacob</CTableDataCell>
+                                            <CTableDataCell>Thornton</CTableDataCell>
+                                        </CTableRow>
+                                        <CTableRow>
+                                            <CTableHeaderCell scope="row">2</CTableHeaderCell>
+                                            <CTableDataCell>Jacob</CTableDataCell>
+                                            <CTableDataCell>Thornton</CTableDataCell>
+                                        </CTableRow>
+                                        <CTableRow>
+                                            <CTableHeaderCell scope="row">2</CTableHeaderCell>
+                                            <CTableDataCell>Jacob</CTableDataCell>
+                                            <CTableDataCell>Thornton</CTableDataCell>
+                                        </CTableRow>
+                                        <CTableRow>
+                                            <CTableHeaderCell scope="row">2</CTableHeaderCell>
+                                            <CTableDataCell>Jacob</CTableDataCell>
+                                            <CTableDataCell>Thornton</CTableDataCell>
+                                        </CTableRow>
+                                        <CTableRow>
+                                            <CTableHeaderCell scope="row">2</CTableHeaderCell>
+                                            <CTableDataCell>Jacob</CTableDataCell>
+                                            <CTableDataCell>Thornton</CTableDataCell>
+                                        </CTableRow>
+                                        <CTableRow>
+                                            <CTableHeaderCell scope="row">2</CTableHeaderCell>
+                                            <CTableDataCell>Jacob</CTableDataCell>
+                                            <CTableDataCell>Thornton</CTableDataCell>
+                                        </CTableRow>
+                                        <CTableRow>
+                                            <CTableHeaderCell scope="row">2</CTableHeaderCell>
+                                            <CTableDataCell>Jacob</CTableDataCell>
+                                            <CTableDataCell>Thornton</CTableDataCell>
+                                        </CTableRow>
+                                        <CTableRow>
+                                            <CTableHeaderCell scope="row">2</CTableHeaderCell>
+                                            <CTableDataCell>Jacob</CTableDataCell>
+                                            <CTableDataCell>Thornton</CTableDataCell>
+                                        </CTableRow>
+                                        <CTableRow>
+                                            <CTableHeaderCell scope="row">2</CTableHeaderCell>
+                                            <CTableDataCell>Jacob</CTableDataCell>
+                                            <CTableDataCell>Thornton</CTableDataCell>
+                                        </CTableRow>
+                                        <CTableRow>
+                                            <CTableHeaderCell scope="row">2</CTableHeaderCell>
+                                            <CTableDataCell>Jacob</CTableDataCell>
+                                            <CTableDataCell>Thornton</CTableDataCell>
+                                        </CTableRow>
+                                        <CTableRow>
+                                            <CTableHeaderCell scope="row">2</CTableHeaderCell>
+                                            <CTableDataCell>Jacob</CTableDataCell>
+                                            <CTableDataCell>Thornton</CTableDataCell>
+                                        </CTableRow>
+                                    </CTableBody>
+                                </CTable>
+                            </div>
+                        </div>
+                        <div className='row'>
+                            <div className='col'>
+                                <div className='row'>
+                                    <div className='col'>
+                                        <CCol>
+                                            <CFormInput
+                                                id="inputFirstName"
+                                                label="First Name"
+                                                value={firstname}
+                                                className='mb-3'
+                                                onChange={(e) => setFirstname(e.target.value)}
+                                            />
+                                        </CCol>
+                                    </div>
+                                    <div className='col'>
+                                        <CCol>
+                                            <CFormInput
+                                                id="inputLastName"
+                                                label="Last Name"
+                                                className='mb-3'
+                                                value={lastname}
+                                                onChange={(e) => setLastname(e.target.value)}
+                                            />
+                                        </CCol>
+                                    </div>
+                                </div>
+                                <div className='row'>
+                                    <div className='col'>
+                                        <CCol>
+                                            <CFormInput
+                                                id="inputAddress"
+                                                label="Address"
+                                                placeholder="Enter your address"
+                                                className='mb-3'
+                                                value={address}
+                                                onChange={(e) => setAddress(e.target.value)}
+                                            />
+                                        </CCol>
+                                    </div>
+                                    <div className='col'>
+                                        <CCol>
+                                            <CFormInput
+                                                type="number"
+                                                id="inputPhone"
+                                                label="Phone Number"
+                                                className='mb-3'
+                                                value={phone}
+                                                onChange={(e) => setPhone(e.target.value)}
+                                            />
+                                        </CCol>
+                                    </div>
+                                </div>
+                                <div className='row'>
+                                    <div className='col'>
+                                        <CCol>
+                                            <CFormInput
+                                                type="date"
+                                                id="inputBirth"
+                                                label="Date Of Birth"
+                                                className='mb-3'
+                                                value={dateOfBirth}
+                                                onChange={(e) => setDateOfBirth(e.target.value)}
+                                            />
+                                        </CCol>
+                                    </div>
+                                    <div className='col'>
+                                        <CCol>
+                                            <CFormInput
+                                                type="file"
+                                                className="form-control mb-3"
+                                                label="Upload Photo"
+                                                id="inputGroupFile04"
+                                                accept="image/*"
+                                                aria-describedby="inputGroupFileAddon04"
+                                                aria-label="Upload"
+                                                onChange={handlePhoto}
+                                            />
+                                        </CCol>
+                                    </div>
+                                </div>
+                                <CCol xs={12}>
+                                    <CButton type="submit" className="me-md-2">
+                                        Submit
+                                    </CButton>
+                                </CCol>
+                            </div>
+                        </div>
+                    </div>
                 </CForm>
             </>}
-        </Layout>
+        </Layout >
 
     )
 }
