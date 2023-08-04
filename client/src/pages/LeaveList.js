@@ -50,14 +50,13 @@ const LeaveList = () => {
     setLeaveList(leaveData.leaves);
     setIsLoading(false);
   };
+  useEffect(() => {
+    fetchLeaves();
+  }, [currentPage, rowsPerPage]);
 
   const handleSubmit = async () => {
     fetchLeaves(globalFilterValue);
   };
-
-  useEffect(() => {
-    fetchLeaves();
-  }, [currentPage, rowsPerPage]);
 
   useEffect(() => {
     if (globalFilterValue.trim() === "") {
@@ -78,54 +77,6 @@ const LeaveList = () => {
       console.log(error);
     }
   };
-  const actionTemplate = (rowData) => (
-    <div>
-      {rowData.status === "Pending" && (
-        <>
-          <Button
-            icon="pi pi-check"
-            title="Approve"
-            rounded
-            severity="success"
-            onClick={() => handleUpdateStatus(rowData._id, "approved")}
-            raised
-          />
-          <Button
-            icon="pi pi-times"
-            title="Reject"
-            rounded
-            severity="danger"
-            onClick={() => handleUpdateStatus(rowData._id, "rejected")}
-            className="ms-2"
-            raised
-          />
-        </>
-      )}
-
-      {rowData.status === "Approved" ? (
-        <Button
-          icon="pi pi-pencil"
-          rounded
-          severity="info"
-          className="ms-2"
-          title="Edit"
-          onClick={() => handleUpdate(rowData._id)}
-          raised
-          disabled
-        />
-      ) : (
-        <Button
-          icon="pi pi-pencil"
-          rounded
-          severity="info"
-          className="ms-2"
-          title="Edit"
-          onClick={() => handleUpdate(rowData._id)}
-          raised
-        />
-      )}
-    </div>
-  );
 
   const onPageChange = (event) => {
     const currentPage = Math.floor(event.first / event.rows) + 1;
@@ -157,12 +108,6 @@ const LeaveList = () => {
       default:
         return null;
     }
-  };
-
-  const statusBodyTemplate = (rowData) => {
-    return (
-      <Tag value={rowData.status} severity={getSeverity(rowData.status)} />
-    );
   };
 
   return (
@@ -256,18 +201,55 @@ const LeaveList = () => {
                 align="center"
               />
               <Column
-                field="status"
                 header="Status"
                 alignHeader="center"
-                body={statusBodyTemplate}
+                body={(rowData) => (
+                  <Tag
+                    value={rowData.status}
+                    severity={getSeverity(rowData.status)}
+                  />
+                )}
                 filterField="status"
                 align="center"
               />
               {auth.user.role === "admin" && (
                 <Column
-                  field="action"
                   header="Action"
-                  body={actionTemplate}
+                  body={(rowData) => (
+                    <div>
+                      {rowData.status === "Pending" && (
+                        <>
+                          <Button
+                            icon="pi pi-check"
+                            title="Approve"
+                            rounded
+                            severity="success"
+                            onClick={() => handleUpdateStatus(rowData._id, "approved")}
+                            raised
+                          />
+                          <Button
+                            icon="pi pi-times"
+                            title="Reject"
+                            rounded
+                            severity="danger"
+                            onClick={() => handleUpdateStatus(rowData._id, "rejected")}
+                            className="ms-2"
+                            raised
+                          />
+                        </>
+                      )}
+                      <Button
+                        icon="pi pi-pencil"
+                        rounded
+                        severity="info"
+                        className="ms-2"
+                        title="Edit"
+                        onClick={() => handleUpdate(rowData._id)}
+                        raised
+                        disabled={rowData.status === "Approved"}
+                      />
+                    </div>
+                  )}
                   align="right"
                   alignHeader="center"
                   style={{ maxWidth: "8rem" }}

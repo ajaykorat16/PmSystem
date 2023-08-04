@@ -8,8 +8,8 @@ import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import Layout from "./Layout";
 import { Button } from "primereact/button";
-import { Avatar } from 'primereact/avatar';
-import "../styles/Styles.css"
+import { Avatar } from "primereact/avatar";
+import "../styles/Styles.css";
 
 const UserList = () => {
   const { deleteUser, getAllUsers } = useUser();
@@ -19,19 +19,27 @@ const UserList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [globalFilterValue, setGlobalFilterValue] = useState("");
-  const [sortField, setSortField] = useState('createdAt');
+  const [sortField, setSortField] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState(-1);
   const navigate = useNavigate();
 
   const fetchUsers = async (query, sortField, sortOrder) => {
     setIsLoading(true);
-    let usertData = await getAllUsers(currentPage, rowsPerPage, query, sortField, sortOrder);
-
+    let usertData = await getAllUsers(
+      currentPage,
+      rowsPerPage,
+      query,
+      sortField,
+      sortOrder
+    );
     const totalRecordsCount = usertData.totalUsers;
     setTotalRecords(totalRecordsCount);
     setUserList(usertData.users);
     setIsLoading(false);
   };
+  useEffect(() => {
+    fetchUsers();
+  }, [currentPage, rowsPerPage]);
 
   const handleSubmit = async () => {
     fetchUsers(globalFilterValue);
@@ -42,10 +50,6 @@ const UserList = () => {
       fetchUsers();
     }
   }, [globalFilterValue, currentPage, rowsPerPage]);
-
-  useEffect(() => {
-    fetchUsers();
-  }, [currentPage, rowsPerPage]);
 
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm(
@@ -59,18 +63,6 @@ const UserList = () => {
   const handleUpdate = async (id) => {
     navigate(`/dashboard/user/update/${id}`);
   };
-  const actionTemplate = (rowData) => {
-    return (
-      <div>
-        {rowData.role === "user" && (
-          <>
-            <Button icon="pi pi-pencil" rounded severity="success" aria-label="edit" onClick={() => handleUpdate(rowData._id)} />
-            <Button icon="pi pi-trash" rounded severity="danger" className="ms-2" aria-label="Cancel" onClick={() => handleDelete(rowData._id)} />
-          </>
-        )}
-      </div>
-    );
-  };
 
   const onPageChange = (event) => {
     const currentPage = Math.floor(event.first / event.rows) + 1;
@@ -79,25 +71,12 @@ const UserList = () => {
     setRowsPerPage(newRowsPerPage);
   };
 
-  const photo = (rowData) => {
-    return (
-      <div className="flex align-items-center gap-2">
-        {rowData.photo ? (
-          <Avatar image={`${rowData.photo}`} size="large" shape="circle" />
-        ) : (
-          <Avatar icon="pi pi-user" style={{ backgroundColor: '#2196F3', color: '#ffffff' }} size="large" shape="circle" />
-        )}
-      </div>
-    );
-  };
-
   const hanldeSorting = async (e) => {
     const field = e.sortField;
     const order = e.sortOrder;
-
     setSortField(field);
     setSortOrder(order);
-    fetchUsers(null, field, order)
+    fetchUsers(null, field, order);
   };
 
   return (
@@ -108,24 +87,24 @@ const UserList = () => {
         <>
           <div className="card mb-5">
             <div className="mainHeader d-flex align-items-center justify-content-between">
-             <div>
-               <h4>Users</h4>
-             </div>
-             <div>
-               <form onSubmit={handleSubmit}>
-                 <div className="p-inputgroup ">
-                   <span className="p-inputgroup-addon">
-                     <i className="pi pi-search" />
-                   </span>
-                   <InputText
-                     type="search"
-                     value={globalFilterValue}
-                     onChange={(e) => setGlobalFilterValue(e.target.value)}
-                     placeholder="Keyword Search"
-                   />
-                 </div>
-               </form>
-             </div>
+              <div>
+                <h4>Users</h4>
+              </div>
+              <div>
+                <form onSubmit={handleSubmit}>
+                  <div className="p-inputgroup ">
+                    <span className="p-inputgroup-addon">
+                      <i className="pi pi-search" />
+                    </span>
+                    <InputText
+                      type="search"
+                      value={globalFilterValue}
+                      onChange={(e) => setGlobalFilterValue(e.target.value)}
+                      placeholder="Keyword Search"
+                    />
+                  </div>
+                </form>
+              </div>
             </div>
             <DataTable
               totalRecords={totalRecords}
@@ -148,7 +127,29 @@ const UserList = () => {
                 />
               }
             >
-              <Column header="#" filterField="representative" body={photo} align="center" />
+              <Column
+                header="#"
+                filterField="representative"
+                body={(rowData) => (
+                  <div className="flex align-items-center gap-2">
+                    {rowData.photo ? (
+                      <Avatar
+                        image={`${rowData.photo}`}
+                        size="large"
+                        shape="circle"
+                      />
+                    ) : (
+                      <Avatar
+                        icon="pi pi-user"
+                        style={{ backgroundColor: "#2196F3", color: "#ffffff" }}
+                        size="large"
+                        shape="circle"
+                      />
+                    )}
+                  </div>
+                )}
+                align="center"
+              />
               <Column
                 field="employeeNumber"
                 header="Emp. ID."
@@ -156,9 +157,26 @@ const UserList = () => {
                 filterField="employeeNumber"
                 align="center"
               />
-              <Column field="fullName" sortable header="Name" filterField="firstname" align="center" />
-              <Column field="email" sortable header="Email" filterField="email" align="center" />
-              <Column field="phone" header="Phone" filterField="phone" align="center" />
+              <Column
+                field="fullName"
+                sortable
+                header="Name"
+                filterField="firstname"
+                align="center"
+              />
+              <Column
+                field="email"
+                sortable
+                header="Email"
+                filterField="email"
+                align="center"
+              />
+              <Column
+                field="phone"
+                header="Phone"
+                filterField="phone"
+                align="center"
+              />
               <Column
                 field="dateOfBirth"
                 header="DOB"
@@ -177,7 +195,34 @@ const UserList = () => {
                 filterField="department"
                 align="center"
               />
-              <Column field="action" header="Action" body={actionTemplate} align="center" />
+              <Column
+                field="action"
+                header="Action"
+                body={(rowData) => (
+                  <div>
+                    {rowData.role === "user" && (
+                      <>
+                        <Button
+                          icon="pi pi-pencil"
+                          rounded
+                          severity="success"
+                          aria-label="edit"
+                          onClick={() => handleUpdate(rowData._id)}
+                        />
+                        <Button
+                          icon="pi pi-trash"
+                          rounded
+                          severity="danger"
+                          className="ms-2"
+                          aria-label="Cancel"
+                          onClick={() => handleDelete(rowData._id)}
+                        />
+                      </>
+                    )}
+                  </div>
+                )}
+                align="center"
+              />
             </DataTable>
           </div>
         </>

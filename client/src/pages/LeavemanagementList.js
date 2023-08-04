@@ -25,12 +25,7 @@ const LeaveManagementList = () => {
   
   const fetchLeaves = async (query) => {
     setIsLoading(true);
-    let leaveManagementData = await getLeavesMonthWise(
-      currentPage,
-      rowsPerPage,
-      query
-    );
-
+    let leaveManagementData = await getLeavesMonthWise(currentPage, rowsPerPage, query);
     const totalRecordsCount = leaveManagementData.totalLeaves;
     setTotalRecords(totalRecordsCount);
     setLeaveList(leaveManagementData.leaves);
@@ -90,21 +85,6 @@ const LeaveManagementList = () => {
     setFullName(fullName)
     setMonth(monthly)
   };
-
-  const actionTemplate = (rowData) => {
-    return(
-    <div>
-      <Button
-        icon="pi pi-pencil"
-        rounded
-        severity="info"
-        className="ms-2"
-        title="Edit"
-        onClick={() => handleUpdate(rowData._id,  rowData.user.fullName, rowData.monthly)}
-        raised
-      />
-    </div>
-  )};
 
   return (
     <Layout>
@@ -191,9 +171,20 @@ const LeaveManagementList = () => {
                 align="center"
               />
               <Column
-                field="action"
                 header="Action"
-                body={actionTemplate}
+                body={(rowData) => (
+                  <div>
+                    <Button
+                      icon="pi pi-pencil"
+                      rounded
+                      severity="info"
+                      className="ms-2"
+                      title="Edit"
+                      onClick={() => handleUpdate(rowData._id, rowData.user.fullName, rowData.monthly)}
+                      raised
+                    />
+                  </div>
+                )}
                 align="center"
               />
             </DataTable>

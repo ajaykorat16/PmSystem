@@ -77,13 +77,6 @@ const DepartmentList = () => {
     fetchDepartments(null, field, order)
   };
 
-  const actionTemplate = (rowData) => (
-    <div>
-      <Button icon="pi pi-pencil" rounded severity="success" aria-label="edit" onClick={() => handleUpdate(rowData._id)} />
-      <Button icon="pi pi-trash" rounded severity="danger" className="ms-2" aria-label="Cancel" onClick={() => handleDelete(rowData._id)} />
-    </div>
-  );
-
   return (
     <Layout>
       {isLoading ? (
@@ -143,7 +136,12 @@ const DepartmentList = () => {
               <Column
                 field="action"
                 header="Action"
-                body={actionTemplate}
+                body={(rowData) => (
+                  <div>
+                    <Button icon="pi pi-pencil" rounded severity="success" aria-label="edit" onClick={() => handleUpdate(rowData._id)} />
+                    <Button icon="pi pi-trash" rounded severity="danger" className="ms-2" aria-label="Cancel" onClick={() => handleDelete(rowData._id)} />
+                  </div>
+                )}
                 style={{ width: '8rem' }}
               />
             </DataTable>
