@@ -1,5 +1,5 @@
 import React from 'react'
-import { CForm, CCol, CFormInput} from '@coreui/react';
+import { CForm, CCol, CFormInput, CTable, CTableHead, CTableRow, CTableHeaderCell, CTableBody, CTableDataCell } from '@coreui/react';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom'
 import { useUser } from '../context/UserContext';
@@ -11,8 +11,9 @@ import toast from 'react-hot-toast';
 import { Avatar } from 'primereact/avatar';
 import { Button } from 'primereact/button';
 import moment from 'moment';
+import { useLeaveManagement } from '../context/LeaveManagementContext';
 
-const AdminProfile = ({ title }) => {
+const UserUpdate = ({ title }) => {
     const [employeeNumber, setEmployeeNumber] = useState("")
     const [firstname, setFirstname] = useState("")
     const [lastname, setLastname] = useState("")
@@ -24,9 +25,12 @@ const AdminProfile = ({ title }) => {
     const [newPhoto, setNewPhoto] = useState(null);
     const [dateOfJoining, setDateOfJoining] = useState("");
     const [photo, setPhoto] = useState("");
+    const [carryForward, setCarryForward] = useState("")
     const [isLoading, setIsLoading] = useState(true)
     const { updateProfile, getUserProfile } = useUser()
     const params = useParams();
+    const { getUserLeave } = useLeaveManagement()
+    const [leave, setLeave] = useState([])
 
     const doj =  moment(dateOfJoining).format('DD-MM-YYYY')
     useEffect(() => {
@@ -44,6 +48,7 @@ const AdminProfile = ({ title }) => {
                     setDateOfBirth(getProfile.dateOfBirth)
                     setDateOfJoining(getProfile.dateOfJoining)
                     setPhoto(getProfile.photo)
+                    setCarryForward(getProfile.carryForward)
                     setIsLoading(false)
                 }
             } catch (error) {
@@ -52,6 +57,15 @@ const AdminProfile = ({ title }) => {
         };
         fetchData();
     }, [params.id, getUserProfile]);
+
+
+    const fetchLeave = async () => {
+        const { leaves } = await getUserLeave()
+        setLeave(leaves)
+    }
+    useEffect(() => {
+        fetchLeave()
+    }, [])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -80,156 +94,156 @@ const AdminProfile = ({ title }) => {
             {isLoading === true && <Loader />}
             {isLoading === false && <>
                 <CForm onSubmit={handleSubmit}>
-                    <div className='mainBody'>
+                    <div className='mainBody me-3'>
                         <div className='row'>
-                            <div className='col userBlock me-4 d-flex align-item-center justify-content-between'>
-                                <div className="ms-3 mt-3">
-                                    {photo && !newPhoto && (
-                                        <Avatar
-                                            image={`${photo}`}
-                                            shape="circle"
-                                            style={{ width: '300px', height: '300px', fontSize: '40px' }}
-                                        />
-                                    )}
-                                    {!photo && newPhoto && (
-                                        <CImage
-                                            align="start"
-                                            rounded
-                                            src={URL.createObjectURL(newPhoto)}
-                                            width={200}
-                                            height={200}
-                                        />
-                                    )}
-                                    {photo && newPhoto && (
-                                        <CImage
-                                            align="start"
-                                            rounded
-                                            src={URL.createObjectURL(newPhoto)}
-                                            width={200}
-                                            height={200}
-                                        />
-                                    )}
-                                </div>
-                                <div className='row'>
-                                    <div>
-                                        <p className='col title'>PROFILE</p>
+                            <div className='col userBlock'>
+                                <CCol className="mb-3">
+                                    <div className="mt-3 d-flex justify-content image-container">
+                                        {photo && !newPhoto && (
+                                            <Avatar
+                                                image={`${photo}`}
+                                                shape="circle"
+                                                style={{ width: '300px', height: '300px', fontSize: '40px' }}
+                                            />
+                                        )}
+                                        {!photo && newPhoto && (
+                                            <CImage
+                                                align="start"
+                                                rounded
+                                                src={URL.createObjectURL(newPhoto)}
+                                                width={200}
+                                                height={200}
+                                            />
+                                        )}
+                                        {photo && newPhoto && (
+                                            <CImage
+                                                align="start"
+                                                rounded
+                                                src={URL.createObjectURL(newPhoto)}
+                                                width={200}
+                                                height={200}
+                                            />
+                                        )}
                                     </div>
-                                    <div className="col userInfo mb-3">
-                                        <div className='detail'>
-                                            <div className='row userDetail'>
-                                                <div className='col'><strong> Employee Id </strong></div>
-                                                <div className='col'>{employeeNumber}</div>
-                                            </div>
-                                            <div className='row userDetail'>
-                                                <div className='col'> <strong> Name </strong> </div>
-                                                <div className='col'>{firstname} {lastname}</div>
-                                            </div>
-                                            <div className='row userDetail'>
-                                                <div className='col'><strong> Department </strong> </div>
-                                                <div className='col'>{departments}</div>
-                                            </div>
-                                            <div className='row userDetail'>
-                                                <div className='col'><strong> Email </strong> </div>
-                                                <div className='col'>{email}</div>
-                                            </div>
-                                            <div className='row userDetail'>
-                                                <div className='col'> <strong> Date Of Joining </strong></div>
-                                                <div className='col'>{doj}</div>
-                                            </div>
+                                </CCol>
+                                <div>
+                                    <p className='title'>PROFILE</p>
+                                </div>
+                                <div className="userInfo mb-3">
+                                    <div className='detail'>
+                                        <div className='row userDetail'>
+                                            <div className='col'><strong> Employee Id </strong></div>
+                                            <div className='col'>{employeeNumber}</div>
+                                        </div>
+                                        <div className='row userDetail'>
+                                            <div className='col'> <strong> Name </strong> </div>
+                                            <div className='col'>{firstname} {lastname}</div>
+                                        </div>
+                                        <div className='row userDetail'>
+                                            <div className='col'><strong> Department </strong> </div>
+                                            <div className='col'>{departments}</div>
+                                        </div>
+                                        <div className='row userDetail'>
+                                            <div className='col'><strong> Email </strong> </div>
+                                            <div className='col'>{email}</div>
+                                        </div>
+                                        <div className='row userDetail'>
+                                            <div className='col'> <strong> Date Of Joining </strong></div>
+                                            <div className='col'>{doj}</div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div id='editUser'>
-                            <div className='row'>
-                                <div className='col'>
-                                    <p className='title'>EDIT USER</p>
+                            <div id='editUser'>
+                                <div className='row'>
+                                    <div className='col'>
+                                        <p className='title'>EDIT USER</p>
+                                    </div>
+                                    <div className='col'>
+                                        <div className="btn-sm float-end submitButton">
+                                            <CCol>
+                                                <Button icon="pi pi-check" type='submit' rounded aria-label="Filter" />
+                                            </CCol>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className='col'>
-                                    <div className="btn-sm float-end submitButton">
+                                <div className='row'>
+                                    <div className='col'>
                                         <CCol>
-                                            <Button icon="pi pi-check" type='submit' rounded aria-label="Filter" />
+                                            <CFormInput
+                                                id="inputFirstName"
+                                                label="First Name"
+                                                value={firstname}
+                                                className='mb-3'
+                                                onChange={(e) => setFirstname(e.target.value)}
+                                            />
+                                        </CCol>
+                                    </div>
+                                    <div className='col'>
+                                        <CCol>
+                                            <CFormInput
+                                                id="inputLastName"
+                                                label="Last Name"
+                                                className='mb-3'
+                                                value={lastname}
+                                                onChange={(e) => setLastname(e.target.value)}
+                                            />
                                         </CCol>
                                     </div>
                                 </div>
-                            </div>
-                            <div className='row'>
-                                <div className='col'>
-                                    <CCol>
-                                        <CFormInput
-                                            id="inputFirstName"
-                                            label="First Name"
-                                            value={firstname}
-                                            className='mb-3'
-                                            onChange={(e) => setFirstname(e.target.value)}
-                                        />
-                                    </CCol>
+                                <div className='row'>
+                                    <div className='col'>
+                                        <CCol>
+                                            <CFormInput
+                                                id="inputAddress"
+                                                label="Address"
+                                                placeholder="Enter your address"
+                                                className='mb-3'
+                                                value={address}
+                                                onChange={(e) => setAddress(e.target.value)}
+                                            />
+                                        </CCol>
+                                    </div>
+                                    <div className='col'>
+                                        <CCol>
+                                            <CFormInput
+                                                type="number"
+                                                id="inputPhone"
+                                                label="Phone Number"
+                                                className='mb-3'
+                                                value={phone}
+                                                onChange={(e) => setPhone(e.target.value)}
+                                            />
+                                        </CCol>
+                                    </div>
                                 </div>
-                                <div className='col'>
-                                    <CCol>
-                                        <CFormInput
-                                            id="inputLastName"
-                                            label="Last Name"
-                                            className='mb-3'
-                                            value={lastname}
-                                            onChange={(e) => setLastname(e.target.value)}
-                                        />
-                                    </CCol>
-                                </div>
-                            </div>
-                            <div className='row'>
-                                <div className='col'>
-                                    <CCol>
-                                        <CFormInput
-                                            id="inputAddress"
-                                            label="Address"
-                                            placeholder="Enter your address"
-                                            className='mb-3'
-                                            value={address}
-                                            onChange={(e) => setAddress(e.target.value)}
-                                        />
-                                    </CCol>
-                                </div>
-                                <div className='col'>
-                                    <CCol>
-                                        <CFormInput
-                                            type="number"
-                                            id="inputPhone"
-                                            label="Phone Number"
-                                            className='mb-3'
-                                            value={phone}
-                                            onChange={(e) => setPhone(e.target.value)}
-                                        />
-                                    </CCol>
-                                </div>
-                            </div>
-                            <div className='row'>
-                                <div className='col'>
-                                    <CCol>
-                                        <CFormInput
-                                            type="date"
-                                            id="inputBirth"
-                                            label="Date Of Birth"
-                                            className='mb-3'
-                                            value={dateOfBirth}
-                                            onChange={(e) => setDateOfBirth(e.target.value)}
-                                        />
-                                    </CCol>
-                                </div>
-                                <div className='col'>
-                                    <CCol>
-                                        <CFormInput
-                                            type="file"
-                                            className="form-control mb-3"
-                                            label="Upload Photo"
-                                            id="inputGroupFile04"
-                                            accept="image/*"
-                                            aria-describedby="inputGroupFileAddon04"
-                                            aria-label="Upload"
-                                            onChange={handlePhoto}
-                                        />
-                                    </CCol>
+                                <div className='row'>
+                                    <div className='col'>
+                                        <CCol>
+                                            <CFormInput
+                                                type="date"
+                                                id="inputBirth"
+                                                label="Date Of Birth"
+                                                className='mb-3'
+                                                value={dateOfBirth}
+                                                onChange={(e) => setDateOfBirth(e.target.value)}
+                                            />
+                                        </CCol>
+                                    </div>
+                                    <div className='col'>
+                                        <CCol>
+                                            <CFormInput
+                                                type="file"
+                                                className="form-control mb-3"
+                                                label="Upload Photo"
+                                                id="inputGroupFile04"
+                                                accept="image/*"
+                                                aria-describedby="inputGroupFileAddon04"
+                                                aria-label="Upload"
+                                                onChange={handlePhoto}
+                                            />
+                                        </CCol>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -241,4 +255,4 @@ const AdminProfile = ({ title }) => {
     )
 }
 
-export default AdminProfile
+export default UserUpdate

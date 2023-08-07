@@ -6,7 +6,7 @@ const DefaultLayout = () => {
   const {auth} = useAuth()
   return (
     <Layout>
-      <h1>Wellcome {auth?.user?.fullName}</h1>
+      <h1>Welcome {auth?.user?.fullName}</h1>
     </Layout>
   )
 }
