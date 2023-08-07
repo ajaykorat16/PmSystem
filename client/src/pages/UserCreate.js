@@ -9,7 +9,7 @@ import toast from "react-hot-toast"
 
 
 
-const UserCreate = () => {
+const UserCreate = ({ title }) => {
     const [employeeNumber, setEmployeeNumber] = useState("")
     const [firstname, setFirstname] = useState("")
     const [lastname, setLastname] = useState("")
@@ -54,7 +54,7 @@ const UserCreate = () => {
     }, [])
 
     return (
-        <Layout>
+        <Layout title={title}>
             <div className="mb-3">
                 <h2 className='mb-5 mt-2'>Create User</h2>
             </div>

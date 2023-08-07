@@ -1,6 +1,6 @@
-import React from 'react'
-import { NavLink } from 'react-router-dom'
-import { useSelector, useDispatch } from 'react-redux'
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   CContainer,
   CHeader,
@@ -9,17 +9,15 @@ import {
   CHeaderToggler,
   CNavLink,
   CNavItem,
-} from '@coreui/react'
-import CIcon from '@coreui/icons-react'
-import { cilMenu } from '@coreui/icons'
-import { logo } from '../assets/brand/logo'
-import AppHeaderDropdown from './AppHeaderDropdown'
+} from '@coreui/react';
+import CIcon from '@coreui/icons-react';
+import { cilMenu } from '@coreui/icons';
+import { logo } from '../assets/brand/logo';
+import AppHeaderDropdown from './AppHeaderDropdown';
 
-
-
-const AppHeader = () => {
-  const dispatch = useDispatch()
-  const sidebarShow = useSelector((state) => state.sidebarShow)
+const AppHeader = ({ title }) => {
+  const dispatch = useDispatch();
+  const sidebarShow = useSelector((state) => state.sidebarShow);
 
   return (
     <CHeader position="sticky" className="mb-4">
@@ -35,9 +33,7 @@ const AppHeader = () => {
         </CHeaderBrand>
         <CHeaderNav className="d-none d-md-flex me-auto">
           <CNavItem>
-            <CNavLink to="/" component={NavLink}>
-              Dashboard
-            </CNavLink>
+            {title ? title : 'Dashboard'}
           </CNavItem>
         </CHeaderNav>
         <CHeaderNav className="ms-3">
@@ -45,7 +41,7 @@ const AppHeader = () => {
         </CHeaderNav>
       </CContainer>
     </CHeader>
-  )
-}
+  );
+};
 
-export default AppHeader
+export default AppHeader;

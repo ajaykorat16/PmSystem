@@ -9,7 +9,7 @@ import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
 
-const DepartmentList = () => {
+const DepartmentList = ({ title }) => {
   const { getDepartment, deleteDepartment } = useDepartment();
   const [isLoading, setIsLoading] = useState(true);
   const [departmentList, setDepartmentList] = useState([])
@@ -32,7 +32,7 @@ const DepartmentList = () => {
     setDepartmentList(departmentData.departments)
     setIsLoading(false);
   };
-  
+
   useEffect(() => {
     fetchDepartments();
   }, [currentPage, rowsPerPage]);
@@ -42,7 +42,7 @@ const DepartmentList = () => {
       fetchDepartments();
     }
   }, [globalFilterValue, currentPage, rowsPerPage])
-   
+
   const handleSubmit = async () => {
     fetchDepartments(globalFilterValue)
   };
@@ -78,7 +78,7 @@ const DepartmentList = () => {
   };
 
   return (
-    <Layout>
+    <Layout title={title}>
       {isLoading ? (
         <Loader />
       ) : (
@@ -126,8 +126,8 @@ const DepartmentList = () => {
               }
             >
               <Column
-                field = "name"
-                header = "Name"
+                field="name"
+                header="Name"
                 sortable
                 filterField="name"
                 filterMenuStyle={{ width: '14rem' }}

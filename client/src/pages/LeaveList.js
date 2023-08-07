@@ -12,7 +12,7 @@ import { Tag } from "primereact/tag";
 import { Button } from "primereact/button";
 import { toast } from "react-hot-toast";
 
-const LeaveList = () => {
+const LeaveList = ({ title }) => {
   const { getLeave, getUserLeave, updateStatus } = useLeave();
   const [leaveList, setLeaveList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -111,7 +111,7 @@ const LeaveList = () => {
   };
 
   return (
-    <Layout>
+    <Layout title={title}>
       {isLoading ? (
         <Loader />
       ) : (

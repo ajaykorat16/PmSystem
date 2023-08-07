@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import Layout from "./Layout";
 import toast from "react-hot-toast";
 
-const DepartmentCreate = () => {
+const DepartmentCreate = ({ title }) => {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const { addDepartment } = useDepartment();
@@ -14,9 +14,9 @@ const DepartmentCreate = () => {
     e.preventDefault();
     try {
       const data = await addDepartment(name);
-      if(data.error){
+      if (data.error) {
         toast.error(data.message)
-      }else{
+      } else {
         navigate("/dashboard/department/list");
       }
     } catch (error) {
@@ -25,7 +25,7 @@ const DepartmentCreate = () => {
   };
 
   return (
-    <Layout>
+    <Layout title={title}>
       <div className="mb-3">
         <h2 className="mb-5 mt-2">Create Department</h2>
       </div>

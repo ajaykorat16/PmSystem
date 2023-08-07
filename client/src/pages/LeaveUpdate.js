@@ -6,7 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Loader from "../components/Loader";
 import Layout from "./Layout";
 
-const LeaveUpdate = () => {
+const LeaveUpdate = ({ title }) => {
   const [userId, setUserId] = useState("");
   const [reason, setReason] = useState("");
   const [status, setStatus] = useState("");
@@ -81,7 +81,7 @@ const LeaveUpdate = () => {
     setTotalDays(totalDays);
   };
   useEffect(() => {
-    if(!isHalfDay){
+    if (!isHalfDay) {
       leaveDaysCount(startDate, endDate);
     }
   }, [startDate, endDate]);
@@ -89,13 +89,13 @@ const LeaveUpdate = () => {
   const handleIsHalfDayChange = (e) => {
     setIsHalfDay(e.target.checked);
     if (e.target.checked) {
-      setEndDate(startDate); 
-      setTotalDays(0.5); 
+      setEndDate(startDate);
+      setTotalDays(0.5);
     }
   };
 
   return (
-    <Layout>
+    <Layout title={title}>
       {isLoading === true && <Loader />}
       {isLoading === false && (
         <>
@@ -132,7 +132,7 @@ const LeaveUpdate = () => {
                 label="Status"
                 value={status}
                 disabled
-                // onChange={(e) => setStatus(e.target.value)}
+              // onChange={(e) => setStatus(e.target.value)}
               />
             </CCol>
             <CCol md={6}>

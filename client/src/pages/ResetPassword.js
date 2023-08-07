@@ -15,16 +15,16 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 import { useLocation, useNavigate } from 'react-router-dom'
-import toast , {Toaster} from "react-hot-toast"
+import toast, { Toaster } from "react-hot-toast"
 import { useUser } from '../context/UserContext'
 import Layout from './Layout'
 
 
 
-const Login = () => {
+const Login = ({ title }) => {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const {resetPassword} = useUser()
+    const { resetPassword } = useUser()
     const navigate = useNavigate()
 
     const handleSubmit = async (e) => {
@@ -32,11 +32,11 @@ const Login = () => {
         try {
             if (password !== confirmPassword) {
                 toast.error("Password and Confirm Password must be same");
-            }else{
+            } else {
                 const data = await resetPassword(password)
-                if(data.error){
+                if (data.error) {
                     toast.error(data.message)
-                }else{
+                } else {
                     navigate("/")
                 }
             }
@@ -46,11 +46,11 @@ const Login = () => {
     }
 
     return (
-        <Layout>
+        <Layout title={title}>
             <CForm onSubmit={handleSubmit}>
                 <h1 className="mb-4">Reset Password</h1>
                 <CCol md={4}>
-                   <CInputGroup className="mb-4">
+                    <CInputGroup className="mb-4">
                         <CInputGroupText>
                             <CIcon icon={cilLockLocked} />
                         </CInputGroupText>
@@ -85,7 +85,7 @@ const Login = () => {
                     </CCol>
                 </CRow>
             </CForm>
-        </Layout>          
+        </Layout>
     )
 }
 

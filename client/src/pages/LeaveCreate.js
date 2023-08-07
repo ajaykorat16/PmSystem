@@ -7,7 +7,7 @@ import Layout from "./Layout";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 
-const LeaveCreate = () => {
+const LeaveCreate = ({ title }) => {
   const [users, setUsers] = useState([]);
   const [userId, setUserId] = useState("");
   const [reason, setReason] = useState("");
@@ -27,9 +27,9 @@ const LeaveCreate = () => {
     e.preventDefault();
     try {
       let leaveData;
-      if(auth.user.role === "admin"){
+      if (auth.user.role === "admin") {
         leaveData = { reason, startDate, endDate, type, totalDays, userId, status: "approved" }
-      }else{
+      } else {
         leaveData = { reason, startDate, endDate, type, totalDays }
       }
       const data = auth.user.role === "admin" ? await addLeave(leaveData) : await addUserLeave(leaveData);
@@ -69,7 +69,7 @@ const LeaveCreate = () => {
   };
 
   useEffect(() => {
-    if(!isHalfDay){
+    if (!isHalfDay) {
       leaveDaysCount(startDate, endDate);
     }
   }, [startDate, endDate]);
@@ -77,13 +77,13 @@ const LeaveCreate = () => {
   const handleIsHalfDayChange = (e) => {
     setIsHalfDay(e.target.checked);
     if (e.target.checked) {
-      setEndDate(startDate); 
-      setTotalDays(0.5); 
+      setEndDate(startDate);
+      setTotalDays(0.5);
     }
   };
 
   return (
-    <Layout>
+    <Layout title={title}>
       <div className="mb-3">
         <h2 className="mb-5 mt-2">Create Leave</h2>
       </div>

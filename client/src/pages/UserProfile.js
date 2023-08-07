@@ -1,7 +1,7 @@
 import React from 'react'
-import { CForm, CCol, CFormInput, CButton, CRow, CTable, CTableHead, CTableRow, CTableHeaderCell, CTableBody, CTableDataCell } from '@coreui/react';
+import { CForm, CCol, CFormInput, CTable, CTableHead, CTableRow, CTableHeaderCell, CTableBody, CTableDataCell } from '@coreui/react';
 import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useUser } from '../context/UserContext';
 import { useEffect } from 'react';
 import { CImage } from '@coreui/react'
@@ -12,7 +12,7 @@ import { Avatar } from 'primereact/avatar';
 import { Button } from 'primereact/button';
 import { useLeaveManagement } from '../context/LeaveManagementContext';
 
-const UserUpdate = () => {
+const UserUpdate = ({ title }) => {
     const [employeeNumber, setEmployeeNumber] = useState("")
     const [firstname, setFirstname] = useState("")
     const [lastname, setLastname] = useState("")
@@ -26,7 +26,6 @@ const UserUpdate = () => {
     const [photo, setPhoto] = useState("");
     const [isLoading, setIsLoading] = useState(true)
     const { updateProfile, getUserProfile } = useUser()
-    const navigate = useNavigate();
     const params = useParams();
     const { getUserLeave } = useLeaveManagement()
     const [leave, setLeave] = useState([])
@@ -87,7 +86,7 @@ const UserUpdate = () => {
     ];
 
     return (
-        <Layout>
+        <Layout title={title}>
             {isLoading === true && <Loader />}
             {isLoading === false && <>
                 <CForm onSubmit={handleSubmit}>
@@ -124,7 +123,7 @@ const UserUpdate = () => {
                                     </div>
                                 </CCol>
                                 <div>
-                                    <p className='title'>USER INFO</p>
+                                    <p className='title'>PROFILE</p>
                                 </div>
                                 <div className="userInfo mb-3">
                                     <div className='detail'>
@@ -152,7 +151,7 @@ const UserUpdate = () => {
                                 </div>
                             </div>
                             <div className='col leaveTale'>
-                                <p className='title'>LEAVE RECORDS</p>
+                                <p className='title'>LEAVE HISTORY</p>
                                 <CTable className='mailTable'>
                                     <CTableHead>
                                         <CTableRow color="dark">
@@ -181,7 +180,7 @@ const UserUpdate = () => {
                         <div id='editUser'>
                             <div className='row'>
                                 <div className='col'>
-                                    <p className='title'>EDIT USER INFO.</p>
+                                    <p className='title'>EDIT USER</p>
                                 </div>
                                 <div className='col'>
                                     <div className="btn-sm float-end submitButton">

@@ -8,10 +8,10 @@ import { useEffect } from 'react';
 import { CImage } from '@coreui/react'
 import Loader from '../components/Loader'
 import Layout from './Layout';
-import toast  from 'react-hot-toast';
+import toast from 'react-hot-toast';
 
 
-const UserUpdate = () => {
+const UserUpdate = ({ title }) => {
     const [employeeNumber, setEmployeeNumber] = useState("")
     const [firstname, setFirstname] = useState("")
     const [lastname, setLastname] = useState("")
@@ -70,9 +70,9 @@ const UserUpdate = () => {
             let updateUsers = { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department: departments, dateOfJoining, photo: newPhoto || photo }
             let id = params.id
             const data = await updateUser(updateUsers, id)
-            if(data.error){
+            if (data.error) {
                 toast.error(data.message)
-            }else{
+            } else {
                 navigate('/dashboard/user/list')
             }
         } catch (error) {
@@ -85,7 +85,7 @@ const UserUpdate = () => {
     };
 
     return (
-        <Layout>
+        <Layout title={title}>
             {isLoading === true && <Loader />}
             {isLoading === false && <>
                 <div className="mb-3">
@@ -133,7 +133,7 @@ const UserUpdate = () => {
                                 id="inputEmployeeNo"
                                 label="Employee Number"
                                 value={employeeNumber}
-                                onChange={(e) => setEmployeeNumber(e.target.value)} 
+                                onChange={(e) => setEmployeeNumber(e.target.value)}
                                 disabled
                             />
                         </CCol>

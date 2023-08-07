@@ -15,7 +15,7 @@ import './scss/style.scss';
 import { Routes, Route } from 'react-router-dom';
 import UserRoutes from './components/Routes/UserRoutes';
 import ResetPassword from './pages/ResetPassword';
-import "primereact/resources/themes/rhea/theme.css"; 
+import "primereact/resources/themes/rhea/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import LeaveManagementList from './pages/LeavemanagementList';
@@ -27,25 +27,25 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<DefaultLayout />} />
         <Route path="/dashboard" element={<AdminRoutes />}>
-          <Route path="user/list" element={<UserList />} />
-          <Route path="user/create" element={<UserCreate />} />
-          <Route path="user/update/:id" element={<UserUpdate />} />
-          <Route path="user/user-profile/:id" element={<UserProfile />} />
-          <Route path="user/resetPassword" element={<ResetPassword />} />
-          <Route path="leave/list" element={<LeaveList />} />
-          <Route path="leave/create" element={<LeaveCreate />} />
-          <Route path="leave/update/:id" element={<LeaveUpdate />} />
-          <Route path="leaveManagement/list" element={<LeaveManagementList />} />
-          <Route path="department/list" element={<DepartmentList />} />
-          <Route path="department/create" element={<DepartmentCreate />} />
-          <Route path="department/update/:id" element={<DepartmentUpdate />} />
-          
+          <Route path="user/list" element={<UserList title="User List" />} />
+          <Route path="user/create" element={<UserCreate title="User Create" />} />
+          <Route path="user/update/:id" element={<UserUpdate title="User Update" />} />
+          <Route path="user/user-profile/:id" element={<UserProfile title="Profile" />} />
+          <Route path="user/resetPassword" element={<ResetPassword title="Reset Password" />} />
+          <Route path="leave/list" element={<LeaveList title="Leave List" />} />
+          <Route path="leave/create" element={<LeaveCreate title="Leave Create" />} />
+          <Route path="leave/update/:id" element={<LeaveUpdate title="Leave Update" />} />
+          <Route path="leaveManagement/list" element={<LeaveManagementList title="Leave Manage" />} />
+          <Route path="department/list" element={<DepartmentList title="Department List" />} />
+          <Route path="department/create" element={<DepartmentCreate title="Create Department" />} />
+          <Route path="department/update/:id" element={<DepartmentUpdate title="Deaprtment Update" />} />
+
         </Route>
         <Route path='/dashboard-user' element={<UserRoutes />}>
-          <Route path="leave/list" element={<LeaveList/>} />
-          <Route path="leave/create" element={<LeaveCreate />} />
-          <Route path="user/user-profile/:id" element={<UserProfile />} />
-          <Route path="user/resetPassword" element={<ResetPassword />} />
+          <Route path="leave/list" element={<LeaveList title="Leave List" />} />
+          <Route path="leave/create" element={<LeaveCreate title="Leave Create" />} />
+          <Route path="user/user-profile/:id" element={<UserProfile title="Profile" />} />
+          <Route path="user/resetPassword" element={<ResetPassword title="Reset Password" />} />
         </Route>
       </Routes>
     </>

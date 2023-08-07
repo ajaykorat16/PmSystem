@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Loader from '../components/Loader'
 import Layout from "./Layout";
 
-const DepartmentUpdate = () => {
+const DepartmentUpdate = ({ title }) => {
   const navigate = useNavigate();
   const params = useParams();
   const [name, setName] = useState("");
@@ -35,7 +35,7 @@ const DepartmentUpdate = () => {
   };
 
   return (
-    <Layout>
+    <Layout title={title}>
       {isLoading === true && <Loader />}
       {isLoading === false && <>
         <div className="mb-3">

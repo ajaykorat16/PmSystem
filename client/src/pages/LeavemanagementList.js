@@ -9,7 +9,7 @@ import { Button } from "primereact/button";
 import { useLeaveManagement } from "../context/LeaveManagementContext";
 import { CButton, CForm, CFormInput, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from "@coreui/react";
 
-const LeaveManagementList = () => {
+const LeaveManagementList = ({ title }) => {
   const { getLeavesMonthWise, getSingleLeave, updateLeave } = useLeaveManagement();
   const [isLoading, setIsLoading] = useState(true);
   const [leavelist, setLeaveList] = useState([]);
@@ -22,7 +22,7 @@ const LeaveManagementList = () => {
   const [leaveId, setLeaveId] = useState(null);
   const [fullName, setFullName] = useState(null);
   const [month, setMonth] = useState(null)
-  
+
   const fetchLeaves = async (query) => {
     setIsLoading(true);
     let leaveManagementData = await getLeavesMonthWise(currentPage, rowsPerPage, query);
@@ -53,7 +53,7 @@ const LeaveManagementList = () => {
     try {
       const id = leaveId;
       const getMonth = new Date(month)
-      const m = getMonth.getMonth() + 1 ;
+      const m = getMonth.getMonth() + 1;
       await updateLeave(leave, id);
       setVisible(false)
       fetchLeaves(m)
@@ -87,15 +87,15 @@ const LeaveManagementList = () => {
   };
 
   return (
-    <Layout>
+    <Layout title={title}>
       {isLoading ? (
         <Loader />
       ) : (
         <>
           <CModal
-          alignment="center"
-          visible={visible}
-          onClose={() => setVisible(false)}
+            alignment="center"
+            visible={visible}
+            onClose={() => setVisible(false)}
           >
             <CModalHeader>
               <CModalTitle>{fullName}</CModalTitle>
@@ -107,7 +107,7 @@ const LeaveManagementList = () => {
                   id="leave"
                   label="Manage Leave"
                   value={leave}
-                  onChange={(e) => setLeave(e.target.value) }
+                  onChange={(e) => setLeave(e.target.value)}
                 />
               </CModalBody>
               <CModalFooter>

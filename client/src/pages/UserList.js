@@ -11,7 +11,7 @@ import { Button } from "primereact/button";
 import { Avatar } from "primereact/avatar";
 import "../styles/Styles.css";
 
-const UserList = () => {
+const UserList = ({ title }) => {
   const { deleteUser, getAllUsers } = useUser();
   const [isLoading, setIsLoading] = useState(true);
   const [userList, setUserList] = useState([]);
@@ -80,7 +80,7 @@ const UserList = () => {
   };
 
   return (
-    <Layout>
+    <Layout title={title}>
       {isLoading ? (
         <Loader />
       ) : (
