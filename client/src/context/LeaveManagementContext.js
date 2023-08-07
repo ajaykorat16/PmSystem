@@ -54,8 +54,20 @@ const LeaveManagementProvider = ({ children }) => {
     }
   }
 
+  //get user leave
+  const getUserLeave = async () => {
+    try {
+      const res = await axios.get(`/leaveManagement/userLeaves`, { headers })
+      if (res.data.error === false) {
+        return res.data
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
-    <LeaveManagementContext.Provider value={{ getLeavesMonthWise, getSingleLeave, updateLeave }} >
+    <LeaveManagementContext.Provider value={{ getLeavesMonthWise, getSingleLeave, updateLeave, getUserLeave }} >
       {children}
     </LeaveManagementContext.Provider>
   );
