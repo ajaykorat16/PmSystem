@@ -1,11 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
     CButton,
-    CCard,
-    CCardBody,
-    CCardGroup,
     CCol,
-    CContainer,
     CForm,
     CFormInput,
     CInputGroup,
@@ -13,9 +9,9 @@ import {
     CRow,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilLockLocked, cilUser } from '@coreui/icons'
-import { useLocation, useNavigate } from 'react-router-dom'
-import toast, { Toaster } from "react-hot-toast"
+import { cilLockLocked } from '@coreui/icons'
+import { useNavigate } from 'react-router-dom'
+import toast from "react-hot-toast"
 import { useUser } from '../context/UserContext'
 import Layout from './Layout'
 

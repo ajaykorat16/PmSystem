@@ -195,6 +195,12 @@ const LeaveList = ({ title }) => {
                 align="center"
               />
               <Column
+                field="totalDays"
+                header="Days"
+                filterField="days"
+                align="center"
+              />
+              <Column
                 field="type"
                 header="Type"
                 filterField="type"

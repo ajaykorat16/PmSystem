@@ -25,15 +25,28 @@ const LeaveManagementList = ({ title }) => {
 
   const fetchLeaves = async (query) => {
     setIsLoading(true);
-    let leaveManagementData = await getLeavesMonthWise(currentPage, rowsPerPage, query);
+    let leaveManagementData;
+    if (!query) {
+      leaveManagementData = await getLeavesMonthWise(currentPage, rowsPerPage);
+    } else {
+      let month = parseInt(query, 10);
+      leaveManagementData = await getLeavesMonthWise(currentPage, rowsPerPage, month);
+    }
     const totalRecordsCount = leaveManagementData.totalLeaves;
     setTotalRecords(totalRecordsCount);
     setLeaveList(leaveManagementData.leaves);
     setIsLoading(false);
   };
   useEffect(() => {
-    fetchLeaves();
-  }, [currentPage, rowsPerPage]);
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth() + 1;
+    setGlobalFilterValue(currentMonth.toString());
+    fetchLeaves(currentMonth);
+  }, []);
+
+  useEffect(() => {
+    fetchLeaves(globalFilterValue);
+  }, [currentPage, rowsPerPage, globalFilterValue]);
 
   const singleDepartment = async () => {
     const data = await getSingleLeave(leaveId);
@@ -62,16 +75,6 @@ const LeaveManagementList = ({ title }) => {
     }
   };
 
-  const handleSubmit = async () => {
-    fetchLeaves(globalFilterValue);
-  };
-
-  useEffect(() => {
-    if (globalFilterValue.trim() === "") {
-      fetchLeaves();
-    }
-  }, [globalFilterValue, currentPage, rowsPerPage]);
-
   const onPageChange = (event) => {
     const currentPage = Math.floor(event.first / event.rows) + 1;
     setCurrentPage(currentPage);
@@ -85,6 +88,11 @@ const LeaveManagementList = ({ title }) => {
     setFullName(fullName)
     setMonth(monthly)
   };
+
+  const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
 
   return (
     <Layout title={title}>
@@ -125,19 +133,24 @@ const LeaveManagementList = ({ title }) => {
                 <h4>Manage Leave</h4>
               </div>
               <div>
-                <form onSubmit={handleSubmit}>
                   <div className="p-inputgroup ">
                     <span className="p-inputgroup-addon">
                       <i className="pi pi-search" />
                     </span>
-                    <InputText
-                      type="search"
-                      value={globalFilterValue}
-                      onChange={(e) => setGlobalFilterValue(e.target.value)}
-                      placeholder="Keyword Search"
-                    />
+                    {/* <input
+                       type="search"
+                       value={globalFilterValue}
+                       onChange={(e) => setGlobalFilterValue(e.target.value)}
+                       placeholder="Keyword Search"
+                    /> */}
+                    <select value={globalFilterValue} onChange={(e) => setGlobalFilterValue(e.target.value)}>
+                      {months.map((month, index) => (
+                        <option key={index} value={index + 1}>
+                          {month}
+                        </option>
+                      ))}
+                    </select>
                   </div>
-                </form>
               </div>
             </div>
             <DataTable

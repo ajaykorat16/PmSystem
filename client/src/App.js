@@ -11,6 +11,7 @@ import UserCreate from './pages/UserCreate';
 import UserList from './pages/UserList';
 import UserUpdate from './pages/UserUpdate';
 import UserProfile from './pages/UserProfile'
+import AdminProfile from './pages/AdminProfile';
 import './scss/style.scss';
 import { Routes, Route } from 'react-router-dom';
 import UserRoutes from './components/Routes/UserRoutes';
@@ -30,7 +31,7 @@ function App() {
           <Route path="user/list" element={<UserList title="User List" />} />
           <Route path="user/create" element={<UserCreate title="User Create" />} />
           <Route path="user/update/:id" element={<UserUpdate title="User Update" />} />
-          <Route path="user/user-profile/:id" element={<UserProfile title="Profile" />} />
+          <Route path="user/admin-profile/:id" element={<AdminProfile title="Profile" />} />
           <Route path="user/resetPassword" element={<ResetPassword title="Reset Password" />} />
           <Route path="leave/list" element={<LeaveList title="Leave List" />} />
           <Route path="leave/create" element={<LeaveCreate title="Leave Create" />} />
@@ -39,7 +40,6 @@ function App() {
           <Route path="department/list" element={<DepartmentList title="Department List" />} />
           <Route path="department/create" element={<DepartmentCreate title="Create Department" />} />
           <Route path="department/update/:id" element={<DepartmentUpdate title="Deaprtment Update" />} />
-
         </Route>
         <Route path='/dashboard-user' element={<UserRoutes />}>
           <Route path="leave/list" element={<LeaveList title="Leave List" />} />

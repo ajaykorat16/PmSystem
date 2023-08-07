@@ -1,5 +1,5 @@
 import React from 'react'
-import { CForm, CCol, CFormInput, CTable, CTableHead, CTableRow, CTableHeaderCell, CTableBody, CTableDataCell } from '@coreui/react';
+import { CForm, CCol, CFormInput} from '@coreui/react';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom'
 import { useUser } from '../context/UserContext';
@@ -11,9 +11,8 @@ import toast from 'react-hot-toast';
 import { Avatar } from 'primereact/avatar';
 import { Button } from 'primereact/button';
 import moment from 'moment';
-import { useLeaveManagement } from '../context/LeaveManagementContext';
 
-const UserUpdate = ({ title }) => {
+const AdminProfile = ({ title }) => {
     const [employeeNumber, setEmployeeNumber] = useState("")
     const [firstname, setFirstname] = useState("")
     const [lastname, setLastname] = useState("")
@@ -25,12 +24,9 @@ const UserUpdate = ({ title }) => {
     const [newPhoto, setNewPhoto] = useState(null);
     const [dateOfJoining, setDateOfJoining] = useState("");
     const [photo, setPhoto] = useState("");
-    const [carryForward, setCarryForward] = useState("")
     const [isLoading, setIsLoading] = useState(true)
     const { updateProfile, getUserProfile } = useUser()
     const params = useParams();
-    const { getUserLeave } = useLeaveManagement()
-    const [leave, setLeave] = useState([])
 
     const doj =  moment(dateOfJoining).format('DD-MM-YYYY')
     useEffect(() => {
@@ -48,7 +44,6 @@ const UserUpdate = ({ title }) => {
                     setDateOfBirth(getProfile.dateOfBirth)
                     setDateOfJoining(getProfile.dateOfJoining)
                     setPhoto(getProfile.photo)
-                    setCarryForward(getProfile.carryForward)
                     setIsLoading(false)
                 }
             } catch (error) {
@@ -57,15 +52,6 @@ const UserUpdate = ({ title }) => {
         };
         fetchData();
     }, [params.id, getUserProfile]);
-
-
-    const fetchLeave = async () => {
-        const { leaves } = await getUserLeave()
-        setLeave(leaves)
-    }
-    useEffect(() => {
-        fetchLeave()
-    }, [])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -96,96 +82,63 @@ const UserUpdate = ({ title }) => {
                 <CForm onSubmit={handleSubmit}>
                     <div className='mainBody'>
                         <div className='row'>
-                            <div className='col userBlock'>
-                                <CCol className="mb-3">
-                                    <div className="d-flex justify-content image-container">
-                                        {photo && !newPhoto && (
-                                            <Avatar
-                                                image={`${photo}`}
-                                                shape="circle"
-                                                style={{ width: '300px', height: '300px', fontSize: '40px' }}
-                                            />
-                                        )}
-                                        {!photo && newPhoto && (
-                                            <CImage
-                                                align="start"
-                                                rounded
-                                                src={URL.createObjectURL(newPhoto)}
-                                                width={200}
-                                                height={200}
-                                            />
-                                        )}
-                                        {photo && newPhoto && (
-                                            <CImage
-                                                align="start"
-                                                rounded
-                                                src={URL.createObjectURL(newPhoto)}
-                                                width={200}
-                                                height={200}
-                                            />
-                                        )}
-                                    </div>
-                                </CCol>
-                                <div>
-                                    <p className='title'>PROFILE</p>
+                            <div className='col userBlock me-4 d-flex align-item-center justify-content-between'>
+                                <div className="ms-3 mt-3">
+                                    {photo && !newPhoto && (
+                                        <Avatar
+                                            image={`${photo}`}
+                                            shape="circle"
+                                            style={{ width: '300px', height: '300px', fontSize: '40px' }}
+                                        />
+                                    )}
+                                    {!photo && newPhoto && (
+                                        <CImage
+                                            align="start"
+                                            rounded
+                                            src={URL.createObjectURL(newPhoto)}
+                                            width={200}
+                                            height={200}
+                                        />
+                                    )}
+                                    {photo && newPhoto && (
+                                        <CImage
+                                            align="start"
+                                            rounded
+                                            src={URL.createObjectURL(newPhoto)}
+                                            width={200}
+                                            height={200}
+                                        />
+                                    )}
                                 </div>
-                                <div className="userInfo mb-3">
-                                    <div className='detail'>
-                                        <div className='row userDetail'>
-                                            <div className='col'><strong> Employee Id </strong></div>
-                                            <div className='col'>{employeeNumber}</div>
-                                        </div>
-                                        <div className='row userDetail'>
-                                            <div className='col'> <strong> Name </strong> </div>
-                                            <div className='col'>{firstname} {lastname}</div>
-                                        </div>
-                                        <div className='row userDetail'>
-                                            <div className='col'><strong> Department </strong> </div>
-                                            <div className='col'>{departments}</div>
-                                        </div>
-                                        <div className='row userDetail'>
-                                            <div className='col'><strong> Email </strong> </div>
-                                            <div className='col'>{email}</div>
-                                        </div>
-                                        <div className='row userDetail'>
-                                            <div className='col'> <strong> Date Of Joining </strong></div>
-                                            <div className='col'>{doj}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className='col leaveTable'>
-                                <div className='leaveHeader'>
+                                <div className='row'>
                                     <div>
-                                        <p className='leaveTitle'>LEAVE HISTORY</p>    
+                                        <p className='col title'>PROFILE</p>
                                     </div>
-                                    <div>
-                                        <p className='carryForward'>Carry Forward: {carryForward}</p>                                        
+                                    <div className="col userInfo mb-3">
+                                        <div className='detail'>
+                                            <div className='row userDetail'>
+                                                <div className='col'><strong> Employee Id </strong></div>
+                                                <div className='col'>{employeeNumber}</div>
+                                            </div>
+                                            <div className='row userDetail'>
+                                                <div className='col'> <strong> Name </strong> </div>
+                                                <div className='col'>{firstname} {lastname}</div>
+                                            </div>
+                                            <div className='row userDetail'>
+                                                <div className='col'><strong> Department </strong> </div>
+                                                <div className='col'>{departments}</div>
+                                            </div>
+                                            <div className='row userDetail'>
+                                                <div className='col'><strong> Email </strong> </div>
+                                                <div className='col'>{email}</div>
+                                            </div>
+                                            <div className='row userDetail'>
+                                                <div className='col'> <strong> Date Of Joining </strong></div>
+                                                <div className='col'>{doj}</div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <CTable className='mailTable'>
-                                    <CTableHead>
-                                        <CTableRow color="dark">
-                                            <CTableHeaderCell scope="col">Month</CTableHeaderCell>
-                                            <CTableHeaderCell scope="col">Leave</CTableHeaderCell>
-                                        </CTableRow>
-                                    </CTableHead>
-                                    <CTableBody>
-                                        {months.map((month, index) => {
-                                            const leaveDataForMonth = leave.find(item => {
-                                                const date = new Date(item.monthly);
-                                                return date.getMonth() === index;
-                                            }) || {};
-
-                                            return (
-                                                <CTableRow key={index} className='tableBody'>
-                                                    <CTableDataCell>{month}</CTableDataCell>
-                                                    <CTableDataCell>{leaveDataForMonth.leave || '-'}</CTableDataCell>
-                                                </CTableRow>
-                                            );
-                                        })}
-                                    </CTableBody>
-                                </CTable>
                             </div>
                         </div>
                         <div id='editUser'>
@@ -288,4 +241,4 @@ const UserUpdate = ({ title }) => {
     )
 }
 
-export default UserUpdate
+export default AdminProfile

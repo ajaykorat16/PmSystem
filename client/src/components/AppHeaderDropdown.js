@@ -64,6 +64,8 @@ const AppHeaderDropdown = () => {
       fetchData();
     }
   }, [getAuth]);
+  
+  const redirectPath = auth?.user?.role === "admin" ? `/dashboard/user/admin-profile/${auth?.user?._id}` : `/dashboard-user/user/user-profile/${auth?.user?._id}`;
 
   return (
     <>
@@ -86,7 +88,7 @@ const AppHeaderDropdown = () => {
           <CDropdownHeader className="bg-light fw-semibold py-2">Settings</CDropdownHeader>
           {getAuth &&
             <>
-              <CDropdownItem onClick={() => navigate(`/dashboard-user/user/user-profile/${auth?.user._id}`)}>
+              <CDropdownItem onClick={() => navigate(redirectPath)}>
                 <CIcon icon={cilUser} className="me-2" />
                 Profile
               </CDropdownItem>

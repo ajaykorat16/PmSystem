@@ -55,12 +55,13 @@
 
 .userDetail {
     border-bottom: 1px solid rgb(158, 158, 158);
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .mainBody {
     font-family: 'Poppins', sans-serif;
     margin-left: 30px;
+    margin-bottom: 15px;
 }
 
 .userBlock {
@@ -69,7 +70,7 @@
     border-radius: 20px;
 }
 
-.leaveTale {
+.leaveTable {
     background-color: rgb(226, 215, 215);
     margin-left: 30px;
     margin-right: 30px;
@@ -91,6 +92,26 @@
     font-size: 27px;
     margin-top: 10px;
     border-bottom: 2px solid rgb(0, 0, 0);
+}
+
+.leaveTitle{
+    font-weight: 700;
+    font-size: 27px;
+    margin-top: 10px;
+    display: inline;
+}
+
+.leaveHeader{
+    border-bottom: 2px solid rgb(0, 0, 0);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.carryForward{
+    font-size: 20px;
+    margin-top: 13px;
+    color: black;
 }
 
 #editUser {

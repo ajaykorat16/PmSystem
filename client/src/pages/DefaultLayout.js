@@ -1,10 +1,12 @@
 import React from 'react'
 import Layout from './Layout'
+import { useAuth } from '../context/AuthContext'
 
 const DefaultLayout = () => {
+  const {auth} = useAuth()
   return (
     <Layout>
-      <h1>hello</h1>
+      <h1>Wellcome {auth?.user?.fullName}</h1>
     </Layout>
   )
 }
