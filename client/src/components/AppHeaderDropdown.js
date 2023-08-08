@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useUser } from '../context/UserContext';
 import { MdOutlineLockReset } from 'react-icons/md';
+import { Avatar } from 'primereact/avatar';
 
 const LeaveBalanceDisplay = ({ leaveBalance }) => {
   return (
@@ -45,9 +46,15 @@ const AppHeaderDropdown = () => {
     try {
       if (getAuth && getAuth.user) {
         const { getProfile } = await getUserProfile(auth.user._id);
-        setPhoto(getProfile.photo);
-        setIsPhoto(true)
         setLeaveBalance(getProfile.leaveBalance);
+        if (getProfile?.photo === null) {
+          setPhoto('')
+          setIsPhoto(false)
+          
+        } else {
+          setPhoto(getProfile.photo);
+          setIsPhoto(true)
+        }
       }
     } catch (error) {
       console.error('Error fetching user profile:', error);
@@ -74,15 +81,11 @@ const AppHeaderDropdown = () => {
       }
       <CDropdown variant="nav-item">
         <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
-          {isPhoto &&
+          {isPhoto ?
             <CImage align="start" rounded src={photo} width={30} height={30} alt="User Avatar" />
+            :
+            <Avatar icon="pi pi-user" style={{ backgroundColor: '#2196F3', color: '#ffffff', borderRadius: "5px" }} />
           }
-          {isPhoto === false &&
-            <CAvatar color="success" textColor="white" shape="rounded">
-              PM
-            </CAvatar>
-          }
-
         </CDropdownToggle>
         <CDropdownMenu className="pt-0 dropdown" placement="bottom-end">
           <CDropdownHeader className="bg-light fw-semibold py-2">Settings</CDropdownHeader>

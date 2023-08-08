@@ -5,6 +5,7 @@ import { useUser } from "../context/UserContext";
 import { useNavigate, useParams } from "react-router-dom";
 import Loader from "../components/Loader";
 import Layout from "./Layout";
+import toast from "react-hot-toast";
 
 const LeaveUpdate = ({ title }) => {
   const [userId, setUserId] = useState("");
@@ -88,9 +89,17 @@ const LeaveUpdate = ({ title }) => {
 
   const handleIsHalfDayChange = (e) => {
     setIsHalfDay(e.target.checked);
-    if (e.target.checked) {
+    let currentDate = new Date(startDate);
+    const dayOfWeek = currentDate.getDay();
+    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+      if (e.target.checked) {
+        setEndDate(startDate);
+        setTotalDays(0.5);
+      }
+    }else{
+      toast.error("You can't take a leave on Saturday and Sunday")
       setEndDate(startDate);
-      setTotalDays(0.5);
+      setTotalDays(0)
     }
   };
 
@@ -175,6 +184,7 @@ const LeaveUpdate = ({ title }) => {
                 label="Leave End"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
+                disabled={isHalfDay}
               />
             </CCol>
             <CCol xs={6}>

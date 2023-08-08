@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useParams } from 'react-router-dom'
 import { useUser } from '../context/UserContext';
 import { useEffect } from 'react';
-import { CImage } from '@coreui/react'
 import Loader from '../components/Loader'
 import Layout from './Layout';
 import toast from 'react-hot-toast';

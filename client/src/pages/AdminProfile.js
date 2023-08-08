@@ -1,17 +1,15 @@
 import React from 'react'
-import { CForm, CCol, CFormInput, CTable, CTableHead, CTableRow, CTableHeaderCell, CTableBody, CTableDataCell } from '@coreui/react';
+import { CForm, CCol, CFormInput} from '@coreui/react';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom'
 import { useUser } from '../context/UserContext';
 import { useEffect } from 'react';
-import { CImage } from '@coreui/react'
 import Loader from '../components/Loader'
 import Layout from './Layout';
 import toast from 'react-hot-toast';
 import { Avatar } from 'primereact/avatar';
 import { Button } from 'primereact/button';
 import moment from 'moment';
-import { useLeaveManagement } from '../context/LeaveManagementContext';
 
 const UserUpdate = ({ title }) => {
     const [employeeNumber, setEmployeeNumber] = useState("")
@@ -25,12 +23,9 @@ const UserUpdate = ({ title }) => {
     const [newPhoto, setNewPhoto] = useState(null);
     const [dateOfJoining, setDateOfJoining] = useState("");
     const [photo, setPhoto] = useState("");
-    const [carryForward, setCarryForward] = useState("")
     const [isLoading, setIsLoading] = useState(true)
     const { updateProfile, getUserProfile } = useUser()
     const params = useParams();
-    const { getUserLeave } = useLeaveManagement()
-    const [leave, setLeave] = useState([])
 
     const doj =  moment(dateOfJoining).format('DD-MM-YYYY')
     useEffect(() => {
@@ -48,7 +43,6 @@ const UserUpdate = ({ title }) => {
                     setDateOfBirth(getProfile.dateOfBirth)
                     setDateOfJoining(getProfile.dateOfJoining)
                     setPhoto(getProfile.photo)
-                    setCarryForward(getProfile.carryForward)
                     setIsLoading(false)
                 }
             } catch (error) {
@@ -57,15 +51,6 @@ const UserUpdate = ({ title }) => {
         };
         fetchData();
     }, [params.id, getUserProfile]);
-
-
-    const fetchLeave = async () => {
-        const { leaves } = await getUserLeave()
-        setLeave(leaves)
-    }
-    useEffect(() => {
-        fetchLeave()
-    }, [])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -83,11 +68,6 @@ const UserUpdate = ({ title }) => {
     const handlePhoto = async (e) => {
         setNewPhoto(e.target.files[0]);
     };
-
-    const months = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-    ];
 
     return (
         <Layout title={title}>

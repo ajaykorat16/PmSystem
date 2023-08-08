@@ -76,9 +76,13 @@ const LeaveCreate = ({ title }) => {
 
   const handleIsHalfDayChange = (e) => {
     setIsHalfDay(e.target.checked);
-    if (e.target.checked) {
-      setEndDate(startDate);
-      setTotalDays(0.5);
+    let currentDate = new Date(startDate);
+    const dayOfWeek = currentDate.getDay();
+    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+      if (e.target.checked) {
+        setEndDate(startDate);
+        setTotalDays(0.5);
+      }
     }
   };
 

@@ -7,6 +7,7 @@ const fs = require("fs")
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const asyncHandler = require('express-async-handler');
+const LeaveManagement = require("../models/leaveManagementModel");
 const saltRounds = 10
 
 const hashPassword = async (password) => {
@@ -183,9 +184,12 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
         }
 
         await Users.findByIdAndDelete({ _id: id })
+        await LeaveManagement.deleteMany({ user: id})
+
         const userLeave = await Leaves.findOne({ userId: id });
         if (userLeave) {
             await Leaves.deleteMany({ userId: userLeave.userId });
+            await LeaveManagement.deleteMany({ user: userLeave.userId})
             return res.status(200).send({
                 error: false,
                 message: "User All Record Delete Successfully !!",

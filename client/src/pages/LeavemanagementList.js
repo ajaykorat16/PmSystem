@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Loader from "../components/Loader";
 import Layout from "./Layout";
-import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
@@ -137,12 +136,6 @@ const LeaveManagementList = ({ title }) => {
                     <span className="p-inputgroup-addon">
                       <i className="pi pi-search" />
                     </span>
-                    {/* <input
-                       type="search"
-                       value={globalFilterValue}
-                       onChange={(e) => setGlobalFilterValue(e.target.value)}
-                       placeholder="Keyword Search"
-                    /> */}
                     <select value={globalFilterValue} onChange={(e) => setGlobalFilterValue(e.target.value)}>
                       {months.map((month, index) => (
                         <option key={index} value={index + 1}>
