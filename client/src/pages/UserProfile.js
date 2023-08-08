@@ -57,7 +57,6 @@ const UserUpdate = ({ title }) => {
         fetchData();
     }, [params.id, getUserProfile]);
 
-
     const fetchLeave = async () => {
         const { leaves } = await getUserLeave()
         setLeave(leaves)
@@ -97,28 +96,19 @@ const UserUpdate = ({ title }) => {
                         <div className='row'>
                             <div className='col userBlock'>
                                 <CCol className="mb-3">
-                                    <div className="d-flex justify-content image-container">
-                                        {photo && !newPhoto && (
-                                            <Avatar
-                                                image={`${photo}`}
-                                                shape="circle"
-                                                style={{ width: '300px', height: '300px', fontSize: '40px' }}
-                                            />
-                                        )}
-                                        {!photo && newPhoto && (
-                                            <Avatar
-                                                image={URL.createObjectURL(newPhoto)}
-                                                shape="circle"
-                                                style={{ width: '300px', height: '300px', fontSize: '40px' }}
-                                            />
-                                        )}
-                                        {photo && newPhoto && (
-                                            <Avatar
-                                                image={URL.createObjectURL(newPhoto)}
-                                                shape="circle"
-                                                style={{ width: '300px', height: '300px', fontSize: '40px' }}
-                                            />
-                                        )}
+                                    <div className="d-flex justify-content image-container mt-3">
+                                        <Avatar
+                                            image={newPhoto ? URL.createObjectURL(newPhoto) : photo || null}
+                                            icon={!photo && !newPhoto ? 'pi pi-user' : null}
+                                            size={!photo && !newPhoto ? 'xlarge' : null}
+                                            shape="circle"
+                                            style={{
+                                                width: '300px',
+                                                height: '300px',
+                                                backgroundColor: (!photo && !newPhoto) ? '#2196F3' : null,
+                                                color: (!photo && !newPhoto) ? '#ffffff' : null
+                                            }}
+                                        />
                                     </div>
                                 </CCol>
                                 <div>

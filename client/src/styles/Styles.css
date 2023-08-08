@@ -127,3 +127,7 @@
     margin-top: 10px;
     margin-right: 10px;
 }
+
+.p-avatar.p-avatar-xl .p-avatar-icon{
+    font-size: 12rem !important;
+}
