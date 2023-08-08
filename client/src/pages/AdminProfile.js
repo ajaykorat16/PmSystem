@@ -107,21 +107,17 @@ const UserUpdate = ({ title }) => {
                                             />
                                         )}
                                         {!photo && newPhoto && (
-                                            <CImage
-                                                align="start"
-                                                rounded
-                                                src={URL.createObjectURL(newPhoto)}
-                                                width={200}
-                                                height={200}
+                                            <Avatar
+                                                image={URL.createObjectURL(newPhoto)}
+                                                shape="circle"
+                                                style={{ width: '300px', height: '300px', fontSize: '40px' }}
                                             />
                                         )}
                                         {photo && newPhoto && (
-                                            <CImage
-                                                align="start"
-                                                rounded
-                                                src={URL.createObjectURL(newPhoto)}
-                                                width={200}
-                                                height={200}
+                                            <Avatar
+                                                image={URL.createObjectURL(newPhoto)}
+                                                shape="circle"
+                                                style={{ width: '300px', height: '300px', fontSize: '40px' }}
                                             />
                                         )}
                                     </div>
