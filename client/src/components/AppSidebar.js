@@ -9,7 +9,6 @@ import SimpleBar from 'simplebar-react'
 import 'simplebar/dist/simplebar.min.css'
 
 import { useAuth } from '../context/AuthContext'
-// sidebar nav config
 import adminNavigatiion from './AdminNav'
 import userNavigation from './UserNav'
 import { NavLink } from 'react-router-dom'
@@ -45,7 +44,7 @@ const AppSidebar = () => {
         <SimpleBar>
           {role && role === "admin" && <AppSidebarNav items={adminNavigatiion} />}
           {role && role === "user" && <AppSidebarNav items={userNavigation} />}
-          {role == "" && <AppSidebarNav items={userNavigation} />}
+          {role === "" && <AppSidebarNav items={userNavigation} />}
         </SimpleBar>
       </CSidebarNav>
       <CSidebarToggler
