@@ -53,8 +53,12 @@ const LeaveUpdate = ({ title }) => {
         status,
         totalDays,
       };
-      await updateLeave(leaveData, id);
-      navigate("/dashboard/leave/list");
+      const data = await updateLeave(leaveData, id);
+      if (data.error) {
+        toast.error(data.message);
+      } else {
+        navigate("/dashboard/leave/list");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -96,7 +100,7 @@ const LeaveUpdate = ({ title }) => {
         setEndDate(startDate);
         setTotalDays(0.5);
       }
-    }else{
+    } else {
       toast.error("You can't take a leave on Saturday and Sunday")
       setEndDate(startDate);
       setTotalDays(0)

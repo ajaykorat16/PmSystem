@@ -127,3 +127,18 @@
     margin-top: 10px;
     margin-right: 10px;
 }
+
+.pmSystem{
+    font-weight: 700;
+    font-size: larger;
+}
+
+.box{
+    text-align: center;
+    width: 130px;
+    height: 40px;
+    border: none;
+    font-size: 18px;
+    background-color: #eee;
+    border-radius: 5px;
+}

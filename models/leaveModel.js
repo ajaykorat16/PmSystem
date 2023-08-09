@@ -12,6 +12,10 @@ const leaveSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    reasonForLeaveReject: {
+      type: String,
+      default: null
+    },
     startDate: {
       type: Date,
       require: true,
