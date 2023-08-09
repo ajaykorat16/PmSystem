@@ -132,18 +132,13 @@ const LeaveManagementList = ({ title }) => {
                 <h4>Manage Leave</h4>
               </div>
               <div>
-                  <div className="p-inputgroup ">
-                    <span className="p-inputgroup-addon">
-                      <i className="pi pi-search" />
-                    </span>
-                    <select value={globalFilterValue} onChange={(e) => setGlobalFilterValue(e.target.value)}>
-                      {months.map((month, index) => (
-                        <option key={index} value={index + 1}>
-                          {month}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                <select className="box" value={globalFilterValue} onChange={(e) => setGlobalFilterValue(e.target.value)}>
+                  {months.map((month, index) => (
+                    <option key={index} value={index + 1}>
+                      {month}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
             <DataTable

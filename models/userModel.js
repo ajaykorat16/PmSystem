@@ -75,7 +75,7 @@ const userSchema = new mongoose.Schema({
     },
     carryForward: {
         type: Number,
-        default: 5
+        default: 0
     }
 }, {
     timestamps: true,

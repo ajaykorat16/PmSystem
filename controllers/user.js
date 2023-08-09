@@ -66,6 +66,22 @@ const createUser = asyncHandler(async (req, res) => {
         const hashedPassword = await hashPassword(password)
 
         const newUser = await new Users({ employeeNumber, firstname: capitalizeFLetter(firstname), lastname: capitalizeFLetter(lastname), email, password: hashedPassword, phone, address, dateOfBirth, department, dateOfJoining }).save()
+        
+        const doj = new Date(newUser.dateOfJoining);
+        const currentDate = new Date();
+        const currentMonth = currentDate.getMonth();
+        const currentYear = currentDate.getFullYear();
+    
+        if (doj.getFullYear() === currentYear && doj.getMonth() === currentMonth && doj.getDate() <= 15) {
+            const leaveEntry = new LeaveManagement({
+                user: newUser._id,
+                monthly: currentDate,
+                leave: 1.5,
+            });
+    
+            await leaveEntry.save();
+        }
+
         return res.status(201).json({
             error: false,
             message: "User Register successfully !!",
