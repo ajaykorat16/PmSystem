@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
-import { CSidebar, CSidebarBrand, CSidebarNav, CSidebarToggler } from '@coreui/react'
+import { CNavLink, CSidebar, CSidebarBrand, CSidebarNav, CSidebarToggler } from '@coreui/react'
 
 import { AppSidebarNav } from './AppSidebarNav'
 
@@ -12,20 +12,21 @@ import { useAuth } from '../context/AuthContext'
 // sidebar nav config
 import adminNavigatiion from './AdminNav'
 import userNavigation from './UserNav'
+import { NavLink } from 'react-router-dom'
 
 const AppSidebar = () => {
   const dispatch = useDispatch()
   const unfoldable = useSelector((state) => state.sidebarUnfoldable)
   const sidebarShow = useSelector((state) => state.sidebarShow)
-  const {auth} = useAuth()
+  const { auth } = useAuth()
   const [role, setRole] = useState("")
 
-  useEffect(()=>{
-    if(auth?.user?.role){
+  useEffect(() => {
+    if (auth?.user?.role) {
       setRole(auth?.user?.role)
-    }  
+    }
   }, [auth])
-  
+
   return (
     <CSidebar
       position="fixed"
@@ -35,14 +36,16 @@ const AppSidebar = () => {
         dispatch({ type: 'set', sidebarShow: visible })
       }}
     >
-      <CSidebarBrand className="d-none d-md-flex" to="/">
-        PM SYSTEM
+      <CSidebarBrand className="d-none d-md-flex pmSystem" to="/">
+        <CNavLink to='/' component={NavLink}>
+          PM SYSTEM
+        </CNavLink>
       </CSidebarBrand>
       <CSidebarNav>
         <SimpleBar>
           {role && role === "admin" && <AppSidebarNav items={adminNavigatiion} />}
           {role && role === "user" && <AppSidebarNav items={userNavigation} />}
-          {role=="" && <AppSidebarNav items={userNavigation} />}
+          {role == "" && <AppSidebarNav items={userNavigation} />}
         </SimpleBar>
       </CSidebarNav>
       <CSidebarToggler

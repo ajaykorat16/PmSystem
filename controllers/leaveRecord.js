@@ -2,12 +2,7 @@ const Leaves = require("../models/leaveModel")
 const Users = require("../models/userModel")
 const { validationResult } = require('express-validator');
 const asyncHandler = require('express-async-handler')
-const { sendMailForLeaveStatus, sendMailForLeaveRequest, formattedDate } = require("../helper/mail")
-
-
-function capitalizeFLetter(string) {
-    return string[0].toUpperCase() + string.slice(1);
-}
+const { sendMailForLeaveStatus, sendMailForLeaveRequest, formattedDate, capitalizeFLetter } = require("../helper/mail")
 
 const createLeave = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
@@ -23,9 +18,22 @@ const createLeave = asyncHandler(async (req, res) => {
             uId = req.user._id
         }
 
-        const createLeaves = await new Leaves({ userId: uId, reason, startDate, endDate, type, status, totalDays }).save();
+        const user = await Users.findById({ _id: uId })
+
+        let createLeaves;
+        if (user.leaveBalance >= totalDays && type === "paid" && user.leaveBalance !== 0) {
+            createLeaves = await new Leaves({ userId: uId, reason, startDate, endDate, type, status, totalDays }).save();
+        } else if (type === "lwp") {
+            createLeaves = await new Leaves({ userId: uId, reason, startDate, endDate, type, status, totalDays }).save();
+        } else {
+            return res.status(201).json({
+                error: true,
+                message: "Your leave balence is not enough to take paid leave!",
+            })
+        }
+
         await sendMailForLeaveRequest(createLeaves)
-        
+
         if (status === "approved" && type === "paid") {
             await Users.findByIdAndUpdate(uId, { $inc: { leaveBalance: -totalDays } }, { new: true })
             await sendMailForLeaveStatus(createLeaves)
@@ -103,13 +111,11 @@ const getLeaves = asyncHandler(async (req, res) => {
             leaves = await Leaves.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate({ path: 'userId', select: 'fullName' }).lean();
         }
 
-        const formattedLeaves = leaves.map((leave, i) => {
-            const index = i + 1
+        const formattedLeaves = leaves.map((leave) => {
             return {
                 ...leave,
                 type: capitalizeFLetter(leave.type),
                 status: capitalizeFLetter(leave.status),
-                index: index,
                 startDate: formattedDate(leave.startDate),
                 endDate: formattedDate(leave.endDate)
             };
@@ -149,13 +155,11 @@ const userGetLeave = asyncHandler(async (req, res) => {
 
         const leaves = await Leaves.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate({ path: 'userId', select: 'fullName' }).lean();
 
-        const formattedLeaves = leaves.map((leave, i) => {
-            const index = i + 1
+        const formattedLeaves = leaves.map((leave) => {
             return {
                 ...leave,
                 type: capitalizeFLetter(leave.type),
                 status: capitalizeFLetter(leave.status),
-                index: index,
                 startDate: formattedDate(leave.startDate),
                 endDate: formattedDate(leave.endDate)
             };
@@ -217,9 +221,23 @@ const updateLeave = asyncHandler(async (req, res) => {
         if (req.user.role === 1) {
             updatedFields.status = status || userLeave.status
         }
-        
-        const updateLeave = await Leaves.findByIdAndUpdate({ _id: userLeave._id }, updatedFields, { new: true });
-        
+
+        const user = await Users.findById({ _id: updatedFields.userId }).select("-photo")
+
+        let updateLeave;
+        if (user.leaveBalance >= updatedFields.totalDays && updatedFields.type === "paid" && user.leaveBalance !== 0) {
+            updateLeave = await Leaves.findByIdAndUpdate({ _id: userLeave._id }, updatedFields, { new: true });
+        }
+        else if (updatedFields.type === "lwp") {
+            updateLeave = await Leaves.findByIdAndUpdate({ _id: userLeave._id }, updatedFields, { new: true });
+        }
+        else {
+            return res.status(201).json({
+                error: true,
+                message: "Your leave balence is not enough to take paid leave!",
+            })
+        }
+
         return res.status(201).send({
             error: false,
             message: "Leave Updated Successfully !!",
@@ -249,15 +267,24 @@ const deleteLeave = asyncHandler(async (req, res) => {
 
 const updateStatus = asyncHandler(async (req, res) => {
     try {
-        const { status } = req.body
+        const { status, reasonForLeaveReject } = req.body
         const { id } = req.params;
 
-        const updateLeave = await Leaves.findByIdAndUpdate({ _id: id }, { status }, { new: true });
+        let updateLeave;
+        if (status === 'rejected') {
+            updateLeave = await Leaves.findByIdAndUpdate({ _id: id }, { status, reasonForLeaveReject }, { new: true });
+            await sendMailForLeaveStatus(updateLeave, reasonForLeaveReject)
+        }
+
+        if (status === 'approved') {
+            updateLeave = await Leaves.findByIdAndUpdate({ _id: id }, { status }, { new: true });
+            await sendMailForLeaveStatus(updateLeave, "-")
+        }
 
         if (updateLeave.status === 'approved' && updateLeave.type === "paid") {
             await Users.findByIdAndUpdate(updateLeave.userId, { $inc: { leaveBalance: -updateLeave.totalDays } }, { new: true })
         }
-        await sendMailForLeaveStatus(updateLeave)
+
         return res.status(201).send({
             error: false,
             message: "Status Updated Successfully !!",

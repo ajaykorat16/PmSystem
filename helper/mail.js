@@ -16,7 +16,11 @@ const formattedDate = (date) => {
     return moment(date).format('DD-MM-YYYY')
 }
 
-const sendMailForLeaveStatus = async (data) => {
+function capitalizeFLetter(string) {
+    return string[0].toUpperCase() + string.slice(1);
+}
+
+const sendMailForLeaveStatus = async (data, reasonForLeaveReject) => {
     try {
         fs.readFile('./templates/email_leaveResponse.html', 'utf8', async function (err, content) {
             if (err) {
@@ -36,7 +40,8 @@ const sendMailForLeaveStatus = async (data) => {
                 body = body.replace('{startDate}', formattedDate(startDate))
                 body = body.replace('{endDate}', formattedDate(endDate))
                 body = body.replace('{totalDays}', totalDays)
-                body = body.replace('{status}', status)
+                body = body.replace('{reasonForLeaveReject}', reasonForLeaveReject)
+                body = body.replace('{status}', capitalizeFLetter(status))
                 body = body.replace('{adminName}', adminUser.fullName)
 
                 const mailOptions = {
@@ -107,4 +112,4 @@ const sendMailForLeaveRequest = async (data) => {
     }
 };
 
-module.exports = { sendMailForLeaveStatus, sendMailForLeaveRequest, formattedDate }
+module.exports = { sendMailForLeaveStatus, sendMailForLeaveRequest, formattedDate, capitalizeFLetter }

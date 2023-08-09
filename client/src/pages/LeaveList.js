@@ -11,6 +11,7 @@ import { useAuth } from "../context/AuthContext";
 import { Tag } from "primereact/tag";
 import { Button } from "primereact/button";
 import { toast } from "react-hot-toast";
+import { CButton, CForm, CFormTextarea, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from "@coreui/react";
 
 const LeaveList = ({ title }) => {
   const { getLeave, getUserLeave, updateStatus } = useLeave();
@@ -22,6 +23,10 @@ const LeaveList = ({ title }) => {
   const [globalFilterValue, setGlobalFilterValue] = useState("");
   const [sortField, setSortField] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState(-1);
+  const [visible, setVisible] = useState(false);
+  const [fullName, setFullName] = useState(null);
+  const [id, setId] = useState(null);
+  const [reasonForLeaveReject, setReasonForLeaveReject] = useState("")
   const navigate = useNavigate();
   const { auth } = useAuth();
 
@@ -68,11 +73,17 @@ const LeaveList = ({ title }) => {
     navigate(`/dashboard/leave/update/${id}`);
   };
 
-  const handleUpdateStatus = async (id, status) => {
+  const handleUpdateStatus = async (id, status, fullName) => {
     try {
-      await updateStatus(status, id);
-      toast.success(`${status} successfully!!`);
-      fetchLeaves();
+      if (status === 'rejected') {
+        setVisible(true)
+        setFullName(fullName)
+        setId(id)
+      } else {
+        await updateStatus(status, id);
+        toast.success("Leave approved successfully!!");
+        fetchLeaves();
+      }
     } catch (error) {
       console.log(error);
     }
@@ -110,12 +121,51 @@ const LeaveList = ({ title }) => {
     }
   };
 
+  const handleSubmitReject = async () => {
+    if (reasonForLeaveReject !== "") {
+      await updateStatus("rejected", id, reasonForLeaveReject);
+      toast.success("Leave rejected successfully!!");
+      fetchLeaves();
+      setVisible(false); // Close the modal
+    } else {
+      toast.error("Please write reason for leave reject !")
+    }
+  };
+
+
   return (
     <Layout title={title}>
       {isLoading ? (
         <Loader />
       ) : (
         <>
+          <CModal
+            alignment="center"
+            visible={visible}
+            onClose={() => setVisible(false)}
+          >
+            <CModalHeader>
+              <CModalTitle>{fullName}</CModalTitle>
+            </CModalHeader>
+            <CForm onSubmit={handleUpdateStatus}>
+              <CModalBody>
+                <CFormTextarea
+                  type="text"
+                  id="leave"
+                  label="Rasone For Reject Leave"
+                  value={reasonForLeaveReject}
+                  onChange={(e) => setReasonForLeaveReject(e.target.value)}
+                  rows={3}
+                />
+              </CModalBody>
+              <CModalFooter>
+                <CButton color="secondary" onClick={() => setVisible(false)}>
+                  Close
+                </CButton>
+                <CButton color="primary" onClick={() => handleSubmitReject()}>Save changes</CButton>
+              </CModalFooter>
+            </CForm>
+          </CModal>
           <div className="card mb-5">
             <div className="mainHeader d-flex align-items-center justify-content-between">
               <div>
@@ -159,12 +209,6 @@ const LeaveList = ({ title }) => {
                 />
               }
             >
-              <Column
-                field="index"
-                header="#"
-                filterField="index"
-                align="center"
-              />
               {auth.user.role === "admin" && (
                 <Column
                   field="userId.fullName"
@@ -177,6 +221,13 @@ const LeaveList = ({ title }) => {
               <Column
                 field="reason"
                 header="Reason"
+                filterField="reason"
+                alignHeader="center"
+                style={{ minWidth: "15rem", maxWidth: "15rem" }}
+              />
+              <Column
+                field="reasonForLeaveReject"
+                header="Reason For Leave Reject"
                 filterField="reason"
                 alignHeader="center"
                 style={{ minWidth: "15rem", maxWidth: "15rem" }}
@@ -238,7 +289,7 @@ const LeaveList = ({ title }) => {
                             title="Reject"
                             rounded
                             severity="danger"
-                            onClick={() => handleUpdateStatus(rowData._id, "rejected")}
+                            onClick={() => handleUpdateStatus(rowData._id, "rejected", rowData.userId.fullName)}
                             className="ms-2"
                             raised
                           />
@@ -252,7 +303,7 @@ const LeaveList = ({ title }) => {
                         title="Edit"
                         onClick={() => handleUpdate(rowData._id)}
                         raised
-                        disabled={rowData.status === "Approved"}
+                        disabled={rowData.status === "Approved" || rowData.status === "Rejected"}
                       />
                     </div>
                   )}
