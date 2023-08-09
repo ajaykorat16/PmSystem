@@ -81,15 +81,16 @@ const LeaveProvider = ({ children }) => {
           toast.success("Leave updated successfully");
         }, 1000);
       }
+      return data
     } catch (error) {
       console.log(error);
     }
   };
 
   //update status
-  const updateStatus = async (status, id) => {
+  const updateStatus = async (status, id, reasonForLeaveReject) => {
     try {
-      const { data } = await axios.put(`/leaves/updateStatus/${id}`, { status }, { headers })
+      const { data } = await axios.put(`/leaves/updateStatus/${id}`, { status, reasonForLeaveReject }, { headers })
       if (data.error === false) {
         getLeave()
       }
