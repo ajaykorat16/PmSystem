@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { CForm, CCol, CFormInput, CFormSelect, CButton } from '@coreui/react';
+import { CForm, CCol, CFormInput, CFormSelect, CButton, CFormTextarea } from '@coreui/react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '../context/UserContext';
@@ -79,7 +79,7 @@ const UserCreate = ({ title }) => {
                     <CFormInput type="number" id="inputPhone" label="Phone Number" value={phone} onChange={(e) => setPhone(e.target.value)} />
                 </CCol>
                 <CCol xs={6}>
-                    <CFormInput id="inputAddress" label="Address" placeholder="1234 Main St" value={address} onChange={(e) => setAddress(e.target.value)} />
+                    <CFormTextarea type="area" id="inputAddress" label="Address" value={address} onChange={(e) => setAddress(e.target.value)} />
                 </CCol>
                 <CCol md={4}>
                     <CFormSelect id="inputDepartment" label="Department" value={departments} onChange={(e) => setDepartments(e.target.value)}>

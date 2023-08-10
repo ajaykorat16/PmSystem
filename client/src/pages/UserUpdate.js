@@ -1,5 +1,5 @@
 import React from 'react'
-import { CForm, CCol, CFormInput, CFormSelect, CButton, CRow } from '@coreui/react';
+import { CForm, CCol, CFormInput, CFormSelect, CButton, CRow, CFormTextarea } from '@coreui/react';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom'
 import { useUser } from '../context/UserContext';
@@ -174,7 +174,8 @@ const UserUpdate = ({ title }) => {
                         />
                     </CCol>
                     <CCol xs={6}>
-                        <CFormInput
+                        <CFormTextarea
+                            type="text"
                             id="inputAddress"
                             label="Address"
                             placeholder="Enter your address"
