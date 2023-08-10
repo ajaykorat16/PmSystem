@@ -21,6 +21,7 @@ import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import LeaveManagementList from './pages/LeavemanagementList';
 import EmployeeList from './pages/EmployeeList';
+import EmployeeByBirthMonth from './pages/EmployeeByBirhtMonth';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
         <Route path="/" element={<DefaultLayout />} />
         <Route path="/dashboard" element={<AdminRoutes />}>
           <Route path="user/list" element={<UserList title="User List" />} />
+          <Route path="user/birtday/list" element={<EmployeeByBirthMonth title="Employee By Birth Month" />} />
           <Route path="user/create" element={<UserCreate title="User Create" />} />
           <Route path="user/update/:id" element={<UserUpdate title="User Update" />} />
           <Route path="user/admin-profile/:id" element={<AdminProfile title="Profile" />} />
@@ -45,6 +47,7 @@ function App() {
         <Route path='/dashboard-user' element={<UserRoutes />}>
           <Route path="leave/list" element={<LeaveList title="Leave List" />} />
           <Route path="employee/list" element={<EmployeeList title="Employee List" />} />
+          <Route path="employee/birtday/list" element={<EmployeeByBirthMonth title="Employee By Birth Month" />} />
           <Route path="leave/create" element={<LeaveCreate title="Leave Create" />} />
           <Route path="user/user-profile/:id" element={<UserProfile title="Profile" />} />
           <Route path="user/resetPassword" element={<ResetPassword title="Reset Password" />} />

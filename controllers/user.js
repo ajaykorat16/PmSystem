@@ -316,6 +316,63 @@ const getUsers = asyncHandler(async (req, res) => {
     }
 });
 
+const getUserByBirthDayMonth = asyncHandler(async (req, res) => {
+    try {
+      const d = new Date();
+      let month = d.getMonth() + 1;
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const sortField = req.query.sortField || 'dateOfBirth';
+      const sortOrder = req.query.sortOrder || 1
+      const filter = req.body.filter || month;
+  
+      let query;
+      if (filter) {
+        query = {
+          $or: [
+            {
+              $expr: {
+                $eq: [{ $month: "$dateOfBirth" }, isNaN(filter) ? null : filter],
+              },
+            },
+          ],
+        };
+      }
+  
+      const totalUsers = await Users.countDocuments(query);
+        const skip = (page - 1) * limit;
+
+        const users = await Users.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate("department").lean();
+
+        const formattedUsers = users.map((user) => {
+            const photoUrl = user.photo && user.photo.contentType
+                ? `data:${user.photo.contentType};base64,${user.photo.data.toString("base64")}`
+                : null;
+            const avatar = user.firstname.charAt(0) + user.lastname.charAt(0);
+
+            return {
+                ...user,
+                avatar: avatar,
+                department: user.department.name,
+                dateOfBirth: formattedDate(user.dateOfBirth),
+                dateOfJoining: formattedDate(user.dateOfJoining),
+                photo: photoUrl,
+            };
+        });
+
+        return res.status(200).json({
+            error: false,
+            message: "Users retrieved successfully",
+            users: formattedUsers,
+            currentPage: page,
+            totalPages: Math.ceil(totalUsers / limit),
+            totalUsers,
+        });
+    } catch (error) {
+      console.log(error.message);
+      res.status(500).send("Server error");
+    }
+  });
 
 const getAllUser = asyncHandler(async (req, res) => {
     try {
@@ -401,4 +458,4 @@ const changePasswordController = asyncHandler(async (req, res) => {
     }
 });
 
-module.exports = { createUser, loginUser, updateUser, deleteUserProfile, getAllUser, getUserProfile, changePasswordController, getUsers }
+module.exports = { createUser, loginUser, updateUser, deleteUserProfile, getAllUser, getUserProfile, changePasswordController, getUsers, getUserByBirthDayMonth }

@@ -40,6 +40,23 @@ const UserProvider = ({ children }) => {
         }
     }
 
+    //get All Users
+    const getAllUsersByBirthMonth = async (page, limit, query, sortField, sortOrder) => {
+        try {
+            let res;
+            if (query) {
+                res = await axios.post(`/user/user-search`, { filter: query }, { params: { page, limit, sortField, sortOrder }, headers: headers });
+            } else {
+                res = await axios.get(`/user/getUserByBirthDayMonth`, { params: { page, limit, sortField, sortOrder } }, { headers });
+            }
+            if (res.data.error === false) {
+                return res.data
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     //get All Employee
     const getAllEmployee = async (page, limit, query, sortField, sortOrder) => {
         try {
@@ -191,7 +208,7 @@ const UserProvider = ({ children }) => {
     }
 
     return (
-        <UserContext.Provider value={{ fetchUsers, createUser, updateUser, deleteUser, getUserProfile, updateProfile, resetPassword, getAllUsers, getAllEmployee }}>
+        <UserContext.Provider value={{ fetchUsers, createUser, updateUser, deleteUser, getUserProfile, updateProfile, resetPassword, getAllUsers, getAllEmployee, getAllUsersByBirthMonth }}>
             {children}
         </UserContext.Provider>
     );

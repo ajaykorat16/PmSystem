@@ -22,6 +22,11 @@ const _nav = [
       },
       {
         component: CNavItem,
+        name: 'Birthday on this Month',
+        to: '/dashboard/user/birtday/list',
+      },
+      {
+        component: CNavItem,
         name: 'Create User',
         to: '/dashboard/user/create',
       },
