@@ -66,12 +66,12 @@ const createUser = asyncHandler(async (req, res) => {
         const hashedPassword = await hashPassword(password)
 
         const newUser = await new Users({ employeeNumber, firstname: capitalizeFLetter(firstname), lastname: capitalizeFLetter(lastname), email, password: hashedPassword, phone, address, dateOfBirth, department, dateOfJoining }).save()
-        
+
         const doj = new Date(newUser.dateOfJoining);
         const currentDate = new Date();
         const currentMonth = currentDate.getMonth();
         const currentYear = currentDate.getFullYear();
-    
+
         if (doj.getFullYear() === currentYear && doj.getMonth() === currentMonth && doj.getDate() <= 15) {
             const leaveEntry = new LeaveManagement({
                 user: newUser._id,
@@ -200,12 +200,12 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
         }
 
         await Users.findByIdAndDelete({ _id: id })
-        await LeaveManagement.deleteMany({ user: id})
+        await LeaveManagement.deleteMany({ user: id })
 
         const userLeave = await Leaves.findOne({ userId: id });
         if (userLeave) {
             await Leaves.deleteMany({ userId: userLeave.userId });
-            await LeaveManagement.deleteMany({ user: userLeave.userId})
+            await LeaveManagement.deleteMany({ user: userLeave.userId })
             return res.status(200).send({
                 error: false,
                 message: "User All Record Delete Successfully !!",
@@ -277,12 +277,12 @@ const getUsers = asyncHandler(async (req, res) => {
         const skip = (page - 1) * limit;
 
         let users
-        if(authUser.role === 'user'){
+        if (authUser.role === 'user') {
             users = await Users.find({
                 ...query,
-                role: "user" 
-              }).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate("department").lean();
-        }else{
+                role: "user"
+            }).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate("department").lean();
+        } else {
             users = await Users.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate("department").lean();
         }
 
@@ -318,31 +318,45 @@ const getUsers = asyncHandler(async (req, res) => {
 
 const getUserByBirthDayMonth = asyncHandler(async (req, res) => {
     try {
-      const d = new Date();
-      let month = d.getMonth() + 1;
-      const page = parseInt(req.query.page) || 1;
-      const limit = parseInt(req.query.limit) || 10;
-      const sortField = req.query.sortField || 'dateOfBirth';
-      const sortOrder = req.query.sortOrder || 1
-      const filter = req.body.filter || month;
-  
-      let query;
-      if (filter) {
-        query = {
-          $or: [
-            {
-              $expr: {
-                $eq: [{ $month: "$dateOfBirth" }, isNaN(filter) ? null : filter],
-              },
-            },
-          ],
-        };
-      }
-  
-      const totalUsers = await Users.countDocuments(query);
+        const d = new Date();
+        let month = d.getMonth() + 1;
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const sortField = req.query.sortField || 'dateOfBirth';
+        const sortOrder = parseInt(req.query.sortOrder) || 1;
+        const filter = req.body.filter || month;
+
+        let query;
+        if (filter) {
+            query = {
+                $or: [
+                    {
+                        $expr: {
+                            $eq: [{ $month: "$dateOfBirth" }, isNaN(filter) ? null : filter],
+                        },
+                    },
+                ],
+            };
+        }
+
+        const totalUsers = await Users.countDocuments(query);
         const skip = (page - 1) * limit;
 
-        const users = await Users.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate("department").lean();
+        const aggregationPipeline = [
+            { $match: query },
+            {
+                $addFields: {
+                    dayOfMonth: { $dayOfMonth: "$dateOfBirth" }
+                }
+            },
+            { $sort: { dayOfMonth: sortOrder } },
+            { $skip: skip },
+            { $limit: limit },
+            { $lookup: { from: "departments", localField: "department", foreignField: "_id", as: "department" } },
+            { $unwind: "$department" }
+        ];
+
+        const users = await Users.aggregate(aggregationPipeline);
 
         const formattedUsers = users.map((user) => {
             const photoUrl = user.photo && user.photo.contentType
@@ -369,10 +383,11 @@ const getUserByBirthDayMonth = asyncHandler(async (req, res) => {
             totalUsers,
         });
     } catch (error) {
-      console.log(error.message);
-      res.status(500).send("Server error");
+        console.log(error.message);
+        res.status(500).send("Server error");
     }
-  });
+});
+
 
 const getAllUser = asyncHandler(async (req, res) => {
     try {

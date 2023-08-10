@@ -12,6 +12,8 @@ router.get("/", auth, isAdmin, getUsers)
 
 router.get("/getUserByBirthDayMonth", auth, getUserByBirthDayMonth)
 
+router.post("/getUserByBirthDayMonth-search", auth, getUserByBirthDayMonth)
+
 router.post("/user-search", auth, getUsers)
 
 router.get("/employeeList", auth, getUsers)

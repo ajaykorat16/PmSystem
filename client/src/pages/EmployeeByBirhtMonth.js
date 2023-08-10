@@ -33,13 +33,25 @@ const EmployeeByBirthMonth = ({ title }) => {
 
   const fetchUsers = async (query, sortField, sortOrder) => {
     setIsLoading(true);
-    let usertData = await getAllUsersByBirthMonth(
-      currentPage,
-      rowsPerPage,
-      query,
-      sortField,
-      sortOrder
-    );
+    let usertData
+    if (!query) {
+      usertData = await getAllUsersByBirthMonth(
+        currentPage,
+        rowsPerPage,
+        sortField,
+        sortOrder
+      );
+    } else {
+      let month = parseInt(query, 10);
+      usertData = await getAllUsersByBirthMonth(
+        currentPage,
+        rowsPerPage,
+        month,
+        sortField,
+        sortOrder
+      );
+    }
+
     const totalRecordsCount = usertData.totalUsers;
     setTotalRecords(totalRecordsCount);
     setUserList(usertData.users);
@@ -59,6 +71,13 @@ const EmployeeByBirthMonth = ({ title }) => {
       fetchUsers();
     }
   }, [globalFilterValue, currentPage, rowsPerPage]);
+
+  useEffect(() => {
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth() + 1;
+    setGlobalFilterValue(currentMonth.toString());
+    fetchUsers(currentMonth);
+  }, []);
 
   const onPageChange = (event) => {
     const currentPage = Math.floor(event.first / event.rows) + 1;
@@ -86,6 +105,11 @@ const EmployeeByBirthMonth = ({ title }) => {
     setPhoto(user.photo)
     setPhone(user.phone)
   }
+
+  const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
 
   return (
     <Layout title={title}>
@@ -162,19 +186,13 @@ const EmployeeByBirthMonth = ({ title }) => {
                 <h4>Employee</h4>
               </div>
               <div>
-                <form onSubmit={handleSubmit}>
-                  <div className="p-inputgroup ">
-                    <span className="p-inputgroup-addon">
-                      <i className="pi pi-search" />
-                    </span>
-                    <InputText
-                      type="search"
-                      value={globalFilterValue}
-                      onChange={(e) => setGlobalFilterValue(e.target.value)}
-                      placeholder="Keyword Search"
-                    />
-                  </div>
-                </form>
+                <select className="box" value={globalFilterValue} onChange={(e) => setGlobalFilterValue(e.target.value)}>
+                  {months.map((month, index) => (
+                    <option key={index} value={index + 1}>
+                      {month}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
             <DataTable

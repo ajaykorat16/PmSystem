@@ -45,7 +45,7 @@ const UserProvider = ({ children }) => {
         try {
             let res;
             if (query) {
-                res = await axios.post(`/user/user-search`, { filter: query }, { params: { page, limit, sortField, sortOrder }, headers: headers });
+                res = await axios.post(`/user/getUserByBirthDayMonth-search`, { filter: query }, { params: { page, limit, sortField, sortOrder }, headers: headers });
             } else {
                 res = await axios.get(`/user/getUserByBirthDayMonth`, { params: { page, limit, sortField, sortOrder } }, { headers });
             }
