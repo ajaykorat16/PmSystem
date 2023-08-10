@@ -126,12 +126,11 @@ const LeaveList = ({ title }) => {
       await updateStatus("rejected", id, reasonForLeaveReject);
       toast.success("Leave rejected successfully!!");
       fetchLeaves();
-      setVisible(false); // Close the modal
+      setVisible(false);
     } else {
       toast.error("Please write reason for leave reject !")
     }
   };
-
 
   return (
     <Layout title={title}>

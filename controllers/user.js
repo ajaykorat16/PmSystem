@@ -78,8 +78,8 @@ const createUser = asyncHandler(async (req, res) => {
                 monthly: currentDate,
                 leave: 1.5,
             });
-    
             await leaveEntry.save();
+            await Users.findByIdAndUpdate(newUser._id, { $inc: { leaveBalance: 1.5 } }, { new: true });
         }
 
         return res.status(201).json({
