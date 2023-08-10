@@ -322,17 +322,16 @@ const getUserByBirthDayMonth = asyncHandler(async (req, res) => {
         let month = d.getMonth() + 1;
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
-        const sortField = req.query.sortField || 'dateOfBirth';
-        const sortOrder = parseInt(req.query.sortOrder) || 1;
         const filter = req.body.filter || month;
 
         let query;
         if (filter) {
+            const filterMonth = isNaN(filter) ? month : parseInt(filter);
             query = {
                 $or: [
                     {
                         $expr: {
-                            $eq: [{ $month: "$dateOfBirth" }, isNaN(filter) ? null : filter],
+                            $eq: [{ $month: "$dateOfBirth" }, filterMonth],
                         },
                     },
                 ],
@@ -349,7 +348,7 @@ const getUserByBirthDayMonth = asyncHandler(async (req, res) => {
                     dayOfMonth: { $dayOfMonth: "$dateOfBirth" }
                 }
             },
-            { $sort: { dayOfMonth: sortOrder } },
+            { $sort: { dayOfMonth: 1 } },
             { $skip: skip },
             { $limit: limit },
             { $lookup: { from: "departments", localField: "department", foreignField: "_id", as: "department" } },

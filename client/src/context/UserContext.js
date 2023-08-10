@@ -41,13 +41,13 @@ const UserProvider = ({ children }) => {
     }
 
     //get All Users
-    const getAllUsersByBirthMonth = async (page, limit, query, sortField, sortOrder) => {
+    const getAllUsersByBirthMonth = async (page, limit, query) => {
         try {
             let res;
             if (query) {
-                res = await axios.post(`/user/getUserByBirthDayMonth-search`, { filter: query }, { params: { page, limit, sortField, sortOrder }, headers: headers });
+                res = await axios.post(`/user/getUserByBirthDayMonth-search`, { filter: query }, { params: { page, limit }, headers: headers });
             } else {
-                res = await axios.get(`/user/getUserByBirthDayMonth`, { params: { page, limit, sortField, sortOrder } }, { headers });
+                res = await axios.get(`/user/getUserByBirthDayMonth`, { params: { page, limit } }, { headers });
             }
             if (res.data.error === false) {
                 return res.data

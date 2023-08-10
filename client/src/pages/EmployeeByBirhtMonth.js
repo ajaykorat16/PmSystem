@@ -3,7 +3,6 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { useUser } from "../context/UserContext";
 import Loader from "../components/Loader";
-import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import Layout from "./Layout";
 import { Button } from "primereact/button";
@@ -20,8 +19,6 @@ const EmployeeByBirthMonth = ({ title }) => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [globalFilterValue, setGlobalFilterValue] = useState("");
   const [visible, setVisible] = useState(false);
-  const [sortField, setSortField] = useState("dateOfBirth");
-  const [sortOrder, setSortOrder] = useState(1);
   const [photo, setPhoto] = useState("");
   const [phone, setPhone] = useState("")
   const [fullName, setFullName] = useState()
@@ -31,24 +28,20 @@ const EmployeeByBirthMonth = ({ title }) => {
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [dateOfJoining, setDateOfJoining] = useState("");
 
-  const fetchUsers = async (query, sortField, sortOrder) => {
+  const fetchUsers = async (query) => {
     setIsLoading(true);
     let usertData
     if (!query) {
       usertData = await getAllUsersByBirthMonth(
         currentPage,
-        rowsPerPage,
-        sortField,
-        sortOrder
+        rowsPerPage
       );
     } else {
       let month = parseInt(query, 10);
       usertData = await getAllUsersByBirthMonth(
         currentPage,
         rowsPerPage,
-        month,
-        sortField,
-        sortOrder
+        month
       );
     }
 
@@ -57,20 +50,9 @@ const EmployeeByBirthMonth = ({ title }) => {
     setUserList(usertData.users);
     setIsLoading(false);
   };
-
   useEffect(() => {
-    fetchUsers();
-  }, [currentPage, rowsPerPage]);
-
-  const handleSubmit = async () => {
     fetchUsers(globalFilterValue);
-  };
-
-  useEffect(() => {
-    if (globalFilterValue.trim() === "") {
-      fetchUsers();
-    }
-  }, [globalFilterValue, currentPage, rowsPerPage]);
+  }, [currentPage, rowsPerPage, globalFilterValue]);
 
   useEffect(() => {
     const currentDate = new Date();
@@ -84,14 +66,6 @@ const EmployeeByBirthMonth = ({ title }) => {
     setCurrentPage(currentPage);
     const newRowsPerPage = event.rows;
     setRowsPerPage(newRowsPerPage);
-  };
-
-  const hanldeSorting = async (e) => {
-    const field = e.sortField;
-    const order = e.sortOrder;
-    setSortField(field);
-    setSortOrder(order);
-    fetchUsers(null, field, order);
   };
 
   const handleViewEmployeeProfile = async (user) => {
@@ -199,9 +173,6 @@ const EmployeeByBirthMonth = ({ title }) => {
               totalRecords={totalRecords}
               lazy
               paginator
-              sortField={sortField}
-              sortOrder={sortOrder}
-              onSort={hanldeSorting}
               rows={rowsPerPage}
               value={userList}
               first={(currentPage - 1) * rowsPerPage}
