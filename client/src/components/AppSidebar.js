@@ -1,17 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-
 import { CNavLink, CSidebar, CSidebarBrand, CSidebarNav, CSidebarToggler } from '@coreui/react'
-
 import { AppSidebarNav } from './AppSidebarNav'
-
 import SimpleBar from 'simplebar-react'
-import 'simplebar/dist/simplebar.min.css'
-
 import { useAuth } from '../context/AuthContext'
 import adminNavigatiion from './AdminNav'
 import userNavigation from './UserNav'
 import { NavLink } from 'react-router-dom'
+import 'simplebar/dist/simplebar.min.css'
 
 const AppSidebar = () => {
   const dispatch = useDispatch()

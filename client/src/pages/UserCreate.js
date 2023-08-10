@@ -7,8 +7,6 @@ import { useDepartment } from '../context/DepartmentContext';
 import Layout from './Layout';
 import toast from "react-hot-toast"
 
-
-
 const UserCreate = ({ title }) => {
     const [employeeNumber, setEmployeeNumber] = useState("")
     const [firstname, setFirstname] = useState("")

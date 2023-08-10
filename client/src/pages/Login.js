@@ -16,9 +16,7 @@ import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import {Toaster} from "react-hot-toast"
-
-
+import { Toaster } from "react-hot-toast"
 
 const Login = () => {
     const [email, setEmail] = useState("jasminkorat204@gmail.com");
@@ -26,7 +24,6 @@ const Login = () => {
     const { auth, login, isLoggedIn } = useAuth()
     const navigate = useNavigate()
     const location = useLocation()
-
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -36,12 +33,12 @@ const Login = () => {
             console.log(error)
         }
     }
+
     useEffect(() => {
         if (isLoggedIn) {
             navigate('/')
         }
-    }, [isLoggedIn,handleSubmit])
-
+    }, [isLoggedIn, handleSubmit])
 
     useEffect(() => {
         if (auth?.token) {
@@ -49,12 +46,10 @@ const Login = () => {
         }
     }, [auth?.token, navigate, isLoggedIn])
 
-
-
     return (
         <div className="bg-light min-vh-100 d-flex flex-row align-items-center">
             <CContainer>
-                <Toaster/>
+                <Toaster />
                 <CRow className="justify-content-center">
                     <CCol md={5}>
                         <CCardGroup>

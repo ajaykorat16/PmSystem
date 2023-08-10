@@ -15,8 +15,6 @@ import toast from "react-hot-toast"
 import { useUser } from '../context/UserContext'
 import Layout from './Layout'
 
-
-
 const Login = ({ title }) => {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");

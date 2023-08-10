@@ -37,6 +37,7 @@ const UserList = ({ title }) => {
     setUserList(usertData.users);
     setIsLoading(false);
   };
+
   useEffect(() => {
     fetchUsers();
   }, [currentPage, rowsPerPage]);
@@ -60,6 +61,7 @@ const UserList = ({ title }) => {
       fetchUsers();
     }
   };
+  
   const handleUpdate = async (id) => {
     navigate(`/dashboard/user/update/${id}`);
   };
