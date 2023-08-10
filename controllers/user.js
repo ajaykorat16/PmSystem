@@ -228,6 +228,7 @@ const getUsers = asyncHandler(async (req, res) => {
     const sortField = req.query.sortField || 'createdAt';
     const sortOrder = req.query.sortOrder || -1
     const { filter } = req.body;
+    const authUser = req.user
 
     try {
         let query = {};
@@ -275,7 +276,16 @@ const getUsers = asyncHandler(async (req, res) => {
         const totalUsers = await Users.countDocuments(query);
         const skip = (page - 1) * limit;
 
-        const users = await Users.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate("department").lean();
+        let users
+        if(authUser.role === 'user'){
+            users = await Users.find({
+                ...query,
+                role: "user" 
+              }).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate("department").lean();
+        }else{
+            users = await Users.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate("department").lean();
+        }
+
         const formattedUsers = users.map((user) => {
             const photoUrl = user.photo && user.photo.contentType
                 ? `data:${user.photo.contentType};base64,${user.photo.data.toString("base64")}`

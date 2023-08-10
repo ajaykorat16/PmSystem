@@ -40,6 +40,23 @@ const UserProvider = ({ children }) => {
         }
     }
 
+    //get All Employee
+    const getAllEmployee = async (page, limit, query, sortField, sortOrder) => {
+        try {
+            let res;
+            if (query) {
+                res = await axios.post(`/user/user-search`, { filter: query }, { params: { page, limit, sortField, sortOrder }, headers: headers });
+            } else {
+                res = await axios.get(`/user/employeeList`, { params: { page, limit, sortField, sortOrder } }, { headers });
+            }
+            if (res.data.error === false) {
+                return res.data
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     //add user
     const createUser = async (addUser) => {
         try {
@@ -174,7 +191,7 @@ const UserProvider = ({ children }) => {
     }
 
     return (
-        <UserContext.Provider value={{ fetchUsers, createUser, updateUser, deleteUser, getUserProfile, updateProfile, resetPassword, getAllUsers }}>
+        <UserContext.Provider value={{ fetchUsers, createUser, updateUser, deleteUser, getUserProfile, updateProfile, resetPassword, getAllUsers, getAllEmployee }}>
             {children}
         </UserContext.Provider>
     );

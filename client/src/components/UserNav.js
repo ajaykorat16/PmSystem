@@ -19,6 +19,19 @@ const _nav = [
         component: CNavItem,
         name: 'Create Leave',
         to: '/dashboard-user/leave/create',
+      }
+    ],
+  },
+  {
+    component: CNavGroup,
+    name: 'Employee',
+    to: '/employee',
+    icon: <CIcon icon={cilNotes} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'Employee List',
+        to: '/dashboard-user/employee/list',
       },
     ],
   },
