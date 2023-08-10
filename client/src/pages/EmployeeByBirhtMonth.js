@@ -241,12 +241,6 @@ const EmployeeByBirthMonth = ({ title }) => {
                 align="center"
               />
               <Column
-                field="dateOfJoining"
-                header="DOJ"
-                filterField="dateOfJoining"
-                align="center"
-              />
-              <Column
                 field="department"
                 header="Department"
                 filterField="department"
