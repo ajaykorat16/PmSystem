@@ -142,6 +142,7 @@ const updateUser = asyncHandler(async (req, res) => {
         const { photo } = req.files;
         const { id } = req.params;
         let user;
+        // const project = ["64d4d93ddcb30a582e4f342c"]
 
         if (id) {
             user = await Users.findById(id);
@@ -178,17 +179,18 @@ const updateUser = asyncHandler(async (req, res) => {
             };
         }
 
-        if (project) {
-            const existingProject = user.projects.find(p => p.id.toString() === project[0]);
-            console.log(project);
-            if (!existingProject) {
-                user.projects.push({ id: new mongoose.Types.ObjectId(project) });
+        if (project && Array.isArray(project)) {
+            const newProjectIds = project.map(p => new mongoose.Types.ObjectId(p));
+            const newProjects = newProjectIds.filter(newId =>
+                !user.projects.some(existingProject => existingProject.id.equals(newId))
+            );
+            if (newProjects.length > 0) {
+                newProjects.forEach(newId => user.projects.push({ id: newId }));
                 updatedFields.projects = user.projects;
             }
         }
 
         const updateUser = await Users.findByIdAndUpdate(user._id, updatedFields, { new: true });
-
         return res.status(201).send({
             error: false,
             message: "Profile Updated Successfully !!",

@@ -114,49 +114,60 @@ const getUserProjects = asyncHandler(async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const sortField = req.query.sortField || 'createdAt';
-        const sortOrder = req.query.sortOrder || -1
-        const userId = req.user._id
+        const sortOrder = req.query.sortOrder || -1;
+        const userId = req.user._id;
+        const { filter } = req.body;
 
-        let userProjects = []
+        let query = { 'developers.id': userId };
 
-        const user = await Users.findById({ _id: userId }).select("-photo")
-        for (const project of user.projects) {
-            const projectId = project.id
-            const projects = await Projects.findById({ _id: projectId }).lean()
-            userProjects.push(projects)
+        if (filter) {
+            function isValidDate(filter) {
+                const dateRegex = /^(0?[1-9]|[1-2]\d|3[0-1])-(0?[1-9]|1[0-2])-\d{4}$/;
+                return dateRegex.test(filter);
+            }
+
+            let dateSearch;
+            if (typeof filter === "string" && isValidDate(filter)) {
+                dateSearch = new Date(filter.split("-").reverse().join("-"));
+            } else {
+                dateSearch = null;
+            }
+
+            query.$or = [
+                { name: { $regex: filter, $options: "i" } },
+                { description: { $regex: filter, $options: "i" } },
+                { $expr: { $eq: [{ $month: "$startDate" }, isNaN(filter) ? null : filter] } },
+                { $expr: { $eq: [{ $year: "$startDate" }, isNaN(filter) ? null : filter] } },
+                { startDate: { $eq: dateSearch } }
+            ]
         }
 
-        const formatteProject = userProjects.map((project) => {
-            return {
-                ...project,
-                startDate: formattedDate(project.startDate),
-            };
-        });
+        const totalProjectsCount = await Projects.countDocuments(query);
 
-        const startIndex = (page - 1) * limit;
-        const endIndex = startIndex + limit;
-        const paginatedProjects = formatteProject.slice(startIndex, endIndex);
-        paginatedProjects.sort((a, b) => {
-            if (sortOrder === 'asc') {
-                return a[sortField] > b[sortField] ? 1 : -1;
-            } else {
-                return a[sortField] < b[sortField] ? 1 : -1;
-            }
-        });
+        const matchingProjects = await Projects.find(query)
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .sort({ [sortField]: sortOrder })
+            .lean();
+
+        const formattedProjects = matchingProjects.map((project) => ({
+            ...project,
+            startDate: formattedDate(project.startDate),
+        }));
 
         return res.status(200).json({
             error: false,
-            message: "Project retrieved successfully",
-            projects: paginatedProjects,
+            message: "Projects retrieved successfully",
+            projects: formattedProjects,
             currentPage: page,
-            totalPages: Math.ceil(userProjects.length / limit),
-            totalProjects: userProjects.length,
+            totalPages: Math.ceil(totalProjectsCount / limit),
+            totalProjects: totalProjectsCount,
         });
     } catch (error) {
         console.error(error.message);
         res.status(500).send('Server error');
     }
-})
+});
 
 const updateProject = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
@@ -200,6 +211,23 @@ const updateProject = asyncHandler(async (req, res) => {
     }
 });
 
+const getSingleProject = asyncHandler(async (req, res) => {
+    try {
+        const { id } = req.params
+        const project = await Projects.findById(id)
+        return res.status(200).json({
+            error: false,
+            message: "Single project get successfully.",
+            project
+        })
+
+
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send('Server error');
+    }
+})
+
 const delelteProject = asyncHandler(async (req, res) => {
     try {
         const { id } = req.params
@@ -210,7 +238,7 @@ const delelteProject = asyncHandler(async (req, res) => {
                 { $pull: { projects: { id: id } } }
             );
         }
-        return res.status(501).json({
+        return res.status(200).json({
             error: false,
             message: "Delete Project Successfully"
         })
@@ -220,4 +248,4 @@ const delelteProject = asyncHandler(async (req, res) => {
     }
 })
 
-module.exports = { createProject, getProjects, getUserProjects, updateProject, delelteProject };
+module.exports = { createProject, getProjects, getUserProjects, updateProject, delelteProject, getSingleProject };
