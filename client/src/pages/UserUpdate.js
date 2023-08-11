@@ -1,5 +1,6 @@
 import React from 'react'
 import { CForm, CCol, CFormInput, CFormSelect, CButton, CRow, CFormTextarea } from '@coreui/react';
+import { MultiSelect } from 'primereact/multiselect';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom'
 import { useUser } from '../context/UserContext';
@@ -29,6 +30,14 @@ const UserUpdate = ({ title }) => {
     const [departmentsList, setDepartmentsList] = useState([]);
     const navigate = useNavigate();
     const params = useParams();
+    const [selectedCities, setSelectedCities] = useState(null);
+    const cities = [
+        { name: 'New York', code: 'NY' },
+        { name: 'Rome', code: 'RM' },
+        { name: 'London', code: 'LDN' },
+        { name: 'Istanbul', code: 'IST' },
+        { name: 'Paris', code: 'PRS' }
+    ]
 
     useEffect(() => {
         const fetchData = async () => {
@@ -215,7 +224,7 @@ const UserUpdate = ({ title }) => {
                             onChange={(e) => setDateOfBirth(e.target.value)}
                         />
                     </CCol>
-                    <CCol xs={12}>
+                    <CCol xs={6}>
                         <CFormInput
                             type="file"
                             className="form-control"
@@ -226,6 +235,20 @@ const UserUpdate = ({ title }) => {
                             aria-label="Upload"
                             onChange={handlePhoto}
                         />
+                    </CCol>
+                    <CCol xs={6}>   
+                        <label htmlFor="projectSelect" className="form-label">Project</label>  
+                            <MultiSelect 
+                                value={selectedCities} 
+                                onChange={(e) => setSelectedCities(e.value)} 
+                                options={cities}
+                                size={6}
+                                style={{border:"1px solid var(--cui-input-border-color, #b1b7c1)", borderRadius:"6px"}}
+                                optionLabel="name" 
+                                placeholder="Select Cities" 
+                                id="projectSelect"
+                                className="form-control"
+                            />
                     </CCol>
                     <CCol xs={12}>
                         <CButton type="submit" className="me-md-2">

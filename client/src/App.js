@@ -22,6 +22,8 @@ import "primeicons/primeicons.css";
 import LeaveManagementList from './pages/LeavemanagementList';
 import EmployeeList from './pages/EmployeeList';
 import EmployeeByBirthMonth from './pages/EmployeeByBirhtMonth';
+import ProjectCreate from './pages/ProjectCreate';
+import ProjectList from './pages/ProjectList';
 
 function App() {
   return (
@@ -43,6 +45,8 @@ function App() {
           <Route path="department/list" element={<DepartmentList title="Department List" />} />
           <Route path="department/create" element={<DepartmentCreate title="Create Department" />} />
           <Route path="department/update/:id" element={<DepartmentUpdate title="Deaprtment Update" />} />
+          <Route path="project/create" element={<ProjectCreate title="Create Project "/>} />
+          <Route path="project/list" element={<ProjectList title="Project List" />} />
         </Route>
         <Route path='/dashboard-user' element={<UserRoutes />}>
           <Route path="leave/list" element={<LeaveList title="Leave List" />} />

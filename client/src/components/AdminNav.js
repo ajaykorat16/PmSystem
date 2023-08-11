@@ -3,6 +3,7 @@ import CIcon from '@coreui/icons-react'
 import {
   cilDescription,
   cilNotes,
+  cilSpreadsheet,
   cilUser,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem } from '@coreui/react'
@@ -70,6 +71,24 @@ const _nav = [
         component: CNavItem,
         name: 'Create Department',
         to: '/dashboard/department/create',
+      },
+    ],
+  },
+  {
+    component: CNavGroup,
+    name: 'Project',
+    to: '/user',
+    icon: <CIcon icon={cilSpreadsheet} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'Project List',
+        to: '/dashboard/project/list',
+      },
+      {
+        component: CNavItem,
+        name: 'Create Project',
+        to: '/dashboard/project/create',
       },
     ],
   },
