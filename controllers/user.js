@@ -9,6 +9,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const asyncHandler = require('express-async-handler');
 const LeaveManagement = require("../models/leaveManagementModel");
+const Projects = require("../models/projects");
 const saltRounds = 10
 
 const hashPassword = async (password) => {
@@ -216,7 +217,11 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
 
         await Users.findByIdAndDelete({ _id: id })
         await LeaveManagement.deleteMany({ user: id })
-
+        await Projects.updateMany(
+            { 'developers.id': id },
+            { $pull: { developers: { id } } } 
+        );
+        
         const userLeave = await Leaves.findOne({ userId: id });
         if (userLeave) {
             await Leaves.deleteMany({ userId: userLeave.userId });

@@ -19,6 +19,8 @@ router.post("/project-search", auth, isAdmin, getProjects)
 
 router.get("/developer-project-list", auth, getUserProjects)
 
+router.post("/search-project-list", auth, getUserProjects)
+
 router.put("/update-project/:id", auth, isAdmin, updateProject)
 
 router.delete("/delete-project/:id", auth, isAdmin, delelteProject)
