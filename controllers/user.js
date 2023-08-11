@@ -1,6 +1,7 @@
 const Users = require("../models/userModel")
 const Leaves = require("../models/leaveModel")
 const Department = require("../models/departmentModel")
+const mongoose = require("mongoose");
 const { validationResult } = require('express-validator');
 const { formattedDate } = require("../helper/mail")
 const fs = require("fs")
@@ -137,22 +138,23 @@ const updateUser = asyncHandler(async (req, res) => {
         return res.status(400).json({ errors: errors.array() });
     }
     try {
-        const { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining } = req.fields;
+        const { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining, project } = req.fields;
         const { photo } = req.files;
         const { id } = req.params;
         let user;
+
         if (id) {
             user = await Users.findById(id);
         } else {
             user = await Users.findById(req.user._id);
         }
 
-        const existingPhone = await Users.findOne({ phone, _id: { $ne: user._id } })
+        const existingPhone = await Users.findOne({ phone, _id: { $ne: user._id } });
         if (existingPhone !== null) {
             return res.status(200).json({
                 error: true,
                 message: "Phone Number should be unique"
-            })
+            });
         }
 
         const updatedFields = {
@@ -176,17 +178,28 @@ const updateUser = asyncHandler(async (req, res) => {
             };
         }
 
+        if (project) {
+            const existingProject = user.projects.find(p => p.id.toString() === project[0]);
+            console.log(project);
+            if (!existingProject) {
+                user.projects.push({ id: new mongoose.Types.ObjectId(project) });
+                updatedFields.projects = user.projects;
+            }
+        }
+
         const updateUser = await Users.findByIdAndUpdate(user._id, updatedFields, { new: true });
+
         return res.status(201).send({
             error: false,
             message: "Profile Updated Successfully !!",
             updateUser
         });
     } catch (error) {
-        console.log(error.message)
+        console.log(error.message);
         res.status(500).send('Server error');
     }
-})
+});
+
 
 const deleteUserProfile = asyncHandler(async (req, res) => {
     try {

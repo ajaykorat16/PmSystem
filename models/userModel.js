@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-    employeeNumber:{
+    employeeNumber: {
         type: Number,
         required: true,
         unique: true,
@@ -76,7 +76,15 @@ const userSchema = new mongoose.Schema({
     carryForward: {
         type: Number,
         default: 0
-    }
+    },
+    projects: [
+        {
+            id: {
+                type: mongoose.ObjectId,
+                ref: "Project"
+            }
+        }
+    ]
 }, {
     timestamps: true,
 });

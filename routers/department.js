@@ -19,5 +19,4 @@ router.put("/updateDepartment/:id",auth, isAdmin, updateDepartment)
 
 router.delete("/deleteDepartment/:id",auth, isAdmin, deleteDepartment)
 
-
 module.exports = router
