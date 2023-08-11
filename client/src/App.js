@@ -24,6 +24,8 @@ import EmployeeList from './pages/EmployeeList';
 import EmployeeByBirthMonth from './pages/EmployeeByBirhtMonth';
 import ProjectCreate from './pages/ProjectCreate';
 import ProjectList from './pages/ProjectList';
+import ProjectUpdate from './pages/ProjectUpdate';
+import UserProjects from './pages/UserProjects';
 
 function App() {
   return (
@@ -45,8 +47,9 @@ function App() {
           <Route path="department/list" element={<DepartmentList title="Department List" />} />
           <Route path="department/create" element={<DepartmentCreate title="Create Department" />} />
           <Route path="department/update/:id" element={<DepartmentUpdate title="Deaprtment Update" />} />
-          <Route path="project/create" element={<ProjectCreate title="Create Project "/>} />
           <Route path="project/list" element={<ProjectList title="Project List" />} />
+          <Route path="project/create" element={<ProjectCreate title="Create Project "/>} />
+          <Route path="project/update/:id" element={<ProjectUpdate title="Update Project" />} />
         </Route>
         <Route path='/dashboard-user' element={<UserRoutes />}>
           <Route path="leave/list" element={<LeaveList title="Leave List" />} />
@@ -55,6 +58,7 @@ function App() {
           <Route path="leave/create" element={<LeaveCreate title="Leave Create" />} />
           <Route path="user/user-profile/:id" element={<UserProfile title="Profile" />} />
           <Route path="user/resetPassword" element={<ResetPassword title="Reset Password" />} />
+          <Route path="project/list" element={<UserProjects title="Your Projects" />} />
         </Route>
       </Routes>
     </>

@@ -40,6 +40,19 @@ const _nav = [
       },
     ],
   },
+  {
+    component: CNavGroup,
+    name: 'Projects',
+    to: '/project',
+    icon: <CIcon icon={cilNotes} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'Your Project',
+        to: '/dashboard-user/project/list',
+      }
+    ],
+  },
 ]
 
 export default _nav

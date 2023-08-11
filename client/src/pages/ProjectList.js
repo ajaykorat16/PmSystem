@@ -7,7 +7,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
-
+import { useNavigate } from 'react-router-dom';
 
 const ProjectList = ({title}) => {
     const {getProject, deleteProject} = useProject()
@@ -19,6 +19,7 @@ const ProjectList = ({title}) => {
     const [globalFilterValue, setGlobalFilterValue] = useState("");
     const [sortField, setSortField] = useState("createdAt");
     const [sortOrder, setSortOrder] = useState(-1);
+    const navigate = useNavigate()
     
     const fetchProjects = async (query, sortField, sortOrder) => {
         setIsLoading(true);
@@ -58,9 +59,9 @@ const ProjectList = ({title}) => {
         }
     };
       
-    // const handleUpdate = async (id) => {
-    //     navigate(`/dashboard/user/update/${id}`);
-    // };
+    const handleUpdate = async (id) => {
+        navigate(`/dashboard/project/update/${id}`);
+    };
     
     const onPageChange = (event) => {
         const currentPage = Math.floor(event.first / event.rows) + 1;
@@ -128,13 +129,11 @@ const ProjectList = ({title}) => {
                 <Column
                     field="name"
                     header="Name"
-                    sortable
                     filterField="name"
                     align="center"
                 />
                 <Column
                     field="startDate"
-                    sortable
                     header="Start Date"
                     filterField="startDate"
                     align="center"
@@ -145,14 +144,21 @@ const ProjectList = ({title}) => {
                     body={(rowData) => (
                         <div>
                             <>
-                              <Button
-                                icon="pi pi-trash"
-                                rounded
-                                severity="danger"
-                                className="ms-2"
-                                aria-label="Cancel"
-                                onClick={() => handleDelete(rowData._id)}
-                              />
+                                <Button
+                                    icon="pi pi-pencil"
+                                    rounded
+                                    severity="success"
+                                    aria-label="edit"
+                                    onClick={() => handleUpdate(rowData._id)}
+                                />
+                                <Button
+                                    icon="pi pi-trash"
+                                    rounded
+                                    severity="danger"
+                                    className="ms-2"
+                                    aria-label="Cancel"
+                                    onClick={() => handleDelete(rowData._id)}
+                                />
                           </>
                         </div>
                     )}
