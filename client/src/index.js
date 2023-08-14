@@ -10,6 +10,7 @@ import { LeaveProvider } from './context/LeaveContext';
 import { DepartmentProvider } from './context/DepartmentContext';
 import { LeaveManagementProvider } from './context/LeaveManagementContext';
 import { ProjectProvider } from './context/ProjectContext';
+import { WorklogProvider } from './context/WorklogContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -18,17 +19,19 @@ root.render(
     <DepartmentProvider>
       <UserProvider>
         <ProjectProvider>
-          <LeaveProvider>
-            <LeaveManagementProvider>
-              <Provider store={store}>
-                <React.StrictMode>
-                  <BrowserRouter>
-                    <App />
-                  </BrowserRouter>
-                </React.StrictMode>
-              </Provider>
-            </LeaveManagementProvider>
-          </LeaveProvider>
+          <WorklogProvider>
+            <LeaveProvider>
+              <LeaveManagementProvider>
+                <Provider store={store}>
+                  <React.StrictMode>
+                    <BrowserRouter>
+                      <App />
+                    </BrowserRouter>
+                  </React.StrictMode>
+                </Provider>
+              </LeaveManagementProvider>
+            </LeaveProvider>
+          </WorklogProvider>
         </ProjectProvider>
       </UserProvider>
     </DepartmentProvider>

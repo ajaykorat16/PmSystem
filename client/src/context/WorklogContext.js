@@ -45,7 +45,7 @@ const WorklogProvider = ({ children }) => {
         try {
             const { project, description, logDate, time } = addWorkLog
 
-            const { data } = await axios.post("/projects/create", { project, description, logDate, time }, { headers });
+            const { data } = await axios.post("/worklog/create", { project, description, logDate, time }, { headers });
             if (data.error === false) {
                 getWorklog()
                 setTimeout(function () {
@@ -86,18 +86,18 @@ const WorklogProvider = ({ children }) => {
     //     }
     // }
 
-    // //delete project
-    // const deleteProject = async (id) => {
-    //     try {
-    //         const { data } = await axios.delete(`/projects/delete-project/${id}`, { headers });
-    //         if (data.error === false) {
-    //             getProject()
-    //             toast.success(data.message)
-    //         }
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
+    //delete project
+    const deleteWorklog = async (id) => {
+        try {
+            const { data } = await axios.delete(`/worklog/delete-worklog/${id}`, { headers });
+            if (data.error === false) {
+                getWorklog()
+                toast.success(data.message)
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     // //users project
     // const userProject = async (page, limit, query, sortField, sortOrder) => {
@@ -117,7 +117,7 @@ const WorklogProvider = ({ children }) => {
     // }
 
     return (
-        <WorklogContext.Provider value={{ getWorklog, createWorkLog }}>
+        <WorklogContext.Provider value={{ getWorklog, createWorkLog, deleteWorklog }}>
             {children}
         </WorklogContext.Provider>
     );

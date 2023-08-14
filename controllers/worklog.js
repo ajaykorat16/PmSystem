@@ -45,9 +45,42 @@ const userGetWorklog = asyncHandler(async (req, res) => {
     }
 
     try {
-        const userId = req.user._id
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const sortField = req.query.sortField || 'createdAt';
+        const sortOrder = req.query.sortOrder || -1;
+        const userId = req.user._id;
+        const { filter } = req.body;
 
-        const worklog = await Worklog.find({ userId: userId }).populate({ path: "project", select: "name" }).lean();
+        let query = { userId: userId };
+
+        if (filter) {
+            function isValidDate(filter) {
+                const dateRegex = /^(0?[1-9]|[1-2]\d|3[0-1])-(0?[1-9]|1[0-2])-\d{4}$/;
+                return dateRegex.test(filter);
+            }
+
+            let dateSearch = null;
+            if (typeof filter === "string" && isValidDate(filter)) {
+                dateSearch = new Date(filter.split("-").reverse().join("-"));
+            }
+
+            let projects = [];
+            let searchProjects = await Projects.find({ name: { $regex: filter, $options: 'i' } });
+            if (searchProjects.length !== 0) {
+                projects = searchProjects.map((d) => d._id);
+            }
+
+            query.$or = [
+                { description: { $regex: filter, $options: "i" } },
+                { project: { $in: projects } },
+                { logDate: dateSearch },
+            ];
+        }
+
+        const totalWorklogCount = await Worklog.countDocuments(query);
+
+        const worklog = await Worklog.find(query).populate({ path: "project", select: "name" }).skip((page - 1) * limit).limit(limit).sort({ [sortField]: sortOrder }).lean();
         const formatteWorklog = worklog.map((log) => {
             return {
                 ...log,
@@ -57,7 +90,10 @@ const userGetWorklog = asyncHandler(async (req, res) => {
         return res.status(200).json({
             error: false,
             message: "Worklog get successfully",
-            worklog: formatteWorklog
+            worklog: formatteWorklog,
+            currentPage: page,
+            totalPages: Math.ceil(totalWorklogCount / limit),
+            totalWorklog: totalWorklogCount,
         });
 
     } catch (error) {
