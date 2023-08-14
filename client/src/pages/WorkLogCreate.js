@@ -32,14 +32,13 @@ const WorkLogCreate = ({title}) => {
           if (data.error) {
             toast.error(data.message)
           } else {
-            navigate('/dashboard-user/workLog/create')
-            console.log("data", data);
+            navigate('/dashboard-user/workLog/list')
           }
         } catch (error) {
             console.log(error)
         }
     }
-console.log(selectproject);
+
     return (
         <Layout title={title}>
             <div className="mb-3">
