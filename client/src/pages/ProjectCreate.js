@@ -26,7 +26,6 @@ const ProjectCreate = ({ title }) => {
         toast.error(data.message)
       } else {
         navigate('/dashboard/project/list')
-        console.log(developers);
       }
     } catch (error) {
         console.log(error.message)
