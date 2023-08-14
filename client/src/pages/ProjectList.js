@@ -133,10 +133,15 @@ const ProjectList = ({title}) => {
                 align="center"
               />
               <Column
-                field="developers.id.fullName"
                 header="Developers"
-                filterField="name"
+                body={(rowData) => {
+                  const developerNames = rowData.developers.map(
+                    (developer) => developer.id.fullName
+                  );
+                  return developerNames.join(', ');
+                }}
                 align="center"
+                style={{maxWidth: "15rem"}}
               />
               <Column
                 field="startDate"

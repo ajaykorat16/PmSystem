@@ -27,6 +27,7 @@ import ProjectList from './pages/ProjectList';
 import ProjectUpdate from './pages/ProjectUpdate';
 import UserProjects from './pages/UserProjects';
 import WorkLogCreate from './pages/WorkLogCreate';
+import UserWorkLogList from './pages/UserWorkLogList';
 
 function App() {
   return (
@@ -61,6 +62,7 @@ function App() {
           <Route path="user/resetPassword" element={<ResetPassword title="Reset Password" />} />
           <Route path="project/list" element={<UserProjects title="Your Projects" />} />
           <Route path="workLog/create" element={<WorkLogCreate title="Work Log Create"/>}/>
+          <Route path="workLog/list" element={<UserWorkLogList title="Work Log List"/>}/>
         </Route>
       </Routes>
     </>

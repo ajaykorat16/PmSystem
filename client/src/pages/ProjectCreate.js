@@ -30,7 +30,7 @@ const ProjectCreate = ({ title }) => {
     } catch (error) {
         console.log(error.message)
     }
-}
+  }
 
   const getUsers = async () => {
     const { getAllUsers } = await fetchUsers();
