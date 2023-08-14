@@ -32,7 +32,7 @@ const UserWorkLogList = ({ title }) => {
       sortField,
       sortOrder
     );
-    const totalRecordsCount = worklogData.totalUsers;
+    const totalRecordsCount = worklogData.totalWorklog;
     setTotalRecords(totalRecordsCount);
     setWorklogList(worklogData.worklog);
     setIsLoading(false);
@@ -63,7 +63,7 @@ const UserWorkLogList = ({ title }) => {
   };
 
   const handleUpdate = async (id) => {
-    navigate(`/dashboard/user/update/${id}`);
+    navigate(`/dashboard-user/workLog/update/${id}`);
   };
 
   const onPageChange = (event) => {
@@ -134,6 +134,13 @@ const UserWorkLogList = ({ title }) => {
                 sortable
                 filterField="Project"
                 align="center"
+              />
+               <Column
+                field="description"
+                header="Description"
+                filterField="description"
+                alignHeader="center"
+                style={{ minWidth: "15rem", maxWidth: "15rem" }}
               />
               <Column
                 field="logDate"
