@@ -33,6 +33,7 @@ const ProjectProvider = ({ children }) => {
                 res = await axios.get(`/projects`, { params: { page, limit, sortField, sortOrder } }, { headers });
             }
             if (res.data.error === false) {
+                console.log(res.data);
                 return res.data
             }
         } catch (error) {

@@ -53,6 +53,24 @@ const _nav = [
       }
     ],
   },
+  {
+    component: CNavGroup,
+    name: 'Work Log',
+    to: '/workLog',
+    icon: <CIcon icon={cilNotes} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'Your Work Log',
+        to: '/dashboard-user/workLog/list',
+      },
+      {
+        component: CNavItem,
+        name: 'Create Work Log',
+        to: '/dashboard-user/workLog/create',
+      }
+    ],
+  },
 ]
 
 export default _nav

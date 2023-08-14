@@ -111,7 +111,10 @@ const getProjects = asyncHandler(async (req, res) => {
         const totalProjects = await Projects.countDocuments(query);
         const skip = (page - 1) * limit;
 
-        let projects = await Projects.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).lean();
+        let projects = await Projects.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate({
+            path: 'developers.id',
+            select: 'fullName', 
+        }).lean();
         const formatteProject = projects.map((project) => {
             return {
                 ...project,

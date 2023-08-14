@@ -5,7 +5,7 @@ const { auth, isAdmin } = require("../middleware/auth")
 
 const { createProject, getAllProjects, getProjects, getUserProjects, updateProject, delelteProject, getSingleProject } = require("../controllers/projects")
 
-router.get("/project-list", auth, isAdmin, getAllProjects)
+router.get("/project-list", auth, getAllProjects)
 
 router.post("/create",
     check('name', 'Project name is required').notEmpty(),
