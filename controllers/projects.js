@@ -202,9 +202,6 @@ const updateProject = asyncHandler(async (req, res) => {
     try {
         const { name, description, startDate, developers } = req.body;
         const { id } = req.params;
-        // let developersArr = JSON.parse(developers)
-
-        console.log("developers", developers);
 
         const existingProject = await Projects.findById(id);
         if (!existingProject) {
@@ -223,21 +220,19 @@ const updateProject = asyncHandler(async (req, res) => {
 
         if (developers && Array.isArray(developers)) {
             const newdevelopersIds = developers.map((p) => { return { id: new mongoose.Types.ObjectId(p) } });
-            console.log("newdevelopersIds", newdevelopersIds);
             projectObj.developers = newdevelopersIds;
         }
 
         const updatedProject = await Projects.findByIdAndUpdate(id, projectObj, { new: true });
 
         for (const developerId of existingProject.developers) {
-            console.log("remove developerId", developers);
-            // await Users.findByIdAndUpdate(developerId, { $pull: { projects: { id: id } } });
+            await Users.findByIdAndUpdate(developerId.id, { $pull: { projects: { id: id } } });
         }
 
         for (const developerId of developers) {
-            console.log("add developerId", developers);
-            // await Users.findByIdAndUpdate(developerId, { $addToSet: { projects: { id: id } } });
+            await Users.findByIdAndUpdate(developerId, { $addToSet: { projects: { id: id } } });
         }
+        
         return res.status(200).json({
             error: false,
             message: "Project updated successfully",

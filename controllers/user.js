@@ -185,6 +185,14 @@ const updateUser = asyncHandler(async (req, res) => {
         }
 
         const updateUser = await Users.findByIdAndUpdate(user._id, updatedFields, { new: true });
+
+        for (const projectsId of user.projects) {
+            await Projects.findByIdAndUpdate(projectsId.id, { $pull: { developers: { id: id } } });
+        }
+
+        for (const projectsId of projectArr) {
+            await Projects.findByIdAndUpdate(projectsId, { $addToSet: { developers: { id: id } } });
+        }
         return res.status(201).send({
             error: false,
             message: "Profile Updated Successfully !!",
