@@ -11,8 +11,7 @@ const WorklogProvider = ({ children }) => {
         Authorization: auth?.token,
     };
 
-
-    //getProjects
+    //get worklog
     const getWorklog = async (page, limit, query, sortField, sortOrder) => {
         try {
             let res;
@@ -20,6 +19,23 @@ const WorklogProvider = ({ children }) => {
                 res = await axios.post(`/worklog/search-worklog?page=${page}&limit=${limit}`, { filter: query }, { headers });
             } else {
                 res = await axios.get(`/worklog/user-worklog`, { params: { page, limit, sortField, sortOrder } }, { headers });
+            }
+            if (res.data.error === false) {
+                return res.data
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    //get admin worklog
+    const getAdminWorklog = async (page, limit, query, sortField, sortOrder) => {
+        try {
+            let res;
+            if (query) {
+                res = await axios.post(`/worklog/search-worklog?page=${page}&limit=${limit}`, { filter: query }, { headers });
+            } else {
+                res = await axios.get(`/worklog`, { params: { page, limit, sortField, sortOrder } }, { headers });
             }
             if (res.data.error === false) {
                 console.log(res.data);
@@ -30,15 +46,15 @@ const WorklogProvider = ({ children }) => {
         }
     };
 
-    //get single project
-    // const getSingleProject = async (id) => {
-    //     try {
-    //         const { data } = await axios.get(`/projects/single-project/${id}`, { headers });
-    //         return data
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
+    // get single worklog
+    const getSingleWorklog = async (id) => {
+        try {
+            const { data } = await axios.get(`/worklog/single-worklog/${id}`, { headers });
+            return data
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     //add workLog
     const createWorkLog = async (addWorkLog) => {
@@ -68,23 +84,23 @@ const WorklogProvider = ({ children }) => {
         }
     }
 
-    // //update project
-    // const updateProject = async (project, id) => {
-    //     try {
-    //         let { name, description, startDate, developers } = project
+    //update project
+    const updateWorklog = async (worklog, id) => {
+        try {
+            let { project, description, logDate, time } = worklog
 
-    //         const { data } = await axios.put(`/projects/update-project/${id}`, { name, description, startDate, developers }, { headers });
-    //         if (data.error === false) {
-    //             getProject()
-    //             setTimeout(function () {
-    //                 toast.success(data.message)
-    //             }, 1000);
-    //         }
-    //         return data;
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
+            const { data } = await axios.put(`/worklog/update-worklog/${id}`, { project, description, logDate, time }, { headers });
+            if (data.error === false) {
+                getWorklog()
+                setTimeout(function () {
+                    toast.success(data.message)
+                }, 1000);
+            }
+            return data;
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     //delete project
     const deleteWorklog = async (id) => {
@@ -99,25 +115,8 @@ const WorklogProvider = ({ children }) => {
         }
     }
 
-    // //users project
-    // const userProject = async (page, limit, query, sortField, sortOrder) => {
-    //     try {
-    //         let res;
-    //         if (query) {
-    //             res = await axios.post(`/projects/search-project-list?page=${page}&limit=${limit}`, { filter: query }, { headers });
-    //         } else {
-    //             res = await axios.get(`/projects/developer-project-list`, { params: { page, limit, sortField, sortOrder } }, { headers });
-    //         }
-    //         if (res.data.error === false) {
-    //             return res.data
-    //         }
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
-
     return (
-        <WorklogContext.Provider value={{ getWorklog, createWorkLog, deleteWorklog }}>
+        <WorklogContext.Provider value={{ getWorklog, createWorkLog, deleteWorklog, getAdminWorklog, getSingleWorklog, updateWorklog }}>
             {children}
         </WorklogContext.Provider>
     );

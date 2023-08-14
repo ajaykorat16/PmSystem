@@ -28,6 +28,8 @@ import ProjectUpdate from './pages/ProjectUpdate';
 import UserProjects from './pages/UserProjects';
 import WorkLogCreate from './pages/WorkLogCreate';
 import UserWorkLogList from './pages/UserWorkLogList';
+import AdminWorkLogList from './pages/AdminWorkLogList';
+import UserWorkLogUpdate from './pages/UserWorkLogUpdate';
 
 function App() {
   return (
@@ -52,6 +54,7 @@ function App() {
           <Route path="project/list" element={<ProjectList title="Project List" />} />
           <Route path="project/create" element={<ProjectCreate title="Create Project "/>} />
           <Route path="project/update/:id" element={<ProjectUpdate title="Update Project" />} />
+          <Route path="workLog/list" element={<AdminWorkLogList title="Worklog List" />} />
         </Route>
         <Route path='/dashboard-user' element={<UserRoutes />}>
           <Route path="leave/list" element={<LeaveList title="Leave List" />} />
@@ -61,7 +64,8 @@ function App() {
           <Route path="user/user-profile/:id" element={<UserProfile title="Profile" />} />
           <Route path="user/resetPassword" element={<ResetPassword title="Reset Password" />} />
           <Route path="project/list" element={<UserProjects title="Your Projects" />} />
-          <Route path="workLog/create" element={<WorkLogCreate title="Work Log Create"/>}/>
+          <Route path="workLog/create" element={<WorkLogCreate title="Create Work Log "/>}/>
+          <Route path="workLog/update/:id" element={<UserWorkLogUpdate title= "Update Work Log" />}/>
           <Route path="workLog/list" element={<UserWorkLogList title="Work Log List"/>}/>
         </Route>
       </Routes>

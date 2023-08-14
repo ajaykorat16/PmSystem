@@ -102,24 +102,82 @@ const userGetWorklog = asyncHandler(async (req, res) => {
     }
 });
 
+async function generateWorklogQuery(filter) {
+    return new Promise(async (resolve, reject) => {
+        const query = {};
+
+        if (filter.project) {
+            let projects = [];
+            let searchProjects = await Projects.find({ name: { $regex: filter.project, $options: 'i' } });
+            if (searchProjects.length !== 0) {
+                projects = searchProjects.map((d) => d._id);
+            }
+            query.project = { $in: projects };
+        }
+
+        if (filter.userId) {
+            let users = [];
+            let searchUsers = await Users.find({ fullName: { $regex: filter.userId, $options: 'i' } });
+            if (searchUsers.length !== 0) {
+                users = searchUsers.map((d) => d._id);
+            }
+            query.userId = { $in: users };
+        }
+
+        if (filter.description) {
+            query.description = { $regex: filter.description, $options: "i" };
+        }
+
+        if (filter.logDate) {
+            const isValidDate = (dateStr) => {
+                const dateRegex = /^(0?[1-9]|[1-2]\d|3[0-1])-(0?[1-9]|1[0-2])-\d{4}$/;
+                return dateRegex.test(dateStr);
+            };
+
+            if (isValidDate(filter.logDate)) {
+                const dateSearch = new Date(filter.logDate.split("-").reverse().join("-"));
+                query.logDate = dateSearch;
+            }
+        }
+
+        resolve(query); 
+    });
+}
+
 const getAllWorklog = asyncHandler(async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
 
     try {
-        const worklog = await Worklog.find().populate({ path: "userId", select: "fullName" }).populate({ path: "project", select: "name" }).lean();
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const sortField = req.query.sortField || 'createdAt';
+        const sortOrder = req.query.sortOrder || -1;
+        const filter = req.body.filter;
+
+        let query = await generateWorklogQuery(filter);
+
+        const totalWorklogCount = await Worklog.countDocuments(query);
+        const worklog = await Worklog.find(query)
+            .populate({ path: "userId", select: "fullName" })
+            .populate({ path: "project", select: "name" })
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .sort({ [sortField]: sortOrder })
+            .lean();
+
         const formatteWorklog = worklog.map((log) => {
             return {
                 ...log,
                 logDate: formattedDate(log.logDate),
             };
         });
+
         return res.status(200).json({
             error: false,
             message: "Worklog get successfully",
-            worklog: formatteWorklog
+            worklog: formatteWorklog,
+            currentPage: page,
+            totalPages: Math.ceil(totalWorklogCount / limit),
+            totalWorklog: totalWorklogCount,
         });
 
     } catch (error) {
@@ -127,6 +185,7 @@ const getAllWorklog = asyncHandler(async (req, res) => {
         res.status(500).send('Server error');
     }
 });
+
 
 const getSingleWorklog = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
