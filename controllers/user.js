@@ -139,12 +139,11 @@ const updateUser = asyncHandler(async (req, res) => {
         return res.status(400).json({ errors: errors.array() });
     }
     try {
-        const { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining, project } = req.fields;
+        const { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining, projects } = req.fields;
         const { photo } = req.files;
         const { id } = req.params;
+        let projectArr = JSON.parse(projects)
         let user;
-        // const project = ["64d4d93ddcb30a582e4f342c"]
-
         if (id) {
             user = await Users.findById(id);
         } else {
@@ -170,7 +169,7 @@ const updateUser = asyncHandler(async (req, res) => {
             department: department || user.department,
             dateOfJoining: dateOfJoining || user.dateOfJoining,
             photo: photo || user.photo,
-            fullName: firstname + " " + lastname
+            fullName: firstname + " " + lastname,
         };
 
         if (photo) {
@@ -180,15 +179,9 @@ const updateUser = asyncHandler(async (req, res) => {
             };
         }
 
-        if (project && Array.isArray(project)) {
-            const newProjectIds = project.map(p => new mongoose.Types.ObjectId(p));
-            const newProjects = newProjectIds.filter(newId =>
-                !user.projects.some(existingProject => existingProject.id.equals(newId))
-            );
-            if (newProjects.length > 0) {
-                newProjects.forEach(newId => user.projects.push({ id: newId }));
-                updatedFields.projects = user.projects;
-            }
+        if (projectArr && Array.isArray(projectArr)) {
+            const newProjectIds = projectArr.map((p) => { return { id: new mongoose.Types.ObjectId(p) } });
+            updatedFields.projects = newProjectIds;
         }
 
         const updateUser = await Users.findByIdAndUpdate(user._id, updatedFields, { new: true });
@@ -219,9 +212,9 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
         await LeaveManagement.deleteMany({ user: id })
         await Projects.updateMany(
             { 'developers.id': id },
-            { $pull: { developers: { id } } } 
+            { $pull: { developers: { id } } }
         );
-        
+
         const userLeave = await Leaves.findOne({ userId: id });
         if (userLeave) {
             await Leaves.deleteMany({ userId: userLeave.userId });
@@ -442,9 +435,9 @@ const getUserProfile = asyncHandler(async (req, res) => {
 
         let getProfile;
         if (id) {
-            getProfile = await Users.findById({ _id: id }).populate("department")
+            getProfile = await Users.findById({ _id: id }).populate("department").populate("projects.id")
         } else {
-            getProfile = await Users.findById({ _id: req.user._id }).populate("department")
+            getProfile = await Users.findById({ _id: req.user._id }).populate("department").populate("projects.id")
         }
 
         const photoUrl = getProfile.photo && getProfile.photo.contentType

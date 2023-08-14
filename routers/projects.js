@@ -3,7 +3,9 @@ const router = express.Router();
 const { check } = require('express-validator');
 const { auth, isAdmin } = require("../middleware/auth")
 
-const { createProject, getProjects, getUserProjects, updateProject, delelteProject, getSingleProject } = require("../controllers/projects")
+const { createProject, getAllProjects, getProjects, getUserProjects, updateProject, delelteProject, getSingleProject } = require("../controllers/projects")
+
+router.get("/project-list", auth, isAdmin, getAllProjects)
 
 router.post("/create",
     check('name', 'Project name is required').notEmpty(),

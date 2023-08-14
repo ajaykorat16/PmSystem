@@ -3,6 +3,8 @@ const Users = require("../models/userModel")
 const asyncHandler = require('express-async-handler');
 const { validationResult } = require('express-validator');
 const { capitalizeFLetter, formattedDate } = require("../helper/mail");
+const mongoose = require("mongoose");
+
 
 const createProject = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
@@ -43,6 +45,28 @@ const createProject = asyncHandler(async (req, res) => {
 
     } catch (error) {
         console.error(error.message);
+        res.status(500).send('Server error');
+    }
+});
+
+const getAllProjects = asyncHandler(async (req, res) => {
+    try {
+        const getAllProjects = await Projects.find().lean();
+
+        const formatteProject = getAllProjects.map((project) => {
+            return {
+                ...project,
+                startDate: formattedDate(project.startDate),
+            };
+        });
+
+        return res.status(200).json({
+            error: false,
+            message: "All Projects retrieved successfully",
+            getAllProjects: formatteProject
+        });
+    } catch (error) {
+        console.log(error.message);
         res.status(500).send('Server error');
     }
 });
@@ -178,6 +202,9 @@ const updateProject = asyncHandler(async (req, res) => {
     try {
         const { name, description, startDate, developers } = req.body;
         const { id } = req.params;
+        // let developersArr = JSON.parse(developers)
+
+        console.log("developers", developers);
 
         const existingProject = await Projects.findById(id);
         if (!existingProject) {
@@ -187,19 +214,30 @@ const updateProject = asyncHandler(async (req, res) => {
             });
         }
 
-        const existingDeveloperIds = existingProject.developers.map(dev => dev.id.toString());
-        const newDeveloperIds = developers.map(dev => dev.id.toString());
-        const uniqueDeveloperIds = [...new Set([...existingDeveloperIds, ...newDeveloperIds])];
-        const updatedDevelopers = uniqueDeveloperIds.map(id => ({ id }));
-
         const projectObj = {
             name: capitalizeFLetter(name) || existingProject.name,
             description: capitalizeFLetter(description) || existingProject.description,
             startDate: startDate || existingProject.startDate,
-            developers: updatedDevelopers
+            developers: developers || existingProject.developers
         };
 
+        if (developers && Array.isArray(developers)) {
+            const newdevelopersIds = developers.map((p) => { return { id: new mongoose.Types.ObjectId(p) } });
+            console.log("newdevelopersIds", newdevelopersIds);
+            projectObj.developers = newdevelopersIds;
+        }
+
         const updatedProject = await Projects.findByIdAndUpdate(id, projectObj, { new: true });
+
+        for (const developerId of existingProject.developers) {
+            console.log("remove developerId", developers);
+            // await Users.findByIdAndUpdate(developerId, { $pull: { projects: { id: id } } });
+        }
+
+        for (const developerId of developers) {
+            console.log("add developerId", developers);
+            // await Users.findByIdAndUpdate(developerId, { $addToSet: { projects: { id: id } } });
+        }
         return res.status(200).json({
             error: false,
             message: "Project updated successfully",
@@ -214,7 +252,7 @@ const updateProject = asyncHandler(async (req, res) => {
 const getSingleProject = asyncHandler(async (req, res) => {
     try {
         const { id } = req.params
-        const project = await Projects.findById(id).populate({path: "developers.id", select: "-photo"})
+        const project = await Projects.findById(id).populate({ path: "developers.id", select: "-photo" })
         return res.status(200).json({
             error: false,
             message: "Single project get successfully.",
@@ -249,4 +287,4 @@ const delelteProject = asyncHandler(async (req, res) => {
     }
 })
 
-module.exports = { createProject, getProjects, getUserProjects, updateProject, delelteProject, getSingleProject };
+module.exports = { createProject, getAllProjects, getProjects, getUserProjects, updateProject, delelteProject, getSingleProject };

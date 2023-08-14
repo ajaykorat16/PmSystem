@@ -8,9 +8,21 @@ const ProjectContext = createContext();
 const ProjectProvider = ({ children }) => {
     const { auth } = useAuth();
     const headers = {
-      Authorization: auth?.token,
+        Authorization: auth?.token,
     };
-  
+
+    //get projects
+    const fetchProjects = async () => {
+        try {
+            const res = await axios.get("/projects/project-list", { headers });
+            if (res.data.error === false) {
+                return res.data
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     //getProjects
     const getProject = async (page, limit, query, sortField, sortOrder) => {
         try {
@@ -21,7 +33,7 @@ const ProjectProvider = ({ children }) => {
                 res = await axios.get(`/projects`, { params: { page, limit, sortField, sortOrder } }, { headers });
             }
             if (res.data.error === false) {
-               return res.data
+                return res.data
             }
         } catch (error) {
             console.log(error);
@@ -32,17 +44,16 @@ const ProjectProvider = ({ children }) => {
     const getSingleProject = async (id) => {
         try {
             const { data } = await axios.get(`/projects/single-project/${id}`, { headers });
-            console.log(data);
             return data
         } catch (error) {
             console.log(error);
         }
     }
-  
+
     //add project
     const createProject = async (addUser) => {
         try {
-            const { name, description, startDate, developers  } = addUser
+            const { name, description, startDate, developers } = addUser
 
             const { data } = await axios.post("/projects/create", { name, description, startDate, developers }, { headers });
             if (data.error === false) {
@@ -84,7 +95,7 @@ const ProjectProvider = ({ children }) => {
             console.log(error);
         }
     }
-  
+
     //delete project
     const deleteProject = async (id) => {
         try {
@@ -116,9 +127,9 @@ const ProjectProvider = ({ children }) => {
     }
 
     return (
-      <ProjectContext.Provider value={{ getProject, getSingleProject, createProject, updateProject, deleteProject, userProject }}>
-        {children}
-      </ProjectContext.Provider>
+        <ProjectContext.Provider value={{ getProject, fetchProjects, getSingleProject, createProject, updateProject, deleteProject, userProject }}>
+            {children}
+        </ProjectContext.Provider>
     );
 };
 

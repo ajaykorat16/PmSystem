@@ -105,7 +105,8 @@ const UserProvider = ({ children }) => {
     //update user
     const updateUser = async (updateUsers, id) => {
         try {
-            let { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining, photo } = updateUsers
+            let { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining, photo, projects } = updateUsers
+            
             const editUser = new FormData()
             editUser.append("employeeNumber", employeeNumber)
             editUser.append("firstname", firstname)
@@ -116,6 +117,7 @@ const UserProvider = ({ children }) => {
             editUser.append("department", department)
             editUser.append("dateOfJoining", dateOfJoining)
             editUser.append("dateOfBirth", dateOfBirth)
+            editUser.append("projects", JSON.stringify(projects))
             photo && editUser.append("photo", photo);
 
             const { data } = await axios.put(`/user/updateProfile/${id}`, editUser, { headers });
@@ -134,7 +136,7 @@ const UserProvider = ({ children }) => {
     //update user
     const updateProfile = async (updateUsers) => {
         try {
-            let { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, dateOfJoining, photo } = updateUsers
+            let { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, dateOfJoining, photo, projects } = updateUsers
 
             const editUser = new FormData()
             editUser.append("employeeNumber", employeeNumber)

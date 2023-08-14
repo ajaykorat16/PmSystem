@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom'
 import { useUser } from '../context/UserContext';
 import { useDepartment } from '../context/DepartmentContext';
+import { useProject } from '../context/ProjectContext';
 import { useEffect } from 'react';
 import { CImage } from '@coreui/react'
 import Loader from '../components/Loader'
@@ -24,20 +25,15 @@ const UserUpdate = ({ title }) => {
     const [newPhoto, setNewPhoto] = useState(null);
     const [dateOfJoining, setDateOfJoining] = useState("");
     const [photo, setPhoto] = useState("");
+    const [projects, setProjects] = useState([]);
+    const [newProjects, setNewProjects] = useState([])
     const [isLoading, setIsLoading] = useState(true)
     const { updateUser, getUserProfile } = useUser()
     const { getDepartmentList } = useDepartment()
     const [departmentsList, setDepartmentsList] = useState([]);
+    const { fetchProjects } = useProject()
     const navigate = useNavigate();
     const params = useParams();
-    const [selectedCities, setSelectedCities] = useState(null);
-    const cities = [
-        { name: 'New York', code: 'NY' },
-        { name: 'Rome', code: 'RM' },
-        { name: 'London', code: 'LDN' },
-        { name: 'Istanbul', code: 'IST' },
-        { name: 'Paris', code: 'PRS' }
-    ]
 
     useEffect(() => {
         const fetchData = async () => {
@@ -54,6 +50,11 @@ const UserUpdate = ({ title }) => {
                     setDateOfBirth(getProfile.dateOfBirth)
                     setDateOfJoining(getProfile.dateOfJoining)
                     setPhoto(getProfile.photo)
+                    if (getProfile.projects && getProfile.projects.length > 0) {
+                        setNewProjects(getProfile.projects.map((e) => e.id._id));
+                    } else {
+                        setNewProjects([]);
+                    }
                     setIsLoading(false)
                 }
             } catch (error) {
@@ -76,7 +77,7 @@ const UserUpdate = ({ title }) => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            let updateUsers = { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department: departments, dateOfJoining, photo: newPhoto || photo }
+            let updateUsers = { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department: departments, dateOfJoining, photo: newPhoto || photo, projects: newProjects }
             let id = params.id
             const data = await updateUser(updateUsers, id)
             if (data.error) {
@@ -92,6 +93,15 @@ const UserUpdate = ({ title }) => {
     const handlePhoto = async (e) => {
         setNewPhoto(e.target.files[0]);
     };
+
+    const getProjects = async () => {
+        const { getAllProjects } = await fetchProjects();
+        setProjects(getAllProjects);
+    };
+
+    useEffect(() => {
+        getProjects();
+    }, []);
 
     return (
         <Layout title={title}>
@@ -236,19 +246,20 @@ const UserUpdate = ({ title }) => {
                             onChange={handlePhoto}
                         />
                     </CCol>
-                    <CCol xs={6}>   
-                        <label htmlFor="projectSelect" className="form-label">Project</label>  
-                            <MultiSelect 
-                                value={selectedCities} 
-                                onChange={(e) => setSelectedCities(e.value)} 
-                                options={cities}
-                                size={6}
-                                style={{border:"1px solid var(--cui-input-border-color, #b1b7c1)", borderRadius:"6px"}}
-                                optionLabel="name" 
-                                placeholder="Select Cities" 
-                                id="projectSelect"
-                                className="form-control"
-                            />
+                    <CCol xs={6}>
+                        <label htmlFor="projectSelect" className="form-label">Project</label>
+                        <MultiSelect
+                            value={newProjects}
+                            onChange={(e) => setNewProjects(e.target.value)}
+                            options={projects}
+                            size={6}
+                            style={{ border: "1px solid var(--cui-input-border-color, #b1b7c1)", borderRadius: "6px" }}
+                            optionLabel="name"
+                            optionValue='_id'
+                            placeholder="Select Projects"
+                            id="projectSelect"
+                            className="form-control"
+                        />
                     </CCol>
                     <CCol xs={12}>
                         <CButton type="submit" className="me-md-2">
