@@ -1,5 +1,6 @@
 const Projects = require("../models/projects");
 const Users = require("../models/userModel")
+const Worklog = require("../models/workLogmodel")
 const asyncHandler = require('express-async-handler');
 const { validationResult } = require('express-validator');
 const { capitalizeFLetter, formattedDate } = require("../helper/mail");
@@ -274,6 +275,7 @@ const delelteProject = asyncHandler(async (req, res) => {
                 { projects: { $elemMatch: { id: id } } },
                 { $pull: { projects: { id: id } } }
             );
+            await Worklog.deleteMany({project: id})
         }
         return res.status(200).json({
             error: false,

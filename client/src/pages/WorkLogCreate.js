@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Layout from './Layout'
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { CButton, CCol, CForm, CFormInput, CFormSelect, CFormTextarea } from '@coreui/react'
+import { CButton, CCol, CForm, CFormInput, CFormSelect } from '@coreui/react'
 import { useProject } from '../context/ProjectContext';
 import { useWorklog } from '../context/WorklogContext';
 import { toast } from 'react-hot-toast';
@@ -69,6 +69,21 @@ const WorkLogCreate = ({title}) => {
                             theme="snow"
                             value={description}
                             onChange={setDescription}
+                            modules={{
+                                toolbar: [
+                                    [{ 'header': '1' }, { 'header': '2' }],
+                                    ['bold', 'italic', 'underline', 'strike'],
+                                    [{ 'align': [] }],
+                                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                    ['link', 'image'],
+                                    [{ 'font': [] }],
+                                    ['clean']
+                                ],
+                            }}
+                            formats={[
+                                'header', 'font', 'bold', 'italic', 'underline', 'strike', 'align',
+                                'list', 'bullet', 'link', 'image'
+                            ]}
                         />
                     </div> 
                 </CCol>

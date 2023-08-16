@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Layout from './Layout'
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { CButton, CCol, CForm, CFormInput, CFormSelect, CFormTextarea } from '@coreui/react'
+import { CButton, CCol, CForm, CFormInput, CFormSelect } from '@coreui/react'
 import { useProject } from '../context/ProjectContext';
 import { useWorklog } from '../context/WorklogContext';
 import { toast } from 'react-hot-toast';
