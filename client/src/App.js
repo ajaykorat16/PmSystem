@@ -54,7 +54,7 @@ function App() {
           <Route path="project/list" element={<ProjectList title="Project List" />} />
           <Route path="project/create" element={<ProjectCreate title="Create Project "/>} />
           <Route path="project/update/:id" element={<ProjectUpdate title="Update Project" />} />
-          <Route path="workLog/list" element={<AdminWorkLogList title="Worklog List" />} />
+          <Route path="admin/workLog/list" element={<AdminWorkLogList title="Worklog List" />} />
         </Route>
         <Route path='/dashboard-user' element={<UserRoutes />}>
           <Route path="leave/list" element={<LeaveList title="Leave List" />} />

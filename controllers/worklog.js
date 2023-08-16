@@ -107,21 +107,11 @@ async function generateWorklogQuery(filter) {
         const query = {};
 
         if (filter.project) {
-            let projects = [];
-            let searchProjects = await Projects.find({ name: { $regex: filter.project, $options: 'i' } });
-            if (searchProjects.length !== 0) {
-                projects = searchProjects.map((d) => d._id);
-            }
-            query.project = { $in: projects };
+            query.project = filter.project;
         }
 
         if (filter.userId) {
-            let users = [];
-            let searchUsers = await Users.find({ fullName: { $regex: filter.userId, $options: 'i' } });
-            if (searchUsers.length !== 0) {
-                users = searchUsers.map((d) => d._id);
-            }
-            query.userId = { $in: users };
+            query.userId = filter.userId;
         }
 
         if (filter.description) {
@@ -129,18 +119,11 @@ async function generateWorklogQuery(filter) {
         }
 
         if (filter.logDate) {
-            const isValidDate = (dateStr) => {
-                const dateRegex = /^(0?[1-9]|[1-2]\d|3[0-1])-(0?[1-9]|1[0-2])-\d{4}$/;
-                return dateRegex.test(dateStr);
-            };
-
-            if (isValidDate(filter.logDate)) {
-                const dateSearch = new Date(filter.logDate.split("-").reverse().join("-"));
-                query.logDate = dateSearch;
-            }
+            const dateSearch = new Date(filter.logDate);
+            dateSearch.setMinutes(dateSearch.getMinutes() - dateSearch.getTimezoneOffset());
+            query.logDate = dateSearch.toISOString();
         }
-
-        resolve(query); 
+        resolve(query);
     });
 }
 
@@ -152,8 +135,11 @@ const getAllWorklog = asyncHandler(async (req, res) => {
         const sortField = req.query.sortField || 'createdAt';
         const sortOrder = req.query.sortOrder || -1;
         const filter = req.body.filter;
+        let query = {}
 
-        let query = await generateWorklogQuery(filter);
+        if (typeof filter !== 'undefined') {
+            query = await generateWorklogQuery(filter);
+        }
 
         const totalWorklogCount = await Worklog.countDocuments(query);
         const worklog = await Worklog.find(query)
@@ -170,6 +156,7 @@ const getAllWorklog = asyncHandler(async (req, res) => {
                 logDate: formattedDate(log.logDate),
             };
         });
+
 
         return res.status(200).json({
             error: false,

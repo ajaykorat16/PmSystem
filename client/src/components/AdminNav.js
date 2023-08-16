@@ -5,6 +5,7 @@ import {
   cilNotes,
   cilSpreadsheet,
   cilUser,
+  cilCalendarCheck
 } from '@coreui/icons'
 import { CNavGroup, CNavItem } from '@coreui/react'
 
@@ -96,12 +97,12 @@ const _nav = [
     component: CNavGroup,
     name: 'Work Log',
     to: '/workLog',
-    icon: <CIcon icon={cilNotes} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilCalendarCheck} customClassName="nav-icon" />,
     items: [
       {
         component: CNavItem,
         name: 'Work Log',
-        to: '/dashboard/workLog/list',
+        to: '/dashboard/admin/workLog/list',
       }
     ],
   },
