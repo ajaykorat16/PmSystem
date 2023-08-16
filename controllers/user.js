@@ -219,20 +219,12 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
 
         await Users.findByIdAndDelete({ _id: id })
         await LeaveManagement.deleteMany({ user: id })
+        await Worklog.deleteMany({ userId: id })
+        await Leaves.deleteMany({ userId: id });
         await Projects.updateMany(
             { 'developers.id': id },
             { $pull: { developers: { id } } }
         );
-
-        const userLeave = await Leaves.findOne({ userId: id });
-        if (userLeave) {
-            await Leaves.deleteMany({ userId: userLeave.userId });
-            await LeaveManagement.deleteMany({ user: userLeave.userId })
-            return res.status(200).send({
-                error: false,
-                message: "User All Record Delete Successfully !!",
-            })
-        }
 
         return res.status(200).send({
             error: false,
