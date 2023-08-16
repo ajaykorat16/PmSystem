@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Layout from './Layout'
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import { CButton, CCol, CForm, CFormInput, CFormSelect, CFormTextarea } from '@coreui/react'
 import { useProject } from '../context/ProjectContext';
 import { useWorklog } from '../context/WorklogContext';
@@ -56,11 +58,19 @@ const WorkLogCreate = ({title}) => {
                 <CCol md={6}>
                     <CFormInput id="inputTime" label="Time" type="number" value={time} onChange={(e) => setTime(e.target.value)} />
                 </CCol>
-                <CCol md={6}>
+                <CCol md={12}>
                     <CFormInput id="inputDate" label="Log Date" type="date" value={logDate} onChange={(e) => setLogDate(e.target.value)} />
                 </CCol>
-                <CCol md={6}>
-                    <CFormTextarea id="inputDescription" label="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
+                <CCol md={12}>
+                    <label className='mb-2'>Description</label>
+                    <div className="editorContainer">     
+                        <ReactQuill
+                            className="editor"
+                            theme="snow"
+                            value={description}
+                            onChange={setDescription}
+                        />
+                    </div> 
                 </CCol>
                 <CCol xs={12}>
                   <CButton type="submit">Submit</CButton>

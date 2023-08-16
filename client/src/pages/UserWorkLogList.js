@@ -89,7 +89,7 @@ const UserWorkLogList = ({ title }) => {
           <div className="card mb-5">
             <div className="mainHeader d-flex align-items-center justify-content-between">
               <div>
-                <h4>Worklog</h4>
+                <h4>Work Log</h4>
               </div>
               <div>
                 <form onSubmit={handleSubmit}>
