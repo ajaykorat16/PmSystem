@@ -28,9 +28,9 @@ function AdminWorkLogList({ title }) {
     const [sortOrder, setSortOrder] = useState(-1);
     const [visible, setVisible] = useState(false);
     const [filter, setFilter] = useState({
-        userId: "",
-        project: "",
-        logDate: ""
+        userId: null,
+        project: null,
+        logDate: null
     });
     const [worklog, setWorklog] = useState({
         userId: "",
@@ -101,6 +101,14 @@ function AdminWorkLogList({ title }) {
 
     }
 
+    const clearFilter = () => {
+        setFilter({
+            userId: null,
+            project: null,
+            logDate: null
+        })
+    }
+
     return (
         <Layout title={title}>
             {isLoading ? (
@@ -149,6 +157,9 @@ function AdminWorkLogList({ title }) {
                             <div>
                                 <h4>Worklog</h4>
                             </div>
+                            <div>
+                                <Button type="button" severity="info" icon="pi pi-filter-slash" label="Clear" onClick={clearFilter} rounded raised />
+                            </div>
                         </div>
                         <DataTable
                             totalRecords={totalRecords}
@@ -172,31 +183,24 @@ function AdminWorkLogList({ title }) {
                                 />
                             }
                         >
-                            <Column field="userId.fullName" header="Developer" filter filterElement={<Dropdown value={filter.userId} options={userOptions} onChange={(e) => setFilter({ ...filter, userId: e.value })} showClear />} />
-                            <Column field="project.name" header="Project" filter filterElement={<Dropdown value={filter.project} options={projectOptions} onChange={(e) => setFilter({ ...filter, project: e.value })} showClear />} />
+                            <Column field="userId.fullName" header="Developer" showFilterMenu={false} filter filterElement={<Dropdown value={filter.userId} options={userOptions} onChange={(e) => setFilter({ ...filter, userId: e.value })} showClear align="center" />} align="center" />
+                            <Column field="project.name" header="Project" showFilterMenu={false} filter filterElement={<Dropdown value={filter.project} options={projectOptions} onChange={(e) => setFilter({ ...filter, project: e.value })} showClear align="center" />} align="center" />
                             <Column
                                 field="logDate"
                                 header="Log Date"
+                                showFilterMenu={false}
+                                style={{ maxWidth: "10rem" }}
                                 filter
                                 filterElement={
-                                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                                        <Calendar
-                                            value={filter.logDate}
-                                            dateFormat="dd-mm-yy"
-                                            onChange={(e) => setFilter({ ...filter, logDate: e.value })}
-                                            showIcon
-                                            style={{ marginRight: '5px' }}
-                                        />
-                                        {filter.logDate !== "" &&
-                                            <Button
-                                                icon="pi pi-times"
-                                                onClick={() => setFilter({ ...filter, logDate: "" })}
-                                                className="p-button-rounded p-button-danger p-button-text"
-                                            />
-                                        }
-
-                                    </div>
+                                    <Calendar
+                                        value={filter.logDate}
+                                        dateFormat="dd-mm-yy"
+                                        onChange={(e) => setFilter({ ...filter, logDate: e.value })}
+                                        showIcon
+                                        style={{ marginRight: '5px' }}
+                                    />
                                 }
+                                align="center"
                             />
                             <Column field="time" header="Time" filterField="time" align="center" />
                             <Column
@@ -208,7 +212,7 @@ function AdminWorkLogList({ title }) {
                                             <Button
                                                 icon="pi pi-eye"
                                                 rounded
-                                                severity="info"
+                                                severity="success"
                                                 className="ms-2"
                                                 aria-label="Cancel"
                                                 onClick={() => handleWorklogDetail(rowData)}
