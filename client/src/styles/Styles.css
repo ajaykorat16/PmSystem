@@ -147,5 +147,35 @@
 }
 
 .description {
-    text-align: justify;
+    margin-bottom: 20px;
+}
+
+.custom .p-scrollpanel-wrapper {
+    border-right: 9px solid #cecbcb;
+}
+
+.custom .p-scrollpanel-bar {
+    background-color: #1188ff;
+    opacity: 4;
+    transition: background-color .3s;
+}
+
+.custom .p-scrollpanel-bar:hover {
+    background-color: #135ba1;
+}
+
+.p-scrollpanel .p-scrollpanel-bar {
+    background: #6fb6fd !important;
+}
+
+.editorContainer {
+    height: 15rem;
+    overflow: scroll;
+    border: 1px solid lightgray;
+    background-color: white;
+}
+
+.editor {
+    height: 100%;
+    border: none;
 }

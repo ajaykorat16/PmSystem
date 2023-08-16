@@ -29,22 +29,21 @@ const WorklogProvider = ({ children }) => {
     };
 
     //get admin worklog
-    const getAdminWorklog = async (page, limit, query, sortField, sortOrder) => {
+    const getAdminWorklog = async (page, limit, filter, sortField, sortOrder) => {
         try {
             let res;
-            if (query) {
-                res = await axios.post(`/worklog/search-worklog?page=${page}&limit=${limit}`, { filter: query }, { headers });
+            if (filter) {
+                res = await axios.post(`/worklog/admin-search-worklog?page=${page}&limit=${limit}`, { filter }, { headers });
             } else {
                 res = await axios.get(`/worklog`, { params: { page, limit, sortField, sortOrder } }, { headers });
             }
             if (res.data.error === false) {
-                console.log(res.data);
                 return res.data
             }
         } catch (error) {
             console.log(error);
         }
-    };
+    }
 
     // get single worklog
     const getSingleWorklog = async (id) => {
