@@ -1,6 +1,7 @@
 const Users = require("../models/userModel")
 const Leaves = require("../models/leaveModel")
 const Department = require("../models/departmentModel")
+const Worklog = require("../models/workLogmodel")
 const mongoose = require("mongoose");
 const { validationResult } = require('express-validator');
 const { formattedDate } = require("../helper/mail")
@@ -411,7 +412,7 @@ const getUserByBirthDayMonth = asyncHandler(async (req, res) => {
 
 const getAllUser = asyncHandler(async (req, res) => {
     try {
-        const getAllUsers = await Users.find().populate("department").lean();
+        const getAllUsers = await Users.find({ role: "user" }).populate("department").lean();
 
         const formattedUsers = getAllUsers.map(user => {
             const photoUrl = user.photo && user.photo.contentType

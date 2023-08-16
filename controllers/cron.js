@@ -4,7 +4,7 @@ const LeaveManagement = require("../models/leaveManagementModel")
 
 const carryForwardLeaves = async () => {
     try {
-        const allUsers = await Users.find().select("_id fullName carryForward");
+        const allUsers = await Users.find({ role: "user" }).select("_id fullName carryForward");
         const currentDate = new Date();
         const oneYearAgo = new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), currentDate.getDate());
         for (const user of allUsers) {
@@ -56,16 +56,16 @@ const createMonthly = async () => {
     try {
         let today = new Date();
         let leave = 1.5
-        const allUsers = await Users.find().select("_id, fullName, carryForward")
+        const allUsers = await Users.find({ role: "user" }).select("_id, fullName, carryForward")
         allUsers.map(async (e) => {
             await new LeaveManagement({ user: e._id, monthly: today, leave }).save()
-            await Users.findByIdAndUpdate(e._id,{ $inc: { leaveBalance: leave } }, { new: true })
+            await Users.findByIdAndUpdate(e._id, { $inc: { leaveBalance: leave } }, { new: true })
         })
     } catch (error) {
         console.log(error);
     }
 
 }
-// createMonthly()
+//createMonthly()
 
 module.exports = { carryForwardLeaves, createMonthly }

@@ -101,7 +101,7 @@ const _nav = [
     items: [
       {
         component: CNavItem,
-        name: 'Work Log',
+        name: 'Work Log List',
         to: '/dashboard/admin/workLog/list',
       }
     ],

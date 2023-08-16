@@ -93,14 +93,14 @@ const UserWorkLogList = ({ title }) => {
   const handleWorklogDetail = async (worklog) => {
     setVisible(true)
     setWorklog({
-        userId: worklog.userId.fullName,
-        project: worklog.project.name,
-        description: worklog.description,
-        logDate: worklog.logDate,
-        time: worklog.time
+      userId: worklog.userId.fullName,
+      project: worklog.project.name,
+      description: worklog.description,
+      logDate: worklog.logDate,
+      time: worklog.time
     })
   }
-  
+
   return (
     <Layout title={title}>
       {isLoading ? (
