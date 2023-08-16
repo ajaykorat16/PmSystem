@@ -92,7 +92,6 @@ const UserWorkLogList = ({ title }) => {
 
   const handleWorklogDetail = async (worklog) => {
     setVisible(true)
-    console.log("worklog", worklog);
     setWorklog({
         userId: worklog.userId.fullName,
         project: worklog.project.name,
@@ -215,8 +214,16 @@ const UserWorkLogList = ({ title }) => {
                   <div>
                     <>
                       <Button
+                        icon="pi pi-eye"
+                        rounded
+                        severity="info"
+                        aria-label="Cancel"
+                        onClick={() => handleWorklogDetail(rowData)}
+                      />
+                      <Button
                         icon="pi pi-pencil"
                         rounded
+                        className="ms-2"
                         severity="success"
                         aria-label="edit"
                         onClick={() => handleUpdate(rowData._id)}
@@ -228,14 +235,6 @@ const UserWorkLogList = ({ title }) => {
                         className="ms-2"
                         aria-label="Cancel"
                         onClick={() => handleDelete(rowData._id)}
-                      />
-                      <Button
-                        icon="pi pi-eye"
-                        rounded
-                        severity="info"
-                        className="ms-2"
-                        aria-label="Cancel"
-                        onClick={() => handleWorklogDetail(rowData)}
                       />
                     </>
                   </div>
