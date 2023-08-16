@@ -9,6 +9,8 @@ import { Dropdown } from "primereact/dropdown";
 import Layout from "./Layout";
 import { Button } from "primereact/button";
 import "../styles/Styles.css";
+import { CButton, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from "@coreui/react";
+import { ScrollPanel } from "primereact/scrollpanel";
 
 
 const UserWorkLogList = ({ title }) => {
@@ -21,7 +23,14 @@ const UserWorkLogList = ({ title }) => {
   const [globalFilterValue, setGlobalFilterValue] = useState("");
   const [sortField, setSortField] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState(-1);
+  const [visible, setVisible] = useState(false);
   const navigate = useNavigate();
+  const [worklog, setWorklog] = useState({
+    project: "",
+    description: "",
+    logDate: "",
+    time: ""
+  });
 
   const fetchWorklog = async (query, sortField, sortOrder) => {
     setIsLoading(true);
@@ -80,12 +89,62 @@ const UserWorkLogList = ({ title }) => {
     setSortOrder(order);
     fetchWorklog(null, field, order);
   };
+
+  const handleWorklogDetail = async (worklog) => {
+    setVisible(true)
+    console.log("worklog", worklog);
+    setWorklog({
+        userId: worklog.userId.fullName,
+        project: worklog.project.name,
+        description: worklog.description,
+        logDate: worklog.logDate,
+        time: worklog.time
+    })
+  }
+  
   return (
     <Layout title={title}>
       {isLoading ? (
         <Loader />
       ) : (
         <>
+          <CModal
+            alignment="center"
+            visible={visible}
+            onClose={() => setVisible(false)}
+            className='mainBody'
+          >
+            <CModalHeader>
+              <CModalTitle><strong>{worklog.project}</strong></CModalTitle>
+            </CModalHeader>
+            <CModalBody>
+              <div>
+                <p>
+                  <strong>{worklog.project}</strong>
+                </p>
+              </div>
+              <div className='description'>
+                <ScrollPanel style={{ width: '100%', height: '20rem' }} className="custom">
+                  <div className="description" dangerouslySetInnerHTML={{ __html: worklog.description }} />
+                </ScrollPanel>
+              </div>
+              <div className='d-flex justify-content-end '>
+                <p>
+                  <strong>{worklog.logDate}</strong>
+                </p>
+              </div>
+              <div className='d-flex justify-content-end '>
+                <p>
+                  <strong>Time: {worklog.time} h</strong>
+                </p>
+              </div>
+            </CModalBody>
+            <CModalFooter>
+              <CButton color="secondary" onClick={() => setVisible(false)}>
+                Ok
+              </CButton>
+            </CModalFooter>
+          </CModal>
           <div className="card mb-5">
             <div className="mainHeader d-flex align-items-center justify-content-between">
               <div>
@@ -135,13 +194,6 @@ const UserWorkLogList = ({ title }) => {
                 filterField="Project"
                 align="center"
               />
-               <Column
-                field="description"
-                header="Description"
-                filterField="description"
-                alignHeader="center"
-                style={{ minWidth: "15rem", maxWidth: "15rem" }}
-              />
               <Column
                 field="logDate"
                 sortable
@@ -176,6 +228,14 @@ const UserWorkLogList = ({ title }) => {
                         className="ms-2"
                         aria-label="Cancel"
                         onClick={() => handleDelete(rowData._id)}
+                      />
+                      <Button
+                        icon="pi pi-eye"
+                        rounded
+                        severity="info"
+                        className="ms-2"
+                        aria-label="Cancel"
+                        onClick={() => handleWorklogDetail(rowData)}
                       />
                     </>
                   </div>
