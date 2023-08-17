@@ -251,7 +251,7 @@ const deleteWorklog = asyncHandler(async (req, res) => {
             })
         }
 
-        const updateworklog = await Worklog.findByIdAndDelete(id)
+        await Worklog.findByIdAndDelete(id)
         return res.status(200).json({
             error: false,
             message: "Delete worklog successfully",

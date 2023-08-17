@@ -4,7 +4,7 @@ const Department = require("../models/departmentModel")
 const Worklog = require("../models/workLogmodel")
 const mongoose = require("mongoose");
 const { validationResult } = require('express-validator');
-const { formattedDate } = require("../helper/mail")
+const { formattedDate, capitalizeFLetter } = require("../helper/mail")
 const fs = require("fs")
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
@@ -28,10 +28,6 @@ const comparePassword = async (password, hashPassword) => {
     } catch (error) {
         console.log(error)
     }
-}
-
-function capitalizeFLetter(string) {
-    return string[0].toUpperCase() + string.slice(1);
 }
 
 const createUser = asyncHandler(async (req, res) => {
@@ -309,7 +305,7 @@ const getUsers = asyncHandler(async (req, res) => {
             return {
                 ...user,
                 avatar: avatar,
-                department: user.department.name,
+                department: user.department?.name || null,
                 dateOfBirth: formattedDate(user.dateOfBirth),
                 dateOfJoining: formattedDate(user.dateOfJoining),
                 photo: photoUrl,

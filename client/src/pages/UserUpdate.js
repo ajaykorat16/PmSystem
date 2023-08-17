@@ -206,9 +206,11 @@ const UserUpdate = ({ title }) => {
                         <CFormSelect
                             id="inputDepartment"
                             label="Department"
+                            placeholder="Select Department"
                             value={departments}
                             onChange={(e) => setDepartments(e.target.value)}
                         >
+                            <option value="" disabled>Select a Department</option>
                             {departmentsList.map((d) => (
                                 <option key={d._id} value={d._id}>
                                     {d.name}

@@ -1,10 +1,8 @@
 const Department = require("../models/departmentModel")
+const Users = require("../models/userModel")
 const { validationResult } = require('express-validator');
 const asyncHandler = require('express-async-handler')
-
-function capitalizeFLetter(string) {
-    return string[0].toUpperCase() + string.slice(1);
-}
+const { capitalizeFLetter } = require("../helper/mail")
 
 const createDepartment = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
@@ -73,6 +71,15 @@ const deleteDepartment = asyncHandler(async (req, res) => {
         }
 
         await Department.findByIdAndDelete({ _id: id })
+
+        const user = await Users.findOne({ department: id })
+        if (user) {
+            await Users.updateMany({ department: id }, { $unset: { department: "" } })
+            return res.status(200).json({
+                error: false,
+                message: "Department delete successfully!!",
+            })
+        }
         return res.status(200).json({
             error: false,
             message: "Department delete successfully!!",
