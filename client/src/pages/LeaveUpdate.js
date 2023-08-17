@@ -115,7 +115,7 @@ const LeaveUpdate = ({ title }) => {
           <div className="mb-3">
             <h2 className="mb-5 mt-2">Update Leave</h2>
           </div>
-          <CForm className="row g-3" onSubmit={handleSubmit}>
+          <CForm className="row g-3 mb-3" onSubmit={handleSubmit}>
             <CCol md={6}>
               <CFormSelect
                 id="inputUserName"
@@ -145,7 +145,6 @@ const LeaveUpdate = ({ title }) => {
                 label="Status"
                 value={status}
                 disabled
-              // onChange={(e) => setStatus(e.target.value)}
               />
             </CCol>
             <CCol md={6}>
@@ -201,6 +200,9 @@ const LeaveUpdate = ({ title }) => {
               />
             </CCol>
             <CCol xs={12}>
+              <CButton className="me-md-2" onClick={() => navigate('/dashboard/leave/list')}>
+                Back
+              </CButton>
               <CButton type="submit" className="me-md-2">
                 Submit
               </CButton>

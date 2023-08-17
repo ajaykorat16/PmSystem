@@ -78,7 +78,7 @@ const UserWorkLogUpdate = ({title}) => {
                     <CFormInput id="inputTime" label="Time" type="number" value={time} onChange={(e) => setTime(e.target.value)} />
                 </CCol>
                 <CCol md={12}>
-                    <CFormInput id="inputDate" label="Log Date" type="date" value={logDate} onChange={(e) => setLogDate(e.target.value)} />
+                    <CFormInput id="inputDate" label="Log Date" max={new Date().toISOString().split('T')[0]} type="date" value={logDate} onChange={(e) => setLogDate(e.target.value)} />
                 </CCol>
                 <CCol md={12}>
                     <label className='mb-2'>Description</label>
@@ -92,6 +92,9 @@ const UserWorkLogUpdate = ({title}) => {
                     </div>
                 </CCol>
                 <CCol xs={12}>
+                    <CButton className="me-md-2" onClick={() => navigate('/dashboard-user/workLog/list')}>
+                        Back
+                    </CButton>
                   <CButton type="submit">Submit</CButton>
                 </CCol>
             </CForm>

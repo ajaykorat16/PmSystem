@@ -8,6 +8,8 @@ import { Column } from 'primereact/column';
 import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
 import { useNavigate } from 'react-router-dom';
+import { CButton, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react';
+import { ScrollPanel } from 'primereact/scrollpanel';
 
 const ProjectList = ({title}) => {
   const {getProject, deleteProject} = useProject()
@@ -19,7 +21,14 @@ const ProjectList = ({title}) => {
   const [globalFilterValue, setGlobalFilterValue] = useState("");
   const [sortField, setSortField] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState(-1);
-  const navigate = useNavigate()
+    const [visible, setVisible] = useState(false);
+    const navigate = useNavigate()
+  const [project, setProject] = useState({
+    name: "",
+    developers: "",
+    description: "",
+    startDate: "",
+});
   
   const fetchProjects = async (query, sortField, sortOrder) => {
     setIsLoading(true);
@@ -78,12 +87,66 @@ const ProjectList = ({title}) => {
     fetchProjects(null, field, order);
   };
   
+  const handleProjectDetail = async (project) => {
+    setVisible(true);
+    const developerNames = project.developers.map(
+      (developer) => developer.id.fullName
+    );
+    setProject({
+        name: project.name,
+        developers: developerNames.join(', '),
+        description: project.description,
+        startDate: project.startDate,
+    });
+  };
+
   return (  
     <Layout title={title}>
       {isLoading ? (
         <Loader />
       ) : (
         <>
+          <CModal
+              alignment="center"
+              visible={visible}
+              onClose={() => setVisible(false)}
+              className="mainBody"
+          >
+            <CModalHeader>
+                <CModalTitle>
+                    <strong>{project.name}</strong>
+                </CModalTitle>
+            </CModalHeader>
+            <CModalBody>
+              <div>
+                <strong>Developers:</strong>
+                <p>
+                 {project.developers}
+                </p>
+              </div>
+              <div className="description">
+                <strong>Description:</strong>
+                <ScrollPanel
+                  className="custom"
+                >
+                  <div
+                    className="description"
+                    dangerouslySetInnerHTML={{ __html: project.description }}
+                  />
+                </ScrollPanel>
+              </div>
+              <div className="d-flex justify-content-end ">
+                <p>
+                  <strong>{project.startDate}</strong>
+                </p>
+              </div>
+            </CModalBody>
+            <CModalFooter>
+              <CButton color="secondary" onClick={() => setVisible(false)}>
+                Ok
+              </CButton>
+            </CModalFooter>
+          </CModal>
           <div className="card mb-5">
             <div className="mainHeader d-flex align-items-center justify-content-between">
               <div>
@@ -156,9 +219,17 @@ const ProjectList = ({title}) => {
                   <div>
                     <>
                       <Button
+                        icon="pi pi-eye"
+                        rounded
+                        severity="success"
+                        aria-label="Cancel"
+                        onClick={() => handleProjectDetail(rowData)}
+                      />
+                      <Button
                         icon="pi pi-pencil"
                         rounded
                         severity="success"
+                        className="ms-2"
                         aria-label="edit"
                         onClick={() => handleUpdate(rowData._id)}
                       />

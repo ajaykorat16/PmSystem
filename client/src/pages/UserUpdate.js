@@ -110,7 +110,7 @@ const UserUpdate = ({ title }) => {
                 <div className="mb-3">
                     <h2 className='mb-5 mt-2'>Update User</h2>
                 </div>
-                <CForm className="row g-3" onSubmit={handleSubmit}>
+                <CForm className="row g-3 mb-3" onSubmit={handleSubmit}>
                     {photo && !newPhoto && (
                         <CCol xs={12}>
                             <CImage
@@ -233,6 +233,7 @@ const UserUpdate = ({ title }) => {
                             id="inputBirth"
                             label="Date Of Birth"
                             value={dateOfBirth}
+                            max={new Date().toISOString().split('T')[0]}
                             onChange={(e) => setDateOfBirth(e.target.value)}
                         />
                     </CCol>
@@ -240,7 +241,7 @@ const UserUpdate = ({ title }) => {
                         <CFormInput
                             type="file"
                             className="form-control"
-                            label={photo ? photo.name : "Upload Photo"}
+                            label={"Upload Photo"}
                             id="inputGroupFile04"
                             accept="image/*"
                             aria-describedby="inputGroupFileAddon04"
@@ -264,6 +265,9 @@ const UserUpdate = ({ title }) => {
                         />
                     </CCol>
                     <CCol xs={12}>
+                        <CButton className="me-md-2" onClick={() => navigate('/dashboard/user/list')}>
+                            Back
+                        </CButton>
                         <CButton type="submit" className="me-md-2">
                             Submit
                         </CButton>
