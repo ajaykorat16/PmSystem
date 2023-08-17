@@ -1,5 +1,5 @@
 import React from 'react'
-import { CForm, CCol, CFormInput} from '@coreui/react';
+import { CForm, CCol, CFormInput } from '@coreui/react';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom'
 import { useUser } from '../context/UserContext';
@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 import { Avatar } from 'primereact/avatar';
 import { Button } from 'primereact/button';
 import moment from 'moment';
+import { Calendar } from 'primereact/calendar';
 
 const UserUpdate = ({ title }) => {
     const [employeeNumber, setEmployeeNumber] = useState("")
@@ -27,7 +28,7 @@ const UserUpdate = ({ title }) => {
     const { updateProfile, getUserProfile } = useUser()
     const params = useParams();
 
-    const doj =  moment(dateOfJoining).format('DD-MM-YYYY')
+    const doj = moment(dateOfJoining).format('DD-MM-YYYY')
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -40,7 +41,7 @@ const UserUpdate = ({ title }) => {
                     setAddress(getProfile.address)
                     setPhone(getProfile.phone)
                     setDepartments(getProfile.department ? getProfile.department.name : "")
-                    setDateOfBirth(getProfile.dateOfBirth)
+                    setDateOfBirth(new Date(getProfile.dateOfBirth))
                     setDateOfJoining(getProfile.dateOfJoining)
                     setPhoto(getProfile.photo)
                     setIsLoading(false)
@@ -72,7 +73,7 @@ const UserUpdate = ({ title }) => {
     return (
         <Layout title={title}>
             {isLoading === true && <Loader />}
-            {isLoading === false && 
+            {isLoading === false &&
                 <>
                     <CForm onSubmit={handleSubmit}>
                         <div className='mainBody me-3'>
@@ -188,14 +189,15 @@ const UserUpdate = ({ title }) => {
                                     <div className='row'>
                                         <div className='col'>
                                             <CCol>
-                                                <CFormInput
-                                                    type="date"
-                                                    id="inputBirth"
-                                                    label="Date Of Birth"
-                                                    max={new Date().toISOString().split('T')[0]}
-                                                    className='mb-3'
+                                                <label className="form-label">Date Of Birth</label>
+                                                <Calendar
                                                     value={dateOfBirth}
+                                                    dateFormat="dd-mm-yy"
                                                     onChange={(e) => setDateOfBirth(e.target.value)}
+                                                    maxDate={new Date()}
+                                                    showIcon
+                                                    id="date"
+                                                    className="form-control"
                                                 />
                                             </CCol>
                                         </div>

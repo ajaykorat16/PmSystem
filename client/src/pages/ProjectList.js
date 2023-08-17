@@ -11,8 +11,8 @@ import { useNavigate } from 'react-router-dom';
 import { CButton, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react';
 import { ScrollPanel } from 'primereact/scrollpanel';
 
-const ProjectList = ({title}) => {
-  const {getProject, deleteProject} = useProject()
+const ProjectList = ({ title }) => {
+  const { getProject, deleteProject } = useProject()
   const [projectList, setProjectList] = useState([])
   const [isLoading, setIsLoading] = useState(true);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -21,15 +21,15 @@ const ProjectList = ({title}) => {
   const [globalFilterValue, setGlobalFilterValue] = useState("");
   const [sortField, setSortField] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState(-1);
-    const [visible, setVisible] = useState(false);
-    const navigate = useNavigate()
+  const [visible, setVisible] = useState(false);
+  const navigate = useNavigate()
   const [project, setProject] = useState({
     name: "",
     developers: "",
     description: "",
     startDate: "",
-});
-  
+  });
+
   const fetchProjects = async (query, sortField, sortOrder) => {
     setIsLoading(true);
     let projectData = await getProject(
@@ -51,13 +51,13 @@ const ProjectList = ({title}) => {
   const handleSubmit = async () => {
     fetchProjects(globalFilterValue);
   };
-  
+
   useEffect(() => {
     if (globalFilterValue.trim() === "") {
       fetchProjects();
     }
   }, [globalFilterValue, currentPage, rowsPerPage]);
- 
+
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this user?"
@@ -67,18 +67,18 @@ const ProjectList = ({title}) => {
       fetchProjects();
     }
   };
-    
+
   const handleUpdate = async (id) => {
     navigate(`/dashboard/project/update/${id}`);
   };
-  
+
   const onPageChange = (event) => {
     const currentPage = Math.floor(event.first / event.rows) + 1;
     setCurrentPage(currentPage);
     const newRowsPerPage = event.rows;
     setRowsPerPage(newRowsPerPage);
   };
-  
+
   const hanldeSorting = async (e) => {
     const field = e.sortField;
     const order = e.sortOrder;
@@ -86,42 +86,42 @@ const ProjectList = ({title}) => {
     setSortOrder(order);
     fetchProjects(null, field, order);
   };
-  
+
   const handleProjectDetail = async (project) => {
     setVisible(true);
     const developerNames = project.developers.map(
       (developer) => developer.id.fullName
     );
     setProject({
-        name: project.name,
-        developers: developerNames.join(', '),
-        description: project.description,
-        startDate: project.startDate,
+      name: project.name,
+      developers: developerNames.join(', '),
+      description: project.description,
+      startDate: project.startDate,
     });
   };
 
-  return (  
+  return (
     <Layout title={title}>
       {isLoading ? (
         <Loader />
       ) : (
         <>
           <CModal
-              alignment="center"
-              visible={visible}
-              onClose={() => setVisible(false)}
-              className="mainBody"
+            alignment="center"
+            visible={visible}
+            onClose={() => setVisible(false)}
+            className="mainBody"
           >
             <CModalHeader>
-                <CModalTitle>
-                    <strong>{project.name}</strong>
-                </CModalTitle>
+              <CModalTitle>
+                <strong>{project.name}</strong>
+              </CModalTitle>
             </CModalHeader>
             <CModalBody>
               <div>
                 <strong>Developers:</strong>
                 <p>
-                 {project.developers}
+                  {project.developers}
                 </p>
               </div>
               <div className="description">
@@ -153,7 +153,7 @@ const ProjectList = ({title}) => {
                 <h4>Projects</h4>
               </div>
               <div>
-                <form  onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit}>
                   <div className="p-inputgroup ">
                     <span className="p-inputgroup-addon">
                       <i className="pi pi-search" />
@@ -183,9 +183,9 @@ const ProjectList = ({title}) => {
               emptyMessage="No user found."
               paginatorLeft={
                 <Dropdown
-                    value={rowsPerPage}
-                    options={[10, 25, 50]}
-                    onChange={(e) => setRowsPerPage(e.value)}
+                  value={rowsPerPage}
+                  options={[10, 25, 50]}
+                  onChange={(e) => setRowsPerPage(e.value)}
                 />
               }
             >
@@ -204,7 +204,7 @@ const ProjectList = ({title}) => {
                   return developerNames.join(', ');
                 }}
                 align="center"
-                style={{maxWidth: "15rem"}}
+                style={{ maxWidth: "15rem" }}
               />
               <Column
                 field="startDate"
@@ -221,7 +221,7 @@ const ProjectList = ({title}) => {
                       <Button
                         icon="pi pi-eye"
                         rounded
-                        severity="success"
+                        severity="info"
                         aria-label="Cancel"
                         onClick={() => handleProjectDetail(rowData)}
                       />

@@ -6,6 +6,7 @@ import { useUser } from '../context/UserContext';
 import { useDepartment } from '../context/DepartmentContext';
 import Layout from './Layout';
 import toast from "react-hot-toast"
+import { Calendar } from 'primereact/calendar';
 
 const UserCreate = ({ title }) => {
     const [employeeNumber, setEmployeeNumber] = useState("")
@@ -90,10 +91,27 @@ const UserCreate = ({ title }) => {
                     </CFormSelect>
                 </CCol>
                 <CCol xs={4}>
-                    <CFormInput type="date" id="inputJoining" label="Date Of Joining" value={dateOfJoining} onChange={(e) => setDateOfJoining(e.target.value)} />
+                    <label className="form-label">Date Of Joining</label>
+                    <Calendar
+                        value={dateOfJoining}
+                        dateFormat="dd-mm-yy"
+                        onChange={(e) => setDateOfJoining(e.target.value)}
+                        showIcon
+                        id="date"
+                        className="form-control"
+                    />
                 </CCol>
                 <CCol xs={4}>
-                    <CFormInput type="date" max={new Date().toISOString().split('T')[0]} id="inputBirth" label="Date Of Birth" value={dateOfBirth} onChange={(e) => setDateOfBirth(e.target.value)} />
+                    <label className="form-label">Date Of Birth</label>
+                    <Calendar
+                        value={dateOfBirth}
+                        dateFormat="dd-mm-yy"
+                        onChange={(e) => setDateOfBirth(e.target.value)}
+                        maxDate={new Date()}
+                        showIcon
+                        id="date"
+                        className="form-control"
+                    />
                 </CCol>
                 <CCol xs={12}>
                     <CButton type="submit" className="me-md-2">Submit</CButton>

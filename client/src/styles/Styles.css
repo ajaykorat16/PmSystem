@@ -180,7 +180,14 @@
     border: none;
 }
 
-.custom{
+.custom {
     width: 100%;
     height: 20rem;
+}
+
+#date {
+border: 1px solid #c7bbbb;
+padding: 0;
+height: 39px;
+border-radius: 6px;  
 }

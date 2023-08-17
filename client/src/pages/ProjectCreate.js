@@ -8,6 +8,7 @@ import { useUser } from "../context/UserContext";
 import { useProject } from "../context/ProjectContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import { Calendar } from "primereact/calendar";
 
 const ProjectCreate = ({ title }) => {
   const { fetchUsers } = useUser();
@@ -30,7 +31,7 @@ const ProjectCreate = ({ title }) => {
         navigate('/dashboard/project/list')
       }
     } catch (error) {
-        console.log(error.message)
+      console.log(error.message)
     }
   }
 
@@ -47,30 +48,39 @@ const ProjectCreate = ({ title }) => {
       <div className="mb-3">
         <h2 className="mb-5 mt-2">Create Project</h2>
       </div>
-      <CForm className="row g-3"  onSubmit={handleSubmit}>
+      <CForm className="row g-3" onSubmit={handleSubmit}>
         <CCol md={6}>
           <CFormInput id="inputName" label="Name" value={name} onChange={(e) => setName(e.target.value)} />
         </CCol>
         <CCol md={6}>
-          <CFormInput id="inputDate" label="Date" type="date" max={new Date().toISOString().split('T')[0]} value={startDate} onChange={(e) => setStartDate(e.target.value)}/>
+          <label className="form-label">Date</label>
+          <Calendar
+            value={startDate}
+            dateFormat="dd-mm-yy"
+            onChange={(e) => setStartDate(e.target.value)}
+            maxDate={new Date()}
+            showIcon
+            id="date"
+            className="form-control"
+          />
         </CCol>
-        <CCol xs={12}>   
-        <label htmlFor="developerSelect" className="form-label">Developers</label>  
+        <CCol xs={12}>
+          <label htmlFor="developerSelect" className="form-label">Developers</label>
           <MultiSelect
-            value={developers} 
-            onChange={(e) => setDevelopers(e.value)} 
+            value={developers}
+            onChange={(e) => setDevelopers(e.value)}
             options={users}
             size={6}
-            style={{border:"1px solid var(--cui-input-border-color, #b1b7c1)", borderRadius:"6px"}}
-            optionLabel="fullName" 
-            placeholder="Select Users" 
+            style={{ border: "1px solid var(--cui-input-border-color, #b1b7c1)", borderRadius: "6px" }}
+            optionLabel="fullName"
+            placeholder="Select Users"
             id="developerSelect"
             className="form-control"
           />
         </CCol>
         <CCol md={12}>
           <label className='mb-2'>Description</label>
-          <div className="editorContainer">     
+          <div className="editorContainer">
             <ReactQuill
               className="editor"
               theme="snow"
@@ -81,7 +91,7 @@ const ProjectCreate = ({ title }) => {
                   [{ 'header': '1' }, { 'header': '2' }],
                   ['bold', 'italic', 'underline', 'strike'],
                   [{ 'align': [] }],
-                  [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                  [{ 'list': 'ordered' }, { 'list': 'bullet' }],
                   ['link', 'image'],
                   [{ 'font': [] }],
                   ['clean']
@@ -92,7 +102,7 @@ const ProjectCreate = ({ title }) => {
                 'list', 'bullet', 'link', 'image'
               ]}
             />
-          </div> 
+          </div>
         </CCol>
         <CCol xs={12}>
           <CButton type="submit">Submit</CButton>

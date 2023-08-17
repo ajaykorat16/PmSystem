@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import Layout from "./Layout";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
+import { Calendar } from "primereact/calendar";
 
 const LeaveCreate = ({ title }) => {
   const [users, setUsers] = useState([]);
@@ -148,12 +149,14 @@ const LeaveCreate = ({ title }) => {
           </CFormSelect>
         </CCol>
         <CCol xs={6}>
-          <CFormInput
-            type="date"
-            id="inputstartDate"
-            label="Leave Start"
+          <label className="form-label">Leave Start</label>
+          <Calendar
             value={startDate}
+            dateFormat="dd-mm-yy"
             onChange={(e) => setStartDate(e.target.value)}
+            showIcon
+            id="date"
+            className="form-control"
           />
         </CCol>
         <CCol xs={6}>
@@ -167,15 +170,17 @@ const LeaveCreate = ({ title }) => {
           />
         </CCol>
         <CCol xs={6}>
-          <CFormInput
-            type="date"
-            id="inputendDate"
-            label="Leave End"
+          <label className="form-label">Leave End</label>
+          <Calendar
             value={endDate}
+            dateFormat="dd-mm-yy"
             onChange={(e) => setEndDate(e.target.value)}
-            disabled={isHalfDay}
+            showIcon
+            id="date"
+            className="form-control"
           />
-        </CCol><CCol xs={6}>
+        </CCol>
+        <CCol xs={6}>
           <CFormInput
             id="inputendDate"
             label="Total Days"

@@ -11,6 +11,7 @@ import { CImage } from '@coreui/react'
 import Loader from '../components/Loader'
 import Layout from './Layout';
 import toast from 'react-hot-toast';
+import { Calendar } from 'primereact/calendar';
 
 
 const UserUpdate = ({ title }) => {
@@ -47,8 +48,8 @@ const UserUpdate = ({ title }) => {
                     setAddress(getProfile.address)
                     setPhone(getProfile.phone)
                     setDepartments(getProfile.department ? getProfile.department._id : "")
-                    setDateOfBirth(getProfile.dateOfBirth)
-                    setDateOfJoining(getProfile.dateOfJoining)
+                    setDateOfBirth(new Date(getProfile.dateOfBirth))
+                    setDateOfJoining(new Date(getProfile.dateOfJoining))
                     setPhoto(getProfile.photo)
                     if (getProfile.projects && getProfile.projects.length > 0) {
                         setNewProjects(getProfile.projects.map((e) => e.id._id));
@@ -219,22 +220,26 @@ const UserUpdate = ({ title }) => {
                         </CFormSelect>
                     </CCol>
                     <CCol xs={6}>
-                        <CFormInput
-                            type="date"
-                            id="inputJoining"
-                            label="Date Of Joining"
+                        <label className="form-label">Date Of Joining</label>
+                        <Calendar
                             value={dateOfJoining}
+                            dateFormat="dd-mm-yy"
                             onChange={(e) => setDateOfJoining(e.target.value)}
+                            showIcon
+                            id="date"
+                            className="form-control"
                         />
                     </CCol>
                     <CCol xs={6}>
-                        <CFormInput
-                            type="date"
-                            id="inputBirth"
-                            label="Date Of Birth"
+                        <label className="form-label">Date Of Birth</label>
+                        <Calendar
                             value={dateOfBirth}
-                            max={new Date().toISOString().split('T')[0]}
+                            dateFormat="dd-mm-yy"
                             onChange={(e) => setDateOfBirth(e.target.value)}
+                            maxDate={new Date()}
+                            showIcon
+                            id="date"
+                            className="form-control"
                         />
                     </CCol>
                     <CCol xs={6}>

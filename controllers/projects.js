@@ -252,13 +252,11 @@ const getSingleProject = asyncHandler(async (req, res) => {
     try {
         const { id } = req.params
         const project = await Projects.findById(id).populate({ path: "developers.id", select: "-photo" })
+        console.log(project);
         return res.status(200).json({
             error: false,
             message: "Single project get successfully.",
-            project: {
-                ...project.toObject(),
-                startDate: project.startDate.toISOString().split('T')[0]
-            }
+            project
         })
     } catch (error) {
         console.error(error.message);

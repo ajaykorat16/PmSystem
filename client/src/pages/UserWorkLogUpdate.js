@@ -7,20 +7,21 @@ import { useProject } from '../context/ProjectContext';
 import { useWorklog } from '../context/WorklogContext';
 import { toast } from 'react-hot-toast';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Calendar } from 'primereact/calendar';
 
-const UserWorkLogUpdate = ({title}) => {
+const UserWorkLogUpdate = ({ title }) => {
     const [projects, setProjects] = useState([]);
     const [selectproject, setSelectProject] = useState("");
     const [description, setDescription] = useState("")
     const [logDate, setLogDate] = useState("")
     const [time, setTime] = useState("")
-    const { updateWorklog, getSingleWorklog }  = useWorklog()
+    const { updateWorklog, getSingleWorklog } = useWorklog()
     const { fetchProjects } = useProject()
     const navigate = useNavigate()
     const params = useParams()
 
     const getProjects = async () => {
-        const { getAllProjects }  = await fetchProjects();
+        const { getAllProjects } = await fetchProjects();
         setProjects(getAllProjects);
     };
     useEffect(() => {
@@ -34,7 +35,7 @@ const UserWorkLogUpdate = ({title}) => {
                 if (worklog) {
                     setSelectProject(worklog.project ? worklog.project._id : "")
                     setDescription(worklog.description)
-                    setLogDate(worklog.logDate);
+                    setLogDate(new Date(worklog.logDate));
                     setTime(worklog.time);
                 }
             } catch (error) {
@@ -66,7 +67,7 @@ const UserWorkLogUpdate = ({title}) => {
                 <h2 className="mb-5 mt-2">Update Work Log</h2>
             </div>
             <CForm className="row g-3" onSubmit={handleSubmit}>
-                <CCol xs={6}>  
+                <CCol xs={4}>
                     <CFormSelect id="inputProject" label="Project" value={selectproject} onChange={(e) => setSelectProject(e.target.value)} >
                         <option value="" disabled>Select a project</option>
                         {projects.map((p) => (
@@ -74,15 +75,24 @@ const UserWorkLogUpdate = ({title}) => {
                         ))}
                     </CFormSelect>
                 </CCol>
-                <CCol md={6}>
+                <CCol md={4}>
                     <CFormInput id="inputTime" label="Time" type="number" value={time} onChange={(e) => setTime(e.target.value)} />
                 </CCol>
-                <CCol md={12}>
-                    <CFormInput id="inputDate" label="Log Date" max={new Date().toISOString().split('T')[0]} type="date" value={logDate} onChange={(e) => setLogDate(e.target.value)} />
+                <CCol md={4}>
+                    <label className="form-label">Log Date</label>
+                    <Calendar
+                        value={logDate}
+                        dateFormat="dd-mm-yy"
+                        onChange={(e) => setLogDate(e.target.value)}
+                        maxDate={new Date()}
+                        showIcon
+                        id="date"
+                        className="form-control"
+                    />
                 </CCol>
                 <CCol md={12}>
                     <label className='mb-2'>Description</label>
-                    <div className="editorContainer">     
+                    <div className="editorContainer">
                         <ReactQuill
                             className="editor"
                             theme="snow"
@@ -95,7 +105,7 @@ const UserWorkLogUpdate = ({title}) => {
                     <CButton className="me-md-2" onClick={() => navigate('/dashboard-user/workLog/list')}>
                         Back
                     </CButton>
-                  <CButton type="submit">Submit</CButton>
+                    <CButton type="submit">Submit</CButton>
                 </CCol>
             </CForm>
         </Layout>

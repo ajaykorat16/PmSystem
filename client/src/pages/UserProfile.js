@@ -11,6 +11,7 @@ import { Avatar } from 'primereact/avatar';
 import { Button } from 'primereact/button';
 import moment from 'moment';
 import { useLeaveManagement } from '../context/LeaveManagementContext';
+import { Calendar } from 'primereact/calendar';
 
 const UserUpdate = ({ title }) => {
     const [employeeNumber, setEmployeeNumber] = useState("")
@@ -31,7 +32,7 @@ const UserUpdate = ({ title }) => {
     const { getUserLeave } = useLeaveManagement()
     const [leave, setLeave] = useState([])
 
-    const doj =  moment(dateOfJoining).format('DD-MM-YYYY')
+    const doj = moment(dateOfJoining).format('DD-MM-YYYY')
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -44,7 +45,7 @@ const UserUpdate = ({ title }) => {
                     setAddress(getProfile.address)
                     setPhone(getProfile.phone)
                     setDepartments(getProfile.department ? getProfile.department.name : "")
-                    setDateOfBirth(getProfile.dateOfBirth)
+                    setDateOfBirth(new Date(getProfile.dateOfBirth))
                     setDateOfJoining(getProfile.dateOfJoining)
                     setPhoto(getProfile.photo)
                     setCarryForward(getProfile.carryForward)
@@ -142,10 +143,10 @@ const UserUpdate = ({ title }) => {
                             <div className='col leaveTable'>
                                 <div className='leaveHeader'>
                                     <div>
-                                        <p className='leaveTitle'>LEAVE HISTORY</p>    
+                                        <p className='leaveTitle'>LEAVE HISTORY</p>
                                     </div>
                                     <div>
-                                        <p className='carryForward'>Carry Forward: {carryForward}</p>                                        
+                                        <p className='carryForward'>Carry Forward: {carryForward}</p>
                                     </div>
                                 </div>
                                 <CTable className='mailTable'>
@@ -239,14 +240,15 @@ const UserUpdate = ({ title }) => {
                             <div className='row'>
                                 <div className='col'>
                                     <CCol>
-                                        <CFormInput
-                                            type="date"
-                                            id="inputBirth"
-                                            label="Date Of Birth"
-                                            max={new Date().toISOString().split('T')[0]}
-                                            className='mb-3'
+                                        <label className="form-label">Date Of Birth</label>
+                                        <Calendar
                                             value={dateOfBirth}
+                                            dateFormat="dd-mm-yy"
                                             onChange={(e) => setDateOfBirth(e.target.value)}
+                                            maxDate={new Date()}
+                                            showIcon
+                                            id="date"
+                                            className="form-control"
                                         />
                                     </CCol>
                                 </div>

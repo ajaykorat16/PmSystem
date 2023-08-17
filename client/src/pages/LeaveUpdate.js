@@ -6,6 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Loader from "../components/Loader";
 import Layout from "./Layout";
 import toast from "react-hot-toast";
+import { Calendar } from "primereact/calendar";
 
 const LeaveUpdate = ({ title }) => {
   const [userId, setUserId] = useState("");
@@ -31,8 +32,8 @@ const LeaveUpdate = ({ title }) => {
         setUserId(data.userId ? data.userId._id : "");
         setReason(data.reason);
         setStatus(data.status);
-        setStartDate(data.startDate);
-        setEndDate(data.endDate);
+        setStartDate(new Date(data.startDate));
+        setEndDate(new Date(data.endDate));
         setTotalDays(data.totalDays);
         setType(data.type);
         setIsLoading(false);
@@ -162,12 +163,14 @@ const LeaveUpdate = ({ title }) => {
               </CFormSelect>
             </CCol>
             <CCol xs={6}>
-              <CFormInput
-                type="date"
-                id="inputstartDate"
-                label="Leave Start"
+              <label className="form-label">Leave Start</label>
+              <Calendar
                 value={startDate}
+                dateFormat="dd-mm-yy"
                 onChange={(e) => setStartDate(e.target.value)}
+                showIcon
+                id="date"
+                className="form-control"
               />
             </CCol>
             <CCol xs={6}>
@@ -181,13 +184,14 @@ const LeaveUpdate = ({ title }) => {
               />
             </CCol>
             <CCol xs={6}>
-              <CFormInput
-                type="date"
-                id="inputendDate"
-                label="Leave End"
+              <label className="form-label">Leave End</label>
+              <Calendar
                 value={endDate}
+                dateFormat="dd-mm-yy"
                 onChange={(e) => setEndDate(e.target.value)}
-                disabled={isHalfDay}
+                showIcon
+                id="date"
+                className="form-control"
               />
             </CCol>
             <CCol xs={6}>

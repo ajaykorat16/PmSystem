@@ -451,9 +451,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
             message: "Users get profile successfully!!",
             getProfile: {
                 ...getProfile.toObject(),
-                photo: photoUrl,
-                dateOfBirth: getProfile.dateOfBirth.toISOString().split('T')[0],
-                dateOfJoining: getProfile.dateOfJoining.toISOString().split('T')[0],
+                photo: photoUrl
             },
         })
     } catch (error) {

@@ -184,10 +184,7 @@ const getSingleWorklog = asyncHandler(async (req, res) => {
         return res.status(200).json({
             error: false,
             message: "single worklog get successfully",
-            worklog: {
-                ...worklog.toObject(),
-                logDate: worklog.logDate.toISOString().split('T')[0]
-            }
+            worklog
         });
 
     } catch (error) {

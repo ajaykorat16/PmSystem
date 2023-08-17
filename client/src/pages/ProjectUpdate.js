@@ -8,6 +8,7 @@ import { useUser } from "../context/UserContext";
 import { useProject } from "../context/ProjectContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import { Calendar } from "primereact/calendar";
 
 const ProjectUpdate = ({ title }) => {
     const { fetchUsers } = useUser();
@@ -25,7 +26,7 @@ const ProjectUpdate = ({ title }) => {
             try {
                 let { project } = await getSingleProject(params.id);
                 setName(project.name)
-                setStartDate(project.startDate);
+                setStartDate(new Date(project.startDate));
                 setDescription(project.description);
                 if (project.developers && project.developers.length > 0) {
                     setDevelopers(project.developers.map((e) => e.id._id));
@@ -42,9 +43,9 @@ const ProjectUpdate = ({ title }) => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            let project = { name, description, startDate, developers: developers}
+            let project = { name, description, startDate, developers: developers }
             let id = params.id
-            
+
             const data = await updateProject(project, id)
             if (data.error) {
                 toast.error(data.message)
@@ -74,7 +75,16 @@ const ProjectUpdate = ({ title }) => {
                     <CFormInput id="inputName" label="Name" value={name} onChange={(e) => setName(e.target.value)} />
                 </CCol>
                 <CCol md={6}>
-                    <CFormInput id="inputDate" label="Date" type="date" max={new Date().toISOString().split('T')[0]} value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                    <label className="form-label">Date</label>
+                    <Calendar
+                        value={startDate}
+                        dateFormat="dd-mm-yy"
+                        onChange={(e) => setStartDate(e.target.value)}
+                        maxDate={new Date()}
+                        showIcon
+                        id="date"
+                        className="form-control"
+                    />
                 </CCol>
                 <CCol xs={12}>
                     <label htmlFor="developerSelect" className="form-label">Developers</label>
@@ -93,29 +103,29 @@ const ProjectUpdate = ({ title }) => {
                 </CCol>
                 <CCol md={12}>
                     <label className='mb-2'>Description</label>
-                    <div className="editorContainer">     
+                    <div className="editorContainer">
                         <ReactQuill
-                          className="editor"
-                          theme="snow"
-                          value={description}
-                          onChange={setDescription}
-                          modules={{
-                            toolbar: [
-                              [{ 'header': '1' }, { 'header': '2' }],
-                              ['bold', 'italic', 'underline', 'strike'],
-                              [{ 'align': [] }],
-                              [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                              ['link', 'image'],
-                              [{ 'font': [] }],
-                              ['clean']
-                            ],
-                          }}
-                          formats={[
-                            'header', 'font', 'bold', 'italic', 'underline', 'strike', 'align',
-                            'list', 'bullet', 'link', 'image'
-                          ]}
+                            className="editor"
+                            theme="snow"
+                            value={description}
+                            onChange={setDescription}
+                            modules={{
+                                toolbar: [
+                                    [{ 'header': '1' }, { 'header': '2' }],
+                                    ['bold', 'italic', 'underline', 'strike'],
+                                    [{ 'align': [] }],
+                                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                                    ['link', 'image'],
+                                    [{ 'font': [] }],
+                                    ['clean']
+                                ],
+                            }}
+                            formats={[
+                                'header', 'font', 'bold', 'italic', 'underline', 'strike', 'align',
+                                'list', 'bullet', 'link', 'image'
+                            ]}
                         />
-                    </div> 
+                    </div>
                 </CCol>
                 <CCol xs={12}>
                     <CButton className="me-md-2" onClick={() => navigate('/dashboard/project/list')}>

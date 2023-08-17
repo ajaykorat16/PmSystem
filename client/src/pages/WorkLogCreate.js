@@ -7,6 +7,7 @@ import { useProject } from '../context/ProjectContext';
 import { useWorklog } from '../context/WorklogContext';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { Calendar } from 'primereact/calendar';
 
 const WorkLogCreate = ({ title }) => {
     const [projects, setProjects] = useState([]);
@@ -47,7 +48,7 @@ const WorkLogCreate = ({ title }) => {
                 <h2 className="mb-5 mt-2">Create Work Log</h2>
             </div>
             <CForm className="row g-3" onSubmit={handleSubmit}>
-                <CCol xs={6}>
+                <CCol xs={4}>
                     <CFormSelect id="inputProject" label="Project" value={selectproject} onChange={(e) => setSelectProject(e.target.value)} >
                         <option value="" disabled>Select a project</option>
                         {projects.map((p) => (
@@ -55,11 +56,20 @@ const WorkLogCreate = ({ title }) => {
                         ))}
                     </CFormSelect>
                 </CCol>
-                <CCol md={6}>
+                <CCol md={4}>
                     <CFormInput id="inputTime" label="Time" type="number" value={time} onChange={(e) => setTime(e.target.value)} />
                 </CCol>
-                <CCol md={12}>
-                    <CFormInput id="inputDate" max={new Date().toISOString().split('T')[0]} label="Log Date" type="date" value={logDate} onChange={(e) => setLogDate(e.target.value)} />
+                <CCol md={4}>
+                    <label className="form-label">Log Date</label>
+                    <Calendar
+                        value={logDate}
+                        dateFormat="dd-mm-yy"
+                        onChange={(e) => setLogDate(e.target.value)}
+                        maxDate={new Date()}
+                        showIcon
+                        id="date"
+                        className="form-control"
+                    />
                 </CCol>
                 <CCol md={12}>
                     <label className='mb-2'>Description</label>
