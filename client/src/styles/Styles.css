@@ -186,8 +186,13 @@
 }
 
 #date {
-border: 1px solid #c7bbbb;
-padding: 0;
-height: 39px;
-border-radius: 6px;  
+    border: 1px solid #c7bbbb;
+    padding: 0;
+    height: 39px;
+    border-radius: 6px;
+}
+
+.p-datepicker {
+    min-width: 20% !important;
+    left:0px
 }
