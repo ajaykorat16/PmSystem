@@ -8,6 +8,7 @@ import { Button } from 'primereact/button';
 import React, { useEffect, useState } from 'react'
 import Layout from "./Layout";
 import { CButton, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react';
+import { ScrollPanel } from 'primereact/scrollpanel';
 
 function UserProjects({ title }) {
     const { userProject } = useProject()
@@ -90,12 +91,10 @@ function UserProjects({ title }) {
                             <CModalTitle><strong>{name}</strong></CModalTitle>
                         </CModalHeader>
                         <CModalBody>
-                            <div className='description'>
-                                <p>
-                                    {description}
-                                </p>
-                            </div>
-                            <div className='d-flex justify-content-end '>
+                            <ScrollPanel style={{ width: '100%', height: '20rem' }} className="custom">
+                                <div className="description" dangerouslySetInnerHTML={{ __html: description }} />
+                            </ScrollPanel>
+                            <div className='d-flex justify-content-end mt-3'>
                                 <p>
                                     <strong>{startDate}</strong>
                                 </p>

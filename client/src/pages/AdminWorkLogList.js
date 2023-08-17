@@ -250,6 +250,7 @@ function AdminWorkLogList({ title }) {
                                         value={filter.logDate}
                                         dateFormat="dd-mm-yy"
                                         onChange={(e) => setFilter({ ...filter, logDate: e.value })}
+                                        maxDate={new Date()}
                                         showIcon
                                         style={{ marginRight: "5px" }}
                                     />

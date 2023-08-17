@@ -93,7 +93,7 @@ const UserCreate = ({ title }) => {
                     <CFormInput type="date" id="inputJoining" label="Date Of Joining" value={dateOfJoining} onChange={(e) => setDateOfJoining(e.target.value)} />
                 </CCol>
                 <CCol xs={4}>
-                    <CFormInput type="date" id="inputBirth" label="Date Of Birth" value={dateOfBirth} onChange={(e) => setDateOfBirth(e.target.value)} />
+                    <CFormInput type="date" max={new Date().toISOString().split('T')[0]} id="inputBirth" label="Date Of Birth" value={dateOfBirth} onChange={(e) => setDateOfBirth(e.target.value)} />
                 </CCol>
                 <CCol xs={12}>
                     <CButton type="submit" className="me-md-2">Submit</CButton>

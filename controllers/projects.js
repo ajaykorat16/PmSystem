@@ -114,7 +114,7 @@ const getProjects = asyncHandler(async (req, res) => {
 
         let projects = await Projects.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate({
             path: 'developers.id',
-            select: 'fullName', 
+            select: 'fullName',
         }).lean();
         const formatteProject = projects.map((project) => {
             return {
@@ -236,7 +236,7 @@ const updateProject = asyncHandler(async (req, res) => {
         for (const developerId of developers) {
             await Users.findByIdAndUpdate(developerId, { $addToSet: { projects: { id: id } } });
         }
-        
+
         return res.status(200).json({
             error: false,
             message: "Project updated successfully",
@@ -275,7 +275,7 @@ const delelteProject = asyncHandler(async (req, res) => {
                 { projects: { $elemMatch: { id: id } } },
                 { $pull: { projects: { id: id } } }
             );
-            await Worklog.deleteMany({project: id})
+            await Worklog.deleteMany({ project: id })
         }
         return res.status(200).json({
             error: false,
@@ -287,4 +287,19 @@ const delelteProject = asyncHandler(async (req, res) => {
     }
 })
 
-module.exports = { createProject, getAllProjects, getProjects, getUserProjects, updateProject, delelteProject, getSingleProject };
+const userProjects = asyncHandler(async (req, res) => {
+    try {
+        const id = req.user._id
+        const project = await Projects.find({ 'developers.id': id })
+        return res.status(200).json({
+            error: false,
+            message: "Project get Successfully",
+            project
+        })
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send('Server error');
+    }
+})
+
+module.exports = { createProject, getAllProjects, getProjects, getUserProjects, updateProject, delelteProject, getSingleProject, userProjects };

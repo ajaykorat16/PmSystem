@@ -126,8 +126,20 @@ const ProjectProvider = ({ children }) => {
         }
     }
 
+    //get users project
+    const getUserProject = async () => {
+        try {
+            const res = await axios.get(`/projects/user-project-list`, { headers });
+            if (res.data.error === false) {
+                return res.data
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     return (
-        <ProjectContext.Provider value={{ getProject, fetchProjects, getSingleProject, createProject, updateProject, deleteProject, userProject }}>
+        <ProjectContext.Provider value={{ getProject, fetchProjects, getSingleProject, createProject, updateProject, deleteProject, userProject, getUserProject }}>
             {children}
         </ProjectContext.Provider>
     );
