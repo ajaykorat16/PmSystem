@@ -117,17 +117,12 @@ const UserWorkLogList = ({ title }) => {
               <CModalTitle><strong>{worklog.project}</strong></CModalTitle>
             </CModalHeader>
             <CModalBody>
-              <div>
-                <p>
-                  <strong>{worklog.project}</strong>
-                </p>
-              </div>
               <div className='description'>
                 <ScrollPanel style={{ width: '100%', height: '20rem' }} className="custom">
                   <div className="description" dangerouslySetInnerHTML={{ __html: worklog.description }} />
                 </ScrollPanel>
               </div>
-              <div className='d-flex justify-content-end '>
+              <div className='d-flex justify-content-end mt-3'>
                 <p>
                   <strong>{worklog.logDate}</strong>
                 </p>

@@ -283,16 +283,21 @@ const getUsers = asyncHandler(async (req, res) => {
             };
         }
 
-        const totalUsers = await Users.countDocuments(query);
         const skip = (page - 1) * limit;
 
+        let totalUsers;
         let users
         if (authUser.role === 'user') {
+            totalUsers = await Users.countDocuments({
+                ...query,
+                role: "user"
+            });
             users = await Users.find({
                 ...query,
                 role: "user"
             }).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate("department").lean();
         } else {
+            totalUsers = await Users.countDocuments(query);
             users = await Users.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate("department").lean();
         }
 

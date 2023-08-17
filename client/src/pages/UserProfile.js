@@ -243,6 +243,7 @@ const UserUpdate = ({ title }) => {
                                             type="date"
                                             id="inputBirth"
                                             label="Date Of Birth"
+                                            max={new Date().toISOString().split('T')[0]}
                                             className='mb-3'
                                             value={dateOfBirth}
                                             onChange={(e) => setDateOfBirth(e.target.value)}
