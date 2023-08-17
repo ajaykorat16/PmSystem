@@ -261,11 +261,10 @@ const UserUpdate = ({ title }) => {
                             onChange={(e) => setNewProjects(e.target.value)}
                             options={projects}
                             size={6}
-                            style={{ border: "1px solid var(--cui-input-border-color, #b1b7c1)", borderRadius: "6px" }}
                             optionLabel="name"
                             optionValue='_id'
                             placeholder="Select Projects"
-                            id="projectSelect"
+                            id="date"
                             className="form-control"
                         />
                     </CCol>
