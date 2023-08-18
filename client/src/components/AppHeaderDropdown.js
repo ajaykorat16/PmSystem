@@ -28,7 +28,7 @@ const AppHeaderDropdown = () => {
   const handleLogout = () => {
     try {
       logout();
-      navigate('/login');
+      navigate('/');
     } catch (error) {
       console.log(error);
     }
@@ -36,7 +36,7 @@ const AppHeaderDropdown = () => {
 
   const handleLogin = () => {
     try {
-      navigate('/login');
+      navigate('/');
     } catch (error) {
       console.log(error);
     }

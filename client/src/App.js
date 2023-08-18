@@ -35,9 +35,9 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/" element={<DefaultLayout />} />
+        <Route path="/" element={<Login />} />
         <Route path="/dashboard" element={<AdminRoutes />}>
+          <Route path="admin" element={<DefaultLayout />} />
           <Route path="user/list" element={<UserList title="User List" />} />
           <Route path="user/birtday/list" element={<EmployeeByBirthMonth title="Employee By Birth Month" />} />
           <Route path="user/create" element={<UserCreate title="User Create" />} />
@@ -52,11 +52,12 @@ function App() {
           <Route path="department/create" element={<DepartmentCreate title="Create Department" />} />
           <Route path="department/update/:id" element={<DepartmentUpdate title="Deaprtment Update" />} />
           <Route path="project/list" element={<ProjectList title="Project List" />} />
-          <Route path="project/create" element={<ProjectCreate title="Create Project "/>} />
+          <Route path="project/create" element={<ProjectCreate title="Create Project " />} />
           <Route path="project/update/:id" element={<ProjectUpdate title="Update Project" />} />
           <Route path="admin/workLog/list" element={<AdminWorkLogList title="Work Log List" />} />
         </Route>
         <Route path='/dashboard-user' element={<UserRoutes />}>
+          <Route path="employee" element={<DefaultLayout />} />
           <Route path="leave/list" element={<LeaveList title="Leave List" />} />
           <Route path="employee/list" element={<EmployeeList title="Employee List" />} />
           <Route path="employee/birtday/list" element={<EmployeeByBirthMonth title="Employee By Birth Month" />} />
@@ -64,9 +65,9 @@ function App() {
           <Route path="user/user-profile/:id" element={<UserProfile title="Profile" />} />
           <Route path="user/resetPassword" element={<ResetPassword title="Reset Password" />} />
           <Route path="project/list" element={<UserProjects title="Your Projects" />} />
-          <Route path="workLog/create" element={<WorkLogCreate title="Create Work Log "/>}/>
-          <Route path="workLog/update/:id" element={<UserWorkLogUpdate title= "Update Work Log" />}/>
-          <Route path="workLog/list" element={<UserWorkLogList title="Work Log List"/>}/>
+          <Route path="workLog/create" element={<WorkLogCreate title="Create Work Log " />} />
+          <Route path="workLog/update/:id" element={<UserWorkLogUpdate title="Update Work Log" />} />
+          <Route path="workLog/list" element={<UserWorkLogList title="Work Log List" />} />
         </Route>
       </Routes>
     </>

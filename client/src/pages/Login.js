@@ -42,7 +42,7 @@ const Login = () => {
 
     useEffect(() => {
         if (auth?.token) {
-            location.pathname !== '/' ? navigate(location.pathname) : navigate('/home')
+            location.pathname !== '/' ? navigate(location.pathname) : (auth.user.role === "user" ? navigate('/dashboard-user/employee') : navigate('/dashboard/admin'))
         }
     }, [auth?.token, navigate, isLoggedIn])
 
