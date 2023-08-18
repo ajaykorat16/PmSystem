@@ -284,6 +284,7 @@ const getUsers = asyncHandler(async (req, res) => {
         }
 
         const skip = (page - 1) * limit;
+        let totalEmployee = await Users.countDocuments({ role: "user" })
 
         let totalUsers;
         let users
@@ -324,6 +325,7 @@ const getUsers = asyncHandler(async (req, res) => {
             currentPage: page,
             totalPages: Math.ceil(totalUsers / limit),
             totalUsers,
+            totalEmployee
         });
     } catch (error) {
         console.log(error);

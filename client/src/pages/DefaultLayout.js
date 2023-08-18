@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import CIcon from '@coreui/icons-react'
 import { CRow, CCol, CWidgetStatsA, CNavLink } from '@coreui/react';
 import { CChartLine, CChartBar } from '@coreui/react-chartjs';
 import { useAuth } from '../context/AuthContext';
 import Layout from './Layout';
-import { cilArrowTop } from '@coreui/icons';
 import { useLeave } from '../context/LeaveContext';
 import { useProject } from '../context/ProjectContext';
 import { useWorklog } from '../context/WorklogContext';
@@ -46,8 +44,8 @@ const DefaultLayout = () => {
   }
 
   const fetchEmployee = async () => {
-    const { totalUsers } = await getAllEmployee()
-    setEmployeeCount(totalUsers)
+    const { totalEmployee } = await getAllEmployee()
+    setEmployeeCount(totalEmployee)
   }
 
   const fetchAdminWorklog = async () => {
