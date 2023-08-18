@@ -152,6 +152,7 @@ const userGetLeave = asyncHandler(async (req, res) => {
         }
         const totalLeaves = await Leaves.countDocuments(query)
         const skip = (page - 1) * limit;
+        const approvedLeave = await Leaves.countDocuments({userId: req.user._id, status:"approved"})
 
         const leaves = await Leaves.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate({ path: 'userId', select: 'fullName' }).lean();
 
@@ -170,7 +171,8 @@ const userGetLeave = asyncHandler(async (req, res) => {
             leaves: formattedLeaves,
             currentPage: page,
             totalPages: Math.ceil(totalLeaves / limit),
-            totalLeaves
+            totalLeaves,
+            approvedLeave
         })
     } catch (error) {
         console.log(error.message)

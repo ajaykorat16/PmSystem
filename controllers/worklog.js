@@ -3,6 +3,7 @@ const Projects = require("../models/projects");
 const asyncHandler = require('express-async-handler');
 const { validationResult } = require('express-validator');
 const { capitalizeFLetter, formattedDate } = require("../helper/mail");
+const moment = require('moment');
 
 const createWorkLog = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
@@ -13,12 +14,13 @@ const createWorkLog = asyncHandler(async (req, res) => {
     try {
         const { project, description, logDate, time } = req.body;
         const userId = req.user._id
+        const parsedDate = moment(logDate).format('YYYY-MM-DD');
 
         const logObj = {
             userId,
             project,
             description: capitalizeFLetter(description),
-            logDate,
+            logDate: parsedDate,
             time
         };
 
@@ -79,16 +81,37 @@ const userGetWorklog = asyncHandler(async (req, res) => {
         const totalWorklogCount = await Worklog.countDocuments(query);
 
         const worklog = await Worklog.find(query).populate({ path: "project", select: "name" }).skip((page - 1) * limit).limit(limit).sort({ [sortField]: sortOrder }).lean();
-        const formatteWorklog = worklog.map((log) => {
+        const formattedWorklog = worklog.map((log) => {
             return {
                 ...log,
                 logDate: formattedDate(log.logDate),
             };
         });
+
+        const currentWeekStart = moment().startOf('week'); 
+        const dayWiseTotals = {};
+
+        formattedWorklog.forEach((log) => {
+            const logDate = moment(log.logDate, "DD-MM-YYYY");
+            if (logDate.isBetween(currentWeekStart, moment(), undefined, '[]')) {
+                const day = logDate.format("dddd");
+                if (!dayWiseTotals[day]) {
+                    dayWiseTotals[day] = 0;
+                }
+                dayWiseTotals[day] += log.time;
+            }
+        });
+
+        const totalWeekTime = Object.values(dayWiseTotals).reduce((total, dayTime) => {
+            return total + dayTime;
+        }, 0);
+
         return res.status(200).json({
             error: false,
             message: "Worklog get successfully",
-            worklog: formatteWorklog,
+            dayWiseTotals: dayWiseTotals,
+            totalWeekTime: totalWeekTime,
+            worklog: formattedWorklog,
             currentPage: page,
             totalPages: Math.ceil(totalWorklogCount / limit),
             totalWorklog: totalWorklogCount,
@@ -133,11 +156,39 @@ const getAllWorklog = asyncHandler(async (req, res) => {
         const sortField = req.query.sortField || 'createdAt';
         const sortOrder = req.query.sortOrder || -1;
         const filter = req.body.filter;
+        const yesterday = moment().subtract(1, 'days').startOf('day');
         let query = {}
 
         if (typeof filter !== 'undefined') {
             query = await generateWorklogQuery(filter);
         }
+
+        const workLogQuery = {
+            logDate: {
+                $gte: yesterday.toDate(), 
+                $lt: moment(yesterday).endOf('day').toDate()
+            }
+        };
+
+        const userCountPipeline = [
+            {
+                $match: workLogQuery
+            },
+            {
+                $group: {
+                    _id: "$userId",
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    userCount: { $sum: 1 }
+                }
+            }
+        ];
+
+        const userCountResult = await Worklog.aggregate(userCountPipeline);
+        const worklogUserCount = userCountResult.length > 0 ? userCountResult[0].userCount : 0;
 
         const totalWorklogCount = await Worklog.countDocuments(query);
         const worklog = await Worklog.find(query)
@@ -148,7 +199,7 @@ const getAllWorklog = asyncHandler(async (req, res) => {
             .sort({ [sortField]: sortOrder })
             .lean();
 
-        const formatteWorklog = worklog.map((log) => {
+        const formattedWorklog = worklog.map((log) => {
             return {
                 ...log,
                 logDate: formattedDate(log.logDate),
@@ -159,10 +210,11 @@ const getAllWorklog = asyncHandler(async (req, res) => {
         return res.status(200).json({
             error: false,
             message: "Worklog get successfully",
-            worklog: formatteWorklog,
+            worklog: formattedWorklog,
             currentPage: page,
             totalPages: Math.ceil(totalWorklogCount / limit),
             totalWorklog: totalWorklogCount,
+            worklogUserCount
         });
 
     } catch (error) {
