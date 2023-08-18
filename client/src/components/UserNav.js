@@ -48,7 +48,7 @@ const _nav = [
     items: [
       {
         component: CNavItem,
-        name: 'Your Project',
+        name: 'Project List',
         to: '/dashboard-user/project/list',
       }
     ],
@@ -61,7 +61,7 @@ const _nav = [
     items: [
       {
         component: CNavItem,
-        name: 'Your Work Log',
+        name: 'Work Log',
         to: '/dashboard-user/workLog/list',
       },
       {
