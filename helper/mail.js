@@ -16,6 +16,10 @@ const formattedDate = (date) => {
     return moment(date).format('DD-MM-YYYY')
 }
 
+const parsedDate = (date) => {
+    return moment(date).format('YYYY-MM-DD');
+}
+
 function capitalizeFLetter(string) {
     return string[0].toUpperCase() + string.slice(1);
 }
@@ -112,4 +116,4 @@ const sendMailForLeaveRequest = async (data) => {
     }
 };
 
-module.exports = { sendMailForLeaveStatus, sendMailForLeaveRequest, formattedDate, capitalizeFLetter }
+module.exports = { sendMailForLeaveStatus, sendMailForLeaveRequest, formattedDate, capitalizeFLetter, parsedDate }

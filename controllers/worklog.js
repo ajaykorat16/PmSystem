@@ -2,7 +2,7 @@ const Worklog = require("../models/workLogmodel")
 const Projects = require("../models/projects");
 const asyncHandler = require('express-async-handler');
 const { validationResult } = require('express-validator');
-const { capitalizeFLetter, formattedDate } = require("../helper/mail");
+const { capitalizeFLetter, formattedDate, parsedDate } = require("../helper/mail");
 const moment = require('moment');
 
 const createWorkLog = asyncHandler(async (req, res) => {
@@ -14,13 +14,12 @@ const createWorkLog = asyncHandler(async (req, res) => {
     try {
         const { project, description, logDate, time } = req.body;
         const userId = req.user._id
-        const parsedDate = moment(logDate).format('YYYY-MM-DD');
 
         const logObj = {
             userId,
             project,
             description: capitalizeFLetter(description),
-            logDate: parsedDate,
+            logDate: parsedDate(logDate),
             time
         };
 
@@ -266,7 +265,7 @@ const updateWorklog = asyncHandler(async (req, res) => {
         const updatedFeilds = {
             project: project || worklog.project,
             description: capitalizeFLetter(description) || worklog.description,
-            logDate: logDate || worklog.logDate,
+            logDate: parsedDate(logDate) || worklog.logDate,
             time: time || worklog.time
         }
 
