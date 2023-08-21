@@ -8,6 +8,7 @@ import adminNavigatiion from './AdminNav'
 import userNavigation from './UserNav'
 import { NavLink } from 'react-router-dom'
 import 'simplebar/dist/simplebar.min.css'
+import { Avatar } from 'primereact/avatar'
 
 const AppSidebar = () => {
   const dispatch = useDispatch()
@@ -22,6 +23,8 @@ const AppSidebar = () => {
     }
   }, [auth])
 
+  const userRole = auth?.user?.role;
+
   return (
     <CSidebar
       position="fixed"
@@ -32,8 +35,12 @@ const AppSidebar = () => {
       }}
     >
       <CSidebarBrand className="d-none d-md-flex pmSystem" to="/">
-        <CNavLink to='/' component={NavLink}>
-          PM SYSTEM
+        <CNavLink to={userRole === "user" ? '/dashboard-user/employee' : "/dashboard/admin"} component={NavLink} className="d-none d-md-flex">
+          <Avatar
+            image='/kr_logo.ico'
+            shape="circle"
+            className='logo'
+          />  PM SYSTEM
         </CNavLink>
       </CSidebarBrand>
       <CSidebarNav>
