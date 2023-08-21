@@ -39,7 +39,7 @@ const AppSidebar = () => {
           <Avatar
             image='/kr_logo.ico'
             shape="circle"
-            className='logo'
+            className='logo p-1'
           />  PM SYSTEM
         </CNavLink>
       </CSidebarBrand>
