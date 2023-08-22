@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { CCol, CFormInput, CButton, CForm } from "@coreui/react";
 import Layout from "./Layout";
 import { MultiSelect } from "primereact/multiselect";
 import { useUser } from "../context/UserContext";
 import { useProject } from "../context/ProjectContext";
+import { Editor } from 'primereact/editor';
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { Calendar } from "primereact/calendar";
@@ -80,27 +80,11 @@ const ProjectCreate = ({ title }) => {
         </CCol>
         <CCol md={12}>
           <label className='mb-2'>Description</label>
-          <div className="editorContainer">
-            <ReactQuill
-              className="editor"
-              theme="snow"
+          <div className="card">
+            <Editor
               value={description}
-              onChange={setDescription}
-              modules={{
-                toolbar: [
-                  [{ 'header': '1' }, { 'header': '2' }],
-                  ['bold', 'italic', 'underline', 'strike'],
-                  [{ 'align': [] }],
-                  [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                  ['link', 'image'],
-                  [{ 'font': [] }],
-                  ['clean']
-                ],
-              }}
-              formats={[
-                'header', 'font', 'bold', 'italic', 'underline', 'strike', 'align',
-                'list', 'bullet', 'link', 'image'
-              ]}
+              onTextChange={(e) => setDescription(e.htmlValue)}
+              className="editorContainer"
             />
           </div>
         </CCol>

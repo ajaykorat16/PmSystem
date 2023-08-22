@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import Layout from './Layout'
-import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { CButton, CCol, CForm, CFormInput, CFormSelect } from '@coreui/react'
 import { useProject } from '../context/ProjectContext';
@@ -8,6 +7,8 @@ import { useWorklog } from '../context/WorklogContext';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { Calendar } from 'primereact/calendar';
+import { Editor } from 'primereact/editor';
+
 
 const WorkLogCreate = ({ title }) => {
     const [projects, setProjects] = useState([]);
@@ -73,27 +74,11 @@ const WorkLogCreate = ({ title }) => {
                 </CCol>
                 <CCol md={12}>
                     <label className='mb-2'>Description</label>
-                    <div className="editorContainer">
-                        <ReactQuill
-                            className="editor"
-                            theme="snow"
+                    <div className="card">
+                        <Editor
                             value={description}
-                            onChange={setDescription}
-                            modules={{
-                                toolbar: [
-                                    [{ 'header': '1' }, { 'header': '2' }],
-                                    ['bold', 'italic', 'underline', 'strike'],
-                                    [{ 'align': [] }],
-                                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                                    ['link', 'image'],
-                                    [{ 'font': [] }],
-                                    ['clean']
-                                ],
-                            }}
-                            formats={[
-                                'header', 'font', 'bold', 'italic', 'underline', 'strike', 'align',
-                                'list', 'bullet', 'link', 'image'
-                            ]}
+                            onTextChange={(e) => setDescription(e.htmlValue)}
+                            className="editorContainer"
                         />
                     </div>
                 </CCol>

@@ -169,10 +169,8 @@
 }
 
 .editorContainer {
-    height: 15rem;
-    overflow: scroll;
-    border: 1px solid lightgray;
-    background-color: white;
+    height: 300px;
+    margin-bottom: 40px;
 }
 
 .editor {
@@ -194,13 +192,17 @@
 
 .p-datepicker {
     min-width: 20% !important;
-    left:0px
+    left: 0px
 }
 
-.logo{
+.logo {
     margin-right: 5px;
 }
 
-.p-scrollpanel .p-scrollpanel-bar{
+.p-scrollpanel .p-scrollpanel-bar {
     background-color: rgb(255, 255, 255) !important;
+}
+
+.p-editor-container .p-editor-toolbar {
+    background: #003552bd !important;
 }

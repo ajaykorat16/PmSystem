@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import Layout from './Layout'
-import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { CButton, CCol, CForm, CFormInput, CFormSelect } from '@coreui/react'
 import { useProject } from '../context/ProjectContext';
@@ -8,6 +7,7 @@ import { useWorklog } from '../context/WorklogContext';
 import { toast } from 'react-hot-toast';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Calendar } from 'primereact/calendar';
+import { Editor } from 'primereact/editor';
 
 const UserWorkLogUpdate = ({ title }) => {
     const [projects, setProjects] = useState([]);
@@ -92,12 +92,11 @@ const UserWorkLogUpdate = ({ title }) => {
                 </CCol>
                 <CCol md={12}>
                     <label className='mb-2'>Description</label>
-                    <div className="editorContainer">
-                        <ReactQuill
-                            className="editor"
-                            theme="snow"
+                    <div className="card">
+                        <Editor
                             value={description}
-                            onChange={setDescription}
+                            onTextChange={(e) => setDescription(e.htmlValue)}
+                            className="editorContainer"
                         />
                     </div>
                 </CCol>
