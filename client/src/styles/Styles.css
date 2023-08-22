@@ -200,3 +200,7 @@
 .logo{
     margin-right: 5px;
 }
+
+.p-scrollpanel .p-scrollpanel-bar{
+    background-color: rgb(255, 255, 255) !important;
+}
