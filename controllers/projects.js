@@ -291,7 +291,6 @@ const getSingleProject = asyncHandler(async (req, res) => {
       path: "developers.id",
       select: "-photo",
     });
-    console.log(project);
     return res.status(200).json({
       error: false,
       message: "Single project get successfully.",
