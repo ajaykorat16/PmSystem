@@ -16,9 +16,8 @@ const formattedDate = (date) => {
     return moment(date).format('DD-MM-YYYY')
 }
 
-const parsedDate = (data) => {
-    let date = new Date(data)
-    return moment(date).format('YYYY-MM-DD');
+const parsedDate = (date) => {
+    return moment(new Date(date)).format('YYYY-MM-DD');
 }
 
 function capitalizeFLetter(string) {
