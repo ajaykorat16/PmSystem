@@ -20,9 +20,9 @@ const DepartmentProvider = ({ children }) => {
         queryUrl = `&query=${query}`
       }
 
-      const res = await axios.get(`/department?page=${page}&limit=${limit}${queryUrl}&sortField=${sortField}&sortOrder=${sortOrder}`, { headers });
-      if (res.data.error === false) {
-        return res.data
+      const { data } = await axios.get(`/department?page=${page}&limit=${limit}${queryUrl}&sortField=${sortField}&sortOrder=${sortOrder}`, { headers });
+      if (data.error === false) {
+        return data
       }
     } catch (error) {
       console.log(error);
@@ -31,9 +31,9 @@ const DepartmentProvider = ({ children }) => {
 
   const getDepartmentList = async () => {
     try {
-      const res = await axios.get(`/department/departmentlist`, { headers });
-      if (res.data.error === false) {
-        return res.data
+      const { data } = await axios.get(`/department/departmentlist`, { headers });
+      if (data.error === false) {
+        return data
       }
     } catch (error) {
       console.log(error);
@@ -47,10 +47,9 @@ const DepartmentProvider = ({ children }) => {
       if (data.error === false) {
         getDepartment()
         setTimeout(function () {
-          toast.success("Department created successfully")
+          toast.success(data.message)
         }, 1000);
       }
-
       return data;
     } catch (error) {
       if (error.response) {
@@ -72,10 +71,10 @@ const DepartmentProvider = ({ children }) => {
   //delete department
   const deleteDepartment = async (id) => {
     try {
-      const res = await axios.delete(`/department/deleteDepartment/${id}`, { headers })
-      if (res.data.error === false) {
+      const { data } = await axios.delete(`/department/deleteDepartment/${id}`, { headers })
+      if (data.error === false) {
         getDepartment()
-        toast.success("Department deleted successfully")
+        toast.success(data.message)
       }
     } catch (error) {
       console.log(error);
@@ -89,7 +88,7 @@ const DepartmentProvider = ({ children }) => {
       if (data.error === false) {
         getDepartment()
         setTimeout(function () {
-          toast.success("Department updated successfully")
+          toast.success(data.message)
         }, 1000);
 
       }

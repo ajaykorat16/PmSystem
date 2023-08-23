@@ -19,7 +19,9 @@ const AuthProvider = ({ children }) => {
             const { data } = await axios.post('/user/login', { email, password });
             if (data.error === false) {
                 setIsLoggedIn(true)
-                toast.success('Login successful');
+                setTimeout(function () {
+                    toast.success(data.message)
+                }, 500);
                 setAuth({
                     ...auth,
                     user: data.user,
@@ -31,9 +33,7 @@ const AuthProvider = ({ children }) => {
             if (error.response) {
                 const errors = error.response.data.errors;
                 if (errors && Array.isArray(errors) && errors.length > 0) {
-                    errors.forEach((error) => {
-                        toast.error(error.msg);
-                    });
+                    toast.error("Please fill all fields")
                 } else {
                     const errorMessage = error.response.data.message;
                     toast.error(errorMessage);
@@ -44,7 +44,6 @@ const AuthProvider = ({ children }) => {
         }
 
     };
-
 
     const logout = () => {
         try {
@@ -62,7 +61,6 @@ const AuthProvider = ({ children }) => {
         }
     };
 
-
     useEffect(() => {
         const data = localStorage.getItem('auth')
         if (data) {
@@ -74,7 +72,6 @@ const AuthProvider = ({ children }) => {
             })
         }
     }, [])
-
 
     return (
         <AuthContext.Provider value={{ auth, login, logout, isLoggedIn }}>

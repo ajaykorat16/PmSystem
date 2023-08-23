@@ -83,7 +83,7 @@ const UserProvider = ({ children }) => {
             if (data.error === false) {
                 fetchUsers()
                 setTimeout(function () {
-                    toast.success("User created successfully")
+                    toast.success(data.message)
                 }, 1000);
             }
             return data;
@@ -124,7 +124,7 @@ const UserProvider = ({ children }) => {
             if (data.error === false) {
                 fetchUsers()
                 setTimeout(function () {
-                    toast.success("User updated successfully")
+                    toast.success(data.message)
                 }, 1000);
             }
             return data;
@@ -151,7 +151,7 @@ const UserProvider = ({ children }) => {
 
             const { data } = await axios.put(`/user/updateProfile`, editUser, { headers });
             if (data.error === false) {
-                toast.success("Profile updated successfully")
+                toast.success(data.message)
             }
             return data;
         } catch (error) {
@@ -165,7 +165,7 @@ const UserProvider = ({ children }) => {
             const { data } = await axios.delete(`/user/deleteProfile/${id}`, { headers });
             if (data.error === false) {
                 fetchUsers()
-                toast.success("User deleted successfully")
+                toast.success(data.message)
             }
         } catch (error) {
             console.log(error);
@@ -188,7 +188,7 @@ const UserProvider = ({ children }) => {
             const { data } = await axios.put(`/user/resetPassword`, { password }, { headers })
             if (data.error === false) {
                 setTimeout(function () {
-                    toast.success("Password updated successfully")
+                    toast.success(data.message)
                 }, 500);
             }
             return data;
@@ -196,9 +196,7 @@ const UserProvider = ({ children }) => {
             if (error.response) {
                 const errors = error.response.data.errors;
                 if (errors && Array.isArray(errors) && errors.length > 0) {
-                    errors.forEach((error) => {
-                        toast.error(error.msg);
-                    });
+                    toast.error("Please fill all fields")
                 } else {
                     const errorMessage = error.response.data.message;
                     toast.error(errorMessage);

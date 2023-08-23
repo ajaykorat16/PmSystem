@@ -21,7 +21,7 @@ import { Toaster } from "react-hot-toast"
 const Login = () => {
     const [email, setEmail] = useState("jasminkorat204@gmail.com");
     const [password, setPassword] = useState("123456");
-    const { auth, login, isLoggedIn } = useAuth()
+    const { auth, login } = useAuth()
     const navigate = useNavigate()
     const location = useLocation()
 
@@ -35,16 +35,10 @@ const Login = () => {
     }
 
     useEffect(() => {
-        if (isLoggedIn) {
-            navigate('/')
-        }
-    }, [isLoggedIn, handleSubmit])
-
-    useEffect(() => {
         if (auth?.token) {
             location.pathname !== '/' ? navigate(location.pathname) : (auth.user.role === "user" ? navigate('/dashboard-user/employee') : navigate('/dashboard/admin'))
         }
-    }, [auth?.token, navigate, isLoggedIn])
+    }, [auth?.token, navigate])
 
     return (
         <div className="bg-light min-vh-100 d-flex flex-row align-items-center">
@@ -85,11 +79,6 @@ const Login = () => {
                                             <CCol xs={6}>
                                                 <CButton color="primary" className="px-4" type='submit'>
                                                     Login
-                                                </CButton>
-                                            </CCol>
-                                            <CCol xs={6} className="text-right">
-                                                <CButton color="link" className="px-0">
-                                                    Forgot password?
                                                 </CButton>
                                             </CCol>
                                         </CRow>

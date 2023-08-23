@@ -71,7 +71,7 @@ const createLeave = asyncHandler(async (req, res) => {
     }
     return res.status(201).json({
       error: false,
-      message: "Your Leave Create successfully !!",
+      message: "Leave Created Successfully !!",
       leave: createLeaves,
     });
   } catch (error) {

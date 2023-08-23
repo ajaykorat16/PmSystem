@@ -14,9 +14,9 @@ const ProjectProvider = ({ children }) => {
     //get projects
     const fetchProjects = async () => {
         try {
-            const res = await axios.get("/projects/project-list", { headers });
-            if (res.data.error === false) {
-                return res.data
+            const { data } = await axios.get("/projects/project-list", { headers });
+            if (data.error === false) {
+                return data
             }
         } catch (error) {
             console.log(error);
@@ -129,9 +129,9 @@ const ProjectProvider = ({ children }) => {
     //get users project
     const getUserProject = async () => {
         try {
-            const res = await axios.get(`/projects/user-project-list`, { headers });
-            if (res.data.error === false) {
-                return res.data
+            const { data } = await axios.get(`/projects/user-project-list`, { headers });
+            if (data.error === false) {
+                return data
             }
         } catch (error) {
             console.log(error);
