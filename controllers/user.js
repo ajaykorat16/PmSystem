@@ -183,7 +183,12 @@ const updateUser = asyncHandler(async (req, res) => {
     } = req.fields;
     const { photo } = req.files;
     const { id } = req.params;
-    let projectArr = JSON.parse(projects);
+
+    let projectArr = [];
+    if (typeof projects !== 'undefined') {
+      projectArr = JSON.parse(projects);
+    }
+
     let user;
     if (id) {
       user = await Users.findById(id);
@@ -216,6 +221,8 @@ const updateUser = asyncHandler(async (req, res) => {
       fullName: firstname + " " + lastname,
     };
 
+    console.log(updatedFields.dateOfBirth);
+
     if (photo) {
       updatedFields.photo = {
         data: fs.readFileSync(photo.path),
@@ -245,6 +252,7 @@ const updateUser = asyncHandler(async (req, res) => {
         $addToSet: { developers: { id: id } },
       });
     }
+
     return res.status(201).send({
       error: false,
       message: "Profile Updated Successfully !!",
@@ -391,8 +399,8 @@ const getUsers = asyncHandler(async (req, res) => {
       const photoUrl =
         user.photo && user.photo.contentType
           ? `data:${user.photo.contentType};base64,${user.photo.data.toString(
-              "base64"
-            )}`
+            "base64"
+          )}`
           : null;
       const avatar = user.firstname.charAt(0) + user.lastname.charAt(0);
 
@@ -473,8 +481,8 @@ const getUserByBirthDayMonth = asyncHandler(async (req, res) => {
       const photoUrl =
         user.photo && user.photo.contentType
           ? `data:${user.photo.contentType};base64,${user.photo.data.toString(
-              "base64"
-            )}`
+            "base64"
+          )}`
           : null;
       const avatar = user.firstname.charAt(0) + user.lastname.charAt(0);
 
@@ -512,8 +520,8 @@ const getAllUser = asyncHandler(async (req, res) => {
       const photoUrl =
         user.photo && user.photo.contentType
           ? `data:${user.photo.contentType};base64,${user.photo.data.toString(
-              "base64"
-            )}`
+            "base64"
+          )}`
           : null;
 
       return {
@@ -554,7 +562,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
       getProfile.photo && getProfile.photo.contentType
         ? `data:${
             getProfile.photo.contentType
-          };base64,${getProfile.photo.data.toString("base64")}`
+        };base64,${getProfile.photo.data.toString("base64")}`
         : null;
 
     return res.status(200).json({

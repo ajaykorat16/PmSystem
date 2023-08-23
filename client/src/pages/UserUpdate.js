@@ -22,7 +22,7 @@ const UserUpdate = ({ title }) => {
     const [phone, setPhone] = useState("");
     const [address, setAddress] = useState("");
     const [departments, setDepartments] = useState("");
-    const [dateOfBirth, setDateOfBirth] = useState("");
+    const [ dateOfBirth, setDateOfBirth] = useState("");
     const [newPhoto, setNewPhoto] = useState(null);
     const [dateOfJoining, setDateOfJoining] = useState("");
     const [photo, setPhoto] = useState("");
@@ -239,7 +239,7 @@ const UserUpdate = ({ title }) => {
                             maxDate={new Date()}
                             showIcon
                             id="date"
-                            className="form-control"
+                            className="form-control"    
                         />
                     </CCol>
                     <CCol xs={6}>
