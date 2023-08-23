@@ -16,7 +16,8 @@ const formattedDate = (date) => {
     return moment(date).format('DD-MM-YYYY')
 }
 
-const parsedDate = (date) => {
+const parsedDate = (data) => {
+    let date = new Date(data)
     return moment(date).format('YYYY-MM-DD');
 }
 
