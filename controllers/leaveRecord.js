@@ -18,6 +18,14 @@ const createLeave = asyncHandler(async (req, res) => {
   try {
     const { reason, startDate, endDate, type, userId, status, totalDays } =
       req.body;
+
+    if (startDate > endDate) {
+      return res.status(200).json({
+        error: true,
+        message: "Please select proper date."
+      })
+    }
+
     let uId;
     if (userId) {
       uId = userId;
@@ -255,6 +263,13 @@ const updateLeave = asyncHandler(async (req, res) => {
     const { reason, startDate, endDate, type, status, userId, totalDays } =
       req.body;
     const { id } = req.params;
+
+    if (startDate > endDate) {
+      return res.status(200).json({
+        error: true,
+        message: "Please select proper date."
+      })
+    }
 
     let userLeave;
     if (id) {
