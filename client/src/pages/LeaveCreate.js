@@ -173,6 +173,7 @@ const LeaveCreate = ({ title }) => {
           <label className="form-label">Leave End</label>
           <Calendar
             value={endDate}
+            minDate={startDate}
             dateFormat="dd-mm-yy"
             onChange={(e) => setEndDate(e.target.value)}
             showIcon

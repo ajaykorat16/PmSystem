@@ -188,6 +188,7 @@ const LeaveUpdate = ({ title }) => {
               <Calendar
                 value={endDate}
                 dateFormat="dd-mm-yy"
+                minDate={startDate}
                 onChange={(e) => setEndDate(e.target.value)}
                 showIcon
                 id="date"
