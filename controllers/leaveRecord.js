@@ -67,7 +67,7 @@ const createLeave = asyncHandler(async (req, res) => {
         { $inc: { leaveBalance: -totalDays } },
         { new: true }
       );
-      await sendMailForLeaveStatus(createLeaves);
+      await sendMailForLeaveStatus(createLeaves, "-");
     }
     return res.status(201).json({
       error: false,
