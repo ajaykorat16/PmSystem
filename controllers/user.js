@@ -113,7 +113,7 @@ const createUser = asyncHandler(async (req, res) => {
 
     return res.status(201).json({
       error: false,
-      message: "User Register successfully !!",
+      message: "User created successfully",
       user: newUser,
     });
   } catch (error) {
@@ -153,7 +153,7 @@ const loginUser = asyncHandler(async (req, res) => {
     });
     return res.status(200).send({
       error: false,
-      message: "User login successful!",
+      message: "Login successfully !",
       user,
       token,
     });
@@ -248,12 +248,13 @@ const updateUser = asyncHandler(async (req, res) => {
     for (const projectsId of projectArr) {
       await Projects.findByIdAndUpdate(projectsId, {
         $addToSet: { developers: { id: id } },
+
       });
     }
 
     return res.status(201).send({
       error: false,
-      message: "Profile Updated Successfully !!",
+      message: "Updated Successfully !!",
       updateUser,
     });
   } catch (error) {
@@ -284,7 +285,7 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
 
     return res.status(200).send({
       error: false,
-      message: "Profile Delete Successfully !!",
+      message: "User Delete Successfully !!",
     });
   } catch (error) {
     console.log(error.message);
@@ -558,8 +559,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
 
     const photoUrl =
       getProfile.photo && getProfile.photo.contentType
-        ? `data:${
-            getProfile.photo.contentType
+        ? `data:${getProfile.photo.contentType
         };base64,${getProfile.photo.data.toString("base64")}`
         : null;
 

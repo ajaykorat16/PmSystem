@@ -45,7 +45,7 @@ const LeaveManagementProvider = ({ children }) => {
       if (data.error === false) {
         getLeavesMonthWise()
         setTimeout(function () {
-          toast.success("Leave updated successfully")
+          toast.success(data.message)
         }, 1000);
 
       }
@@ -57,9 +57,9 @@ const LeaveManagementProvider = ({ children }) => {
   //get user leave
   const getUserLeave = async () => {
     try {
-      const res = await axios.get(`/leaveManagement/userLeaves`, { headers })
-      if (res.data.error === false) {
-        return res.data
+      const { data } = await axios.get(`/leaveManagement/userLeaves`, { headers })
+      if (data.error === false) {
+        return data
       }
     } catch (error) {
       console.log(error);

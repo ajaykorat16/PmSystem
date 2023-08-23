@@ -37,7 +37,7 @@ const LeaveProvider = ({ children }) => {
       if (data.error === false) {
         getLeave();
         setTimeout(function () {
-          toast.success("Leave created successfully");
+          toast.success(data.message);
         }, 1000);
       }
       return data;
@@ -59,10 +59,10 @@ const LeaveProvider = ({ children }) => {
   //delete leave
   const deleteLeave = async (id) => {
     try {
-      const res = await axios.delete(`/leaves/deleteLeave/${id}`, { headers });
-      if (res.data.error === false) {
+      const { data } = await axios.delete(`/leaves/deleteLeave/${id}`, { headers });
+      if (data.error === false) {
         getLeave();
-        toast.success("Leave deleted successfully");
+        toast.success(data.message);
       }
     } catch (error) {
       console.log(error);
@@ -78,7 +78,7 @@ const LeaveProvider = ({ children }) => {
       if (data.error === false) {
         getLeave();
         setTimeout(function () {
-          toast.success("Leave updated successfully");
+          toast.success(data.message);
         }, 1000);
       }
       return data
@@ -135,7 +135,7 @@ const LeaveProvider = ({ children }) => {
       if (data.error === false) {
         getUserLeave();
         setTimeout(function () {
-          toast.success("Leave created successfully");
+          toast.success(data.message);
         }, 1000);
       }
       return data;
