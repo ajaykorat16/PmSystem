@@ -148,7 +148,6 @@ const UserProvider = ({ children }) => {
             editUser.append("dateOfJoining", dateOfJoining)
             editUser.append("dateOfBirth", dateOfBirth)
             photo && editUser.append("photo", photo);
-            console.log(dateOfBirth);
 
             const { data } = await axios.put(`/user/updateProfile`, editUser, { headers });
             if (data.error === false) {

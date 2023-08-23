@@ -221,8 +221,6 @@ const updateUser = asyncHandler(async (req, res) => {
       fullName: firstname + " " + lastname,
     };
 
-    console.log(updatedFields.dateOfBirth);
-
     if (photo) {
       updatedFields.photo = {
         data: fs.readFileSync(photo.path),
