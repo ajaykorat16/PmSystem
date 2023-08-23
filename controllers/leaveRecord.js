@@ -55,7 +55,7 @@ const createLeave = asyncHandler(async (req, res) => {
     } else {
       return res.status(201).json({
         error: true,
-        message: "Your leave balence is not enough to take paid leave!",
+        message: "Your leave balance is not enough to take paid leave!",
       });
     }
 
