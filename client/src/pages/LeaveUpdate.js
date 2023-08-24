@@ -166,6 +166,7 @@ const LeaveUpdate = ({ title }) => {
               <label className="form-label">Leave Start</label>
               <Calendar
                 value={startDate}
+                maxDate={endDate}
                 dateFormat="dd-mm-yy"
                 onChange={(e) => setStartDate(e.target.value)}
                 showIcon
