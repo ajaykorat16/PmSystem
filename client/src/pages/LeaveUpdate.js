@@ -190,6 +190,7 @@ const LeaveUpdate = ({ title }) => {
                 dateFormat="dd-mm-yy"
                 minDate={startDate}
                 onChange={(e) => setEndDate(e.target.value)}
+                disabled={isHalfDay}
                 showIcon
                 id="date"
                 className="form-control"
