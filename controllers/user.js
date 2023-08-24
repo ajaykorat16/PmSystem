@@ -239,6 +239,29 @@ const updateUser = asyncHandler(async (req, res) => {
       new: true,
     });
 
+    const doj = new Date(updateUser.dateOfJoining);
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
+
+    if (
+      doj.getFullYear() === currentYear &&
+      doj.getMonth() === currentMonth &&
+      doj.getDate() <= 15
+    ) {
+      const leaveEntry = new LeaveManagement({
+        user: updateUser._id,
+        monthly: currentDate,
+        leave: 1.5,
+      });
+      await leaveEntry.save();
+      await Users.findByIdAndUpdate(
+        updateUser._id,
+        { $inc: { leaveBalance: 1.5 } },
+        { new: true }
+      );
+    }
+
     for (const projectsId of user.projects) {
       await Projects.findByIdAndUpdate(projectsId.id, {
         $pull: { developers: { id: id } },
