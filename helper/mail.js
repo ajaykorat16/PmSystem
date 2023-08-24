@@ -38,7 +38,7 @@ const sendMailForLeaveStatus = async (data, reasonForLeaveReject) => {
 
                 body = body.replace('{userName}', employee.fullName)
                 body = body.replace('{userName}', employee.fullName)
-                body = body.replace('{department}', employee.department.name)
+                body = body.replace('{department}', employee?.department?.name)
                 body = body.replace('{reason}', capitalizeFLetter(reason))
                 body = body.replace('{leaveType}', capitalizeFLetter(type))
                 body = body.replace('{startDate}', formattedDate(startDate))
@@ -85,7 +85,7 @@ const sendMailForLeaveRequest = async (data) => {
 
                 body = body.replace('{adminName}', adminUser.fullName)
                 body = body.replace('{userName}', employee.fullName)
-                body = body.replace('{department}', employee.department.name)
+                body = body.replace('{department}', employee?.department?.name)
                 body = body.replace('{startDate}', formattedDate(startDate))
                 body = body.replace('{endDate}', formattedDate(endDate))
                 body = body.replace('{reason}', reason)
