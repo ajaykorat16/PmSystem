@@ -122,6 +122,11 @@ const LeaveManagementList = ({ title }) => {
 
   const handleCreate = async () => {
     setNewVisible(true);
+    setManageLeave({
+      user: "",
+      monthly: "",
+      leave: "",
+    })
   };
 
   const addLeave = async (e) => {
@@ -238,7 +243,7 @@ const LeaveManagementList = ({ title }) => {
                 </CModalBody>
                 <CModalFooter>
                   <CButton color="secondary" onClick={() => setNewVisible(false)}> Close</CButton>
-                  <CButton color="primary" type="submit">Save changes</CButton>
+                  <CButton color="primary" type="submit">Submit</CButton>
                 </CModalFooter>
               </CForm>
             </CModal>
@@ -263,6 +268,7 @@ const LeaveManagementList = ({ title }) => {
                 <div className="ms-3">
                   <CButton
                     onClick={() => handleCreate()}
+                    title="Add Leave"
                     className="btn btn-light"
                     style={{ height: "40px" }}
                   >

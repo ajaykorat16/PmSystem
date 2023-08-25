@@ -75,8 +75,10 @@ const LeaveManagementProvider = ({ children }) => {
         setTimeout(function () {
           toast.success(data.message)
         }, 1000);
+        return data;
+      }else{
+        toast.error(data.message)
       }
-      return data;
     } catch (error) {
       if (error.response) {
         const errors = error.response.data.errors;
