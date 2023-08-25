@@ -113,6 +113,13 @@ const createManageLeave = asyncHandler(async (req, res) => {
   try {
     const { user, monthly, leave } = req.body
 
+    if (leave < 1) {
+      return res.status(200).json({
+        error: true,
+        message: "Leave value must be greater than and equal to 01 !"
+      })
+    }
+
     const today = new Date()
     const currentYear = today.getFullYear()
     const monthlyDate = moment(new Date(currentYear, monthly - 1, 1)).format('YYYY-MM-DD');
