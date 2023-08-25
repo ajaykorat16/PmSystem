@@ -116,7 +116,7 @@ const createManageLeave = asyncHandler(async (req, res) => {
     if (leave < 1) {
       return res.status(200).json({
         error: true,
-        message: "Leave value must be greater than and equal to 01 !"
+        message: "Leave value must be greater than and equal to 1."
       })
     }
 
