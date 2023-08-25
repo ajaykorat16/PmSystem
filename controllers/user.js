@@ -98,12 +98,11 @@ const createUser = asyncHandler(async (req, res) => {
       doj.getMonth() === currentMonth &&
       doj.getDate() <= 15
     ) {
-      const leaveEntry = new LeaveManagement({
+      await new LeaveManagement({
         user: newUser._id,
         monthly: currentDate,
         leave: 1.5,
-      });
-      await leaveEntry.save();
+      }).save();
       await Users.findByIdAndUpdate(
         newUser._id,
         { $inc: { leaveBalance: 1.5 } },
@@ -238,29 +237,6 @@ const updateUser = asyncHandler(async (req, res) => {
     const updateUser = await Users.findByIdAndUpdate(user._id, updatedFields, {
       new: true,
     });
-
-    const doj = new Date(updateUser.dateOfJoining);
-    const currentDate = new Date();
-    const currentMonth = currentDate.getMonth();
-    const currentYear = currentDate.getFullYear();
-
-    if (
-      doj.getFullYear() === currentYear &&
-      doj.getMonth() === currentMonth &&
-      doj.getDate() <= 15
-    ) {
-      const leaveEntry = new LeaveManagement({
-        user: updateUser._id,
-        monthly: currentDate,
-        leave: 1.5,
-      });
-      await leaveEntry.save();
-      await Users.findByIdAndUpdate(
-        updateUser._id,
-        { $inc: { leaveBalance: 1.5 } },
-        { new: true }
-      );
-    }
 
     for (const projectsId of user.projects) {
       await Projects.findByIdAndUpdate(projectsId.id, {
