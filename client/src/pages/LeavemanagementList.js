@@ -21,10 +21,8 @@ import { useUser } from "../context/UserContext";
 import { toast } from "react-hot-toast";
 
 const LeaveManagementList = ({ title }) => {
-  const { getLeavesMonthWise, getSingleLeave, updateLeave, createLeave } =
-    useLeaveManagement();
+  const { getLeavesMonthWise, getSingleLeave, updateLeave, createLeave } = useLeaveManagement();
   const { fetchUsers } = useUser();
-
   const [isLoading, setIsLoading] = useState(true);
   const [leavelist, setLeaveList] = useState([]);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -62,27 +60,35 @@ const LeaveManagementList = ({ title }) => {
     setLeaveList(leaveManagementData.leaves);
     setIsLoading(false);
   };
+
+  const getUsers = async () => {
+    const { getAllUsers } = await fetchUsers();
+    setUsers(getAllUsers);
+  };
+
   useEffect(() => {
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth() + 1;
     setGlobalFilterValue(currentMonth.toString());
     fetchLeaves(currentMonth);
+    getUsers();
   }, []);
 
   useEffect(() => {
     fetchLeaves(globalFilterValue);
   }, [currentPage, rowsPerPage, globalFilterValue]);
 
-  const singleDepartment = async () => {
+  const singleLeave = async () => {
     const data = await getSingleLeave(leaveId);
     if (data) {
       setLeave(data.leave);
       setIsLoading(false);
     }
   };
+
   useEffect(() => {
     if (leaveId !== null) {
-      singleDepartment();
+      singleLeave();
     }
   }, [leaveId]);
 
@@ -114,49 +120,33 @@ const LeaveManagementList = ({ title }) => {
     setMonth(monthly);
   };
 
-  const getUsers = async () => {
-    const { getAllUsers } = await fetchUsers();
-    setUsers(getAllUsers);
-  };
-  useEffect(() => {
-    getUsers();
-  }, []);
-
   const handleCreate = async () => {
     setNewVisible(true);
   };
-  
+
   const addLeave = async (e) => {
     e.preventDefault();
     try {
-      console.log(manageLeave);
       const data = await createLeave(manageLeave);
       if (data.error) {
         toast.error(data.message)
       }
+
       const getMonth = new Date(month);
       const m = getMonth.getMonth() + 1;
-      setVisible(false);
+      setNewVisible(false);
       fetchLeaves(m);
+      setManageLeave({
+        user: "",
+        monthly: "",
+        leave: "",
+      })
     } catch (error) {
       console.log(error);
     }
   }
 
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
+  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
   return (
     <Layout title={title}>
@@ -184,12 +174,8 @@ const LeaveManagementList = ({ title }) => {
                   />
                 </CModalBody>
                 <CModalFooter>
-                  <CButton color="secondary" onClick={() => setVisible(false)}>
-                    Close
-                  </CButton>
-                  <CButton color="primary" type="submit">
-                    Save changes
-                  </CButton>
+                  <CButton color="secondary" onClick={() => setVisible(false)}>Close</CButton>
+                  <CButton color="primary" type="submit">Save changes</CButton>
                 </CModalFooter>
               </CForm>
             </CModal>
@@ -211,9 +197,8 @@ const LeaveManagementList = ({ title }) => {
                     className="mb-2"
                     value={manageLeave.user}
                     onChange={(e) =>
-                      setManageLeave({ ...manageLeave, user: e.value })
-                    }
-                  >
+                      setManageLeave({ ...manageLeave, user: e.target.value })
+                    }>
                     <option value="" disabled>
                       Select User
                     </option>
@@ -229,12 +214,12 @@ const LeaveManagementList = ({ title }) => {
                     className="mb-2"
                     value={manageLeave.monthly}
                     onChange={(e) =>
-                      setManageLeave({ ...manageLeave, monthly: e.value })
+                      setManageLeave({ ...manageLeave, monthly: e.target.value })
                     }
                   >
-                    <object value="" disabled>
+                    <option value="" disabled>
                       Select Month
-                    </object>
+                    </option>
                     {months.map((month, index) => (
                       <option key={index} value={index + 1}>
                         {month}
@@ -247,23 +232,18 @@ const LeaveManagementList = ({ title }) => {
                     label="Manage Leave"
                     value={manageLeave.leave}
                     onChange={(e) =>
-                      setManageLeave({ ...manageLeave, leave: e.value })
+                      setManageLeave({ ...manageLeave, leave: e.target.value })
                     }
                   />
                 </CModalBody>
                 <CModalFooter>
-                  <CButton color="secondary" onClick={() => setVisible(false)}>
-                    Close
-                  </CButton>
-                  <CButton color="primary" type="submit">
-                    Save changes
-                  </CButton>
+                  <CButton color="secondary" onClick={() => setNewVisible(false)}> Close</CButton>
+                  <CButton color="primary" type="submit">Save changes</CButton>
                 </CModalFooter>
               </CForm>
             </CModal>
           </div>
           <div className="card mb-5">
-            {/* Header section */}
             <div className="mainHeader d-flex align-items-center justify-content-between ">
               <div>
                 <h4>Manage Leave</h4>

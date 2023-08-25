@@ -67,19 +67,17 @@ const LeaveManagementProvider = ({ children }) => {
   }
 
   //create leave
-  const createLeave = async () => {
+  const createLeave = async (leave) => {
     try {
-      const {user, monthly, leave} = leave
-      const { data } = await axios.post("/leaveManagement/create-manageLeave", { user, monthly, leave }, { headers });
+      const { data } = await axios.post("/leaveManagement/create-manageLeave", leave, { headers });
       if (data.error === false) {
-        console.log(data);
         getLeavesMonthWise()
         setTimeout(function () {
           toast.success(data.message)
         }, 1000);
       }
       return data;
-    }catch (error) {
+    } catch (error) {
       if (error.response) {
         const errors = error.response.data.errors;
         if (errors && Array.isArray(errors) && errors.length > 0) {
