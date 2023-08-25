@@ -66,8 +66,36 @@ const LeaveManagementProvider = ({ children }) => {
     }
   }
 
+  //create leave
+  const createLeave = async () => {
+    try {
+      const {user, monthly, leave} = leave
+      const { data } = await axios.post("/leaveManagement/create-manageLeave", { user, monthly, leave }, { headers });
+      if (data.error === false) {
+        console.log(data);
+        getLeavesMonthWise()
+        setTimeout(function () {
+          toast.success(data.message)
+        }, 1000);
+      }
+      return data;
+    }catch (error) {
+      if (error.response) {
+        const errors = error.response.data.errors;
+        if (errors && Array.isArray(errors) && errors.length > 0) {
+          toast.error("All field required")
+        } else {
+          const errorMessage = error.response.data.message;
+          toast.error(errorMessage);
+        }
+      } else {
+        toast.error('An error occurred. Please try again later.');
+      }
+    }
+  }
+
   return (
-    <LeaveManagementContext.Provider value={{ getLeavesMonthWise, getSingleLeave, updateLeave, getUserLeave }} >
+    <LeaveManagementContext.Provider value={{ getLeavesMonthWise, getSingleLeave, updateLeave, getUserLeave, createLeave }} >
       {children}
     </LeaveManagementContext.Provider>
   );
