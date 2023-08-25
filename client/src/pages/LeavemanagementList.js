@@ -39,7 +39,7 @@ const LeaveManagementList = ({ title }) => {
   const [manageLeave, setManageLeave] = useState({
     user: "",
     monthly: "",
-    leave: "",
+    leave: 1.5,
   });
 
   const fetchLeaves = async (query) => {
@@ -125,7 +125,7 @@ const LeaveManagementList = ({ title }) => {
     setManageLeave({
       user: "",
       monthly: "",
-      leave: "",
+      leave: 1.5,
     })
   };
 
@@ -136,11 +136,8 @@ const LeaveManagementList = ({ title }) => {
       if (data.error) {
         toast.error(data.message)
       }
-
-      const getMonth = new Date(month);
-      const m = getMonth.getMonth() + 1;
       setNewVisible(false);
-      fetchLeaves(m);
+      fetchLeaves(globalFilterValue);
       setManageLeave({
         user: "",
         monthly: "",
