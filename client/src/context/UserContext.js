@@ -77,9 +77,8 @@ const UserProvider = ({ children }) => {
     //add user
     const createUser = async (addUser) => {
         try {
-            const { employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining } = addUser
-
-            const { data } = await axios.post("/user/addUser", { employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining }, { headers });
+            
+            const { data } = await axios.post("/user/addUser", addUser, { headers });
             if (data.error === false) {
                 fetchUsers()
                 setTimeout(function () {

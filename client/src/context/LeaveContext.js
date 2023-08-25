@@ -31,9 +31,8 @@ const LeaveProvider = ({ children }) => {
   //add leave
   const addLeave = async (leaveData) => {
     try {
-      const { reason, startDate, endDate, type, userId, status, totalDays } = leaveData;
+      const { data } = await axios.post(`/leaves/createLeaveAdmin`, leaveData, { headers });
 
-      const { data } = await axios.post(`/leaves/createLeaveAdmin`, { reason, startDate, endDate, type, userId, status, totalDays }, { headers });
       if (data.error === false) {
         getLeave();
         setTimeout(function () {
@@ -72,9 +71,8 @@ const LeaveProvider = ({ children }) => {
   //update leave
   const updateLeave = async (leaveData, id) => {
     try {
-      const { reason, startDate, endDate, type, userId, status, totalDays } = leaveData;
+      const { data } = await axios.put(`/leaves/updateLeave/${id}`, leaveData, { headers });
 
-      const { data } = await axios.put(`/leaves/updateLeave/${id}`, { reason, startDate, endDate, type, userId, status, totalDays }, { headers });
       if (data.error === false) {
         getLeave();
         setTimeout(function () {

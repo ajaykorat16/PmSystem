@@ -61,6 +61,7 @@ const ProjectUpdate = ({ title }) => {
         const { getAllUsers } = await fetchUsers();
         setUsers(getAllUsers);
     };
+    
     useEffect(() => {
         getUsers();
     }, []);

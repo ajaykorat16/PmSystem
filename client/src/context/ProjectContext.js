@@ -53,9 +53,8 @@ const ProjectProvider = ({ children }) => {
     //add project
     const createProject = async (addUser) => {
         try {
-            const { name, description, startDate, developers } = addUser
+            const { data } = await axios.post("/projects/create", addUser, { headers });
 
-            const { data } = await axios.post("/projects/create", { name, description, startDate, developers }, { headers });
             if (data.error === false) {
                 getProject()
                 setTimeout(function () {
@@ -81,9 +80,7 @@ const ProjectProvider = ({ children }) => {
     //update project
     const updateProject = async (project, id) => {
         try {
-            let { name, description, startDate, developers } = project
-
-            const { data } = await axios.put(`/projects/update-project/${id}`, { name, description, startDate, developers }, { headers });
+            const { data } = await axios.put(`/projects/update-project/${id}`, project, { headers });
             if (data.error === false) {
                 getProject()
                 setTimeout(function () {

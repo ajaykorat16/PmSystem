@@ -58,9 +58,8 @@ const WorklogProvider = ({ children }) => {
     //add workLog
     const createWorkLog = async (addWorkLog) => {
         try {
-            const { project, description, logDate, time } = addWorkLog
+            const { data } = await axios.post("/worklog/create", addWorkLog, { headers });
 
-            const { data } = await axios.post("/worklog/create", { project, description, logDate, time }, { headers });
             if (data.error === false) {
                 getWorklog()
                 setTimeout(function () {
@@ -86,9 +85,8 @@ const WorklogProvider = ({ children }) => {
     //update project
     const updateWorklog = async (worklog, id) => {
         try {
-            let { project, description, logDate, time } = worklog
+            const { data } = await axios.put(`/worklog/update-worklog/${id}`, worklog, { headers });
 
-            const { data } = await axios.put(`/worklog/update-worklog/${id}`, { project, description, logDate, time }, { headers });
             if (data.error === false) {
                 getWorklog()
                 setTimeout(function () {

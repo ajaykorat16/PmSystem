@@ -183,6 +183,10 @@
     height: 20rem;
 }
 
+.p-scrollpanel-content {
+    padding-top: 4px !important;
+}
+
 #date {
     border: 1px solid #c7bbbb;
     padding: 0;
