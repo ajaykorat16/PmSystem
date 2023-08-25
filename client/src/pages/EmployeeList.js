@@ -274,9 +274,10 @@ const EmployeeList = ({ title }) => {
                     <>
                       <Button
                         icon="pi pi-eye"
+                        title="View Profile"
                         rounded
                         severity="success"
-                        aria-label="edit"
+                        aria-label="view"
                         onClick={() => handleViewEmployeeProfile(rowData)}
                       />
                     </>

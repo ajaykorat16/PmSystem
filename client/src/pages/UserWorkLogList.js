@@ -210,13 +210,15 @@ const UserWorkLogList = ({ title }) => {
                     <>
                       <Button
                         icon="pi pi-eye"
+                        title="View Work Log"
                         rounded
                         severity="info"
-                        aria-label="Cancel"
+                        aria-label="view"
                         onClick={() => handleWorklogDetail(rowData)}
                       />
                       <Button
                         icon="pi pi-pencil"
+                        title="Edit"
                         rounded
                         className="ms-2"
                         severity="success"
@@ -225,10 +227,11 @@ const UserWorkLogList = ({ title }) => {
                       />
                       <Button
                         icon="pi pi-trash"
+                        title="Delete"
                         rounded
                         severity="danger"
                         className="ms-2"
-                        aria-label="Cancel"
+                        aria-label="delete"
                         onClick={() => handleDelete(rowData._id)}
                       />
                     </>

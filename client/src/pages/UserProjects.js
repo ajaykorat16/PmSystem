@@ -170,10 +170,11 @@ function UserProjects({ title }) {
                                         <>
                                             <Button
                                                 icon="pi pi-eye"
+                                                title='View Project'
                                                 rounded
                                                 severity="info"
                                                 className="ms-2"
-                                                aria-label="Cancel"
+                                                aria-label="view"
                                                 onClick={() => handleProjectdetail(rowData)}
                                             />
                                         </>

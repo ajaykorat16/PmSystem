@@ -254,6 +254,7 @@ const EmployeeByBirthMonth = ({ title }) => {
                     <>
                       <Button
                         icon="pi pi-eye"
+                        title="View Profile"
                         rounded
                         severity="success"
                         aria-label="edit"

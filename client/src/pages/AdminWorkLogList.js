@@ -271,6 +271,7 @@ function AdminWorkLogList({ title }) {
                                         <>
                                             <Button
                                                 icon="pi pi-eye"
+                                                title="View Work Log"
                                                 rounded
                                                 severity="success"
                                                 className="ms-2"

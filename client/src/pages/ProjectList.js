@@ -220,6 +220,7 @@ const ProjectList = ({ title }) => {
                     <>
                       <Button
                         icon="pi pi-eye"
+                        title='View Project'
                         rounded
                         severity="info"
                         aria-label="Cancel"
@@ -227,6 +228,7 @@ const ProjectList = ({ title }) => {
                       />
                       <Button
                         icon="pi pi-pencil"
+                        title='Edit'
                         rounded
                         severity="success"
                         className="ms-2"
@@ -235,6 +237,7 @@ const ProjectList = ({ title }) => {
                       />
                       <Button
                         icon="pi pi-trash"
+                        title='Delete'
                         rounded
                         severity="danger"
                         className="ms-2"

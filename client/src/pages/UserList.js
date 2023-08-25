@@ -206,6 +206,7 @@ const UserList = ({ title }) => {
                       <>
                         <Button
                           icon="pi pi-pencil"
+                          title="Edit"
                           rounded
                           severity="success"
                           aria-label="edit"
@@ -213,6 +214,7 @@ const UserList = ({ title }) => {
                         />
                         <Button
                           icon="pi pi-trash"
+                          title="Delete"
                           rounded
                           severity="danger"
                           className="ms-2"
