@@ -50,7 +50,7 @@ const UserList = ({ title }) => {
     if (globalFilterValue.trim() === "") {
       fetchUsers();
     }
-  }, [globalFilterValue, currentPage, rowsPerPage]);
+  }, [globalFilterValue]);
 
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm(
@@ -61,7 +61,7 @@ const UserList = ({ title }) => {
       fetchUsers();
     }
   };
-  
+
   const handleUpdate = async (id) => {
     navigate(`/dashboard/user/update/${id}`);
   };

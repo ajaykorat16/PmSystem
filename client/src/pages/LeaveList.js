@@ -67,7 +67,7 @@ const LeaveList = ({ title }) => {
     if (globalFilterValue.trim() === "") {
       fetchLeaves();
     }
-  }, [globalFilterValue, currentPage, rowsPerPage]);
+  }, [globalFilterValue]);
 
   const handleUpdate = async (id) => {
     navigate(`/dashboard/leave/update/${id}`);

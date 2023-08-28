@@ -59,7 +59,7 @@ const UserWorkLogList = ({ title }) => {
     if (globalFilterValue.trim() === "") {
       fetchWorklog();
     }
-  }, [globalFilterValue, currentPage, rowsPerPage]);
+  }, [globalFilterValue]);
 
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm(

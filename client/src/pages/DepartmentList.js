@@ -41,7 +41,7 @@ const DepartmentList = ({ title }) => {
     if (globalFilterValue.trim() === '') {
       fetchDepartments();
     }
-  }, [globalFilterValue, currentPage, rowsPerPage])
+  }, [globalFilterValue])
 
   const handleSubmit = async () => {
     fetchDepartments(globalFilterValue)
