@@ -14,7 +14,7 @@ const WorkLogCreate = ({ title }) => {
     const [projects, setProjects] = useState([]);
     const [selectproject, setSelectProject] = useState("");
     const [description, setDescription] = useState("")
-    const [logDate, setLogDate] = useState("")
+    const [logDate, setLogDate] = useState(new Date())
     const [time, setTime] = useState("")
     const { createWorkLog } = useWorklog()
     const { getUserProject } = useProject()

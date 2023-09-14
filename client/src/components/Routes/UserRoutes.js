@@ -17,6 +17,7 @@ const UserRoutes = () => {
         setOk(false);
       }
     };
+
     if (auth?.token) authCheck();
   }, [auth?.token]);
 
