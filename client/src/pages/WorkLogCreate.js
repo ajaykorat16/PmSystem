@@ -58,7 +58,7 @@ const WorkLogCreate = ({ title }) => {
                     </CFormSelect>
                 </CCol>
                 <CCol md={4}>
-                    <CFormInput id="inputTime" label="Time" type="number" value={time} onChange={(e) => setTime(e.target.value)} />
+                    <CFormInput id="inputTime" label="Time" type="number" value={time} min={0} onChange={(e) => setTime(e.target.value)} />
                 </CCol>
                 <CCol md={4}>
                     <label className="form-label">Log Date</label>
