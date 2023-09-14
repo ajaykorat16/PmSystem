@@ -465,12 +465,24 @@ const getUserByBirthDayMonth = asyncHandler(async (req, res) => {
       {
         $lookup: {
           from: "departments",
-          localField: "department",
-          foreignField: "_id",
+          let: { departmentId: "$department" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$_id", "$$departmentId"],
+                },
+              },
+            },
+          ],
           as: "department",
         },
       },
-      { $unwind: "$department" },
+      {
+        $addFields: {
+          department: { $arrayElemAt: ["$department", 0] },
+        },
+      },
     ];
 
     const users = await Users.aggregate(aggregationPipeline);
@@ -487,7 +499,7 @@ const getUserByBirthDayMonth = asyncHandler(async (req, res) => {
       return {
         ...user,
         avatar: avatar,
-        department: user.department.name,
+        department: user.department ? user.department.name : null,
         dateOfBirth: formattedDate(user.dateOfBirth),
         dateOfJoining: formattedDate(user.dateOfJoining),
         photo: photoUrl,
