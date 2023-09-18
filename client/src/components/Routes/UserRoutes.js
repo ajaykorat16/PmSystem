@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
-import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
+import { baseURL } from "../../lib";
+import axios from "axios";
 import Spinner from "../Spinner";
 
 const UserRoutes = () => {
@@ -10,7 +11,7 @@ const UserRoutes = () => {
 
   useEffect(() => {
     const authCheck = async () => {
-      const res = await axios.get(`/user/user-auth`);
+      const res = await axios.get(`${baseURL}/user/user-auth`);
       if (res.data.ok) {
         setOk(true);
       } else {
