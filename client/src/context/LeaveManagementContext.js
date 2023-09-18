@@ -1,6 +1,7 @@
 import { useContext, createContext } from "react";
-import axios from "axios";
 import { useAuth } from "./AuthContext";
+import { baseURL } from "../lib";
+import axios from "axios";
 import toast from "react-hot-toast";
 
 const LeaveManagementContext = createContext();
@@ -16,9 +17,9 @@ const LeaveManagementProvider = ({ children }) => {
     try {
       let res;
       if (query) {
-        res = await axios.post(`/leaveManagement/search?page=${page}&limit=${limit}`, { filter: query }, { headers });
+        res = await axios.post(`${baseURL}/leaveManagement/search?page=${page}&limit=${limit}`, { filter: query }, { headers });
       } else {
-        res = await axios.get(`/leaveManagement`, { params: { page, limit } }, { headers });
+        res = await axios.get(`${baseURL}/leaveManagement`, { params: { page, limit } }, { headers });
       }
       if (res.data.error === false) {
         return res.data;
@@ -31,7 +32,7 @@ const LeaveManagementProvider = ({ children }) => {
   //get single leave
   const getSingleLeave = async (id) => {
     try {
-      const { data } = await axios.get(`/leaveManagement/singleLeave/${id}`, { headers })
+      const { data } = await axios.get(`${baseURL}/leaveManagement/singleLeave/${id}`, { headers })
       return data.getLeave
     } catch (error) {
       console.log(error);
@@ -41,7 +42,7 @@ const LeaveManagementProvider = ({ children }) => {
   //update leave
   const updateLeave = async (leave, id) => {
     try {
-      const { data } = await axios.put(`/leaveManagement/updateLeave/${id}`, { leave }, { headers })
+      const { data } = await axios.put(`${baseURL}/leaveManagement/updateLeave/${id}`, { leave }, { headers })
       if (data.error === false) {
         getLeavesMonthWise()
         setTimeout(function () {
@@ -57,7 +58,7 @@ const LeaveManagementProvider = ({ children }) => {
   //get user leave
   const getUserLeave = async () => {
     try {
-      const { data } = await axios.get(`/leaveManagement/userLeaves`, { headers })
+      const { data } = await axios.get(`${baseURL}/leaveManagement/userLeaves`, { headers })
       if (data.error === false) {
         return data
       }
@@ -69,7 +70,7 @@ const LeaveManagementProvider = ({ children }) => {
   //create leave
   const createLeave = async (leave) => {
     try {
-      const { data } = await axios.post("/leaveManagement/create-manageLeave", leave, { headers });
+      const { data } = await axios.post(`${baseURL}/leaveManagement/create-manageLeave`, leave, { headers });
       if (data.error === false) {
         getLeavesMonthWise()
         setTimeout(function () {

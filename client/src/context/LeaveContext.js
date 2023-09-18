@@ -1,6 +1,7 @@
 import { useContext, createContext } from "react";
-import axios from "axios";
 import { useAuth } from "./AuthContext";
+import { baseURL } from "../lib";
+import axios from "axios";
 import toast from "react-hot-toast";
 
 const LeaveContext = createContext();
@@ -16,9 +17,9 @@ const LeaveProvider = ({ children }) => {
     try {
       let res;
       if (query) {
-        res = await axios.post(`/leaves/leavelist-search`, { filter: query }, { params: { page, limit, sortField, sortOrder }, headers });
+        res = await axios.post(`${baseURL}/leaves/leavelist-search`, { filter: query }, { params: { page, limit, sortField, sortOrder }, headers });
       } else {
-        res = await axios.get(`/leaves/leavelist`, { params: { page, limit, sortField, sortOrder } }, { headers });
+        res = await axios.get(`${baseURL}/leaves/leavelist`, { params: { page, limit, sortField, sortOrder } }, { headers });
       }
       if (res.data.error === false) {
         return res.data;
@@ -31,7 +32,7 @@ const LeaveProvider = ({ children }) => {
   //add leave
   const addLeave = async (leaveData) => {
     try {
-      const { data } = await axios.post(`/leaves/createLeaveAdmin`, leaveData, { headers });
+      const { data } = await axios.post(`${baseURL}/leaves/createLeaveAdmin`, leaveData, { headers });
 
       if (data.error === false) {
         getLeave();
@@ -58,7 +59,7 @@ const LeaveProvider = ({ children }) => {
   //delete leave
   const deleteLeave = async (id) => {
     try {
-      const { data } = await axios.delete(`/leaves/deleteLeave/${id}`, { headers });
+      const { data } = await axios.delete(`${baseURL}/leaves/deleteLeave/${id}`, { headers });
       if (data.error === false) {
         getLeave();
         toast.success(data.message);
@@ -71,7 +72,7 @@ const LeaveProvider = ({ children }) => {
   //update leave
   const updateLeave = async (leaveData, id) => {
     try {
-      const { data } = await axios.put(`/leaves/updateLeave/${id}`, leaveData, { headers });
+      const { data } = await axios.put(`${baseURL}/leaves/updateLeave/${id}`, leaveData, { headers });
 
       if (data.error === false) {
         getLeave();
@@ -88,7 +89,7 @@ const LeaveProvider = ({ children }) => {
   //update status
   const updateStatus = async (status, id, reasonForLeaveReject) => {
     try {
-      const { data } = await axios.put(`/leaves/updateStatus/${id}`, { status, reasonForLeaveReject }, { headers })
+      const { data } = await axios.put(`${baseURL}/leaves/updateStatus/${id}`, { status, reasonForLeaveReject }, { headers })
       if (data.error === false) {
         getLeave()
       }
@@ -100,7 +101,7 @@ const LeaveProvider = ({ children }) => {
   //get single leave
   const getLeaveById = async (id) => {
     try {
-      const { data } = await axios.get(`/leaves/getLeaveById/${id}`, { headers });
+      const { data } = await axios.get(`${baseURL}/leaves/getLeaveById/${id}`, { headers });
       return data.leaves;
     } catch (error) {
       console.log(error);
@@ -112,9 +113,9 @@ const LeaveProvider = ({ children }) => {
     try {
       let res;
       if (query) {
-        res = await axios.post(`/leaves/userLeaves-search`, { filter: query }, { params: { page, limit, sortField, sortOrder }, headers });
+        res = await axios.post(`${baseURL}/leaves/userLeaves-search`, { filter: query }, { params: { page, limit, sortField, sortOrder }, headers });
       } else {
-        res = await axios.get(`/leaves/userLeaves`, { params: { page, limit, sortField, sortOrder } }, { headers });
+        res = await axios.get(`${baseURL}/leaves/userLeaves`, { params: { page, limit, sortField, sortOrder } }, { headers });
       }
       if (res.data.error === false) {
         return res.data;
@@ -129,7 +130,7 @@ const LeaveProvider = ({ children }) => {
     try {
       const { reason, startDate, endDate, type, status, totalDays } = leaveData;
 
-      const { data } = await axios.post(`/leaves/createLeave`, { reason, startDate, endDate, type, status, totalDays }, { headers });
+      const { data } = await axios.post(`${baseURL}/leaves/createLeave`, { reason, startDate, endDate, type, status, totalDays }, { headers });
       if (data.error === false) {
         getUserLeave();
         setTimeout(function () {

@@ -1,6 +1,7 @@
 import { useContext, createContext } from "react";
-import axios from "axios";
 import { useAuth } from "./AuthContext";
+import { baseURL } from "../lib";
+import axios from "axios";
 import toast from "react-hot-toast";
 
 const WorklogContext = createContext();
@@ -16,9 +17,9 @@ const WorklogProvider = ({ children }) => {
         try {
             let res;
             if (query) {
-                res = await axios.post(`/worklog/search-worklog`, { filter: query }, { params: { page, limit, sortField, sortOrder }, headers: headers });
+                res = await axios.post(`${baseURL}/worklog/search-worklog`, { filter: query }, { params: { page, limit, sortField, sortOrder }, headers: headers });
             } else {
-                res = await axios.get(`/worklog/user-worklog`, { params: { page, limit, sortField, sortOrder } }, { headers });
+                res = await axios.get(`${baseURL}/worklog/user-worklog`, { params: { page, limit, sortField, sortOrder } }, { headers });
             }
             if (res.data.error === false) {
                 return res.data
@@ -33,9 +34,9 @@ const WorklogProvider = ({ children }) => {
         try {
             let res;
             if (filter) {
-                res = await axios.post(`/worklog/admin-search-worklog?page=${page}&limit=${limit}`, { filter }, { headers });
+                res = await axios.post(`${baseURL}/worklog/admin-search-worklog?page=${page}&limit=${limit}`, { filter }, { headers });
             } else {
-                res = await axios.get(`/worklog`, { params: { page, limit, sortField, sortOrder } }, { headers });
+                res = await axios.get(`${baseURL}/worklog`, { params: { page, limit, sortField, sortOrder } }, { headers });
             }
             if (res.data.error === false) {
                 return res.data
@@ -48,7 +49,7 @@ const WorklogProvider = ({ children }) => {
     // get single worklog
     const getSingleWorklog = async (id) => {
         try {
-            const { data } = await axios.get(`/worklog/single-worklog/${id}`, { headers });
+            const { data } = await axios.get(`${baseURL}/worklog/single-worklog/${id}`, { headers });
             return data
         } catch (error) {
             console.log(error);
@@ -58,7 +59,7 @@ const WorklogProvider = ({ children }) => {
     //add workLog
     const createWorkLog = async (addWorkLog) => {
         try {
-            const { data } = await axios.post("/worklog/create", addWorkLog, { headers });
+            const { data } = await axios.post(`${baseURL}/worklog/create`, addWorkLog, { headers });
 
             if (data.error === false) {
                 getWorklog()
@@ -85,7 +86,7 @@ const WorklogProvider = ({ children }) => {
     //update project
     const updateWorklog = async (worklog, id) => {
         try {
-            const { data } = await axios.put(`/worklog/update-worklog/${id}`, worklog, { headers });
+            const { data } = await axios.put(`${baseURL}/worklog/update-worklog/${id}`, worklog, { headers });
 
             if (data.error === false) {
                 getWorklog()
@@ -102,7 +103,7 @@ const WorklogProvider = ({ children }) => {
     //delete project
     const deleteWorklog = async (id) => {
         try {
-            const { data } = await axios.delete(`/worklog/delete-worklog/${id}`, { headers });
+            const { data } = await axios.delete(`${baseURL}/worklog/delete-worklog/${id}`, { headers });
             if (data.error === false) {
                 getWorklog()
                 toast.success(data.message)

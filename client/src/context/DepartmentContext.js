@@ -1,6 +1,7 @@
 import { useContext, createContext } from "react";
-import axios from "axios";
 import { useAuth } from "./AuthContext";
+import { baseURL } from "../lib";
+import axios from "axios";
 import toast from "react-hot-toast";
 
 const DepartmentContext = createContext();
@@ -20,7 +21,7 @@ const DepartmentProvider = ({ children }) => {
         queryUrl = `&query=${query}`
       }
 
-      const { data } = await axios.get(`/department?page=${page}&limit=${limit}${queryUrl}&sortField=${sortField}&sortOrder=${sortOrder}`, { headers });
+      const { data } = await axios.get(`${baseURL}/department?page=${page}&limit=${limit}${queryUrl}&sortField=${sortField}&sortOrder=${sortOrder}`, { headers });
       if (data.error === false) {
         return data
       }
@@ -31,7 +32,7 @@ const DepartmentProvider = ({ children }) => {
 
   const getDepartmentList = async () => {
     try {
-      const { data } = await axios.get(`/department/departmentlist`, { headers });
+      const { data } = await axios.get(`${baseURL}/department/departmentlist`, { headers });
       if (data.error === false) {
         return data
       }
@@ -43,7 +44,7 @@ const DepartmentProvider = ({ children }) => {
   //add department
   const addDepartment = async (name) => {
     try {
-      const { data } = await axios.post("/department/createDepartment", { name }, { headers });
+      const { data } = await axios.post(`${baseURL}/department/createDepartment`, { name }, { headers });
       if (data.error === false) {
         getDepartment()
         setTimeout(function () {
@@ -71,7 +72,7 @@ const DepartmentProvider = ({ children }) => {
   //delete department
   const deleteDepartment = async (id) => {
     try {
-      const { data } = await axios.delete(`/department/deleteDepartment/${id}`, { headers })
+      const { data } = await axios.delete(`${baseURL}/department/deleteDepartment/${id}`, { headers })
       if (data.error === false) {
         getDepartment()
         toast.success(data.message)
@@ -84,7 +85,7 @@ const DepartmentProvider = ({ children }) => {
   //update department
   const updateDepartment = async (name, id) => {
     try {
-      const { data } = await axios.put(`/department/updateDepartment/${id}`, { name }, { headers })
+      const { data } = await axios.put(`${baseURL}/department/updateDepartment/${id}`, { name }, { headers })
       if (data.error === false) {
         getDepartment()
         setTimeout(function () {
@@ -100,7 +101,7 @@ const DepartmentProvider = ({ children }) => {
   //getSingleDepartment
   const getSingleDepartment = async (id) => {
     try {
-      const { data } = await axios.get(`/department/getSingleDepartment/${id}`, { headers })
+      const { data } = await axios.get(`${baseURL}/department/getSingleDepartment/${id}`, { headers })
       return data.getSingle
     } catch (error) {
       console.log(error);
