@@ -32,17 +32,10 @@ const EmployeeByBirthMonth = ({ title }) => {
     setIsLoading(true);
     let usertData
     if (!query) {
-      usertData = await getAllUsersByBirthMonth(
-        currentPage,
-        rowsPerPage
-      );
+      usertData = await getAllUsersByBirthMonth(currentPage, rowsPerPage);
     } else {
       let month = parseInt(query, 10);
-      usertData = await getAllUsersByBirthMonth(
-        currentPage,
-        rowsPerPage,
-        month
-      );
+      usertData = await getAllUsersByBirthMonth(currentPage, rowsPerPage, month);
     }
 
     const totalRecordsCount = usertData.totalUsers;
@@ -92,10 +85,7 @@ const EmployeeByBirthMonth = ({ title }) => {
       ) : (
         <>
           <CModal
-            alignment="center"
-            visible={visible}
-            onClose={() => setVisible(false)}
-            className='mainBody'
+            alignment="center" visible={visible} onClose={() => setVisible(false)} className='mainBody'
           >
             <CModalHeader>
               <CModalTitle><strong>{fullName}</strong></CModalTitle>
@@ -193,73 +183,27 @@ const EmployeeByBirthMonth = ({ title }) => {
                 body={(rowData) => (
                   <div className="flex align-items-center gap-2">
                     {rowData.photo ? (
-                      <Avatar
-                        image={`${rowData.photo}`}
-                        size="large"
-                        shape="circle"
-                      />
+                      <Avatar image={`${rowData.photo}`} size="large" shape="circle" />
                     ) : (
-                      <Avatar
-                        icon="pi pi-user"
-                        style={{ backgroundColor: "#2196F3", color: "#ffffff" }}
-                        size="large"
-                        shape="circle"
-                      />
+                      <Avatar icon="pi pi-user" className="avatar" size="large" shape="circle" />
                     )}
                   </div>
                 )}
                 align="center"
               />
-              <Column
-                field="employeeNumber"
-                header="Emp. ID."
-                filterField="employeeNumber"
-                align="center"
-              />
-              <Column
-                field="fullName"
-                header="Name"
-                filterField="firstname"
-                align="center"
-              />
-              <Column
-                field="email"
-                header="Email"
-                filterField="email"
-                align="center"
-              />
-              <Column
-                field="phone"
-                header="Phone"
-                filterField="phone"
-                align="center"
-              />
-              <Column
-                field="dateOfBirth"
-                header="DOB"
-                filterField="dateOfBirth"
-                align="center"
-              />
-              <Column
-                field="department"
-                header="Department"
-                filterField="department"
-                align="center"
-              />
+              <Column field="employeeNumber" header="Emp. ID." filterField="employeeNumber" align="center" />
+              <Column field="fullName" header="Name" filterField="firstname" align="center" />
+              <Column field="email" header="Email" filterField="email" align="center" />
+              <Column field="phone" header="Phone" filterField="phone" align="center" />
+              <Column field="dateOfBirth" header="DOB" filterField="dateOfBirth" align="center" />
+              <Column field="department" header="Department" filterField="department" align="center" />
               <Column
                 field="action"
                 header="Action"
                 body={(rowData) => (
                   <div>
                     <>
-                      <Button
-                        icon="pi pi-eye"
-                        title="View Profile"
-                        rounded
-                        severity="success"
-                        aria-label="edit"
-                        onClick={() => handleViewEmployeeProfile(rowData)}
-                      />
+                      <Button icon="pi pi-eye" title="View Profile" rounded severity="success" aria-label="edit" onClick={() => handleViewEmployeeProfile(rowData)} />
                     </>
                   </div>
                 )}

@@ -26,7 +26,7 @@ const UserList = ({ title }) => {
   const fetchUsers = async (currentPage, rowsPerPage, query, sortField, sortOrder) => {
     setIsLoading(true);
     let usertData = await getAllUsers(currentPage, rowsPerPage, query, sortField, sortOrder);
-    
+
     const totalRecordsCount = usertData.totalUsers;
     setTotalRecords(totalRecordsCount);
     setUserList(usertData.users);
@@ -59,9 +59,7 @@ const UserList = ({ title }) => {
     }
   };
 
-  const handleUpdate = async (id) => {
-    navigate(`/dashboard/user/update/${id}`);
-  };
+  const handleUpdate = async (id) => { navigate(`/dashboard/user/update/${id}`); };
 
   const onPageChange = (event) => {
     const newCurrentPage = Math.floor(event.first / event.rows) + 1;
@@ -95,12 +93,7 @@ const UserList = ({ title }) => {
                     <span className="p-inputgroup-addon">
                       <i className="pi pi-search" />
                     </span>
-                    <InputText
-                      type="search"
-                      value={globalFilterValue}
-                      onChange={(e) => setGlobalFilterValue(e.target.value)}
-                      placeholder="Keyword Search"
-                    />
+                    <InputText type="search" value={globalFilterValue} onChange={(e) => setGlobalFilterValue(e.target.value)} placeholder="Keyword Search" />
                   </div>
                 </form>
               </div>
@@ -119,11 +112,7 @@ const UserList = ({ title }) => {
               dataKey="_id"
               emptyMessage="No user found."
               paginatorLeft={
-                <Dropdown
-                  value={rowsPerPage}
-                  options={[10, 25, 50]}
-                  onChange={(e) => setRowsPerPage(e.value)}
-                />
+                <Dropdown value={rowsPerPage} options={[10, 25, 50]} onChange={(e) => setRowsPerPage(e.value)} />
               }
             >
               <Column
@@ -132,68 +121,21 @@ const UserList = ({ title }) => {
                 body={(rowData) => (
                   <div className="flex align-items-center gap-2">
                     {rowData.photo ? (
-                      <Avatar
-                        image={`${rowData.photo}`}
-                        size="large"
-                        shape="circle"
-                      />
+                      <Avatar image={`${rowData.photo}`} size="large" shape="circle" />
                     ) : (
-                      <Avatar
-                        icon="pi pi-user"
-                        style={{ backgroundColor: "#2196F3", color: "#ffffff" }}
-                        size="large"
-                        shape="circle"
-                      />
+                      <Avatar icon="pi pi-user" className="avatar" size="large" shape="circle" />
                     )}
                   </div>
                 )}
                 align="center"
               />
-              <Column
-                field="employeeNumber"
-                header="Emp. ID."
-                sortable
-                filterField="employeeNumber"
-                align="center"
-              />
-              <Column
-                field="fullName"
-                sortable
-                header="Name"
-                filterField="firstname"
-                align="center"
-              />
-              <Column
-                field="email"
-                sortable
-                header="Email"
-                filterField="email"
-                align="center"
-              />
-              <Column
-                field="phone"
-                header="Phone"
-                filterField="phone"
-                align="center"
-              />
-              <Column
-                field="dateOfBirth"
-                header="DOB"
-                filterField="dateOfBirth"
-                align="center"
-              />
-              <Column
-                field="dateOfJoining"
-                header="DOJ"
-                filterField="dateOfJoining"
-                align="center"
-              />
-              <Column
-                field="department"
-                header="Department"
-                filterField="department"
-                align="center"
-              />
+              <Column field="employeeNumber" header="Emp. ID." sortable filterField="employeeNumber" align="center" />
+              <Column field="fullName" sortable header="Name" filterField="firstname" align="center" />
+              <Column field="email" sortable header="Email" filterField="email" align="center" />
+              <Column field="phone" header="Phone" filterField="phone" align="center" />
+              <Column field="dateOfBirth" header="DOB" filterField="dateOfBirth" align="center" />
+              <Column field="dateOfJoining" header="DOJ" filterField="dateOfJoining" align="center" />
+              <Column field="department" header="Department" filterField="department" align="center" />
               <Column
                 field="action"
                 header="Action"
@@ -201,23 +143,8 @@ const UserList = ({ title }) => {
                   <div>
                     {rowData.role === "user" && (
                       <>
-                        <Button
-                          icon="pi pi-pencil"
-                          title="Edit"
-                          rounded
-                          severity="success"
-                          aria-label="edit"
-                          onClick={() => handleUpdate(rowData._id)}
-                        />
-                        <Button
-                          icon="pi pi-trash"
-                          title="Delete"
-                          rounded
-                          severity="danger"
-                          className="ms-2"
-                          aria-label="Cancel"
-                          onClick={() => handleDelete(rowData._id)}
-                        />
+                        <Button icon="pi pi-pencil" title="Edit" rounded severity="success" aria-label="edit" onClick={() => handleUpdate(rowData._id)} />
+                        <Button icon="pi pi-trash" title="Delete" rounded severity="danger" className="ms-2" aria-label="Cancel" onClick={() => handleDelete(rowData._id)} />
                       </>
                     )}
                   </div>

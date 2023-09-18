@@ -164,12 +164,7 @@ const EmployeeList = ({ title }) => {
                     <span className="p-inputgroup-addon">
                       <i className="pi pi-search" />
                     </span>
-                    <InputText
-                      type="search"
-                      value={globalFilterValue}
-                      onChange={(e) => setGlobalFilterValue(e.target.value)}
-                      placeholder="Keyword Search"
-                    />
+                    <InputText type="search" value={globalFilterValue} onChange={(e) => setGlobalFilterValue(e.target.value)} placeholder="Keyword Search" />
                   </div>
                 </form>
               </div>
@@ -209,7 +204,7 @@ const EmployeeList = ({ title }) => {
                     ) : (
                       <Avatar
                         icon="pi pi-user"
-                        style={{ backgroundColor: "#2196F3", color: "#ffffff" }}
+                        className="avatar"
                         size="large"
                         shape="circle"
                       />
@@ -218,51 +213,13 @@ const EmployeeList = ({ title }) => {
                 )}
                 align="center"
               />
-              <Column
-                field="employeeNumber"
-                header="Emp. ID."
-                sortable
-                filterField="employeeNumber"
-                align="center"
-              />
-              <Column
-                field="fullName"
-                sortable
-                header="Name"
-                filterField="firstname"
-                align="center"
-              />
-              <Column
-                field="email"
-                sortable
-                header="Email"
-                filterField="email"
-                align="center"
-              />
-              <Column
-                field="phone"
-                header="Phone"
-                filterField="phone"
-                align="center"
-              />
-              <Column
-                field="dateOfBirth"
-                header="DOB"
-                filterField="dateOfBirth"
-                align="center"
-              />
-              <Column
-                field="dateOfJoining"
-                header="DOJ"
-                filterField="dateOfJoining"
-                align="center"
-              />
-              <Column
-                field="department"
-                header="Department"
-                filterField="department"
-                align="center"
-              />
+              <Column field="employeeNumber" header="Emp. ID." sortable filterField="employeeNumber" align="center" />
+              <Column field="fullName" sortable header="Name" filterField="firstname" align="center" />
+              <Column field="email" sortable header="Email" filterField="email" align="center" />
+              <Column field="phone" header="Phone" filterField="phone" align="center" />
+              <Column field="dateOfBirth" header="DOB" filterField="dateOfBirth" align="center" />
+              <Column field="dateOfJoining" header="DOJ" filterField="dateOfJoining" align="center" />
+              <Column field="department" header="Department" filterField="department" align="center" />
               <Column
                 field="action"
                 header="Action"
