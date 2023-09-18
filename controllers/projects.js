@@ -1,14 +1,10 @@
+const mongoose = require("mongoose");
 const Projects = require("../models/projects");
 const Users = require("../models/userModel");
 const Worklog = require("../models/workLogmodel");
 const asyncHandler = require("express-async-handler");
 const { validationResult } = require("express-validator");
-const {
-  capitalizeFLetter,
-  formattedDate,
-  parsedDate,
-} = require("../helper/mail");
-const mongoose = require("mongoose");
+const { capitalizeFLetter, formattedDate, parsedDate, } = require("../helper/mail");
 
 const createProject = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
@@ -40,7 +36,13 @@ const createProject = asyncHandler(async (req, res) => {
       let projectId = project._id;
       await Users.findOneAndUpdate(
         { _id: id },
-        { $push: { projects: { id: projectId } } },
+        {
+          $push: {
+            projects: {
+              id: projectId
+            }
+          }
+        },
         { new: true }
       );
     }
@@ -126,15 +128,7 @@ const getProjects = asyncHandler(async (req, res) => {
     const totalProjects = await Projects.countDocuments(query);
     const skip = (page - 1) * limit;
 
-    let projects = await Projects.find(query)
-      .sort({ [sortField]: sortOrder })
-      .skip(skip)
-      .limit(limit)
-      .populate({
-        path: "developers.id",
-        select: "fullName",
-      })
-      .lean();
+    let projects = await Projects.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate({ path: "developers.id", select: "fullName", }).lean();
     const formatteProject = projects.map((project) => {
       return {
         ...project,
@@ -199,11 +193,7 @@ const getUserProjects = asyncHandler(async (req, res) => {
 
     const totalProjectsCount = await Projects.countDocuments(query);
 
-    const matchingProjects = await Projects.find(query)
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .sort({ [sortField]: sortOrder })
-      .lean();
+    const matchingProjects = await Projects.find(query).skip((page - 1) * limit).limit(limit).sort({ [sortField]: sortOrder }).lean();
 
     const formattedProjects = matchingProjects.map((project) => ({
       ...project,
@@ -244,8 +234,7 @@ const updateProject = asyncHandler(async (req, res) => {
 
     const projectObj = {
       name: capitalizeFLetter(name) || existingProject.name,
-      description:
-        capitalizeFLetter(description) || existingProject.description,
+      description: capitalizeFLetter(description) || existingProject.description,
       startDate: parsedDate(startDate) || existingProject.startDate,
       developers: developers || existingProject.developers,
     };
@@ -257,20 +246,14 @@ const updateProject = asyncHandler(async (req, res) => {
       projectObj.developers = newdevelopersIds;
     }
 
-    const updatedProject = await Projects.findByIdAndUpdate(id, projectObj, {
-      new: true,
-    });
+    const updatedProject = await Projects.findByIdAndUpdate(id, projectObj, { new: true, });
 
     for (const developerId of existingProject.developers) {
-      await Users.findByIdAndUpdate(developerId.id, {
-        $pull: { projects: { id: id } },
-      });
+      await Users.findByIdAndUpdate(developerId.id, { $pull: { projects: { id: id } }, });
     }
 
     for (const developerId of developers) {
-      await Users.findByIdAndUpdate(developerId, {
-        $addToSet: { projects: { id: id } },
-      });
+      await Users.findByIdAndUpdate(developerId, { $addToSet: { projects: { id: id } }, });
     }
 
     return res.status(200).json({
@@ -287,10 +270,7 @@ const updateProject = asyncHandler(async (req, res) => {
 const getSingleProject = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
-    const project = await Projects.findById(id).populate({
-      path: "developers.id",
-      select: "-photo",
-    });
+    const project = await Projects.findById(id).populate({ path: "developers.id", select: "-photo", });
     return res.status(200).json({
       error: false,
       message: "Single project get successfully.",
@@ -308,8 +288,21 @@ const delelteProject = asyncHandler(async (req, res) => {
     const project = await Projects.findByIdAndDelete(id);
     if (project) {
       await Users.updateMany(
-        { projects: { $elemMatch: { id: id } } },
-        { $pull: { projects: { id: id } } }
+        {
+          projects:
+          {
+            $elemMatch: {
+              id: id
+            }
+          }
+        },
+        {
+          $pull: {
+            projects: {
+              id: id
+            }
+          }
+        }
       );
       await Worklog.deleteMany({ project: id });
     }
@@ -338,13 +331,4 @@ const userProjects = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = {
-  createProject,
-  getAllProjects,
-  getProjects,
-  getUserProjects,
-  updateProject,
-  delelteProject,
-  getSingleProject,
-  userProjects,
-};
+module.exports = { createProject, getAllProjects, getProjects, getUserProjects, updateProject, delelteProject, getSingleProject, userProjects, };

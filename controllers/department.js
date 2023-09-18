@@ -1,7 +1,7 @@
 const Department = require("../models/departmentModel")
 const Users = require("../models/userModel")
-const { validationResult } = require('express-validator');
 const asyncHandler = require('express-async-handler')
+const { validationResult } = require('express-validator');
 const { capitalizeFLetter } = require("../helper/mail")
 
 const createDepartment = asyncHandler(async (req, res) => {

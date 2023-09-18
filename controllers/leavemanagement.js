@@ -1,9 +1,9 @@
 const LeaveManagement = require("../models/leaveManagementModel");
 const Users = require("../models/userModel");
+const { validationResult } = require("express-validator");
+const { parsedDate } = require("../helper/mail")
 const asyncHandler = require("express-async-handler");
 const moment = require('moment');
-const { parsedDate } = require("../helper/mail")
-const { validationResult } = require("express-validator");
 
 const getLeavesMonthWise = asyncHandler(async (req, res) => {
   try {

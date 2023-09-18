@@ -1,16 +1,16 @@
+const mongoose = require("mongoose");
 const Users = require("../models/userModel");
 const Leaves = require("../models/leaveModel");
 const Department = require("../models/departmentModel");
 const Worklog = require("../models/workLogmodel");
-const mongoose = require("mongoose");
+const Projects = require("../models/projects");
+const LeaveManagement = require("../models/leaveManagementModel");
+const fs = require("fs");
 const { validationResult } = require("express-validator");
 const { formattedDate, capitalizeFLetter, parsedDate } = require("../helper/mail");
-const fs = require("fs");
+const asyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const asyncHandler = require("express-async-handler");
-const LeaveManagement = require("../models/leaveManagementModel");
-const Projects = require("../models/projects");
 const saltRounds = 10;
 
 const hashPassword = async (password) => {
@@ -36,18 +36,7 @@ const createUser = asyncHandler(async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
   try {
-    const {
-      employeeNumber,
-      firstname,
-      lastname,
-      email,
-      password,
-      phone,
-      address,
-      dateOfBirth,
-      department,
-      dateOfJoining,
-    } = req.body;
+    const { employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining, } = req.body;
 
     const existingEmployeeNumber = await Users.findOne({ employeeNumber });
     if (existingEmployeeNumber) {
@@ -93,21 +82,9 @@ const createUser = asyncHandler(async (req, res) => {
     const currentMonth = currentDate.getMonth();
     const currentYear = currentDate.getFullYear();
 
-    if (
-      doj.getFullYear() === currentYear &&
-      doj.getMonth() === currentMonth &&
-      doj.getDate() <= 15
-    ) {
-      await new LeaveManagement({
-        user: newUser._id,
-        monthly: currentDate,
-        leave: 1.5,
-      }).save();
-      await Users.findByIdAndUpdate(
-        newUser._id,
-        { $inc: { leaveBalance: 1.5 } },
-        { new: true }
-      );
+    if (doj.getFullYear() === currentYear && doj.getMonth() === currentMonth && doj.getDate() <= 15) {
+      await new LeaveManagement({ user: newUser._id, monthly: currentDate, leave: 1.5, }).save();
+      await Users.findByIdAndUpdate(newUser._id, { $inc: { leaveBalance: 1.5 } }, { new: true });
     }
 
     return res.status(201).json({
@@ -129,9 +106,7 @@ const loginUser = asyncHandler(async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await Users.findOne({ email })
-      .select("-photo")
-      .populate("department");
+    const user = await Users.findOne({ email }).select("-photo").populate("department");
     if (!user) {
       return res.status(401).json({
         error: true,
@@ -147,9 +122,7 @@ const loginUser = asyncHandler(async (req, res) => {
       });
     }
 
-    const token = await jwt.sign({ user }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "5 days",
-    });
+    const token = await jwt.sign({ user }, process.env.JWT_SECRET_KEY, { expiresIn: "5 days", });
     return res.status(200).send({
       error: false,
       message: "Login successfully !",
@@ -168,18 +141,7 @@ const updateUser = asyncHandler(async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
   try {
-    const {
-      employeeNumber,
-      firstname,
-      lastname,
-      email,
-      phone,
-      address,
-      dateOfBirth,
-      department,
-      dateOfJoining,
-      projects,
-    } = req.fields;
+    const { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining, projects, } = req.fields;
     const { photo } = req.files;
     const { id } = req.params;
 
@@ -195,10 +157,7 @@ const updateUser = asyncHandler(async (req, res) => {
       user = await Users.findById(req.user._id);
     }
 
-    const existingPhone = await Users.findOne({
-      phone,
-      _id: { $ne: user._id },
-    });
+    const existingPhone = await Users.findOne({ phone, _id: { $ne: user._id }, });
     if (existingPhone !== null) {
       return res.status(200).json({
         error: true,
@@ -234,21 +193,14 @@ const updateUser = asyncHandler(async (req, res) => {
       updatedFields.projects = newProjectIds;
     }
 
-    const updateUser = await Users.findByIdAndUpdate(user._id, updatedFields, {
-      new: true,
-    });
+    const updateUser = await Users.findByIdAndUpdate(user._id, updatedFields, { new: true, });
 
     for (const projectsId of user.projects) {
-      await Projects.findByIdAndUpdate(projectsId.id, {
-        $pull: { developers: { id: id } },
-      });
+      await Projects.findByIdAndUpdate(projectsId.id, { $pull: { developers: { id: id } }, });
     }
 
     for (const projectsId of projectArr) {
-      await Projects.findByIdAndUpdate(projectsId, {
-        $addToSet: { developers: { id: id } },
-
-      });
+      await Projects.findByIdAndUpdate(projectsId, { $addToSet: { developers: { id: id } }, });
     }
 
     return res.status(201).send({
@@ -277,10 +229,7 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
     await LeaveManagement.deleteMany({ user: id });
     await Worklog.deleteMany({ userId: id });
     await Leaves.deleteMany({ userId: id });
-    await Projects.updateMany(
-      { "developers.id": id },
-      { $pull: { developers: { id } } }
-    );
+    await Projects.updateMany({ "developers.id": id }, { $pull: { developers: { id } } });
 
     return res.status(200).send({
       error: false,
@@ -370,27 +319,11 @@ const getUsers = asyncHandler(async (req, res) => {
     let totalUsers;
     let users;
     if (authUser.role === "user") {
-      totalUsers = await Users.countDocuments({
-        ...query,
-        role: "user",
-      });
-      users = await Users.find({
-        ...query,
-        role: "user",
-      })
-        .sort({ [sortField]: sortOrder })
-        .skip(skip)
-        .limit(limit)
-        .populate("department")
-        .lean();
+      totalUsers = await Users.countDocuments({ ...query, role: "user", });
+      users = await Users.find({ ...query, role: "user", }).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate("department").lean();
     } else {
       totalUsers = await Users.countDocuments(query);
-      users = await Users.find(query)
-        .sort({ [sortField]: sortOrder })
-        .skip(skip)
-        .limit(limit)
-        .populate("department")
-        .lean();
+      users = await Users.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate("department").lean();
     }
 
     const formattedUsers = users.map((user) => {
@@ -522,9 +455,7 @@ const getUserByBirthDayMonth = asyncHandler(async (req, res) => {
 
 const getAllUser = asyncHandler(async (req, res) => {
   try {
-    const getAllUsers = await Users.find({ role: "user" })
-      .populate("department")
-      .lean();
+    const getAllUsers = await Users.find({ role: "user" }).populate("department").lean();
 
     const formattedUsers = getAllUsers.map((user) => {
       const photoUrl =
@@ -559,13 +490,9 @@ const getUserProfile = asyncHandler(async (req, res) => {
 
     let getProfile;
     if (id) {
-      getProfile = await Users.findById({ _id: id })
-        .populate("department")
-        .populate("projects.id");
+      getProfile = await Users.findById({ _id: id }).populate("department").populate("projects.id");
     } else {
-      getProfile = await Users.findById({ _id: req.user._id })
-        .populate("department")
-        .populate("projects.id");
+      getProfile = await Users.findById({ _id: req.user._id }).populate("department").populate("projects.id");
     }
 
     const photoUrl =
@@ -613,14 +540,4 @@ const changePasswordController = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = {
-  createUser,
-  loginUser,
-  updateUser,
-  deleteUserProfile,
-  getAllUser,
-  getUserProfile,
-  changePasswordController,
-  getUsers,
-  getUserByBirthDayMonth,
-};
+module.exports = { createUser, loginUser, updateUser, deleteUserProfile, getAllUser, getUserProfile, changePasswordController, getUsers, getUserByBirthDayMonth, };

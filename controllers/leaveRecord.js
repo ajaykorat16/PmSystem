@@ -1,14 +1,8 @@
 const Leaves = require("../models/leaveModel");
 const Users = require("../models/userModel");
-const { validationResult } = require("express-validator");
 const asyncHandler = require("express-async-handler");
-const {
-  sendMailForLeaveStatus,
-  sendMailForLeaveRequest,
-  formattedDate,
-  capitalizeFLetter,
-  parsedDate,
-} = require("../helper/mail");
+const { validationResult } = require("express-validator");
+const { sendMailForLeaveStatus, sendMailForLeaveRequest, formattedDate, capitalizeFLetter, parsedDate, } = require("../helper/mail");
 
 const createLeave = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
@@ -16,8 +10,7 @@ const createLeave = asyncHandler(async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
   try {
-    const { reason, startDate, endDate, type, userId, status, totalDays } =
-      req.body;
+    const { reason, startDate, endDate, type, userId, status, totalDays } = req.body;
 
     if (startDate > endDate) {
       return res.status(200).json({
@@ -36,11 +29,7 @@ const createLeave = asyncHandler(async (req, res) => {
     const user = await Users.findById({ _id: uId });
 
     let createLeaves;
-    if (
-      user.leaveBalance >= totalDays &&
-      type === "paid" &&
-      user.leaveBalance !== 0
-    ) {
+    if (user.leaveBalance >= totalDays && type === "paid" && user.leaveBalance !== 0) {
       createLeaves = await new Leaves({
         userId: uId,
         reason,
@@ -70,13 +59,10 @@ const createLeave = asyncHandler(async (req, res) => {
     await sendMailForLeaveRequest(createLeaves);
 
     if (status === "approved" && type === "paid") {
-      await Users.findByIdAndUpdate(
-        uId,
-        { $inc: { leaveBalance: -totalDays } },
-        { new: true }
-      );
+      await Users.findByIdAndUpdate(uId, { $inc: { leaveBalance: -totalDays } }, { new: true });
       await sendMailForLeaveStatus(createLeaves, "-");
     }
+
     return res.status(201).json({
       error: false,
       message: "Leave Created Successfully !!",
@@ -142,23 +128,14 @@ const getLeaves = asyncHandler(async (req, res) => {
     let leaves;
 
     if (sortField === "userId.fullName") {
-      leaves = await Leaves.find(query)
-        .populate({ path: "userId", select: "fullName" })
-        .skip(skip)
-        .limit(limit)
-        .lean();
+      leaves = await Leaves.find(query).populate({ path: "userId", select: "fullName" }).skip(skip).limit(limit).lean();
       leaves.sort((a, b) => {
         const nameA = a.userId?.fullName || "";
         const nameB = b.userId?.fullName || "";
         return sortOrder * nameA.localeCompare(nameB);
       });
     } else {
-      leaves = await Leaves.find(query)
-        .sort({ [sortField]: sortOrder })
-        .skip(skip)
-        .limit(limit)
-        .populate({ path: "userId", select: "fullName" })
-        .lean();
+      leaves = await Leaves.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate({ path: "userId", select: "fullName" }).lean();
     }
 
     const formattedLeaves = leaves.map((leave) => {
@@ -191,6 +168,7 @@ const userGetLeave = asyncHandler(async (req, res) => {
     const sortField = req.query.sortField || "createdAt";
     const sortOrder = req.query.sortOrder || -1;
     let query = { userId: req.user._id };
+
     if (filter) {
       query = {
         userId: req.user._id,
@@ -200,19 +178,16 @@ const userGetLeave = asyncHandler(async (req, res) => {
         ],
       };
     }
+
     const totalLeaves = await Leaves.countDocuments(query);
     const skip = (page - 1) * limit;
+
     const approvedLeave = await Leaves.countDocuments({
       userId: req.user._id,
       status: "approved",
     });
 
-    const leaves = await Leaves.find(query)
-      .sort({ [sortField]: sortOrder })
-      .skip(skip)
-      .limit(limit)
-      .populate({ path: "userId", select: "fullName" })
-      .lean();
+    const leaves = await Leaves.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate({ path: "userId", select: "fullName" }).lean();
 
     const formattedLeaves = leaves.map((leave) => {
       return {
@@ -223,6 +198,7 @@ const userGetLeave = asyncHandler(async (req, res) => {
         endDate: formattedDate(leave.endDate),
       };
     });
+
     return res.status(200).json({
       error: false,
       message: "Get All Leave successfully !!",
@@ -240,9 +216,7 @@ const userGetLeave = asyncHandler(async (req, res) => {
 
 const getLeaveById = asyncHandler(async (req, res) => {
   try {
-    const leaves = await Leaves.findById(req.params.id)
-      .populate("userId")
-      .lean();
+    const leaves = await Leaves.findById(req.params.id).populate("userId").lean();
     return res.status(200).json({
       error: false,
       message: "Get Leave successfully !!",
@@ -260,8 +234,7 @@ const getLeaveById = asyncHandler(async (req, res) => {
 
 const updateLeave = asyncHandler(async (req, res) => {
   try {
-    const { reason, startDate, endDate, type, status, userId, totalDays } =
-      req.body;
+    const { reason, startDate, endDate, type, status, userId, totalDays } = req.body;
     const { id } = req.params;
 
     if (startDate > endDate) {
@@ -292,27 +265,13 @@ const updateLeave = asyncHandler(async (req, res) => {
       updatedFields.status = status || userLeave.status;
     }
 
-    const user = await Users.findById({ _id: updatedFields.userId }).select(
-      "-photo"
-    );
+    const user = await Users.findById({ _id: updatedFields.userId }).select("-photo");
 
     let updateLeave;
-    if (
-      user.leaveBalance >= updatedFields.totalDays &&
-      updatedFields.type === "paid" &&
-      user.leaveBalance !== 0
-    ) {
-      updateLeave = await Leaves.findByIdAndUpdate(
-        { _id: userLeave._id },
-        updatedFields,
-        { new: true }
-      );
+    if (user.leaveBalance >= updatedFields.totalDays && updatedFields.type === "paid" && user.leaveBalance !== 0) {
+      updateLeave = await Leaves.findByIdAndUpdate({ _id: userLeave._id }, updatedFields, { new: true });
     } else if (updatedFields.type === "lwp") {
-      updateLeave = await Leaves.findByIdAndUpdate(
-        { _id: userLeave._id },
-        updatedFields,
-        { new: true }
-      );
+      updateLeave = await Leaves.findByIdAndUpdate({ _id: userLeave._id }, updatedFields, { new: true });
     } else {
       return res.status(201).json({
         error: true,
@@ -353,29 +312,17 @@ const updateStatus = asyncHandler(async (req, res) => {
 
     let updateLeave;
     if (status === "rejected") {
-      updateLeave = await Leaves.findByIdAndUpdate(
-        { _id: id },
-        { status, reasonForLeaveReject },
-        { new: true }
-      );
+      updateLeave = await Leaves.findByIdAndUpdate({ _id: id }, { status, reasonForLeaveReject }, { new: true });
       await sendMailForLeaveStatus(updateLeave, reasonForLeaveReject);
     }
 
     if (status === "approved") {
-      updateLeave = await Leaves.findByIdAndUpdate(
-        { _id: id },
-        { status },
-        { new: true }
-      );
+      updateLeave = await Leaves.findByIdAndUpdate({ _id: id }, { status }, { new: true });
       await sendMailForLeaveStatus(updateLeave, "-");
     }
 
     if (updateLeave.status === "approved" && updateLeave.type === "paid") {
-      await Users.findByIdAndUpdate(
-        updateLeave.userId,
-        { $inc: { leaveBalance: -updateLeave.totalDays } },
-        { new: true }
-      );
+      await Users.findByIdAndUpdate(updateLeave.userId, { $inc: { leaveBalance: -updateLeave.totalDays } }, { new: true });
     }
 
     return res.status(201).send({
@@ -389,13 +336,4 @@ const updateStatus = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = {
-  createLeave,
-  getAllLeaves,
-  updateLeave,
-  deleteLeave,
-  userGetLeave,
-  getLeaveById,
-  getLeaves,
-  updateStatus,
-};
+module.exports = { createLeave, getAllLeaves, updateLeave, deleteLeave, userGetLeave, getLeaveById, getLeaves, updateStatus, };

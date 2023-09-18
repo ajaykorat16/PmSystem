@@ -1,9 +1,9 @@
 const Worklog = require("../models/workLogmodel")
 const Projects = require("../models/projects");
 const asyncHandler = require('express-async-handler');
+const moment = require('moment');
 const { validationResult } = require('express-validator');
 const { capitalizeFLetter, formattedDate, parsedDate } = require("../helper/mail");
-const moment = require('moment');
 
 const createWorkLog = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
