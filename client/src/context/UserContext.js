@@ -1,6 +1,7 @@
 import React, { useContext, createContext } from "react";
-import axios from 'axios';
 import { useAuth } from "./AuthContext";
+import { baseURL } from "../lib";
+import axios from 'axios';
 import toast from "react-hot-toast";
 
 const UserContext = createContext();
@@ -14,7 +15,7 @@ const UserProvider = ({ children }) => {
     //get users
     const fetchUsers = async () => {
         try {
-            const res = await axios.get("/user/userList", { headers });
+            const res = await axios.get(`${baseURL}/user/userList`, { headers });
             if (res.data.error === false) {
                 return res.data
             }
@@ -28,9 +29,9 @@ const UserProvider = ({ children }) => {
         try {
             let res;
             if (query) {
-                res = await axios.post(`/user/user-search`, { filter: query }, { params: { page, limit, sortField, sortOrder }, headers: headers });
+                res = await axios.post(`${baseURL}/user/user-search`, { filter: query }, { params: { page, limit, sortField, sortOrder }, headers: headers });
             } else {
-                res = await axios.get(`/user`, { params: { page, limit, sortField, sortOrder } }, { headers });
+                res = await axios.get(`${baseURL}/user`, { params: { page, limit, sortField, sortOrder } }, { headers });
             }
             if (res.data.error === false) {
                 return res.data
@@ -45,9 +46,9 @@ const UserProvider = ({ children }) => {
         try {
             let res;
             if (query) {
-                res = await axios.post(`/user/getUserByBirthDayMonth-search`, { filter: query }, { params: { page, limit }, headers: headers });
+                res = await axios.post(`${baseURL}/user/getUserByBirthDayMonth-search`, { filter: query }, { params: { page, limit }, headers: headers });
             } else {
-                res = await axios.get(`/user/getUserByBirthDayMonth`, { params: { page, limit } }, { headers });
+                res = await axios.get(`${baseURL}/user/getUserByBirthDayMonth`, { params: { page, limit } }, { headers });
             }
             if (res.data.error === false) {
                 return res.data
@@ -62,9 +63,9 @@ const UserProvider = ({ children }) => {
         try {
             let res;
             if (query) {
-                res = await axios.post(`/user/user-search`, { filter: query }, { params: { page, limit, sortField, sortOrder }, headers: headers });
+                res = await axios.post(`${baseURL}/user/user-search`, { filter: query }, { params: { page, limit, sortField, sortOrder }, headers: headers });
             } else {
-                res = await axios.get(`/user/employeeList`, { params: { page, limit, sortField, sortOrder } }, { headers });
+                res = await axios.get(`${baseURL}/user/employeeList`, { params: { page, limit, sortField, sortOrder } }, { headers });
             }
             if (res.data.error === false) {
                 return res.data
@@ -78,7 +79,7 @@ const UserProvider = ({ children }) => {
     const createUser = async (addUser) => {
         try {
             
-            const { data } = await axios.post("/user/addUser", addUser, { headers });
+            const { data } = await axios.post(`${baseURL}/user/addUser`, addUser, { headers });
             if (data.error === false) {
                 fetchUsers()
                 setTimeout(function () {
@@ -119,7 +120,7 @@ const UserProvider = ({ children }) => {
             editUser.append("projects", JSON.stringify(projects))
             photo && editUser.append("photo", photo);
 
-            const { data } = await axios.put(`/user/updateProfile/${id}`, editUser, { headers });
+            const { data } = await axios.put(`${baseURL}/user/updateProfile/${id}`, editUser, { headers });
             if (data.error === false) {
                 fetchUsers()
                 setTimeout(function () {
@@ -148,7 +149,7 @@ const UserProvider = ({ children }) => {
             editUser.append("dateOfBirth", dateOfBirth)
             photo && editUser.append("photo", photo);
 
-            const { data } = await axios.put(`/user/updateProfile`, editUser, { headers });
+            const { data } = await axios.put(`${baseURL}/user/updateProfile`, editUser, { headers });
             if (data.error === false) {
                 toast.success(data.message)
             }
@@ -161,7 +162,7 @@ const UserProvider = ({ children }) => {
     //delete user
     const deleteUser = async (id) => {
         try {
-            const { data } = await axios.delete(`/user/deleteProfile/${id}`, { headers });
+            const { data } = await axios.delete(`${baseURL}/user/deleteProfile/${id}`, { headers });
             if (data.error === false) {
                 fetchUsers()
                 toast.success(data.message)
@@ -174,7 +175,7 @@ const UserProvider = ({ children }) => {
     //get single user
     const getUserProfile = async (id) => {
         try {
-            const { data } = await axios.get(`/user/getUserProfile/${id}`, { headers });
+            const { data } = await axios.get(`${baseURL}/user/getUserProfile/${id}`, { headers });
             return data
         } catch (error) {
             console.log(error);
@@ -184,7 +185,7 @@ const UserProvider = ({ children }) => {
     //reset password
     const resetPassword = async (password) => {
         try {
-            const { data } = await axios.put(`/user/resetPassword`, { password }, { headers })
+            const { data } = await axios.put(`${baseURL}/user/resetPassword`, { password }, { headers })
             if (data.error === false) {
                 setTimeout(function () {
                     toast.success(data.message)

@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext, createContext } from "react";
+import { baseURL } from "../lib";
 import axios from 'axios'
 import toast from "react-hot-toast"
 
@@ -16,7 +17,7 @@ const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            const { data } = await axios.post('/user/login', { email, password });
+            const { data } = await axios.post(`${baseURL}/user/login`, { email, password });
             if (data.error === false) {
                 setIsLoggedIn(true)
                 setTimeout(function () {
