@@ -23,15 +23,10 @@ const UserList = ({ title }) => {
   const [sortOrder, setSortOrder] = useState(-1);
   const navigate = useNavigate();
 
-  const fetchUsers = async (query, sortField, sortOrder) => {
+  const fetchUsers = async (currentPage, rowsPerPage, query, sortField, sortOrder) => {
     setIsLoading(true);
-    let usertData = await getAllUsers(
-      currentPage,
-      rowsPerPage,
-      query,
-      sortField,
-      sortOrder
-    );
+    let usertData = await getAllUsers(currentPage, rowsPerPage, query, sortField, sortOrder);
+    
     const totalRecordsCount = usertData.totalUsers;
     setTotalRecords(totalRecordsCount);
     setUserList(usertData.users);
@@ -39,18 +34,20 @@ const UserList = ({ title }) => {
   };
 
   useEffect(() => {
-    fetchUsers();
-  }, [currentPage, rowsPerPage]);
+    fetchUsers(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
+  }, [currentPage, rowsPerPage, sortField, sortOrder]);
 
   const handleSubmit = async () => {
-    fetchUsers(globalFilterValue);
+    setCurrentPage(1);
+    fetchUsers(1, rowsPerPage, globalFilterValue, sortField, sortOrder);
   };
 
   useEffect(() => {
     if (globalFilterValue.trim() === "") {
-      fetchUsers();
+      setCurrentPage(1);
+      fetchUsers(1, rowsPerPage, "", sortField, sortOrder);
     }
-  }, [globalFilterValue]);
+  }, [globalFilterValue, rowsPerPage, sortField, sortOrder]);
 
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm(
@@ -58,7 +55,7 @@ const UserList = ({ title }) => {
     );
     if (confirmDelete) {
       await deleteUser(id);
-      fetchUsers();
+      fetchUsers(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
     }
   };
 
@@ -67,8 +64,8 @@ const UserList = ({ title }) => {
   };
 
   const onPageChange = (event) => {
-    const currentPage = Math.floor(event.first / event.rows) + 1;
-    setCurrentPage(currentPage);
+    const newCurrentPage = Math.floor(event.first / event.rows) + 1;
+    setCurrentPage(newCurrentPage);
     const newRowsPerPage = event.rows;
     setRowsPerPage(newRowsPerPage);
   };
@@ -78,7 +75,7 @@ const UserList = ({ title }) => {
     const order = e.sortOrder;
     setSortField(field);
     setSortOrder(order);
-    fetchUsers(null, field, order);
+    fetchUsers(currentPage, rowsPerPage, globalFilterValue, field, order);
   };
 
   return (

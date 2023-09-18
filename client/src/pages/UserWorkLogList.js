@@ -32,15 +32,10 @@ const UserWorkLogList = ({ title }) => {
     time: ""
   });
 
-  const fetchWorklog = async (query, sortField, sortOrder) => {
+  const fetchWorklog = async (currentPage, rowsPerPage, query, sortField, sortOrder) => {
     setIsLoading(true);
-    let worklogData = await getWorklog(
-      currentPage,
-      rowsPerPage,
-      query,
-      sortField,
-      sortOrder
-    );
+    let worklogData = await getWorklog(currentPage, rowsPerPage, query, sortField, sortOrder);
+
     const totalRecordsCount = worklogData.totalWorklog;
     setTotalRecords(totalRecordsCount);
     setWorklogList(worklogData.worklog);
@@ -48,18 +43,20 @@ const UserWorkLogList = ({ title }) => {
   };
 
   useEffect(() => {
-    fetchWorklog();
-  }, [currentPage, rowsPerPage]);
+    fetchWorklog(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
+  }, [currentPage, rowsPerPage, sortField, sortOrder]);
 
   const handleSubmit = async () => {
-    fetchWorklog(globalFilterValue);
+    setCurrentPage(1);
+    fetchWorklog(1, rowsPerPage, globalFilterValue, sortField, sortOrder);
   };
 
   useEffect(() => {
     if (globalFilterValue.trim() === "") {
-      fetchWorklog();
+      setCurrentPage(1);
+      fetchWorklog(1, rowsPerPage, "", sortField, sortOrder);
     }
-  }, [globalFilterValue]);
+  }, [globalFilterValue, rowsPerPage, sortField, sortOrder]);
 
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm(
@@ -67,7 +64,7 @@ const UserWorkLogList = ({ title }) => {
     );
     if (confirmDelete) {
       await deleteWorklog(id);
-      fetchWorklog();
+      fetchWorklog(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
     }
   };
 
@@ -76,8 +73,8 @@ const UserWorkLogList = ({ title }) => {
   };
 
   const onPageChange = (event) => {
-    const currentPage = Math.floor(event.first / event.rows) + 1;
-    setCurrentPage(currentPage);
+    const newCurrentPage = Math.floor(event.first / event.rows) + 1;
+    setCurrentPage(newCurrentPage);
     const newRowsPerPage = event.rows;
     setRowsPerPage(newRowsPerPage);
   };
@@ -87,7 +84,7 @@ const UserWorkLogList = ({ title }) => {
     const order = e.sortOrder;
     setSortField(field);
     setSortOrder(order);
-    fetchWorklog(null, field, order);
+    fetchWorklog(currentPage, rowsPerPage, globalFilterValue, field, order);
   };
 
   const handleWorklogDetail = async (worklog) => {

@@ -16,7 +16,7 @@ const WorklogProvider = ({ children }) => {
         try {
             let res;
             if (query) {
-                res = await axios.post(`/worklog/search-worklog?page=${page}&limit=${limit}`, { filter: query }, { headers });
+                res = await axios.post(`/worklog/search-worklog`, { filter: query }, { params: { page, limit, sortField, sortOrder }, headers: headers });
             } else {
                 res = await axios.get(`/worklog/user-worklog`, { params: { page, limit, sortField, sortOrder } }, { headers });
             }

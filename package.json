@@ -10,7 +10,7 @@
     "start": "node server.js",
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
-  "author": "\"Jasmin Korat\"",
+  "author": "\"Kriva Technolabs\"",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.0",

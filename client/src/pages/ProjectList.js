@@ -30,41 +30,39 @@ const ProjectList = ({ title }) => {
     startDate: "",
   });
 
-  const fetchProjects = async (query, sortField, sortOrder) => {
+  const fetchProjects = async (currentPage, rowsPerPage, query, sortField, sortOrder) => {
     setIsLoading(true);
-    let projectData = await getProject(
-      currentPage,
-      rowsPerPage,
-      query,
-      sortField,
-      sortOrder
-    );
+    let projectData = await getProject(currentPage, rowsPerPage, query, sortField, sortOrder);
+    
     const totalRecordsCount = projectData.totalProjects;
     setTotalRecords(totalRecordsCount);
     setProjectList(projectData.projects);
     setIsLoading(false);
   };
+
   useEffect(() => {
-    fetchProjects();
-  }, [currentPage, rowsPerPage]);
+    fetchProjects(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
+  }, [currentPage, rowsPerPage, sortField, sortOrder]);
 
   const handleSubmit = async () => {
-    fetchProjects(globalFilterValue);
+    setCurrentPage(1);
+    fetchProjects(1, rowsPerPage, globalFilterValue, sortField, sortOrder);
   };
 
   useEffect(() => {
     if (globalFilterValue.trim() === "") {
-      fetchProjects();
+      setCurrentPage(1);
+      fetchProjects(1, rowsPerPage, "", sortField, sortOrder);
     }
-  }, [globalFilterValue, currentPage, rowsPerPage]);
+  }, [globalFilterValue, rowsPerPage, sortField, sortOrder]);
 
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm(
-      "Are you sure you want to delete this user?"
+      "Are you sure you want to delete this project?"
     );
     if (confirmDelete) {
       await deleteProject(id);
-      fetchProjects();
+      fetchProjects(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
     }
   };
 
@@ -73,8 +71,8 @@ const ProjectList = ({ title }) => {
   };
 
   const onPageChange = (event) => {
-    const currentPage = Math.floor(event.first / event.rows) + 1;
-    setCurrentPage(currentPage);
+    const newCurrentPage = Math.floor(event.first / event.rows) + 1;
+    setCurrentPage(newCurrentPage);
     const newRowsPerPage = event.rows;
     setRowsPerPage(newRowsPerPage);
   };
@@ -84,7 +82,7 @@ const ProjectList = ({ title }) => {
     const order = e.sortOrder;
     setSortField(field);
     setSortOrder(order);
-    fetchProjects(null, field, order);
+    fetchProjects(currentPage, rowsPerPage, globalFilterValue, field, order);
   };
 
   const handleProjectDetail = async (project) => {
@@ -210,6 +208,7 @@ const ProjectList = ({ title }) => {
                 field="startDate"
                 header="Start Date"
                 filterField="startDate"
+                sortable
                 align="center"
               />
               <Column

@@ -21,30 +21,30 @@ const DepartmentList = ({ title }) => {
   const [sortOrder, setSortOrder] = useState(-1);
   const navigate = useNavigate();
 
-  const fetchDepartments = async (query, sortField, sortOrder) => {
+  const fetchDepartments = async (currentPage, rowsPerPage, query, sortField, sortOrder) => {
     setIsLoading(true);
-    let departmentData = {};
-    departmentData = await getDepartment(currentPage, rowsPerPage, query, sortField, sortOrder);
+    let departmentData = await getDepartment(currentPage, rowsPerPage, query, sortField, sortOrder);
 
     const totalRecordsCount = departmentData.totalDepartments;
-
     setTotalRecords(totalRecordsCount);
     setDepartmentList(departmentData.departments)
     setIsLoading(false);
   };
 
   useEffect(() => {
-    fetchDepartments();
-  }, [currentPage, rowsPerPage]);
+    fetchDepartments(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
+  }, [currentPage, rowsPerPage, sortField, sortOrder]);
 
   useEffect(() => {
     if (globalFilterValue.trim() === '') {
-      fetchDepartments();
+      setCurrentPage(1);
+      fetchDepartments(1, rowsPerPage, "", sortField, sortOrder);
     }
-  }, [globalFilterValue])
+  }, [globalFilterValue, rowsPerPage, sortField, sortOrder])
 
   const handleSubmit = async () => {
-    fetchDepartments(globalFilterValue)
+    setCurrentPage(1);
+    fetchDepartments(1, rowsPerPage, globalFilterValue, sortField, sortOrder)
   };
 
   const handleDelete = async (id) => {
@@ -53,7 +53,7 @@ const DepartmentList = ({ title }) => {
     );
     if (confirmDelete) {
       await deleteDepartment(id);
-      fetchDepartments();
+      fetchDepartments(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
     }
   };
 
@@ -62,8 +62,8 @@ const DepartmentList = ({ title }) => {
   };
 
   const onPageChange = (event) => {
-    const currentPage = Math.floor(event.first / event.rows) + 1;
-    setCurrentPage(currentPage);
+    const newCurrentPage = Math.floor(event.first / event.rows) + 1;
+    setCurrentPage(newCurrentPage);
     const newRowsPerPage = event.rows;
     setRowsPerPage(newRowsPerPage);
   };
@@ -74,7 +74,7 @@ const DepartmentList = ({ title }) => {
 
     setSortField(field);
     setSortOrder(order);
-    fetchDepartments(null, field, order)
+    fetchDepartments(currentPage, rowsPerPage, globalFilterValue, field, order)
   };
 
   return (

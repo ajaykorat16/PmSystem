@@ -28,7 +28,7 @@ const ProjectProvider = ({ children }) => {
         try {
             let res;
             if (query) {
-                res = await axios.post(`/projects/project-search?page=${page}&limit=${limit}`, { filter: query }, { headers });
+                res = await axios.post(`/projects/project-search`, { filter: query }, { params: { page, limit, sortField, sortOrder }, headers });
             } else {
                 res = await axios.get(`/projects`, { params: { page, limit, sortField, sortOrder } }, { headers });
             }
@@ -111,7 +111,7 @@ const ProjectProvider = ({ children }) => {
         try {
             let res;
             if (query) {
-                res = await axios.post(`/projects/search-project-list?page=${page}&limit=${limit}`, { filter: query }, { headers });
+                res = await axios.post(`/projects/search-project-list`, { filter: query }, { params: { page, limit, sortField, sortOrder }, headers });
             } else {
                 res = await axios.get(`/projects/developer-project-list`, { params: { page, limit, sortField, sortOrder } }, { headers });
             }

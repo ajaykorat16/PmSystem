@@ -25,37 +25,35 @@ function UserProjects({ title }) {
     const [description, setDescription] = useState("")
     const [startDate, setStartDate] = useState("")
 
-    const fetchProjects = async (query, sortField, sortOrder) => {
+    const fetchProjects = async (currentPage, rowsPerPage, query, sortField, sortOrder) => {
         setIsLoading(true);
-        let projectData = await userProject(
-            currentPage,
-            rowsPerPage,
-            query,
-            sortField,
-            sortOrder
-        );
+        let projectData = await userProject(currentPage, rowsPerPage, query, sortField, sortOrder);
+
         const totalRecordsCount = projectData.totalProjects;
         setTotalRecords(totalRecordsCount);
         setProjectList(projectData.projects);
         setIsLoading(false);
     };
+
     useEffect(() => {
-        fetchProjects();
-    }, [currentPage, rowsPerPage]);
+        fetchProjects(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
+    }, [currentPage, rowsPerPage, sortField, sortOrder]);
 
     const handleSubmit = async () => {
-        fetchProjects(globalFilterValue);
+        setCurrentPage(1);
+        fetchProjects(1, rowsPerPage, globalFilterValue, sortField, sortOrder);
     };
 
     useEffect(() => {
         if (globalFilterValue.trim() === "") {
-            fetchProjects();
+            setCurrentPage(1);
+            fetchProjects(1, rowsPerPage, "", sortField, sortOrder);
         }
-    }, [globalFilterValue, currentPage, rowsPerPage]);
+    }, [globalFilterValue, rowsPerPage, sortField, sortOrder]);
 
     const onPageChange = (event) => {
-        const currentPage = Math.floor(event.first / event.rows) + 1;
-        setCurrentPage(currentPage);
+        const newCurrentPage = Math.floor(event.first / event.rows) + 1;
+        setCurrentPage(newCurrentPage);
         const newRowsPerPage = event.rows;
         setRowsPerPage(newRowsPerPage);
     };
@@ -65,7 +63,7 @@ function UserProjects({ title }) {
         const order = e.sortOrder;
         setSortField(field);
         setSortOrder(order);
-        fetchProjects(null, field, order);
+        fetchProjects(currentPage, rowsPerPage, globalFilterValue, field, order);
     };
 
     const handleProjectdetail = async (project) => {

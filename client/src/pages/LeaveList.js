@@ -26,48 +26,39 @@ const LeaveList = ({ title }) => {
   const [visible, setVisible] = useState(false);
   const [fullName, setFullName] = useState(null);
   const [id, setId] = useState(null);
-  const [reasonForLeaveReject, setReasonForLeaveReject] = useState("")
+  const [reasonForLeaveReject, setReasonForLeaveReject] = useState("");
   const navigate = useNavigate();
   const { auth } = useAuth();
 
-  const fetchLeaves = async (query, sortField, sortOrder) => {
+  const fetchLeaves = async (currentPage, rowsPerPage, query, sortField, sortOrder) => {
     setIsLoading(true);
     let leaveData;
     if (auth.user.role === "admin") {
-      leaveData = await getLeave(
-        currentPage,
-        rowsPerPage,
-        query,
-        sortField,
-        sortOrder
-      );
+      leaveData = await getLeave(currentPage, rowsPerPage, query, sortField, sortOrder);
     } else {
-      leaveData = await getUserLeave(
-        currentPage,
-        rowsPerPage,
-        query,
-        sortField,
-        sortOrder
-      );
+      leaveData = await getUserLeave(currentPage, rowsPerPage, query, sortField, sortOrder);
     }
     const totalRecordsCount = leaveData.totalLeaves;
     setTotalRecords(totalRecordsCount);
     setLeaveList(leaveData.leaves);
     setIsLoading(false);
   };
+
   useEffect(() => {
-    fetchLeaves();
-  }, [currentPage, rowsPerPage]);
+    fetchLeaves(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
+  }, [currentPage, rowsPerPage, sortField, sortOrder]);
 
   const handleSubmit = async () => {
-    fetchLeaves(globalFilterValue);
+    setCurrentPage(1);
+    fetchLeaves(1, rowsPerPage, globalFilterValue, sortField, sortOrder);
   };
 
   useEffect(() => {
     if (globalFilterValue.trim() === "") {
-      fetchLeaves();
+      setCurrentPage(1);
+      fetchLeaves(1, rowsPerPage, "", sortField, sortOrder);
     }
-  }, [globalFilterValue]);
+  }, [globalFilterValue, rowsPerPage, sortField, sortOrder]);
 
   const handleUpdate = async (id) => {
     navigate(`/dashboard/leave/update/${id}`);
@@ -75,14 +66,14 @@ const LeaveList = ({ title }) => {
 
   const handleUpdateStatus = async (id, status, fullName) => {
     try {
-      if (status === 'rejected') {
-        setVisible(true)
-        setFullName(fullName)
-        setId(id)
+      if (status === "rejected") {
+        setVisible(true);
+        setFullName(fullName);
+        setId(id);
       } else {
         await updateStatus(status, id);
         toast.success("Leave approved successfully!!");
-        fetchLeaves();
+        fetchLeaves(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
       }
     } catch (error) {
       console.log(error);
@@ -90,8 +81,8 @@ const LeaveList = ({ title }) => {
   };
 
   const onPageChange = (event) => {
-    const currentPage = Math.floor(event.first / event.rows) + 1;
-    setCurrentPage(currentPage);
+    const newCurrentPage = Math.floor(event.first / event.rows) + 1;
+    setCurrentPage(newCurrentPage);
     const newRowsPerPage = event.rows;
     setRowsPerPage(newRowsPerPage);
   };
@@ -102,7 +93,7 @@ const LeaveList = ({ title }) => {
 
     setSortField(field);
     setSortOrder(order);
-    fetchLeaves(null, field, order);
+    fetchLeaves(currentPage, rowsPerPage, globalFilterValue, field, order);
   };
 
   const getSeverity = (status) => {
@@ -125,10 +116,10 @@ const LeaveList = ({ title }) => {
     if (reasonForLeaveReject !== "") {
       await updateStatus("rejected", id, reasonForLeaveReject);
       toast.success("Leave rejected successfully!!");
-      fetchLeaves();
+      fetchLeaves(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
       setVisible(false);
     } else {
-      toast.error("Please write reason for leave reject !")
+      toast.error("Please write a reason for leave rejection!");
     }
   };
 

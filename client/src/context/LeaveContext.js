@@ -16,7 +16,7 @@ const LeaveProvider = ({ children }) => {
     try {
       let res;
       if (query) {
-        res = await axios.post(`/leaves/leavelist-search?page=${page}&limit=${limit}`, { filter: query }, { headers });
+        res = await axios.post(`/leaves/leavelist-search`, { filter: query }, { params: { page, limit, sortField, sortOrder }, headers });
       } else {
         res = await axios.get(`/leaves/leavelist`, { params: { page, limit, sortField, sortOrder } }, { headers });
       }
@@ -112,7 +112,7 @@ const LeaveProvider = ({ children }) => {
     try {
       let res;
       if (query) {
-        res = await axios.post(`/leaves/userLeaves-search?page=${page}&limit=${limit}`, { filter: query }, { headers });
+        res = await axios.post(`/leaves/userLeaves-search`, { filter: query }, { params: { page, limit, sortField, sortOrder }, headers });
       } else {
         res = await axios.get(`/leaves/userLeaves`, { params: { page, limit, sortField, sortOrder } }, { headers });
       }
