@@ -2,6 +2,7 @@ require('dotenv').config()
 require("./database/db")
 require("./routers/cron")
 const express = require('express')
+const path = require('path')
 const PORT = process.env.PORT
 const user = require("./routers/user")
 const department = require("./routers/department")
@@ -13,6 +14,14 @@ const worklog = require("./routers/worklog")
 const app = express()
 var cors = require('cors')
 app.use(cors())
+
+const corsOptions = { origin: "*" }
+app.use(express.static(path.join(__dirname, "/client/build")));
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname + "/client/build/index.html"));
+});
+
+app.use(cors(corsOptions))
 app.use(express.json())
 
 app.use("/user", user)
