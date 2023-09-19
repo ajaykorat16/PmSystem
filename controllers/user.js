@@ -7,7 +7,7 @@ const Projects = require("../models/projects");
 const LeaveManagement = require("../models/leaveManagementModel");
 const fs = require("fs");
 const { validationResult } = require("express-validator");
-const { formattedDate, capitalizeFLetter, parsedDate, parseIndianDate } = require("../helper/mail");
+const { formattedDate, capitalizeFLetter} = require("../helper/mail");
 const asyncHandler = require("express-async-handler");
 const moment = require('moment')
 const jwt = require("jsonwebtoken");
@@ -80,9 +80,9 @@ const createUser = asyncHandler(async (req, res) => {
       password: hashedPassword,
       phone,
       address,
-      dateOfBirth: parsedDate(dateOfBirth),
+      dateOfBirth: dateOfBirth,
       department,
-      dateOfJoining: parsedDate(dateOfJoining),
+      dateOfJoining: dateOfJoining,
     }).save();
 
 

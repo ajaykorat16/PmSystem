@@ -4,7 +4,7 @@ const Users = require("../models/userModel");
 const Worklog = require("../models/workLogmodel");
 const asyncHandler = require("express-async-handler");
 const { validationResult } = require("express-validator");
-const { capitalizeFLetter, formattedDate, parsedDate, } = require("../helper/mail");
+const { capitalizeFLetter, formattedDate } = require("../helper/mail");
 
 const createProject = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
@@ -18,7 +18,7 @@ const createProject = asyncHandler(async (req, res) => {
     const projectObj = {
       name: capitalizeFLetter(name),
       description: capitalizeFLetter(description),
-      startDate: parsedDate(startDate),
+      startDate: startDate,
       developers,
     };
 
@@ -235,7 +235,7 @@ const updateProject = asyncHandler(async (req, res) => {
     const projectObj = {
       name: capitalizeFLetter(name) || existingProject.name,
       description: capitalizeFLetter(description) || existingProject.description,
-      startDate: parsedDate(startDate) || existingProject.startDate,
+      startDate: startDate || existingProject.startDate,
       developers: developers || existingProject.developers,
     };
 

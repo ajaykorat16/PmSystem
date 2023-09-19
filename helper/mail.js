@@ -14,11 +14,8 @@ const transporter = nodemailer.createTransport({
 });
 
 const parseIndianDate = (date, input = 'ddd MMM DD YYYY HH:mm:ss Z+HHmm', format = 'YYYY-MM-DD') => {
-
     const utcDateTime = momentTimezone(date, input).tz('UTC');
-
     const indianDateTime = utcDateTime.clone().tz('Asia/Kolkata');
-
     return indianDateTime.format(format);
 };
 

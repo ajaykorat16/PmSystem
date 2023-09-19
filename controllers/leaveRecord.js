@@ -2,7 +2,7 @@ const Leaves = require("../models/leaveModel");
 const Users = require("../models/userModel");
 const asyncHandler = require("express-async-handler");
 const { validationResult } = require("express-validator");
-const { sendMailForLeaveStatus, sendMailForLeaveRequest, formattedDate, capitalizeFLetter, parsedDate, } = require("../helper/mail");
+const { sendMailForLeaveStatus, sendMailForLeaveRequest, formattedDate, capitalizeFLetter } = require("../helper/mail");
 
 const createLeave = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
@@ -11,7 +11,7 @@ const createLeave = asyncHandler(async (req, res) => {
   }
   try {
     const { reason, startDate, endDate, type, userId, status, totalDays } = req.body;
-    
+
     if (startDate > endDate) {
       return res.status(200).json({
         error: true,
@@ -27,14 +27,14 @@ const createLeave = asyncHandler(async (req, res) => {
     }
 
     const user = await Users.findById({ _id: uId });
-    
+
     let createLeaves;
     if (user.leaveBalance >= totalDays && type === "paid" && user.leaveBalance !== 0) {
       createLeaves = await new Leaves({
         userId: uId,
         reason,
-        startDate: parsedDate(startDate),
-        endDate: parsedDate(endDate),
+        startDate: startDate,
+        endDate: endDate,
         type,
         status,
         totalDays,
@@ -43,8 +43,8 @@ const createLeave = asyncHandler(async (req, res) => {
       createLeaves = await new Leaves({
         userId: uId,
         reason,
-        startDate: parsedDate(startDate),
-        endDate: parsedDate(endDate),
+        startDate: startDate,
+        endDate: endDate,
         type,
         status,
         totalDays,
@@ -255,8 +255,8 @@ const updateLeave = asyncHandler(async (req, res) => {
       userId: userId || userLeave.userId,
       reason: reason || userLeave.reason,
       status: status || userLeave.status,
-      startDate: parsedDate(startDate) || userLeave.startDate,
-      endDate: parsedDate(endDate) || userLeave.endDate,
+      startDate: startDate || userLeave.startDate,
+      endDate: endDate || userLeave.endDate,
       type: type || userLeave.type,
       totalDays: totalDays || userLeave.totalDays,
     };
