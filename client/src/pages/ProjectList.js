@@ -178,7 +178,7 @@ const ProjectList = ({ title }) => {
               first={(currentPage - 1) * rowsPerPage}
               onPage={onPageChange}
               dataKey="_id"
-              emptyMessage="No user found."
+              emptyMessage="No project found."
               paginatorLeft={
                 <Dropdown
                   value={rowsPerPage}

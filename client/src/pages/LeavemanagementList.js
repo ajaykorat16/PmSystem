@@ -6,17 +6,7 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { useLeaveManagement } from "../context/LeaveManagementContext";
-import {
-  CButton,
-  CForm,
-  CFormInput,
-  CFormSelect,
-  CModal,
-  CModalBody,
-  CModalFooter,
-  CModalHeader,
-  CModalTitle,
-} from "@coreui/react";
+import { CButton, CForm, CFormInput, CFormSelect, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle, } from "@coreui/react";
 import { useUser } from "../context/UserContext";
 import { toast } from "react-hot-toast";
 
@@ -36,11 +26,7 @@ const LeaveManagementList = ({ title }) => {
   const [fullName, setFullName] = useState(null);
   const [month, setMonth] = useState(null);
   const [users, setUsers] = useState([]);
-  const [manageLeave, setManageLeave] = useState({
-    user: "",
-    monthly: "",
-    leave: 1.5,
-  });
+  const [manageLeave, setManageLeave] = useState({ user: "", monthly: "", leave: 1.5, });
 
   const fetchLeaves = async (query) => {
     setIsLoading(true);
@@ -49,11 +35,7 @@ const LeaveManagementList = ({ title }) => {
       leaveManagementData = await getLeavesMonthWise(currentPage, rowsPerPage);
     } else {
       let month = parseInt(query, 10);
-      leaveManagementData = await getLeavesMonthWise(
-        currentPage,
-        rowsPerPage,
-        month
-      );
+      leaveManagementData = await getLeavesMonthWise(currentPage, rowsPerPage, month);
     }
     const totalRecordsCount = leaveManagementData.totalLeaves;
     setTotalRecords(totalRecordsCount);
@@ -122,27 +104,17 @@ const LeaveManagementList = ({ title }) => {
 
   const handleCreate = async () => {
     setNewVisible(true);
-    setManageLeave({
-      user: "",
-      monthly: "",
-      leave: 1.5,
-    })
+    setManageLeave({ user: "", monthly: "", leave: 1.5, })
   };
 
   const addLeave = async (e) => {
     e.preventDefault();
     try {
       const data = await createLeave(manageLeave);
-      if (data.error) {
-        toast.error(data.message)
-      }
+      if (data.error) { toast.error(data.message) }
       setNewVisible(false);
       fetchLeaves(globalFilterValue);
-      setManageLeave({
-        user: "",
-        monthly: "",
-        leave: "",
-      })
+      setManageLeave({ user: "", monthly: "", leave: "", })
     } catch (error) {
       console.log(error);
     }
@@ -167,13 +139,7 @@ const LeaveManagementList = ({ title }) => {
               </CModalHeader>
               <CForm onSubmit={handleChange}>
                 <CModalBody>
-                  <CFormInput
-                    type="number"
-                    id="leave"
-                    label="Manage Leave"
-                    value={leave}
-                    onChange={(e) => setLeave(e.target.value)}
-                  />
+                  <CFormInput type="number" id="leave" label="Manage Leave" value={leave} onChange={(e) => setLeave(e.target.value)} />
                 </CModalBody>
                 <CModalFooter>
                   <CButton color="secondary" onClick={() => setVisible(false)}>Close</CButton>
@@ -198,9 +164,7 @@ const LeaveManagementList = ({ title }) => {
                     label="User Name"
                     className="mb-2"
                     value={manageLeave.user}
-                    onChange={(e) =>
-                      setManageLeave({ ...manageLeave, user: e.target.value })
-                    }>
+                    onChange={(e) => setManageLeave({ ...manageLeave, user: e.target.value })}>
                     <option value="" disabled>
                       Select User
                     </option>
@@ -215,9 +179,7 @@ const LeaveManagementList = ({ title }) => {
                     label="Month"
                     className="mb-2"
                     value={manageLeave.monthly}
-                    onChange={(e) =>
-                      setManageLeave({ ...manageLeave, monthly: e.target.value })
-                    }
+                    onChange={(e) => setManageLeave({ ...manageLeave, monthly: e.target.value })}
                   >
                     <option value="" disabled>
                       Select Month
@@ -233,9 +195,7 @@ const LeaveManagementList = ({ title }) => {
                     id="leave"
                     label="Manage Leave"
                     value={manageLeave.leave}
-                    onChange={(e) =>
-                      setManageLeave({ ...manageLeave, leave: e.target.value })
-                    }
+                    onChange={(e) => setManageLeave({ ...manageLeave, leave: e.target.value })}
                   />
                 </CModalBody>
                 <CModalFooter>
@@ -283,27 +243,13 @@ const LeaveManagementList = ({ title }) => {
               first={(currentPage - 1) * rowsPerPage}
               onPage={onPageChange}
               dataKey="_id"
-              emptyMessage="No user found."
+              emptyMessage="No data found."
               paginatorLeft={
-                <Dropdown
-                  value={rowsPerPage}
-                  options={[10, 25, 50]}
-                  onChange={(e) => setRowsPerPage(e.value)}
-                />
+                <Dropdown value={rowsPerPage} options={[10, 25, 50]} onChange={(e) => setRowsPerPage(e.value)} />
               }
             >
-              <Column
-                field="user.fullName"
-                header="Emp. Name"
-                filterField="employeeName"
-                align="center"
-              />
-              <Column
-                field="leave"
-                header="Leaves"
-                filterField="leaves"
-                align="center"
-              />
+              <Column field="user.fullName" header="Emp. Name" filterField="employeeName" align="center" />
+              <Column field="leave" header="Leaves" filterField="leaves" align="center" />
               <Column
                 header="Action"
                 body={(rowData) => (
@@ -314,13 +260,7 @@ const LeaveManagementList = ({ title }) => {
                       severity="info"
                       className="ms-2"
                       title="Edit"
-                      onClick={() =>
-                        handleUpdate(
-                          rowData._id,
-                          rowData.user.fullName,
-                          rowData.monthly
-                        )
-                      }
+                      onClick={() => handleUpdate(rowData._id, rowData.user.fullName, rowData.monthly)}
                       raised
                     />
                   </div>

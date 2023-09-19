@@ -25,12 +25,7 @@ const UserWorkLogList = ({ title }) => {
   const [sortOrder, setSortOrder] = useState(-1);
   const [visible, setVisible] = useState(false);
   const navigate = useNavigate();
-  const [worklog, setWorklog] = useState({
-    project: "",
-    description: "",
-    logDate: "",
-    time: ""
-  });
+  const [worklog, setWorklog] = useState({ project: "", description: "", logDate: "", time: "" });
 
   const fetchWorklog = async (currentPage, rowsPerPage, query, sortField, sortOrder) => {
     setIsLoading(true);
@@ -147,12 +142,7 @@ const UserWorkLogList = ({ title }) => {
                     <span className="p-inputgroup-addon">
                       <i className="pi pi-search" />
                     </span>
-                    <InputText
-                      type="search"
-                      value={globalFilterValue}
-                      onChange={(e) => setGlobalFilterValue(e.target.value)}
-                      placeholder="Keyword Search"
-                    />
+                    <InputText type="search" value={globalFilterValue} onChange={(e) => setGlobalFilterValue(e.target.value)} placeholder="Keyword Search" />
                   </div>
                 </form>
               </div>
@@ -169,68 +159,23 @@ const UserWorkLogList = ({ title }) => {
               first={(currentPage - 1) * rowsPerPage}
               onPage={onPageChange}
               dataKey="_id"
-              emptyMessage="No user found."
+              emptyMessage="No work log found."
               paginatorLeft={
-                <Dropdown
-                  value={rowsPerPage}
-                  options={[10, 25, 50]}
-                  onChange={(e) => setRowsPerPage(e.value)}
-                />
+                <Dropdown value={rowsPerPage} options={[10, 25, 50]} onChange={(e) => setRowsPerPage(e.value)} />
               }
             >
-              <Column
-                field="project.name"
-                header="Project Name"
-                sortable
-                filterField="Project"
-                align="center"
-              />
-              <Column
-                field="logDate"
-                sortable
-                header="Log Date"
-                filterField="logDate"
-                align="center"
-              />
-              <Column
-                field="time"
-                sortable
-                header="Time"
-                filterField="time"
-                align="center"
-              />
+              <Column field="project.name" header="Project Name" sortable filterField="Project" align="center" />
+              <Column field="logDate" sortable header="Log Date" filterField="logDate" align="center" />
+              <Column field="time" sortable header="Time" filterField="time" align="center" />
               <Column
                 field="action"
                 header="Action"
                 body={(rowData) => (
                   <div>
                     <>
-                      <Button
-                        icon="pi pi-eye"
-                        title="View Work Log"
-                        rounded
-                        severity="info"
-                        aria-label="view"
-                        onClick={() => handleWorklogDetail(rowData)}
-                      />
-                      <Button
-                        icon="pi pi-pencil"
-                        title="Edit"
-                        rounded
-                        className="ms-2"
-                        severity="success"
-                        aria-label="edit"
-                        onClick={() => handleUpdate(rowData._id)}
-                      />
-                      <Button
-                        icon="pi pi-trash"
-                        title="Delete"
-                        rounded
-                        severity="danger"
-                        className="ms-2"
-                        aria-label="delete"
-                        onClick={() => handleDelete(rowData._id)}
-                      />
+                      <Button icon="pi pi-eye" title="View Work Log" rounded severity="info" aria-label="view" onClick={() => handleWorklogDetail(rowData)} />
+                      <Button icon="pi pi-pencil" title="Edit" rounded className="ms-2" severity="success" aria-label="edit" onClick={() => handleUpdate(rowData._id)} />
+                      <Button icon="pi pi-trash" title="Delete" rounded severity="danger" className="ms-2" aria-label="delete" onClick={() => handleDelete(rowData._id)} />
                     </>
                   </div>
                 )}

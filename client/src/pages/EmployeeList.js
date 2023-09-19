@@ -181,13 +181,9 @@ const EmployeeList = ({ title }) => {
               first={(currentPage - 1) * rowsPerPage}
               onPage={onPageChange}
               dataKey="_id"
-              emptyMessage="No user found."
+              emptyMessage="No employee found."
               paginatorLeft={
-                <Dropdown
-                  value={rowsPerPage}
-                  options={[10, 25, 50]}
-                  onChange={(e) => setRowsPerPage(e.value)}
-                />
+                <Dropdown value={rowsPerPage} options={[10, 25, 50]} onChange={(e) => setRowsPerPage(e.value)} />
               }
             >
               <Column
@@ -196,18 +192,9 @@ const EmployeeList = ({ title }) => {
                 body={(rowData) => (
                   <div className="flex align-items-center gap-2">
                     {rowData.photo ? (
-                      <Avatar
-                        image={`${rowData.photo}`}
-                        size="large"
-                        shape="circle"
-                      />
+                      <Avatar image={`${rowData.photo}`} size="large" shape="circle" />
                     ) : (
-                      <Avatar
-                        icon="pi pi-user"
-                        className="avatar"
-                        size="large"
-                        shape="circle"
-                      />
+                      <Avatar icon="pi pi-user" className="avatar" size="large" shape="circle" />
                     )}
                   </div>
                 )}

@@ -1,17 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import {
-    CButton,
-    CCard,
-    CCardBody,
-    CCardGroup,
-    CCol,
-    CContainer,
-    CForm,
-    CFormInput,
-    CInputGroup,
-    CInputGroupText,
-    CRow,
-} from '@coreui/react'
+import { CButton, CCard, CCardBody, CCardGroup, CCol, CContainer, CForm, CFormInput, CInputGroup, CInputGroupText, CRow, } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -19,8 +7,8 @@ import { useAuth } from '../context/AuthContext'
 import { Toaster } from "react-hot-toast"
 
 const Login = () => {
-    const [email, setEmail] = useState("jasminkorat204@gmail.com");
-    const [password, setPassword] = useState("123456");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const { auth, login } = useAuth()
     const navigate = useNavigate()
     const location = useLocation()
@@ -56,24 +44,13 @@ const Login = () => {
                                             <CInputGroupText>
                                                 <CIcon icon={cilUser} />
                                             </CInputGroupText>
-                                            <CFormInput type="email"
-                                                placeholder="Email"
-                                                autoComplete="email"
-                                                value={email}
-                                                onChange={(e) => setEmail(e.target.value)}
-                                            />
+                                            <CFormInput type="email" placeholder="Email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                                         </CInputGroup>
                                         <CInputGroup className="mb-4">
                                             <CInputGroupText>
                                                 <CIcon icon={cilLockLocked} />
                                             </CInputGroupText>
-                                            <CFormInput
-                                                type="password"
-                                                placeholder="Password"
-                                                autoComplete="current-password"
-                                                value={password}
-                                                onChange={(e) => setPassword(e.target.value)}
-                                            />
+                                            <CFormInput type="password" placeholder="Password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
                                         </CInputGroup>
                                         <CRow>
                                             <CCol xs={6}>

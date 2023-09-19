@@ -10,14 +10,7 @@ import { useWorklog } from "../context/WorklogContext";
 import { useUser } from "../context/UserContext";
 import { useProject } from "../context/ProjectContext";
 import "../styles/Styles.css";
-import {
-    CButton,
-    CModal,
-    CModalBody,
-    CModalFooter,
-    CModalHeader,
-    CModalTitle,
-} from "@coreui/react";
+import { CButton, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle, } from "@coreui/react";
 import { Button } from "primereact/button";
 
 function AdminWorkLogList({ title }) {
@@ -34,28 +27,12 @@ function AdminWorkLogList({ title }) {
     const [sortField, setSortField] = useState("createdAt");
     const [sortOrder, setSortOrder] = useState(-1);
     const [visible, setVisible] = useState(false);
-    const [filter, setFilter] = useState({
-        userId: null,
-        project: null,
-        logDate: null,
-    });
-    const [worklog, setWorklog] = useState({
-        userId: "",
-        project: "",
-        description: "",
-        logDate: "",
-        time: "",
-    });
+    const [filter, setFilter] = useState({ userId: null, project: null, logDate: null, });
+    const [worklog, setWorklog] = useState({ userId: "", project: "", description: "", logDate: "", time: "", });
 
     const fetchWorklog = async (filter, sortField, sortOrder) => {
         setIsLoading(true);
-        let worklogData = await getAdminWorklog(
-            currentPage,
-            rowsPerPage,
-            filter,
-            sortField,
-            sortOrder
-        );
+        let worklogData = await getAdminWorklog(currentPage, rowsPerPage, filter, sortField, sortOrder);
         const totalRecordsCount = worklogData.totalWorklog;
         setTotalRecords(totalRecordsCount);
         setWorklogList(worklogData.worklog);
@@ -92,14 +69,8 @@ function AdminWorkLogList({ title }) {
         fetchWorklog(null, field, order);
     };
 
-    const userOptions = users.map((user) => ({
-        label: user.fullName,
-        value: user._id,
-    }));
-    const projectOptions = projects.map((project) => ({
-        label: project.name,
-        value: project._id,
-    }));
+    const userOptions = users.map((user) => ({ label: user.fullName, value: user._id, }));
+    const projectOptions = projects.map((project) => ({ label: project.name, value: project._id, }));
 
     const handleWorklogDetail = async (worklog) => {
         setVisible(true);
@@ -113,11 +84,7 @@ function AdminWorkLogList({ title }) {
     };
 
     const clearFilter = () => {
-        setFilter({
-            userId: null,
-            project: null,
-            logDate: null,
-        });
+        setFilter({ userId: null, project: null, logDate: null, });
     };
 
     return (
@@ -147,10 +114,7 @@ function AdminWorkLogList({ title }) {
                                 <ScrollPanel
                                     className="custom"
                                 >
-                                    <div
-                                        className="description"
-                                        dangerouslySetInnerHTML={{ __html: worklog.description }}
-                                    />
+                                    <div className="description" dangerouslySetInnerHTML={{ __html: worklog.description }} />
                                 </ScrollPanel>
                             </div>
                             <div className="d-flex justify-content-end ">
@@ -176,15 +140,7 @@ function AdminWorkLogList({ title }) {
                                 <h4>Work Log</h4>
                             </div>
                             <div>
-                                <Button
-                                    type="button"
-                                    severity="info"
-                                    icon="pi pi-filter-slash"
-                                    label="Clear Filters"
-                                    onClick={clearFilter}
-                                    rounded
-                                    raised
-                                />
+                                <Button type="button" severity="info" icon="pi pi-filter-slash" label="Clear Filters" onClick={clearFilter} rounded raised />
                             </div>
                         </div>
                         <DataTable
@@ -200,13 +156,9 @@ function AdminWorkLogList({ title }) {
                             first={(currentPage - 1) * rowsPerPage}
                             onPage={onPageChange}
                             dataKey="_id"
-                            emptyMessage="No user found."
+                            emptyMessage="No work log found."
                             paginatorLeft={
-                                <Dropdown
-                                    value={rowsPerPage}
-                                    options={[10, 25, 50]}
-                                    onChange={(e) => setRowsPerPage(e.value)}
-                                />
+                                <Dropdown value={rowsPerPage} options={[10, 25, 50]} onChange={(e) => setRowsPerPage(e.value)} />
                             }
                         >
                             <Column
@@ -215,12 +167,7 @@ function AdminWorkLogList({ title }) {
                                 showFilterMenu={false}
                                 filter
                                 filterElement={
-                                    <Dropdown
-                                        value={filter.userId}
-                                        options={userOptions}
-                                        onChange={(e) => setFilter({ ...filter, userId: e.value })}
-                                        showClear
-                                    />
+                                    <Dropdown value={filter.userId} options={userOptions} onChange={(e) => setFilter({ ...filter, userId: e.value })} showClear />
                                 }
                                 align="center"
                             />
@@ -230,12 +177,7 @@ function AdminWorkLogList({ title }) {
                                 showFilterMenu={false}
                                 filter
                                 filterElement={
-                                    <Dropdown
-                                        value={filter.project}
-                                        options={projectOptions}
-                                        onChange={(e) => setFilter({ ...filter, project: e.value })}
-                                        showClear
-                                    />
+                                    <Dropdown value={filter.project} options={projectOptions} onChange={(e) => setFilter({ ...filter, project: e.value })} showClear />
                                 }
                                 align="center"
                             />
@@ -257,12 +199,7 @@ function AdminWorkLogList({ title }) {
                                 }
                                 align="center"
                             />
-                            <Column
-                                field="time"
-                                header="Time"
-                                filterField="time"
-                                align="center"
-                            />
+                            <Column field="time" header="Time" filterField="time" align="center" />
                             <Column
                                 field="action"
                                 header="Action"
