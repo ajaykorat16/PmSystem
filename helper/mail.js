@@ -1,7 +1,8 @@
-const nodemailer = require('nodemailer');
 const Users = require("../models/userModel")
 var fs = require("fs");
-const moment = require('moment');
+const momentTimezone = require('moment-timezone')
+const moment = require('moment')
+const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
     host: process.env.MAIL_HOST,
     port: 465,
@@ -12,12 +13,20 @@ const transporter = nodemailer.createTransport({
     },
 });
 
+const parseIndianDate = (date, input = 'ddd MMM DD YYYY HH:mm:ss Z+HHmm', format = 'YYYY-MM-DD') => {
+    const utcDateTime = momentTimezone(date, input).tz('UTC');
+
+    const indianDateTime = utcDateTime.clone().tz('Asia/Kolkata');
+
+    return indianDateTime.format(format);
+};
+
 const formattedDate = (date) => {
     return moment(date).format('DD-MM-YYYY')
 }
 
 const parsedDate = (date) => {
-    return moment(new Date(date)).format('YYYY-MM-DD');
+    return moment(date).format('YYYY-MM-DD');
 }
 
 function capitalizeFLetter(string) {
@@ -116,4 +125,4 @@ const sendMailForLeaveRequest = async (data) => {
     }
 };
 
-module.exports = { sendMailForLeaveStatus, sendMailForLeaveRequest, formattedDate, capitalizeFLetter, parsedDate }
+module.exports = { sendMailForLeaveStatus, sendMailForLeaveRequest, formattedDate, capitalizeFLetter, parsedDate, parseIndianDate }

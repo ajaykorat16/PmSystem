@@ -7,7 +7,7 @@ const Projects = require("../models/projects");
 const LeaveManagement = require("../models/leaveManagementModel");
 const fs = require("fs");
 const { validationResult } = require("express-validator");
-const { formattedDate, capitalizeFLetter, parsedDate } = require("../helper/mail");
+const { formattedDate, capitalizeFLetter, parsedDate, parseIndianDate } = require("../helper/mail");
 const asyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
@@ -172,9 +172,9 @@ const updateUser = asyncHandler(async (req, res) => {
       email: email || user.email,
       phone: phone || user.phone,
       address: address || user.address,
-      dateOfBirth: parsedDate(dateOfBirth) || user.dateOfBirth,
+      dateOfBirth: parseIndianDate(dateOfBirth) || user.dateOfBirth,
       department: department || user.department,
-      dateOfJoining: parsedDate(dateOfJoining) || user.dateOfJoining,
+      dateOfJoining: parseIndianDate(dateOfJoining) || user.dateOfJoining,
       photo: photo || user.photo,
       fullName: firstname + " " + lastname,
     };
