@@ -7,6 +7,7 @@ import { useDepartment } from '../context/DepartmentContext';
 import Layout from './Layout';
 import toast from "react-hot-toast"
 import { Calendar } from 'primereact/calendar';
+import moment from 'moment';
 
 const UserCreate = ({ title }) => {
     const [employeeNumber, setEmployeeNumber] = useState("")
@@ -31,7 +32,7 @@ const UserCreate = ({ title }) => {
             if (password !== confirmPassword) {
                 toast.error("Password and Confirm Password must be same");
             } else {
-                let addUser = { employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth, department: departments, dateOfJoining }
+                let addUser = { employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth: formatDate(dateOfBirth), department: departments, dateOfJoining: formatDate(dateOfJoining) }
                 const data = await createUser(addUser)
                 if (data.error) {
                     toast.error(data.message)
@@ -43,6 +44,11 @@ const UserCreate = ({ title }) => {
             console.log(error.message)
         }
     }
+
+    const formatDate = (date, format = 'YYYY-MM-DD') => {
+        const inputTime = moment(date);
+        return inputTime.format(format);
+    };
 
     const fetchDepartment = async () => {
         const { departments } = await getDepartmentList()

@@ -29,6 +29,12 @@ const UserUpdate = ({ title }) => {
     const params = useParams();
 
     const doj = moment(dateOfJoining).format('DD-MM-YYYY')
+
+    const formatDate = (date, format = 'YYYY-MM-DD') => {
+        const inputTime = moment(date);
+        return inputTime.format(format);
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -56,7 +62,7 @@ const UserUpdate = ({ title }) => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            let updateUsers = { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, dateOfJoining, photo: newPhoto || photo }
+            let updateUsers = { firstname, lastname, phone, address, dateOfBirth: formatDate(dateOfBirth), photo: newPhoto || photo }
             const data = await updateProfile(updateUsers)
             if (data.error) {
                 toast.error(data.message)

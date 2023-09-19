@@ -11,7 +11,7 @@ const createLeave = asyncHandler(async (req, res) => {
   }
   try {
     const { reason, startDate, endDate, type, userId, status, totalDays } = req.body;
-
+    
     if (startDate > endDate) {
       return res.status(200).json({
         error: true,
@@ -27,7 +27,7 @@ const createLeave = asyncHandler(async (req, res) => {
     }
 
     const user = await Users.findById({ _id: uId });
-
+    
     let createLeaves;
     if (user.leaveBalance >= totalDays && type === "paid" && user.leaveBalance !== 0) {
       createLeaves = await new Leaves({

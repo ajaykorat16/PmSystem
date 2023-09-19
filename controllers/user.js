@@ -9,6 +9,7 @@ const fs = require("fs");
 const { validationResult } = require("express-validator");
 const { formattedDate, capitalizeFLetter, parsedDate, parseIndianDate } = require("../helper/mail");
 const asyncHandler = require("express-async-handler");
+const moment = require('moment')
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
@@ -37,6 +38,13 @@ const createUser = asyncHandler(async (req, res) => {
   }
   try {
     const { employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining, } = req.body;
+
+    if (!moment(dateOfBirth).isValid() || !moment(dateOfJoining).isValid()) {
+      return res.status(400).json({
+        error: true,
+        message: 'Invalid date format for dateOfBirth or dateOfJoining',
+      });
+    }
 
     const existingEmployeeNumber = await Users.findOne({ employeeNumber });
     if (existingEmployeeNumber) {
@@ -76,6 +84,7 @@ const createUser = asyncHandler(async (req, res) => {
       department,
       dateOfJoining: parsedDate(dateOfJoining),
     }).save();
+
 
     const doj = new Date(newUser.dateOfJoining);
     const currentDate = new Date();
@@ -172,9 +181,9 @@ const updateUser = asyncHandler(async (req, res) => {
       email: email || user.email,
       phone: phone || user.phone,
       address: address || user.address,
-      dateOfBirth: parseIndianDate(dateOfBirth) || user.dateOfBirth,
+      dateOfBirth: dateOfBirth || user.dateOfBirth,
       department: department || user.department,
-      dateOfJoining: parseIndianDate(dateOfJoining) || user.dateOfJoining,
+      dateOfJoining: dateOfJoining ? dateOfJoining : user.dateOfJoining,
       photo: photo || user.photo,
       fullName: firstname + " " + lastname,
     };
