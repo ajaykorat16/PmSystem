@@ -137,7 +137,7 @@ function UserProjects({ title }) {
                             first={(currentPage - 1) * rowsPerPage}
                             onPage={onPageChange}
                             dataKey="_id"
-                            emptyMessage="No user found."
+                            emptyMessage="No projects found."
                             paginatorLeft={
                                 <Dropdown
                                     value={rowsPerPage}

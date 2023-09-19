@@ -12,6 +12,7 @@ import Loader from '../components/Loader'
 import Layout from './Layout';
 import toast from 'react-hot-toast';
 import { Calendar } from 'primereact/calendar';
+import { useHelper } from '../context/Helper';
 
 
 const UserUpdate = ({ title }) => {
@@ -33,6 +34,7 @@ const UserUpdate = ({ title }) => {
     const { getDepartmentList } = useDepartment()
     const [departmentsList, setDepartmentsList] = useState([]);
     const { fetchProjects } = useProject()
+    const { formatDate } = useHelper()
     const navigate = useNavigate();
     const params = useParams();
 
@@ -78,7 +80,7 @@ const UserUpdate = ({ title }) => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            let updateUsers = { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department: departments, dateOfJoining, photo: newPhoto || photo, projects: newProjects }
+            let updateUsers = { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth: formatDate(dateOfBirth), department: departments, dateOfJoining: formatDate(dateOfJoining), photo: newPhoto || photo, projects: newProjects }
             let id = params.id
             const data = await updateUser(updateUsers, id)
             if (data.error) {

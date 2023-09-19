@@ -7,6 +7,7 @@ import Loader from "../components/Loader";
 import Layout from "./Layout";
 import toast from "react-hot-toast";
 import { Calendar } from "primereact/calendar";
+import { useHelper } from "../context/Helper";
 
 const LeaveUpdate = ({ title }) => {
   const [userId, setUserId] = useState("");
@@ -20,6 +21,7 @@ const LeaveUpdate = ({ title }) => {
   const [users, setUsers] = useState([]);
   const { updateLeave, getLeaveById } = useLeave();
   const { fetchUsers } = useUser();
+  const { formatDate } = useHelper()
   const typeList = ["paid", "lwp"];
   const [isHalfDay, setIsHalfDay] = useState(false);
   const navigate = useNavigate();
@@ -47,8 +49,8 @@ const LeaveUpdate = ({ title }) => {
     try {
       const leaveData = {
         reason,
-        startDate,
-        endDate,
+        startDate: formatDate(startDate),
+        endDate: formatDate(endDate),
         type,
         userId,
         status,

@@ -11,6 +11,7 @@ import { Avatar } from 'primereact/avatar';
 import { Button } from 'primereact/button';
 import moment from 'moment';
 import { Calendar } from 'primereact/calendar';
+import { useHelper } from '../context/Helper';
 
 const UserUpdate = ({ title }) => {
     const [employeeNumber, setEmployeeNumber] = useState("")
@@ -26,14 +27,10 @@ const UserUpdate = ({ title }) => {
     const [photo, setPhoto] = useState("");
     const [isLoading, setIsLoading] = useState(true)
     const { updateProfile, getUserProfile } = useUser()
+    const { formatDate } = useHelper();
     const params = useParams();
 
     const doj = moment(dateOfJoining).format('DD-MM-YYYY')
-
-    const formatDate = (date, format = 'YYYY-MM-DD') => {
-        const inputTime = moment(date);
-        return inputTime.format(format);
-    };
 
     useEffect(() => {
         const fetchData = async () => {

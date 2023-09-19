@@ -12,6 +12,7 @@ import { Button } from 'primereact/button';
 import moment from 'moment';
 import { useLeaveManagement } from '../context/LeaveManagementContext';
 import { Calendar } from 'primereact/calendar';
+import { useHelper } from '../context/Helper';
 
 const UserUpdate = ({ title }) => {
     const [employeeNumber, setEmployeeNumber] = useState("")
@@ -30,6 +31,7 @@ const UserUpdate = ({ title }) => {
     const { updateProfile, getUserProfile } = useUser()
     const params = useParams();
     const { getUserLeave } = useLeaveManagement()
+    const { formatDate } = useHelper()
     const [leave, setLeave] = useState([])
 
     const doj = moment(dateOfJoining).format('DD-MM-YYYY')
@@ -69,7 +71,7 @@ const UserUpdate = ({ title }) => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            let updateUsers = { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, dateOfJoining, photo: newPhoto || photo }
+            let updateUsers = { firstname, lastname, phone, address, dateOfBirth: formatDate(dateOfBirth), photo: newPhoto || photo }
             const data = await updateProfile(updateUsers)
             if (data.error) {
                 toast.error(data.message)

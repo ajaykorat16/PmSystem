@@ -7,6 +7,7 @@ import Layout from "./Layout";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { Calendar } from "primereact/calendar";
+import { useHelper } from "../context/Helper";
 
 const LeaveCreate = ({ title }) => {
   const [users, setUsers] = useState([]);
@@ -17,7 +18,7 @@ const LeaveCreate = ({ title }) => {
   const [totalDays, setTotalDays] = useState("")
   const [type, setType] = useState("");
   const [isHalfDay, setIsHalfDay] = useState(false);
-
+  const { formatDate } = useHelper()
   const { auth } = useAuth();
   const { addLeave, addUserLeave } = useLeave();
   const { fetchUsers } = useUser();
@@ -29,9 +30,9 @@ const LeaveCreate = ({ title }) => {
     try {
       let leaveData;
       if (auth.user.role === "admin") {
-        leaveData = { reason, startDate, endDate, type, totalDays, userId, status: "approved" }
+        leaveData = { reason, startDate: formatDate(startDate), endDate: formatDate(endDate), type, totalDays, userId, status: "approved" }
       } else {
-        leaveData = { reason, startDate, endDate, type, totalDays }
+        leaveData = { reason, startDate: formatDate(startDate), endDate: formatDate(endDate), type, totalDays }
       }
       const data = auth.user.role === "admin" ? await addLeave(leaveData) : await addUserLeave(leaveData);
       if (data.error) {

@@ -8,6 +8,7 @@ import { toast } from 'react-hot-toast';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Calendar } from 'primereact/calendar';
 import { Editor } from 'primereact/editor';
+import { useHelper } from '../context/Helper';
 
 const UserWorkLogUpdate = ({ title }) => {
     const [projects, setProjects] = useState([]);
@@ -17,6 +18,7 @@ const UserWorkLogUpdate = ({ title }) => {
     const [time, setTime] = useState("")
     const { updateWorklog, getSingleWorklog } = useWorklog()
     const { fetchProjects } = useProject()
+    const { formatDate } = useHelper()
     const navigate = useNavigate()
     const params = useParams()
 
@@ -48,7 +50,7 @@ const UserWorkLogUpdate = ({ title }) => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            let worklog = { project: selectproject, description, logDate, time }
+            let worklog = { project: selectproject, description, logDate: formatDate(logDate), time }
             let id = params.id
             const data = await updateWorklog(worklog, id)
             if (data.error) {

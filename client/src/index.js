@@ -11,29 +11,32 @@ import { DepartmentProvider } from './context/DepartmentContext';
 import { LeaveManagementProvider } from './context/LeaveManagementContext';
 import { ProjectProvider } from './context/ProjectContext';
 import { WorklogProvider } from './context/WorklogContext';
+import { HelperProvider } from './context/Helper';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
   <AuthProvider>
     <DepartmentProvider>
-      <UserProvider>
-        <ProjectProvider>
-          <WorklogProvider>
-            <LeaveProvider>
-              <LeaveManagementProvider>
-                <Provider store={store}>
-                  <React.StrictMode>
-                    <BrowserRouter>
-                      <App />
-                    </BrowserRouter>
-                  </React.StrictMode>
-                </Provider>
-              </LeaveManagementProvider>
-            </LeaveProvider>
-          </WorklogProvider>
-        </ProjectProvider>
-      </UserProvider>
+      <HelperProvider>
+        <UserProvider>
+          <ProjectProvider>
+            <WorklogProvider>
+              <LeaveProvider>
+                <LeaveManagementProvider>
+                  <Provider store={store}>
+                    <React.StrictMode>
+                      <BrowserRouter>
+                        <App />
+                      </BrowserRouter>
+                    </React.StrictMode>
+                  </Provider>
+                </LeaveManagementProvider>
+              </LeaveProvider>
+            </WorklogProvider>
+          </ProjectProvider>
+        </UserProvider>
+      </HelperProvider>
     </DepartmentProvider>
   </AuthProvider>
 );

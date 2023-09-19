@@ -8,6 +8,7 @@ import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { Calendar } from 'primereact/calendar';
 import { Editor } from 'primereact/editor';
+import { useHelper } from '../context/Helper';
 
 
 const WorkLogCreate = ({ title }) => {
@@ -18,6 +19,7 @@ const WorkLogCreate = ({ title }) => {
     const [time, setTime] = useState("")
     const { createWorkLog } = useWorklog()
     const { getUserProject } = useProject()
+    const { formatDate } = useHelper()
     const navigate = useNavigate()
 
     const getProjects = async () => {
@@ -31,7 +33,7 @@ const WorkLogCreate = ({ title }) => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            const addWorkLog = { project: selectproject, description, logDate, time }
+            const addWorkLog = { project: selectproject, description, logDate: formatDate(logDate), time }
             const data = await createWorkLog(addWorkLog)
             if (data.error) {
                 toast.error(data.message)

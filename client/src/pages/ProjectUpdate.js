@@ -9,9 +9,11 @@ import { useProject } from "../context/ProjectContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { Calendar } from "primereact/calendar";
+import { useHelper } from "../context/Helper";
 
 const ProjectUpdate = ({ title }) => {
     const { fetchUsers } = useUser();
+    const { formatDate } = useHelper()
     const { getSingleProject, updateProject } = useProject();
     const [users, setUsers] = useState([]);
     const [name, setName] = useState("")
@@ -43,7 +45,7 @@ const ProjectUpdate = ({ title }) => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            let project = { name, description, startDate, developers: developers }
+            let project = { name, description, startDate: formatDate(startDate), developers: developers }
             let id = params.id
 
             const data = await updateProject(project, id)
@@ -61,7 +63,7 @@ const ProjectUpdate = ({ title }) => {
         const { getAllUsers } = await fetchUsers();
         setUsers(getAllUsers);
     };
-    
+
     useEffect(() => {
         getUsers();
     }, []);

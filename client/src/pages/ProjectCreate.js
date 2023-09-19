@@ -9,9 +9,11 @@ import { Editor } from 'primereact/editor';
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { Calendar } from "primereact/calendar";
+import { useHelper } from "../context/Helper";
 
 const ProjectCreate = ({ title }) => {
   const { fetchUsers } = useUser();
+  const { formatDate } = useHelper()
   const { createProject } = useProject();
   const [users, setUsers] = useState([]);
   const [name, setName] = useState("")
@@ -23,7 +25,7 @@ const ProjectCreate = ({ title }) => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      const addProject = { name, description, startDate, developers: developers.map(dev => ({ id: dev._id })) }
+      const addProject = { name, description, startDate: formatDate(startDate), developers: developers.map(dev => ({ id: dev._id })) }
       const data = await createProject(addProject)
       if (data.error) {
         toast.error(data.message)
