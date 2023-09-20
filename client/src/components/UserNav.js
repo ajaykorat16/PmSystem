@@ -36,7 +36,7 @@ const _nav = [
       {
         component: CNavItem,
         name: 'Birthday this Month',
-        to: '/dashboard-user/employee/birtday/list',
+        to: '/dashboard-user/employee/birthday/list',
       },
     ],
   },
