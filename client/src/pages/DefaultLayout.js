@@ -448,7 +448,7 @@ const DefaultLayout = () => {
           )}
         </CCol>
         <CCol sm={3}>
-          <CNavLink component={NavLink} to={userRole === "user" ? "/dashboard-user/employee/birtday/list" : "/dashboard/user/birtday/list"}>
+          <CNavLink component={NavLink} to={userRole === "user" ? "/dashboard-user/employee/birthday/list" : "/dashboard/user/birthday/list"}>
             <CWidgetStatsA
               className="mb-4"
               color="warning"
