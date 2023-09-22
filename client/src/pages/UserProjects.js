@@ -119,7 +119,7 @@ function UserProjects({ title }) {
                                             type="search"
                                             value={globalFilterValue}
                                             onChange={(e) => setGlobalFilterValue(e.target.value)}
-                                            placeholder="Keyword Search"
+                                            placeholder="Search"
                                         />
                                     </div>
                                 </form>

@@ -93,7 +93,7 @@ const UserList = ({ title }) => {
                     <span className="p-inputgroup-addon">
                       <i className="pi pi-search" />
                     </span>
-                    <InputText type="search" value={globalFilterValue} onChange={(e) => setGlobalFilterValue(e.target.value)} placeholder="Keyword Search" />
+                    <InputText type="search" value={globalFilterValue} onChange={(e) => setGlobalFilterValue(e.target.value)} placeholder="Search" />
                   </div>
                 </form>
               </div>
