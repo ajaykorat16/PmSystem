@@ -151,7 +151,7 @@ const UserUpdate = ({ title }) => {
                                         <p className='carryForward'>Carry Forward: {carryForward}</p>
                                     </div>
                                 </div>
-                                <CTable className='mailTable'>
+                                <CTable className='mainTable' style={{ backgroundColor: 'transparent' }}>
                                     <CTableHead>
                                         <CTableRow color="dark">
                                             <CTableHeaderCell scope="col">Month</CTableHeaderCell>

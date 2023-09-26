@@ -78,8 +78,9 @@
 
 }
 
-.mailTable {
+.mainTable {
     margin-top: 20px;
+    background-color: transparent !important;
 }
 
 .tableBody {
