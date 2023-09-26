@@ -176,98 +176,91 @@ const UserUpdate = ({ title }) => {
                                 </CTable>
                             </div>
                         </div>
-                        <div id='editUser'>
-                            <div className='row'>
-                                <div className='col'>
-                                    <p className='title'>EDIT USER</p>
-                                </div>
-                                <div className='col'>
-                                    <div className="btn-sm float-end submitButton">
-                                        <CCol>
-                                            <Button icon="pi pi-check" type='submit' rounded aria-label="Filter" />
-                                        </CCol>
-                                    </div>
-                                </div>
+                        <div id='editUser' className='row'>
+                            <div className='col-6'>
+                                <p className='title'>EDIT USER</p>
                             </div>
-                            <div className='row'>
-                                <div className='col'>
+                            <div className='col-6'>
+                                <div className="btn-sm float-end submitButton">
                                     <CCol>
-                                        <CFormInput
-                                            id="inputFirstName"
-                                            label="First Name"
-                                            value={firstname}
-                                            className='mb-3'
-                                            onChange={(e) => setFirstname(e.target.value)}
-                                        />
-                                    </CCol>
-                                </div>
-                                <div className='col'>
-                                    <CCol>
-                                        <CFormInput
-                                            id="inputLastName"
-                                            label="Last Name"
-                                            className='mb-3'
-                                            value={lastname}
-                                            onChange={(e) => setLastname(e.target.value)}
-                                        />
+                                        <Button icon="pi pi-check" type='submit' rounded aria-label="Filter" />
                                     </CCol>
                                 </div>
                             </div>
-                            <div className='row'>
-                                <div className='col'>
-                                    <CCol>
-                                        <CFormInput
-                                            id="inputAddress"
-                                            label="Address"
-                                            placeholder="Enter your address"
-                                            className='mb-3'
-                                            value={address}
-                                            onChange={(e) => setAddress(e.target.value)}
-                                        />
-                                    </CCol>
-                                </div>
-                                <div className='col'>
-                                    <CCol>
-                                        <CFormInput
-                                            type="number"
-                                            id="inputPhone"
-                                            label="Phone Number"
-                                            className='mb-3'
-                                            value={phone}
-                                            onChange={(e) => setPhone(e.target.value)}
-                                        />
-                                    </CCol>
-                                </div>
+
+                            <div className='col-6'>
+                                <CCol>
+                                    <CFormInput
+                                        id="inputFirstName"
+                                        label="First Name"
+                                        value={firstname}
+                                        className='mb-3'
+                                        onChange={(e) => setFirstname(e.target.value)}
+                                    />
+                                </CCol>
                             </div>
-                            <div className='row'>
-                                <div className='col'>
-                                    <CCol>
-                                        <label className="form-label">Date Of Birth</label>
-                                        <Calendar
-                                            value={dateOfBirth}
-                                            dateFormat="dd-mm-yy"
-                                            onChange={(e) => setDateOfBirth(e.target.value)}
-                                            maxDate={new Date()}
-                                            showIcon
-                                            id="date"
-                                            className="form-control"
-                                        />
-                                    </CCol>
-                                </div>
-                                <div className='col'>
-                                    <CCol>
-                                        <CFormInput
-                                            type="file"
-                                            className="form-control mb-3"
-                                            label="Upload Photo"
-                                            id="inputGroupFile04"
-                                            accept="image/*"
-                                            aria-describedby="inputGroupFileAddon04"
-                                            aria-label="Upload"
-                                            onChange={handlePhoto}
-                                        />
-                                    </CCol>
-                                </div>
+                            <div className='col-6'>
+                                <CCol>
+                                    <CFormInput
+                                        id="inputLastName"
+                                        label="Last Name"
+                                        className='mb-3'
+                                        value={lastname}
+                                        onChange={(e) => setLastname(e.target.value)}
+                                    />
+                                </CCol>
+                            </div>
+                            <div className='col-6'>
+                                <CCol>
+                                    <CFormInput
+                                        id="inputAddress"
+                                        label="Address"
+                                        placeholder="Enter your address"
+                                        className='mb-3'
+                                        value={address}
+                                        onChange={(e) => setAddress(e.target.value)}
+                                    />
+                                </CCol>
+                            </div>
+                            <div className='col-6'>
+                                <CCol>
+                                    <CFormInput
+                                        type="number"
+                                        id="inputPhone"
+                                        label="Phone Number"
+                                        className='mb-3'
+                                        value={phone}
+                                        onChange={(e) => setPhone(e.target.value)}
+                                    />
+                                </CCol>
+                            </div>
+                            <div className='col-6'>
+                                <CCol>
+                                    <label className="form-label">Date Of Birth</label>
+                                    <Calendar
+                                        value={dateOfBirth}
+                                        dateFormat="dd-mm-yy"
+                                        onChange={(e) => setDateOfBirth(e.target.value)}
+                                        maxDate={new Date()}
+                                        showIcon
+                                        id="date"
+                                        className="form-control"
+                                    />
+                                </CCol>
+                            </div>
+                            <div className='col-6'>
+                                <CCol>
+                                    <CFormInput
+                                        type="file"
+                                        className="form-control mb-3"
+                                        label="Upload Photo"
+                                        id="inputGroupFile04"
+                                        accept="image/*"
+                                        aria-describedby="inputGroupFileAddon04"
+                                        aria-label="Upload"
+                                        onChange={handlePhoto}
+                                    />
+                                </CCol>
                             </div>
                         </div>
                     </div>

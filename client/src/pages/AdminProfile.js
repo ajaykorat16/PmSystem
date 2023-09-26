@@ -81,7 +81,7 @@ const UserUpdate = ({ title }) => {
                     <CForm onSubmit={handleSubmit}>
                         <div className='mainBody me-3'>
                             <div className='row'>
-                                <div className='col userBlock'>
+                                <div className='userBlock'>
                                     <CCol className="mb-3">
                                         <div className="mt-3 d-flex justify-content image-container">
                                             <Avatar
