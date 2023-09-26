@@ -45,7 +45,7 @@ const AuthProvider = ({ children }) => {
         }
     };
 
-    axios.defaults.headers.common["Authorization"] = auth?.token === '' ? logout() : auth.token
+    axios.defaults.headers.common["Authorization"] = auth?.token
 
     const login = async (email, password) => {
         try {
