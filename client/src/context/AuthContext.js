@@ -124,9 +124,6 @@ const AuthProvider = ({ children }) => {
             const { data } = await axios.post(`${baseURL}/user/loginByAdmin`, { email: parseData?.user.email });
             if (data.error === false) {
                 setIsLoggedIn(true)
-                setTimeout(function () {
-                    toast.success(data.message)
-                }, 500);
 
                 if (auth) {
                     localStorage.removeItem("adminAuth")
