@@ -18,7 +18,7 @@ const LeaveBalanceDisplay = ({ leaveBalance }) => {
 
 const AppHeaderDropdown = () => {
   const [photo, setPhoto] = useState('');
-  const { logout, auth } = useAuth();
+  const { logout, auth, adminAuth, backToAdmin } = useAuth();
   const { getUserProfile } = useUser();
   const [getAuth, setGetAuth] = useState(null);
   const [isPhoto, setIsPhoto] = useState(false)
@@ -71,6 +71,11 @@ const AppHeaderDropdown = () => {
       fetchData();
     }
   }, [getAuth]);
+
+  const handleBackToAdmin = async () =>{
+    await backToAdmin()
+    navigate("/")
+  } 
   
   const redirectPath = auth?.user?.role === "admin" ? `/dashboard/user/admin-profile/${auth?.user?._id}` : `/dashboard-user/user/user-profile/${auth?.user?._id}`;
 
@@ -100,6 +105,15 @@ const AppHeaderDropdown = () => {
                 Reset Password
               </CDropdownItem>
               <CDropdownDivider />
+            </>
+          }
+          {
+            adminAuth.token !== '' && 
+            <>
+              <CDropdownItem onClick={handleBackToAdmin}>
+                <MdOutlineLockReset className="me-2" fontSize={20} />
+                Back To Admin
+              </CDropdownItem>
             </>
           }
           {getAuth ?

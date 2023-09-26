@@ -9,10 +9,12 @@ import { Dropdown } from "primereact/dropdown";
 import Layout from "./Layout";
 import { Button } from "primereact/button";
 import { Avatar } from "primereact/avatar";
+import { useAuth } from "../context/AuthContext";
 import "../styles/Styles.css";
 
 const UserList = ({ title }) => {
-  const { deleteUser, getAllUsers } = useUser();
+  const { deleteUser, getAllUsers, getUserProfile } = useUser();
+  const { loginUserByAdmin } = useAuth()
   const [isLoading, setIsLoading] = useState(true);
   const [userList, setUserList] = useState([]);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -75,6 +77,12 @@ const UserList = ({ title }) => {
     setSortOrder(order);
     fetchUsers(currentPage, rowsPerPage, globalFilterValue, field, order);
   };
+
+  const handleLogin = async (id) => {
+    const { getProfile } = await getUserProfile(id)
+    await loginUserByAdmin(getProfile.email)
+    navigate("/")
+  }
 
   return (
     <Layout title={title}>
@@ -145,6 +153,7 @@ const UserList = ({ title }) => {
                       <>
                         <Button icon="pi pi-pencil" title="Edit" rounded severity="success" aria-label="edit" onClick={() => handleUpdate(rowData._id)} />
                         <Button icon="pi pi-trash" title="Delete" rounded severity="danger" className="ms-2" aria-label="Cancel" onClick={() => handleDelete(rowData._id)} />
+                        <Button icon="pi pi-lock" title="User Login" rounded severity="info" className="ms-2" aria-label="login" onClick={() => handleLogin(rowData._id)} />
                       </>
                     )}
                   </div>

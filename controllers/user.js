@@ -144,6 +144,35 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 });
 
+const loginUserByAdmin = asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ error: true, errors: errors.array() });
+  }
+  try {
+    const { email } = req.body;
+
+    const user = await Users.findOne({ email }).select("-photo").populate("department");
+    if (!user) {
+      return res.status(401).json({
+        error: true,
+        message: "Invalid Email. Please sign up first.",
+      });
+    }
+
+    const token = await jwt.sign({ user }, process.env.JWT_SECRET_KEY, { expiresIn: "5 days", });
+    return res.status(200).send({
+      error: false,
+      message: "Login successfully !",
+      user,
+      token,
+    });
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).send("Server error");
+  }
+});
+
 const updateUser = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -549,4 +578,4 @@ const changePasswordController = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { createUser, loginUser, updateUser, deleteUserProfile, getAllUser, getUserProfile, changePasswordController, getUsers, getUserByBirthDayMonth, };
+module.exports = { createUser, loginUser, updateUser, deleteUserProfile, getAllUser, getUserProfile, changePasswordController, getUsers, getUserByBirthDayMonth, loginUserByAdmin };
