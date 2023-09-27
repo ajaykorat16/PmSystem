@@ -6,8 +6,12 @@ const HelperContext = createContext()
 const HelperProvider = ({ children }) => {
 
     const formatDate = (date, format = 'YYYY-MM-DD') => {
-        const inputTime = moment(date);
-        return inputTime.format(format);
+        if (date !== "") {
+            const inputTime = moment(date);
+            return inputTime.format(format);
+        } else {
+            return ""
+        }
     };
 
     return (

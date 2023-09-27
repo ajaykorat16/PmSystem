@@ -21,6 +21,7 @@ router.post("/createLeave",
     check('reason', 'reasone is required').notEmpty(),
     check('startDate', 'startDate is required').notEmpty(),
     check('endDate', 'endDate is required').notEmpty(),
+    check('type', 'type is required').notEmpty(),
     auth, createLeave)
 
 router.post("/createLeaveAdmin",
@@ -28,6 +29,7 @@ router.post("/createLeaveAdmin",
     check('reason', 'Reason is required').notEmpty(),
     check('startDate', 'Start Date is required').notEmpty(),
     check('endDate', 'End Date is required').notEmpty(),
+    check('type', 'type is required').notEmpty(),
     auth, isAdmin, createLeave)
 
 router.put("/updateLeave", auth, updateLeave)
