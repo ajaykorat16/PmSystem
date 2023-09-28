@@ -8,6 +8,13 @@ const LeaveContext = createContext();
 
 const LeaveProvider = ({ children }) => {
   const { auth } = useAuth();
+
+  if (auth.token === '') {
+    if (window.location.pathname !== "/"){
+        window.location.href = "/"
+    }
+}
+  
   const headers = {
     Authorization: auth?.token,
   };
