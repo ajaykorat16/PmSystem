@@ -61,7 +61,7 @@ const LeaveCreate = ({ title }) => {
   const leaveDaysCount = (startDate, endDate) => {
     const eDate = new Date(endDate);
     let currentDate = new Date(startDate);
-    let totalDays = 1;
+    let totalDays = 0;
     while (currentDate <= eDate) {
       const dayOfWeek = currentDate.getDay();
       if (dayOfWeek !== 0 && dayOfWeek !== 6) {
