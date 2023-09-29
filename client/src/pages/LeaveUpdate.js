@@ -28,21 +28,6 @@ const LeaveUpdate = ({ title }) => {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  function mapDayType(dayType) {
-    switch (dayType) {
-      case "Single Day":
-        return "single";
-      case "Multiple Day":
-        return "multiple";
-      case "First Half":
-        return "first_half";
-      case "Second Half":
-        return "second_half";
-      default:
-        return dayType;
-    }
-  }
-
   useEffect(() => {
     const setValues = async () => {
       const data = await getLeaveById(id);
