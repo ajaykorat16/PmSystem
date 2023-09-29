@@ -131,7 +131,7 @@ const loginUser = asyncHandler(async (req, res) => {
       });
     }
 
-    const token = await jwt.sign({ user }, process.env.JWT_SECRET_KEY, { expiresIn: "5 days", });
+    const token = await jwt.sign({ user }, process.env.JWT_SECRET_KEY, { expiresIn: "365 days", });
     return res.status(200).send({
       error: false,
       message: "Login successfully !",
@@ -160,7 +160,7 @@ const loginUserByAdmin = asyncHandler(async (req, res) => {
       });
     }
 
-    const token = await jwt.sign({ user }, process.env.JWT_SECRET_KEY, { expiresIn: "5 days", });
+    const token = await jwt.sign({ user }, process.env.JWT_SECRET_KEY, { expiresIn: "365 days", });
     return res.status(200).send({
       error: false,
       message: "Login successfully !",
