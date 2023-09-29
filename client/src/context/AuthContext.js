@@ -2,7 +2,6 @@ import { useState, useEffect, useContext, createContext } from "react";
 import { baseURL } from "../lib";
 import axios from 'axios'
 import toast from "react-hot-toast"
-import jwtDecode from 'jwt-decode';
 
 const AuthContext = createContext()
 
@@ -160,18 +159,11 @@ const AuthProvider = ({ children }) => {
         const data = localStorage.getItem('auth')
         if (data) {
             const parseData = JSON.parse(data)
-            const decodedToken = jwtDecode(parseData.token);
-            const currentTime = Date.now() / 1000;
-            if (decodedToken.exp < currentTime) {
-                logout()
-            }
-            else {
-                setAuth({
-                    ...auth,
-                    user: parseData.user,
-                    token: parseData.token
-                })
-            }
+            setAuth({
+                ...auth,
+                user: parseData.user,
+                token: parseData.token
+            })
         }
 
         const adminData = localStorage.getItem('adminAuth')
