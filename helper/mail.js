@@ -43,7 +43,7 @@ function formatteDayType(dayType) {
         case "second_half":
             return "Second Half";
         default:
-            return dayType;
+            return "Single Day";
     }
 }
 
@@ -58,7 +58,7 @@ function parsedDayType(dayType) {
         case "Second Half":
             return "second_half";
         default:
-            return dayType;
+            return "single";
     }
 }
 
