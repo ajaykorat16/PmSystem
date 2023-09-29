@@ -32,6 +32,36 @@ function capitalizeFLetter(string) {
     return string[0].toUpperCase() + string.slice(1);
 }
 
+function formatteDayType(dayType) {
+    switch (dayType) {
+        case "single":
+            return "Single Day";
+        case "multiple":
+            return "Multiple Day";
+        case "first_half":
+            return "First Half";
+        case "second_half":
+            return "Second Half";
+        default:
+            return dayType;
+    }
+}
+
+function parsedDayType(dayType) {
+    switch (dayType) {
+        case "Single Day":
+            return "single";
+        case "Multiple Day":
+            return "multiple";
+        case "First Half":
+            return "first_half";
+        case "Second Half":
+            return "second_half";
+        default:
+            return dayType;
+    }
+}
+
 const sendMailForLeaveStatus = async (data, reasonForLeaveReject) => {
     try {
         fs.readFile('./templates/email_leaveResponse.html', 'utf8', async function (err, content) {
@@ -124,4 +154,4 @@ const sendMailForLeaveRequest = async (data) => {
     }
 };
 
-module.exports = { sendMailForLeaveStatus, sendMailForLeaveRequest, formattedDate, capitalizeFLetter, parsedDate, parseIndianDate }
+module.exports = { sendMailForLeaveStatus, sendMailForLeaveRequest, formattedDate, capitalizeFLetter, parsedDate, parseIndianDate, formatteDayType, parsedDayType }

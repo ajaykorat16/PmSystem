@@ -26,29 +26,14 @@ const LeaveCreate = ({ title }) => {
   const dayTypeList = ["Single Day", "Multiple Day", "First Half", "Second Half"];
   const navigate = useNavigate();
 
-  function mapDayType(dayType) {
-    switch (dayType) {
-      case "Single Day":
-        return "single";
-      case "Multiple Day":
-        return "multiple";
-      case "First Half":
-        return "first_half";
-      case "Second Half":
-        return "second_half";
-      default:
-        return dayType;
-    }
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       let leaveData;
       if (auth.user.role === "admin") {
-        leaveData = { reason, startDate: formatDate(startDate), endDate: formatDate(endDate), leaveType, leaveDayType: mapDayType(leaveDayType), totalDays, userId, status: "approved" }
+        leaveData = { reason, startDate: formatDate(startDate), endDate: formatDate(endDate), leaveType, leaveDayType, totalDays, userId, status: "approved" }
       } else {
-        leaveData = { reason, startDate: formatDate(startDate), endDate: formatDate(endDate), leaveType, leaveDayType: mapDayType(leaveDayType), totalDays }
+        leaveData = { reason, startDate: formatDate(startDate), endDate: formatDate(endDate), leaveType, leaveDayType, totalDays }
       }
       const data = auth.user.role === "admin" ? await addLeave(leaveData) : await addUserLeave(leaveData);
       if (data.error) {
@@ -66,6 +51,7 @@ const LeaveCreate = ({ title }) => {
     const { getAllUsers } = await fetchUsers();
     setUsers(getAllUsers);
   };
+  
   useEffect(() => {
     if (auth.user.role === "admin") {
       getUsers();

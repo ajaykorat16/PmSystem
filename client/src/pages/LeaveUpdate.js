@@ -69,7 +69,7 @@ const LeaveUpdate = ({ title }) => {
         startDate: formatDate(startDate),
         endDate: formatDate(endDate),
         leaveType,
-        leaveDayType: mapDayType(leaveDayType),
+        leaveDayType,
         userId,
         status,
         totalDays,
@@ -89,6 +89,7 @@ const LeaveUpdate = ({ title }) => {
     const { getAllUsers } = await fetchUsers();
     setUsers(getAllUsers);
   };
+
   useEffect(() => {
     getUsers();
   }, []);
@@ -106,10 +107,11 @@ const LeaveUpdate = ({ title }) => {
     }
     setTotalDays(totalDays);
   };
+
   useEffect(() => {
     if (leaveDayType === "Multiple Day") {
       leaveDaysCount(startDate, endDate);
-    }else{
+    } else {
       handleHalfDay()
     }
   }, [startDate, endDate]);

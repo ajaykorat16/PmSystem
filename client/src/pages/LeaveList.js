@@ -243,13 +243,13 @@ const LeaveList = ({ title }) => {
               />
               <Column
                 field="leaveType"
-                header="leaveType"
+                header="Leave Type"
                 filterField="leaveType"
                 align="center"
               />
               <Column
                 field="leaveDayType"
-                header="leaveDayType"
+                header="Leave Day Type"
                 filterField="leaveDayType"
                 align="center"
               />

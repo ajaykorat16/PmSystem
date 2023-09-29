@@ -2,7 +2,7 @@ const Leaves = require("../models/leaveModel");
 const Users = require("../models/userModel");
 const asyncHandler = require("express-async-handler");
 const { validationResult } = require("express-validator");
-const { sendMailForLeaveStatus, sendMailForLeaveRequest, formattedDate, capitalizeFLetter } = require("../helper/mail");
+const { sendMailForLeaveStatus, sendMailForLeaveRequest, formattedDate, capitalizeFLetter, formatteDayType, parsedDayType } = require("../helper/mail");
 
 const createLeave = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
@@ -36,7 +36,7 @@ const createLeave = asyncHandler(async (req, res) => {
         startDate: startDate,
         endDate: endDate,
         leaveType,
-        leaveDayType,
+        leaveDayType: parsedDayType(leaveDayType),
         status,
         totalDays,
       }).save();
@@ -47,7 +47,7 @@ const createLeave = asyncHandler(async (req, res) => {
         startDate: startDate,
         endDate: endDate,
         leaveType,
-        leaveDayType,
+        leaveDayType: parsedDayType(leaveDayType),
         status,
         totalDays,
       }).save();
@@ -144,7 +144,7 @@ const getLeaves = asyncHandler(async (req, res) => {
       return {
         ...leave,
         leaveType: capitalizeFLetter(leave.leaveType),
-        leaveDayType: capitalizeFLetter(leave.leaveDayType),
+        leaveDayType: formatteDayType(leave.leaveDayType),
         status: capitalizeFLetter(leave.status),
         startDate: formattedDate(leave.startDate),
         endDate: formattedDate(leave.endDate),
@@ -196,7 +196,7 @@ const userGetLeave = asyncHandler(async (req, res) => {
       return {
         ...leave,
         leaveType: capitalizeFLetter(leave.leaveType),
-        leaveDayType: capitalizeFLetter(leave.leaveDayType),
+        leaveDayType: formatteDayType(leave.leaveDayType),
         status: capitalizeFLetter(leave.status),
         startDate: formattedDate(leave.startDate),
         endDate: formattedDate(leave.endDate),
@@ -226,6 +226,7 @@ const getLeaveById = asyncHandler(async (req, res) => {
       message: "Get Leave successfully !!",
       leaves: {
         ...leaves,
+        leaveDayType: formatteDayType(leaves.leaveDayType),
         startDate: leaves.startDate.toISOString().split("T")[0],
         endDate: leaves.endDate.toISOString().split("T")[0],
       },
@@ -262,7 +263,7 @@ const updateLeave = asyncHandler(async (req, res) => {
       startDate: startDate || userLeave.startDate,
       endDate: endDate || userLeave.endDate,
       leaveType: leaveType || userLeave.leaveType,
-      leaveDayType: leaveDayType || userLeave.leaveDayType,
+      leaveDayType: parsedDayType(leaveDayType) || userLeave.leaveDayType,
       totalDays: totalDays || userLeave.totalDays,
     };
 
