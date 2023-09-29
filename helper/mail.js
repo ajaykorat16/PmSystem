@@ -39,7 +39,7 @@ const sendMailForLeaveStatus = async (data, reasonForLeaveReject) => {
                 console.log("Mail.sendLeaveRequest [ERROR: " + err + " ]");
             } else {
                 let body = content;
-                const { startDate, endDate, reason, totalDays, status, type, userId } = data
+                const { startDate, endDate, reason, totalDays, status, leaveType, userId } = data
 
                 const adminUser = await Users.findOne({ role: 'admin' }).select("-photo");
                 const employee = await Users.findOne({ _id: userId }).select("-photo").populate('department');
@@ -48,7 +48,7 @@ const sendMailForLeaveStatus = async (data, reasonForLeaveReject) => {
                 body = body.replace('{userName}', employee.fullName)
                 body = body.replace('{department}', employee?.department?.name)
                 body = body.replace('{reason}', capitalizeFLetter(reason))
-                body = body.replace('{leaveType}', capitalizeFLetter(type))
+                body = body.replace('{leaveType}', capitalizeFLetter(leaveType))
                 body = body.replace('{startDate}', formattedDate(startDate))
                 body = body.replace('{endDate}', formattedDate(endDate))
                 body = body.replace('{totalDays}', totalDays)

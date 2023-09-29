@@ -242,9 +242,15 @@ const LeaveList = ({ title }) => {
                 align="center"
               />
               <Column
-                field="type"
-                header="Type"
-                filterField="type"
+                field="leaveType"
+                header="leaveType"
+                filterField="leaveType"
+                align="center"
+              />
+              <Column
+                field="leaveDayType"
+                header="leaveDayType"
+                filterField="leaveDayType"
                 align="center"
               />
               <Column

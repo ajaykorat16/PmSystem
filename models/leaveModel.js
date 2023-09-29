@@ -29,10 +29,14 @@ const leaveSchema = new mongoose.Schema(
       enum: ["pending", "approved", "rejected"],
       default: "pending",
     },
-    type: {
+    leaveType: {
       type: String,
       enum: ["paid", "lwp"],
       default: "lwp",
+    },
+    leaveDayType: {
+      type: String,
+      enum: ["single", "multiple", "first_half", "second_half"],
     },
     totalDays: {
       type: Number,

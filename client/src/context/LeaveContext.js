@@ -135,9 +135,7 @@ const LeaveProvider = ({ children }) => {
   //add user leave
   const addUserLeave = async (leaveData) => {
     try {
-      const { reason, startDate, endDate, type, status, totalDays } = leaveData;
-
-      const { data } = await axios.post(`${baseURL}/leaves/createLeave`, { reason, startDate, endDate, type, status, totalDays }, { headers });
+      const { data } = await axios.post(`${baseURL}/leaves/createLeave`, leaveData, { headers });
       if (data.error === false) {
         getUserLeave();
         setTimeout(function () {

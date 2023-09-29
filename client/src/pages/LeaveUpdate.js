@@ -16,13 +16,15 @@ const LeaveUpdate = ({ title }) => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [totalDays, setTotalDays] = useState("");
-  const [type, setType] = useState("");
+  const [leaveType, setLeaveType] = useState("");
+  const [leaveDayType, setLeaveDayType] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [users, setUsers] = useState([]);
   const { updateLeave, getLeaveById } = useLeave();
   const { fetchUsers } = useUser();
   const { formatDate } = useHelper()
   const typeList = ["paid", "lwp"];
+  const dayTypeList = ["single", "multiple", "first_half", "second_half"];
   const [isHalfDay, setIsHalfDay] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams();
@@ -37,7 +39,8 @@ const LeaveUpdate = ({ title }) => {
         setStartDate(new Date(data.startDate));
         setEndDate(new Date(data.endDate));
         setTotalDays(data.totalDays);
-        setType(data.type);
+        setLeaveType(data.leaveType);
+        setLeaveDayType(data.leaveDayType);
         setIsLoading(false);
       }
     };
@@ -51,7 +54,8 @@ const LeaveUpdate = ({ title }) => {
         reason,
         startDate: formatDate(startDate),
         endDate: formatDate(endDate),
-        type,
+        leaveType,
+        leaveDayType,
         userId,
         status,
         totalDays,
@@ -153,11 +157,31 @@ const LeaveUpdate = ({ title }) => {
             <CCol md={6}>
               <CFormSelect
                 id="inputType"
-                label="Type"
-                value={type}
-                onChange={(e) => setType(e.target.value)}
+                label="Leave Type"
+                value={leaveType}
+                onChange={(e) => setLeaveType(e.target.value)}
               >
+                <option value="" disabled>
+                  Select a Leave Type
+                </option>
                 {typeList.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </CFormSelect>
+            </CCol>
+            <CCol md={6}>
+              <CFormSelect
+                id="inputType"
+                label="Leave Day Type"
+                value={leaveDayType}
+                onChange={(e) => setLeaveDayType(e.target.value)}
+              >
+                <option value="" disabled>
+                  Select a Leave Day Type
+                </option>
+                {dayTypeList.map((t) => (
                   <option key={t} value={t}>
                     {t}
                   </option>

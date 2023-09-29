@@ -10,7 +10,7 @@ const createLeave = asyncHandler(async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
   try {
-    const { reason, startDate, endDate, type, userId, status, totalDays } = req.body;
+    const { reason, startDate, endDate, leaveType, leaveDayType, userId, status, totalDays } = req.body;
 
     if (startDate > endDate) {
       return res.status(200).json({
@@ -29,23 +29,25 @@ const createLeave = asyncHandler(async (req, res) => {
     const user = await Users.findById({ _id: uId });
 
     let createLeaves;
-    if (user.leaveBalance >= totalDays && type === "paid" && user.leaveBalance !== 0) {
+    if (user.leaveBalance >= totalDays && leaveType === "paid" && user.leaveBalance !== 0) {
       createLeaves = await new Leaves({
         userId: uId,
         reason,
         startDate: startDate,
         endDate: endDate,
-        type,
+        leaveType,
+        leaveDayType,
         status,
         totalDays,
       }).save();
-    } else if (type === "lwp") {
+    } else if (leaveType === "lwp") {
       createLeaves = await new Leaves({
         userId: uId,
         reason,
         startDate: startDate,
         endDate: endDate,
-        type,
+        leaveType,
+        leaveDayType,
         status,
         totalDays,
       }).save();
@@ -58,7 +60,7 @@ const createLeave = asyncHandler(async (req, res) => {
 
     await sendMailForLeaveRequest(createLeaves);
 
-    if (status === "approved" && type === "paid") {
+    if (status === "approved" && leaveType === "paid") {
       await Users.findByIdAndUpdate(uId, { $inc: { leaveBalance: -totalDays } }, { new: true });
       await sendMailForLeaveStatus(createLeaves, "-");
     }
@@ -116,7 +118,7 @@ const getLeaves = asyncHandler(async (req, res) => {
       }
       query = {
         $or: [
-          { type: { $regex: filter.toLowerCase() } },
+          { leaveType: { $regex: filter.toLowerCase() } },
           { status: { $regex: filter.toLowerCase() } },
           { userId: { $in: fullName } },
         ],
@@ -141,7 +143,8 @@ const getLeaves = asyncHandler(async (req, res) => {
     const formattedLeaves = leaves.map((leave) => {
       return {
         ...leave,
-        type: capitalizeFLetter(leave.type),
+        leaveType: capitalizeFLetter(leave.leaveType),
+        leaveDayType: capitalizeFLetter(leave.leaveDayType),
         status: capitalizeFLetter(leave.status),
         startDate: formattedDate(leave.startDate),
         endDate: formattedDate(leave.endDate),
@@ -173,7 +176,7 @@ const userGetLeave = asyncHandler(async (req, res) => {
       query = {
         userId: req.user._id,
         $or: [
-          { type: { $regex: filter.toLowerCase() } },
+          { leaveType: { $regex: filter.toLowerCase() } },
           { status: { $regex: filter.toLowerCase() } },
         ],
       };
@@ -192,7 +195,8 @@ const userGetLeave = asyncHandler(async (req, res) => {
     const formattedLeaves = leaves.map((leave) => {
       return {
         ...leave,
-        type: capitalizeFLetter(leave.type),
+        leaveType: capitalizeFLetter(leave.leaveType),
+        leaveDayType: capitalizeFLetter(leave.leaveDayType),
         status: capitalizeFLetter(leave.status),
         startDate: formattedDate(leave.startDate),
         endDate: formattedDate(leave.endDate),
@@ -234,7 +238,7 @@ const getLeaveById = asyncHandler(async (req, res) => {
 
 const updateLeave = asyncHandler(async (req, res) => {
   try {
-    const { reason, startDate, endDate, type, status, userId, totalDays } = req.body;
+    const { reason, startDate, endDate, leaveType, leaveDayType, status, userId, totalDays } = req.body;
     const { id } = req.params;
 
     if (startDate > endDate) {
@@ -257,7 +261,8 @@ const updateLeave = asyncHandler(async (req, res) => {
       status: status || userLeave.status,
       startDate: startDate || userLeave.startDate,
       endDate: endDate || userLeave.endDate,
-      type: type || userLeave.type,
+      leaveType: leaveType || userLeave.leaveType,
+      leaveDayType: leaveDayType || userLeave.leaveDayType,
       totalDays: totalDays || userLeave.totalDays,
     };
 
@@ -268,9 +273,9 @@ const updateLeave = asyncHandler(async (req, res) => {
     const user = await Users.findById({ _id: updatedFields.userId }).select("-photo");
 
     let updateLeave;
-    if (user.leaveBalance >= updatedFields.totalDays && updatedFields.type === "paid" && user.leaveBalance !== 0) {
+    if (user.leaveBalance >= updatedFields.totalDays && updatedFields.leaveType === "paid" && user.leaveBalance !== 0) {
       updateLeave = await Leaves.findByIdAndUpdate({ _id: userLeave._id }, updatedFields, { new: true });
-    } else if (updatedFields.type === "lwp") {
+    } else if (updatedFields.leaveType === "lwp") {
       updateLeave = await Leaves.findByIdAndUpdate({ _id: userLeave._id }, updatedFields, { new: true });
     } else {
       return res.status(201).json({
@@ -321,7 +326,7 @@ const updateStatus = asyncHandler(async (req, res) => {
       await sendMailForLeaveStatus(updateLeave, "-");
     }
 
-    if (updateLeave.status === "approved" && updateLeave.type === "paid") {
+    if (updateLeave.status === "approved" && updateLeave.leaveType === "paid") {
       await Users.findByIdAndUpdate(updateLeave.userId, { $inc: { leaveBalance: -updateLeave.totalDays } }, { new: true });
     }
 
