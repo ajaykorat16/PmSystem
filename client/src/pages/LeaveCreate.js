@@ -90,11 +90,11 @@ const LeaveCreate = ({ title }) => {
     if (leaveDayType === "Multiple Day") {
       leaveDaysCount(startDate, endDate);
     } else {
-      handleIsHalfDayChange()
+      handleHalfDay()
     }
   }, [startDate, endDate]);
 
-  const handleIsHalfDayChange = () => {
+  const handleHalfDay = () => {
     let currentDate = new Date(startDate);
     const dayOfWeek = currentDate.getDay();
     if (dayOfWeek !== 0 && dayOfWeek !== 6) {

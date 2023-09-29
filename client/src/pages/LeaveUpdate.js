@@ -24,10 +24,24 @@ const LeaveUpdate = ({ title }) => {
   const { fetchUsers } = useUser();
   const { formatDate } = useHelper()
   const typeList = ["paid", "lwp"];
-  const dayTypeList = ["single", "multiple", "first_half", "second_half"];
-  const [isHalfDay, setIsHalfDay] = useState(false);
+  const dayTypeList = ["Single Day", "Multiple Day", "First Half", "Second Half"];
   const navigate = useNavigate();
   const { id } = useParams();
+
+  function mapDayType(dayType) {
+    switch (dayType) {
+      case "Single Day":
+        return "single";
+      case "Multiple Day":
+        return "multiple";
+      case "First Half":
+        return "first_half";
+      case "Second Half":
+        return "second_half";
+      default:
+        return dayType;
+    }
+  }
 
   useEffect(() => {
     const setValues = async () => {
@@ -55,7 +69,7 @@ const LeaveUpdate = ({ title }) => {
         startDate: formatDate(startDate),
         endDate: formatDate(endDate),
         leaveType,
-        leaveDayType,
+        leaveDayType: mapDayType(leaveDayType),
         userId,
         status,
         totalDays,
@@ -93,24 +107,25 @@ const LeaveUpdate = ({ title }) => {
     setTotalDays(totalDays);
   };
   useEffect(() => {
-    if (!isHalfDay) {
+    if (leaveDayType === "Multiple Day") {
       leaveDaysCount(startDate, endDate);
+    }else{
+      handleHalfDay()
     }
   }, [startDate, endDate]);
 
-  const handleIsHalfDayChange = (e) => {
-    setIsHalfDay(e.target.checked);
+  const handleHalfDay = () => {
     let currentDate = new Date(startDate);
     const dayOfWeek = currentDate.getDay();
     if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-      if (e.target.checked) {
+      if (leaveDayType === "First Half" || leaveDayType === "Second Half") {
         setEndDate(startDate);
         setTotalDays(0.5);
       }
-    } else {
-      toast.error("You can't take a leave on Saturday and Sunday")
-      setEndDate(startDate);
-      setTotalDays(0)
+      if (leaveDayType === "Single Day") {
+        setEndDate(startDate);
+        setTotalDays(1);
+      }
     }
   };
 
@@ -178,15 +193,21 @@ const LeaveUpdate = ({ title }) => {
                 value={leaveDayType}
                 onChange={(e) => setLeaveDayType(e.target.value)}
               >
-                <option value="" disabled>
-                  Select a Leave Day Type
-                </option>
                 {dayTypeList.map((t) => (
                   <option key={t} value={t}>
                     {t}
                   </option>
                 ))}
               </CFormSelect>
+            </CCol>
+            <CCol xs={6}>
+              <CFormInput
+                id="inputendDate"
+                label="Total Days"
+                value={totalDays}
+                onChange={(e) => setTotalDays(e.target.value)}
+                disabled
+              />
             </CCol>
             <CCol xs={6}>
               <label className="form-label">Leave Start</label>
@@ -201,35 +222,16 @@ const LeaveUpdate = ({ title }) => {
               />
             </CCol>
             <CCol xs={6}>
-              <CFormCheck
-                className="mt-4"
-                type="checkbox"
-                id="inputIsHalfDay"
-                label="Half Day"
-                checked={isHalfDay}
-                onChange={handleIsHalfDayChange}
-              />
-            </CCol>
-            <CCol xs={6}>
               <label className="form-label">Leave End</label>
               <Calendar
                 value={endDate}
                 dateFormat="dd-mm-yy"
                 minDate={startDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                disabled={isHalfDay}
+                disabled={leaveDayType !== "Multiple Day"}
                 showIcon
                 id="date"
                 className="form-control"
-              />
-            </CCol>
-            <CCol xs={6}>
-              <CFormInput
-                id="inputendDate"
-                label="Total Days"
-                value={totalDays}
-                onChange={(e) => setTotalDays(e.target.value)}
-                disabled
               />
             </CCol>
             <CCol xs={12}>
