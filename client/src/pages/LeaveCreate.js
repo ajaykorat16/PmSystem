@@ -15,26 +15,41 @@ const LeaveCreate = ({ title }) => {
   const [reason, setReason] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [totalDays, setTotalDays] = useState("")
+  const [totalDays, setTotalDays] = useState(1)
   const [leaveType, setLeaveType] = useState("");
-  const [leaveDayType, setLeaveDayType] = useState("");
+  const [leaveDayType, setLeaveDayType] = useState("Single Day");
   const [isHalfDay, setIsHalfDay] = useState(false);
   const { formatDate } = useHelper()
   const { auth } = useAuth();
   const { addLeave, addUserLeave } = useLeave();
   const { fetchUsers } = useUser();
   const typeList = ["paid", "lwp"];
-  const dayTypeList = ["single", "multiple", "first_half", "second_half"];
+  const dayTypeList = ["Single Day", "Multiple Day", "First Half", "Second Half"];
   const navigate = useNavigate();
+
+  function mapDayType(dayType) {
+    switch (dayType) {
+      case "Single Day":
+        return "single";
+      case "Multiple Day":
+        return "multiple";
+      case "First Half":
+        return "first_half";
+      case "Second Half":
+        return "second_half";
+      default:
+        return dayType; 
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       let leaveData;
       if (auth.user.role === "admin") {
-        leaveData = { reason, startDate: formatDate(startDate), endDate: formatDate(endDate), leaveType, leaveDayType, totalDays, userId, status: "approved" }
+        leaveData = { reason, startDate: formatDate(startDate), endDate: formatDate(endDate), leaveType, leaveDayType: mapDayType(leaveDayType), totalDays, userId, status: "approved" }
       } else {
-        leaveData = { reason, startDate: formatDate(startDate), endDate: formatDate(endDate), leaveType, leaveDayType, totalDays }
+        leaveData = { reason, startDate: formatDate(startDate), endDate: formatDate(endDate), leaveType, leaveDayType: mapDayType(leaveDayType), totalDays }
       }
       const data = auth.user.role === "admin" ? await addLeave(leaveData) : await addUserLeave(leaveData);
       if (data.error) {
@@ -61,7 +76,7 @@ const LeaveCreate = ({ title }) => {
   const leaveDaysCount = (startDate, endDate) => {
     const eDate = new Date(endDate);
     let currentDate = new Date(startDate);
-    let totalDays = 0;
+    let totalDays = 1;
     while (currentDate <= eDate) {
       const dayOfWeek = currentDate.getDay();
       if (dayOfWeek !== 0 && dayOfWeek !== 6) {
@@ -79,15 +94,15 @@ const LeaveCreate = ({ title }) => {
   }, [startDate, endDate]);
 
   const handleIsHalfDayChange = (e) => {
-    setIsHalfDay(e.target.checked);
-    let currentDate = new Date(startDate);
-    const dayOfWeek = currentDate.getDay();
-    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-      if (e.target.checked) {
-        setEndDate(startDate);
-        setTotalDays(0.5);
-      }
-    }
+    // setIsHalfDay(e.target.checked);
+    // let currentDate = new Date(startDate);
+    // const dayOfWeek = currentDate.getDay();
+    // if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+    //   if (e.target.checked) {
+    //     setEndDate(startDate);
+    //     setTotalDays(0.5);
+    //   }
+    // }
   };
 
   return (
@@ -158,15 +173,21 @@ const LeaveCreate = ({ title }) => {
             value={leaveDayType}
             onChange={(e) => setLeaveDayType(e.target.value)}
           >
-            <option value="" disabled>
-              Select a Leave Day Type
-            </option>
             {dayTypeList.map((t) => (
               <option key={t} value={t}>
                 {t}
               </option>
             ))}
           </CFormSelect>
+        </CCol>
+        <CCol xs={6}>
+          <CFormInput
+            id="inputendDate"
+            label="Total Days"
+            value={totalDays}
+            onChange={(e) => setTotalDays(e.target.value)}
+            disabled
+          />
         </CCol>
         <CCol xs={6}>
           <label className="form-label">Leave Start</label>
@@ -181,38 +202,18 @@ const LeaveCreate = ({ title }) => {
           />
         </CCol>
         <CCol xs={6}>
-          <CFormCheck
-            className="mt-4"
-            type="checkbox"
-            id="inputIsHalfDay"
-            label="Half Day"
-            checked={isHalfDay}
-            onChange={handleIsHalfDayChange}
-          />
-        </CCol>
-        <CCol xs={6}>
           <label className="form-label">Leave End</label>
           <Calendar
             value={endDate}
             minDate={startDate}
             dateFormat="dd-mm-yy"
             onChange={(e) => setEndDate(e.target.value)}
-            disabled={isHalfDay}
+            disabled={leaveDayType !== "multiple"}
             showIcon
             id="date"
             className="form-control"
           />
         </CCol>
-        <CCol xs={6}>
-          <CFormInput
-            id="inputendDate"
-            label="Total Days"
-            value={totalDays}
-            onChange={(e) => setTotalDays(e.target.value)}
-            disabled
-          />
-        </CCol>
-
         <CCol xs={12}>
           <CButton type="submit" className="me-md-2">
             Submit
