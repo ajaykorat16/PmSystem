@@ -18,7 +18,6 @@ const LeaveCreate = ({ title }) => {
   const [totalDays, setTotalDays] = useState(1)
   const [leaveType, setLeaveType] = useState("");
   const [leaveDayType, setLeaveDayType] = useState("Single Day");
-  const [isHalfDay, setIsHalfDay] = useState(false);
   const { formatDate } = useHelper()
   const { auth } = useAuth();
   const { addLeave, addUserLeave } = useLeave();
@@ -38,7 +37,7 @@ const LeaveCreate = ({ title }) => {
       case "Second Half":
         return "second_half";
       default:
-        return dayType; 
+        return dayType;
     }
   }
 
@@ -88,21 +87,26 @@ const LeaveCreate = ({ title }) => {
   };
 
   useEffect(() => {
-    if (!isHalfDay) {
+    if (leaveDayType === "Multiple Day") {
       leaveDaysCount(startDate, endDate);
+    } else {
+      handleIsHalfDayChange()
     }
   }, [startDate, endDate]);
 
-  const handleIsHalfDayChange = (e) => {
-    // setIsHalfDay(e.target.checked);
-    // let currentDate = new Date(startDate);
-    // const dayOfWeek = currentDate.getDay();
-    // if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-    //   if (e.target.checked) {
-    //     setEndDate(startDate);
-    //     setTotalDays(0.5);
-    //   }
-    // }
+  const handleIsHalfDayChange = () => {
+    let currentDate = new Date(startDate);
+    const dayOfWeek = currentDate.getDay();
+    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+      if (leaveDayType === "First Half" || leaveDayType === "Second Half") {
+        setEndDate(startDate);
+        setTotalDays(0.5);
+      }
+      if (leaveDayType === "Single Day") {
+        setEndDate(startDate);
+        setTotalDays(1);
+      }
+    }
   };
 
   return (
@@ -208,7 +212,7 @@ const LeaveCreate = ({ title }) => {
             minDate={startDate}
             dateFormat="dd-mm-yy"
             onChange={(e) => setEndDate(e.target.value)}
-            disabled={leaveDayType !== "multiple"}
+            disabled={leaveDayType !== "Multiple Day"}
             showIcon
             id="date"
             className="form-control"
