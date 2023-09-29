@@ -51,7 +51,7 @@ const LeaveCreate = ({ title }) => {
     const { getAllUsers } = await fetchUsers();
     setUsers(getAllUsers);
   };
-  
+
   useEffect(() => {
     if (auth.user.role === "admin") {
       getUsers();
@@ -78,7 +78,7 @@ const LeaveCreate = ({ title }) => {
     } else {
       handleHalfDay()
     }
-  }, [startDate, endDate]);
+  }, [startDate, endDate, leaveDayType]);
 
   const handleHalfDay = () => {
     let currentDate = new Date(startDate);

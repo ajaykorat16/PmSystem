@@ -114,7 +114,7 @@ const LeaveUpdate = ({ title }) => {
     } else {
       handleHalfDay()
     }
-  }, [startDate, endDate]);
+  }, [startDate, endDate, leaveDayType]);
 
   const handleHalfDay = () => {
     let currentDate = new Date(startDate);
