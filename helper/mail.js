@@ -71,7 +71,7 @@ const sendMailForLeaveStatus = async (data, reasonForLeaveReject) => {
                 let body = content;
                 const { startDate, endDate, reason, totalDays, status, leaveType, userId } = data
 
-                const adminUser = await Users.findOne({ role: 'admin' }).select("-photo");
+                const adminUser = await Users.findOne({ email: process.env.ADMIN_EMAIL }).select("-photo");
                 const employee = await Users.findOne({ _id: userId }).select("-photo").populate('department');
 
                 body = body.replace('{userName}', employee.fullName)
