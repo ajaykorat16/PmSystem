@@ -69,7 +69,7 @@ const sendMailForLeaveStatus = async (data, reasonForLeaveReject) => {
                 console.log("Mail.sendLeaveRequest [ERROR: " + err + " ]");
             } else {
                 let body = content;
-                const { startDate, endDate, reason, totalDays, status, leaveType, userId } = data
+                const { startDate, endDate, reason, totalDays, status, leaveType, leaveDayType, userId } = data
 
                 const adminUser = await Users.findOne({ email: process.env.ADMIN_EMAIL }).select("-photo");
                 const employee = await Users.findOne({ _id: userId }).select("-photo").populate('department');
@@ -78,7 +78,8 @@ const sendMailForLeaveStatus = async (data, reasonForLeaveReject) => {
                 body = body.replace('{userName}', employee.fullName)
                 body = body.replace('{department}', employee?.department?.name)
                 body = body.replace('{reason}', capitalizeFLetter(reason))
-                body = body.replace('{leaveType}', formatteDayType(leaveType))
+                body = body.replace('{leaveType}', capitalizeFLetter(leaveType))
+                body = body.replace('{leaveDayType}', formatteDayType(leaveDayType))
                 body = body.replace('{startDate}', formattedDate(startDate))
                 body = body.replace('{endDate}', formattedDate(endDate))
                 body = body.replace('{totalDays}', totalDays)
@@ -87,8 +88,9 @@ const sendMailForLeaveStatus = async (data, reasonForLeaveReject) => {
                 body = body.replace('{adminName}', adminUser.fullName)
 
                 const mailOptions = {
-                    from: process.env.MAIL_FROM_EMAIL,
+                    from: `"Kriva Technolabs" <${process.env.MAIL_FROM_EMAIL}>`,
                     to: employee.email,
+                    name: "Jasmin Korat",
                     subject: "Your Leave Request Update",
                     html: body
                 };
@@ -116,7 +118,7 @@ const sendMailForLeaveRequest = async (data) => {
                 console.log("Mail.sendLeaveRequest [ERROR: " + err + " ]");
             } else {
                 let body = content;
-                const { reason, startDate, endDate, userId, totalDays } = data;
+                const { reason, startDate, endDate, userId, totalDays, leaveType, leaveDayType } = data;
 
                 const adminUser = await Users.findOne({ email: process.env.ADMIN_EMAIL }).select("-photo");
                 const employee = await Users.findOne({ _id: userId }).select("-photo").populate('department');
@@ -124,6 +126,8 @@ const sendMailForLeaveRequest = async (data) => {
                 body = body.replace('{adminName}', adminUser.fullName)
                 body = body.replace('{userName}', employee.fullName)
                 body = body.replace('{department}', employee?.department?.name)
+                body = body.replace('{leaveType}', capitalizeFLetter(leaveType))
+                body = body.replace('{leaveDayType}', formatteDayType(leaveDayType))
                 body = body.replace('{startDate}', formattedDate(startDate))
                 body = body.replace('{endDate}', formattedDate(endDate))
                 body = body.replace('{reason}', reason)
@@ -132,7 +136,7 @@ const sendMailForLeaveRequest = async (data) => {
                 body = body.replace('{phoneNumber}', employee.phone)
 
                 const mailOptions = {
-                    from: process.env.MAIL_FROM_EMAIL,
+                    from: `"Kriva Technolabs" <${process.env.MAIL_FROM_EMAIL}>`,
                     to: adminUser.email,
                     subject: "Leave Request",
                     html: body

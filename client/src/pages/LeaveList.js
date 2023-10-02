@@ -152,7 +152,7 @@ const LeaveList = ({ title }) => {
                 <CButton color="secondary" onClick={() => setVisible(false)}>
                   Close
                 </CButton>
-                <CButton color="primary" onClick={() => handleSubmitReject()}>Save changes</CButton>
+                <CButton color="primary" onClick={() => handleSubmitReject()}>Submit</CButton>
               </CModalFooter>
             </CForm>
           </CModal>
