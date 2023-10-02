@@ -78,7 +78,7 @@ const sendMailForLeaveStatus = async (data, reasonForLeaveReject) => {
                 body = body.replace('{userName}', employee.fullName)
                 body = body.replace('{department}', employee?.department?.name)
                 body = body.replace('{reason}', capitalizeFLetter(reason))
-                body = body.replace('{leaveType}', capitalizeFLetter(leaveType))
+                body = body.replace('{leaveType}', formatteDayType(leaveType))
                 body = body.replace('{startDate}', formattedDate(startDate))
                 body = body.replace('{endDate}', formattedDate(endDate))
                 body = body.replace('{totalDays}', totalDays)
