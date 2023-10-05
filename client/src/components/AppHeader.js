@@ -1,16 +1,8 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import {
-  CContainer,
-  CHeader,
-  CHeaderBrand,
-  CHeaderNav,
-  CHeaderToggler,
-  CNavItem,
-} from '@coreui/react';
+import { CContainer, CHeader, CHeaderNav, CHeaderToggler, CNavItem, } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { cilMenu } from '@coreui/icons';
-import { logo } from '../assets/brand/logo';
 import AppHeaderDropdown from './AppHeaderDropdown';
 
 const AppHeader = ({ title }) => {

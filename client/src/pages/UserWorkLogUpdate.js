@@ -41,7 +41,7 @@ const UserWorkLogUpdate = ({ title }) => {
                     setTime(worklog.time);
                 }
             } catch (error) {
-                console.error("Error fetching user profile:", error);
+                console.log(error.message);
             }
         };
         fetchData();

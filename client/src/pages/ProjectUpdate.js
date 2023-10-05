@@ -36,7 +36,7 @@ const ProjectUpdate = ({ title }) => {
                     setDevelopers([]);
                 }
             } catch (error) {
-                console.error("Error fetching user profile:", error);
+                console.log(error.message);
             }
         };
         fetchData();
