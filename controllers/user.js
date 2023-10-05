@@ -214,9 +214,7 @@ const updateUser = asyncHandler(async (req, res) => {
       department: department || user.department,
       dateOfJoining: dateOfJoining ? dateOfJoining : user.dateOfJoining,
       photo: photo || user.photo,
-      fullName: () => {
-        return this.firstname + " " + this.lastname
-      }
+      fullName: (firstname ? capitalizeFLetter(firstname) : user.firstname) + " " + (lastname ? capitalizeFLetter(lastname) : user.lastname)
     };
 
     if (photo) {
