@@ -32,14 +32,10 @@ const UserCreate = ({ title }) => {
         try {
             if (password !== confirmPassword) {
                 toast.error("Password and Confirm Password must be same");
-            } else if (password.length < 6) {
-                toast.error("Password must be contain six characters");
             } else {
                 let addUser = { employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth: formatDate(dateOfBirth), department: departments, dateOfJoining: formatDate(dateOfJoining) }
                 const data = await createUser(addUser)
-                if (data.error) {
-                    toast.error(data.message)
-                } else {
+                if (typeof data !== 'undefined' && data.error === false) {
                     navigate('/dashboard/user/list')
                 }
             }

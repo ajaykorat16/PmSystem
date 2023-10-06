@@ -36,9 +36,7 @@ const LeaveCreate = ({ title }) => {
         leaveData = { reason, startDate: formatDate(startDate), endDate: formatDate(endDate), leaveType, leaveDayType, totalDays }
       }
       const data = auth.user.role === "admin" ? await addLeave(leaveData) : await addUserLeave(leaveData);
-      if (data.error) {
-        toast.error(data.message);
-      } else {
+      if (typeof data !== 'undefined' && data.error === false) {
         const redirectPath = auth.user.role === "admin" ? "/dashboard/leave/list" : "/dashboard-user/leave/list";
         navigate(redirectPath);
       }

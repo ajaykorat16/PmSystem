@@ -14,9 +14,7 @@ const DepartmentCreate = ({ title }) => {
     e.preventDefault();
     try {
       const data = await addDepartment(name);
-      if (data.error) {
-        toast.error(data.message)
-      } else {
+      if (typeof data !== 'undefined' && data.error === false) {
         navigate("/dashboard/department/list");
       }
     } catch (error) {

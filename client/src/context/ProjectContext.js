@@ -8,7 +8,7 @@ const ProjectContext = createContext();
 
 const ProjectProvider = ({ children }) => {
     const { auth } = useAuth();
-      
+
     const headers = {
         Authorization: auth?.token,
     };
@@ -68,7 +68,11 @@ const ProjectProvider = ({ children }) => {
             if (error.response) {
                 const errors = error.response.data.errors;
                 if (errors && Array.isArray(errors) && errors.length > 0) {
-                    toast.error("Please fill all fields")
+                    if (errors.length > 1) {
+                        toast.error("Please fill all fields")
+                    } else {
+                        toast.error(errors[0].msg)
+                    }
                 } else {
                     const errorMessage = error.response.data.message;
                     toast.error(errorMessage);

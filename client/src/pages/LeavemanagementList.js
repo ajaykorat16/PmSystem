@@ -8,7 +8,6 @@ import { Button } from "primereact/button";
 import { useLeaveManagement } from "../context/LeaveManagementContext";
 import { CButton, CForm, CFormInput, CFormSelect, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle, } from "@coreui/react";
 import { useUser } from "../context/UserContext";
-import { toast } from "react-hot-toast";
 
 const LeaveManagementList = ({ title }) => {
   const { getLeavesMonthWise, getSingleLeave, updateLeave, createLeave } = useLeaveManagement();
@@ -111,10 +110,11 @@ const LeaveManagementList = ({ title }) => {
     e.preventDefault();
     try {
       const data = await createLeave(manageLeave);
-      if (data.error) { toast.error(data.message) }
-      setNewVisible(false);
-      fetchLeaves(globalFilterValue);
-      setManageLeave({ user: "", monthly: "", leave: "", })
+      if (typeof data !== 'undefined' && data.error === false) {
+        setNewVisible(false);
+        fetchLeaves(globalFilterValue);
+        setManageLeave({ user: "", monthly: "", leave: "", })
+      }
     } catch (error) {
       console.log(error);
     }

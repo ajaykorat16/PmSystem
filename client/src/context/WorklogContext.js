@@ -71,12 +71,20 @@ const WorklogProvider = ({ children }) => {
             return data;
         } catch (error) {
             if (error.response) {
-                const errors = error.response.data.errors;
-                if (errors && Array.isArray(errors) && errors.length > 0) {
-                    toast.error("Please fill all fields")
+                if (error.response) {
+                    const errors = error.response.data.errors;
+                    if (errors && Array.isArray(errors) && errors.length > 0) {
+                        if (errors.length > 1) {
+                            toast.error("Please fill all fields")
+                        } else {
+                            toast.error(errors[0].msg)
+                        }
+                    } else {
+                        const errorMessage = error.response.data.message;
+                        toast.error(errorMessage);
+                    }
                 } else {
-                    const errorMessage = error.response.data.message;
-                    toast.error(errorMessage);
+                    toast.error('An error occurred. Please try again later.');
                 }
             } else {
                 toast.error('An error occurred. Please try again later.');

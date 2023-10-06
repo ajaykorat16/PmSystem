@@ -35,9 +35,7 @@ const WorkLogCreate = ({ title }) => {
         try {
             const addWorkLog = { project: selectproject, description, logDate: formatDate(logDate), time }
             const data = await createWorkLog(addWorkLog)
-            if (data.error) {
-                toast.error(data.message)
-            } else {
+            if (typeof data !== 'undefined' && data.error === false) {
                 navigate('/dashboard-user/workLog/list')
             }
         } catch (error) {

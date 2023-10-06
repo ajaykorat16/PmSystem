@@ -27,9 +27,7 @@ const ProjectCreate = ({ title }) => {
     try {
       const addProject = { name, description, startDate: formatDate(startDate), developers: developers.map(dev => ({ id: dev._id })) }
       const data = await createProject(addProject)
-      if (data.error) {
-        toast.error(data.message)
-      } else {
+      if (typeof data !== 'undefined' && data.error === false) {
         navigate('/dashboard/project/list')
       }
     } catch (error) {
