@@ -29,7 +29,11 @@ const parsedDate = (date, format = 'YYYY-MM-DD') => {
 };
 
 function capitalizeFLetter(string) {
-    return string[0].toUpperCase() + string.slice(1);
+    if(typeof string !== 'undefined'){
+        return string[0].toUpperCase() + string.slice(1);
+    }else{
+        return ""
+    }
 }
 
 function formatteDayType(dayType) {
@@ -43,7 +47,7 @@ function formatteDayType(dayType) {
         case "second_half":
             return "Second Half";
         default:
-            return "Single Day";
+            return "";
     }
 }
 

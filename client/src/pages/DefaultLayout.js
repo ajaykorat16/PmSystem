@@ -24,8 +24,8 @@ const DefaultLayout = () => {
   const [userWorklogCount, setUserWorklogCount] = useState(0)
 
   const fetchLeave = async () => {
-    const { approvedLeave } = await getUserLeave()
-    setLeaveCount(approvedLeave)
+    const data = await getUserLeave()
+    setLeaveCount(data?.approvedLeave)
   }
 
   const fetchProjects = async () => {

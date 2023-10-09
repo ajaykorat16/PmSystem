@@ -38,9 +38,9 @@ const LeaveList = ({ title }) => {
     } else {
       leaveData = await getUserLeave(currentPage, rowsPerPage, query, sortField, sortOrder);
     }
-    const totalRecordsCount = leaveData.totalLeaves;
-    setTotalRecords(totalRecordsCount);
-    setLeaveList(leaveData.leaves);
+    const totalRecordsCount = leaveData?.totalLeaves;
+    setTotalRecords(totalRecordsCount); 
+    setLeaveList(leaveData?.leaves);
     setIsLoading(false);
   };
 
