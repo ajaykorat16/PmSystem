@@ -53,9 +53,9 @@ const ProjectProvider = ({ children }) => {
     }
 
     //add project
-    const createProject = async (addUser) => {
+    const createProject = async (addproject) => {
         try {
-            const { data } = await axios.post(`${baseURL}/projects/create`, addUser, { headers });
+            const { data } = await axios.post(`${baseURL}/projects/create`, addproject, { headers });
 
             if (data.error === false) {
                 getProject()

@@ -30,6 +30,7 @@ import WorkLogCreate from './pages/WorkLogCreate';
 import UserWorkLogList from './pages/UserWorkLogList';
 import AdminWorkLogList from './pages/AdminWorkLogList';
 import UserWorkLogUpdate from './pages/UserWorkLogUpdate';
+import ManageCredentials from './pages/ManageCredentials';
 
 function App() {
   return (
@@ -54,7 +55,8 @@ function App() {
           <Route path="project/list" element={<ProjectList title="Project List" />} />
           <Route path="project/create" element={<ProjectCreate title="Create Project " />} />
           <Route path="project/update/:id" element={<ProjectUpdate title="Update Project" />} />
-          <Route path="admin/workLog/list" element={<AdminWorkLogList title="Work Log List" />} />
+          <Route path="workLog/list" element={<AdminWorkLogList title="Work Log List" />} />
+          <Route path="mangeCredentials" element={<ManageCredentials title="Manage Credentials" />} />
         </Route>
         <Route path='/dashboard-user' element={<UserRoutes />}>
           <Route path="employee" element={<DefaultLayout />} />

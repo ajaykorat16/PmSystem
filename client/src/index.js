@@ -12,6 +12,7 @@ import { LeaveManagementProvider } from './context/LeaveManagementContext';
 import { ProjectProvider } from './context/ProjectContext';
 import { WorklogProvider } from './context/WorklogContext';
 import { HelperProvider } from './context/Helper';
+import { CredentialProvider } from './context/CredentialContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -19,23 +20,25 @@ root.render(
   <AuthProvider>
     <DepartmentProvider>
       <HelperProvider>
-        <UserProvider>
-          <ProjectProvider>
-            <WorklogProvider>
-              <LeaveProvider>
-                <LeaveManagementProvider>
-                  <Provider store={store}>
-                    <React.StrictMode>
-                      <BrowserRouter>
-                        <App />
-                      </BrowserRouter>
-                    </React.StrictMode>
-                  </Provider>
-                </LeaveManagementProvider>
-              </LeaveProvider>
-            </WorklogProvider>
-          </ProjectProvider>
-        </UserProvider>
+        <CredentialProvider>
+          <UserProvider>
+            <ProjectProvider>
+              <WorklogProvider>
+                <LeaveProvider>
+                  <LeaveManagementProvider>
+                    <Provider store={store}>
+                      <React.StrictMode>
+                        <BrowserRouter>
+                          <App />
+                        </BrowserRouter>
+                      </React.StrictMode>
+                    </Provider>
+                  </LeaveManagementProvider>
+                </LeaveProvider>
+              </WorklogProvider>
+            </ProjectProvider>
+          </UserProvider>
+        </CredentialProvider>
       </HelperProvider>
     </DepartmentProvider>
   </AuthProvider>

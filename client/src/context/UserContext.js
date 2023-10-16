@@ -213,8 +213,19 @@ const UserProvider = ({ children }) => {
         }
     }
 
+    const userForCredential = async () => {
+        try {
+            const res = await axios.get(`${baseURL}/user/credentialUser`, { headers });
+            if (res.data.error === false) {
+                return res.data
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     return (
-        <UserContext.Provider value={{ fetchUsers, createUser, updateUser, deleteUser, getUserProfile, updateProfile, resetPassword, getAllUsers, getAllEmployee, getAllUsersByBirthMonth }}>
+        <UserContext.Provider value={{ fetchUsers, createUser, updateUser, deleteUser, getUserProfile, updateProfile, resetPassword, getAllUsers, getAllEmployee, getAllUsersByBirthMonth, userForCredential }}>
             {children}
         </UserContext.Provider>
     );
