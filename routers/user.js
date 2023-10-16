@@ -4,11 +4,13 @@ const { check } = require('express-validator');
 const {auth, isAdmin} = require("../middleware/auth")
 const formidableMiddleware = require('express-formidable');
 
-const { createUser, loginUser, updateUser, deleteUserProfile, getAllUser, getUserProfile, changePasswordController, getUsers, getUserByBirthDayMonth, loginUserByAdmin } = require("../controllers/user")
+const { createUser, loginUser, updateUser, deleteUserProfile, getAllUser, getUserProfile, changePasswordController, getUsers, getUserByBirthDayMonth, loginUserByAdmin, userForCredential } = require("../controllers/user")
 
 router.get("/userList", auth, isAdmin, getAllUser)
 
 router.get("/", auth, isAdmin, getUsers)
+
+router.get("/credentialUser", auth, userForCredential)
 
 router.get("/getUserByBirthDayMonth", auth, getUserByBirthDayMonth)
 

@@ -10,6 +10,7 @@ const leaveRecord = require("./routers/leaveRecord")
 const leaveManagement = require("./routers/leaveManagement")
 const projects = require("./routers/projects")
 const worklog = require("./routers/worklog")
+const credential = require("./routers/credentials")
 
 const app = express()
 var cors = require('cors')
@@ -30,6 +31,7 @@ app.use("/leaves", leaveRecord)
 app.use("/leaveManagement", leaveManagement)
 app.use("/projects", projects)
 app.use("/worklog", worklog)
+app.use("/credential", credential)
 
 
 app.listen(PORT, () => {

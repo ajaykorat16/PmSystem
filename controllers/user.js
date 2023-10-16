@@ -493,28 +493,28 @@ const getUserByBirthDayMonth = asyncHandler(async (req, res) => {
 
 const getAllUser = asyncHandler(async (req, res) => {
   try {
-    const getAllUsers = await Users.find({ role: "user" }).populate("department").lean();
-
-    const formattedUsers = getAllUsers.map((user) => {
-      const photoUrl =
-        user.photo && user.photo.contentType
-          ? `data:${user.photo.contentType};base64,${user.photo.data.toString(
-            "base64"
-          )}`
-          : null;
-
-      return {
-        ...user,
-        dateOfBirth: formattedDate(user.dateOfBirth),
-        dateOfJoining: formattedDate(user.dateOfJoining),
-        photo: photoUrl,
-      };
-    });
+    const getAllUsers = await Users.find({ role: "user" }).select("-photo");
 
     return res.status(200).json({
       error: false,
       message: "All users retrieved successfully",
-      getAllUsers: formattedUsers,
+      getAllUsers,
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send("Server error");
+  }
+});
+
+const userForCredential = asyncHandler(async (req, res) => {
+  try {
+    const loginUser = req.user._id
+    const getAllUsers = await Users.find({ _id: { $ne: loginUser } }).select("-photo");
+
+    return res.status(200).json({
+      error: false,
+      message: "All users retrieved successfully",
+      getAllUsers,
     });
   } catch (error) {
     console.log(error.message);
@@ -578,4 +578,4 @@ const changePasswordController = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { createUser, loginUser, updateUser, deleteUserProfile, getAllUser, getUserProfile, changePasswordController, getUsers, getUserByBirthDayMonth, loginUserByAdmin };
+module.exports = { createUser, loginUser, updateUser, deleteUserProfile, getAllUser, getUserProfile, changePasswordController, getUsers, getUserByBirthDayMonth, loginUserByAdmin, userForCredential };
