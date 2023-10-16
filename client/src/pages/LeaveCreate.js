@@ -4,7 +4,6 @@ import { useLeave } from "../context/LeaveContext";
 import { useUser } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import Layout from "./Layout";
-import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { Calendar } from "primereact/calendar";
 import { useHelper } from "../context/Helper";
@@ -181,7 +180,6 @@ const LeaveCreate = ({ title }) => {
           <label className="form-label">Leave Start</label>
           <Calendar
             value={startDate}
-            maxDate={endDate}
             dateFormat="dd-mm-yy"
             onChange={(e) => setStartDate(e.target.value)}
             showIcon

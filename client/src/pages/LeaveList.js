@@ -14,7 +14,7 @@ import { toast } from "react-hot-toast";
 import { CButton, CForm, CFormTextarea, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from "@coreui/react";
 
 const LeaveList = ({ title }) => {
-  const { getLeave, getUserLeave, updateStatus } = useLeave();
+  const { getLeave, getUserLeave, updateStatus, deleteLeave } = useLeave();
   const [leaveList, setLeaveList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -39,7 +39,7 @@ const LeaveList = ({ title }) => {
       leaveData = await getUserLeave(currentPage, rowsPerPage, query, sortField, sortOrder);
     }
     const totalRecordsCount = leaveData?.totalLeaves;
-    setTotalRecords(totalRecordsCount); 
+    setTotalRecords(totalRecordsCount);
     setLeaveList(leaveData?.leaves);
     setIsLoading(false);
   };
@@ -77,6 +77,16 @@ const LeaveList = ({ title }) => {
       }
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(
+      'Are you sure you want to delete this leave?'
+    );
+    if (confirmDelete) {
+      await deleteLeave(id);
+      fetchLeaves(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
     }
   };
 
@@ -192,122 +202,81 @@ const LeaveList = ({ title }) => {
               dataKey="_id"
               emptyMessage="No leave found."
               paginatorLeft={
-                <Dropdown
-                  value={rowsPerPage}
-                  options={[10, 25, 50]}
-                  onChange={(e) => setRowsPerPage(e.value)}
-                />
+                <Dropdown value={rowsPerPage} options={[10, 25, 50]} onChange={(e) => setRowsPerPage(e.value)} />
               }
             >
               {auth.user.role === "admin" && (
-                <Column
-                  field="userId.fullName"
-                  sortable
-                  header="Name"
-                  filterField="name"
-                  align="center"
-                />
+                <Column field="userId.fullName" sortable header="Name" filterField="name" align="center" />
               )}
-              <Column
-                field="reason"
-                header="Reason"
-                filterField="reason"
-                alignHeader="center"
-                style={{ minWidth: "15rem", maxWidth: "15rem" }}
-              />
-              <Column
-                field="reasonForLeaveReject"
-                header="Reason For Leave Reject"
-                filterField="reason"
-                alignHeader="center"
-                style={{ minWidth: "15rem", maxWidth: "15rem" }}
-              />
-              <Column
-                field="startDate"
-                header="Start Date"
-                sortable
-                filterField="start"
-                align="center"
-              />
-              <Column
-                field="endDate"
-                header="End Date"
-                filterField="end"
-                align="center"
-              />
-              <Column
-                field="totalDays"
-                header="Days"
-                filterField="days"
-                align="center"
-              />
-              <Column
-                field="leaveType"
-                header="Leave Type"
-                filterField="leaveType"
-                align="center"
-              />
-              <Column
-                field="leaveDayType"
-                header="Leave Day Type"
-                filterField="leaveDayType"
-                align="center"
-              />
+              <Column field="reason" header="Reason" filterField="reason" alignHeader="center" style={{ minWidth: "15rem", maxWidth: "15rem" }} />
+              <Column field="reasonForLeaveReject" header="Reason For Leave Reject" filterField="reason" alignHeader="center" style={{ minWidth: "15rem", maxWidth: "15rem" }} />
+              <Column field="startDate" header="Start Date" sortable filterField="start" align="center" />
+              <Column field="endDate" header="End Date" filterField="end" align="center" />
+              <Column field="totalDays" header="Days" filterField="days" align="center" />
+              <Column field="leaveType" header="Leave Type" filterField="leaveType" align="center" />
+              <Column field="leaveDayType" header="Leave Day Type" filterField="leaveDayType" align="center" />
               <Column
                 header="Status"
                 alignHeader="center"
                 body={(rowData) => (
-                  <Tag
-                    value={rowData.status}
-                    severity={getSeverity(rowData.status)}
-                  />
+                  <Tag value={rowData.status} severity={getSeverity(rowData.status)} />
                 )}
                 filterField="status"
                 align="center"
               />
-              {auth.user.role === "admin" && (
-                <Column
-                  header="Action"
-                  body={(rowData) => (
-                    <div>
-                      {rowData.status === "Pending" && (
-                        <>
-                          <Button
-                            icon="pi pi-check"
-                            title="Approve"
-                            rounded
-                            severity="success"
-                            onClick={() => handleUpdateStatus(rowData._id, "approved")}
-                            raised
-                          />
-                          <Button
-                            icon="pi pi-times"
-                            title="Reject"
-                            rounded
-                            severity="danger"
-                            onClick={() => handleUpdateStatus(rowData._id, "rejected", rowData.userId.fullName)}
-                            className="ms-2"
-                            raised
-                          />
-                        </>
-                      )}
-                      <Button
-                        icon="pi pi-pencil"
-                        rounded
-                        severity="info"
-                        className="ms-2"
-                        title="Edit"
-                        onClick={() => handleUpdate(rowData._id)}
-                        raised
-                        disabled={rowData.status === "Approved" || rowData.status === "Rejected"}
-                      />
-                    </div>
-                  )}
-                  align="right"
-                  alignHeader="center"
-                  style={{ maxWidth: "8rem" }}
-                />
-              )}
+              <Column
+                header="Action"
+                body={(rowData) => (
+                  <div>
+                    {rowData.status === "Pending" && auth.user.role === "admin" && (
+                      <>
+                        <Button
+                          icon="pi pi-check"
+                          title="Approve"
+                          rounded
+                          severity="success"
+                          onClick={() => handleUpdateStatus(rowData._id, "approved")}
+                          raised
+                        />
+                        <Button
+                          icon="pi pi-times"
+                          title="Reject"
+                          rounded
+                          severity="danger"
+                          onClick={() => handleUpdateStatus(rowData._id, "rejected", rowData.userId.fullName)}
+                          className="ms-2"
+                          raised
+                        />
+                      </>
+                    )}
+                    {rowData.status === "Pending" && auth.user.role === "user" && (
+                      <>
+                        <Button
+                          icon="pi pi-trash"
+                          title="Delete"
+                          rounded
+                          severity="danger"
+                          onClick={() => handleDelete(rowData._id)}
+                          raised
+                        />
+                      </>
+                    )}
+                    <Button
+                      icon="pi pi-pencil"
+                      rounded
+                      severity="info"
+                      className="ms-2"
+                      title="Edit"
+                      onClick={() => handleUpdate(rowData._id)}
+                      raised
+                      disabled={rowData.status !== "Pending"}
+                    />
+                  </div>
+                )}
+                align="right"
+                alignHeader="center"
+                style={{ maxWidth: "8rem" }}
+              />
             </DataTable>
           </div>
         </>

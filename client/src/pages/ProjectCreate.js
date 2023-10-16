@@ -7,7 +7,6 @@ import { useUser } from "../context/UserContext";
 import { useProject } from "../context/ProjectContext";
 import { Editor } from 'primereact/editor';
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-hot-toast";
 import { Calendar } from "primereact/calendar";
 import { useHelper } from "../context/Helper";
 

@@ -66,7 +66,7 @@ const LeaveProvider = ({ children }) => {
     try {
       const { data } = await axios.delete(`${baseURL}/leaves/deleteLeave/${id}`, { headers });
       if (data.error === false) {
-        getLeave();
+        getUserLeave();
         toast.success(data.message);
       }
     } catch (error) {

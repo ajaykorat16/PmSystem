@@ -4,7 +4,6 @@ import "react-quill/dist/quill.snow.css";
 import { CButton, CCol, CForm, CFormInput, CFormSelect } from '@coreui/react'
 import { useProject } from '../context/ProjectContext';
 import { useWorklog } from '../context/WorklogContext';
-import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { Calendar } from 'primereact/calendar';
 import { Editor } from 'primereact/editor';

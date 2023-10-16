@@ -40,6 +40,6 @@ router.put("/updateLeave/:id", auth, isAdmin, updateLeave)
 
 router.put("/updateStatus/:id", auth, isAdmin, updateStatus);
 
-router.delete("/deleteLeave/:id", auth, isAdmin, deleteLeave)
+router.delete("/deleteLeave/:id", auth, deleteLeave)
 
 module.exports = router

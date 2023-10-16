@@ -3,7 +3,6 @@ import { CCol, CFormInput, CButton, CForm } from "@coreui/react";
 import { useDepartment } from "../context/DepartmentContext";
 import { useNavigate } from "react-router-dom";
 import Layout from "./Layout";
-import toast from "react-hot-toast";
 
 const DepartmentCreate = ({ title }) => {
   const navigate = useNavigate();
