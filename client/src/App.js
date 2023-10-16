@@ -62,6 +62,7 @@ function App() {
           <Route path="employee/list" element={<EmployeeList title="Employee List" />} />
           <Route path="employee/birthday/list" element={<EmployeeByBirthMonth title="Employee By Birth Month" />} />
           <Route path="leave/create" element={<LeaveCreate title="Leave Create" />} />
+          <Route path="leave/update/:id" element={<LeaveUpdate title="Leave Update" />} />
           <Route path="user/user-profile/:id" element={<UserProfile title="Profile" />} />
           <Route path="user/resetPassword" element={<ResetPassword title="Reset Password" />} />
           <Route path="project/list" element={<UserProjects title="Your Projects" />} />

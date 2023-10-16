@@ -248,13 +248,7 @@ const updateLeave = asyncHandler(async (req, res) => {
         message: "Please select proper date."
       })
     }
-
-    let userLeave;
-    if (id) {
-      userLeave = await Leaves.findOne({ _id: id });
-    } else {
-      userLeave = await Leaves.findOne({ userId: req.user._id });
-    }
+    const userLeave = await Leaves.findOne({ _id: id });
 
     const updatedFields = {
       userId: userId || userLeave.userId,

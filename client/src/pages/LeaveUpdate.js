@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { CForm, CCol, CFormInput, CFormSelect, CButton } from "@coreui/react";
 import { useLeave } from "../context/LeaveContext";
 import { useUser } from "../context/UserContext";
+import { useAuth } from "../context/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
 import Loader from "../components/Loader";
 import Layout from "./Layout";
@@ -22,6 +23,7 @@ const LeaveUpdate = ({ title }) => {
   const [users, setUsers] = useState([]);
   const { updateLeave, getLeaveById } = useLeave();
   const { fetchUsers } = useUser();
+  const { auth } = useAuth();
   const { formatDate } = useHelper()
   const typeList = ["paid", "lwp"];
   const dayTypeList = ["Single Day", "Multiple Day", "First Half", "Second Half"];
@@ -49,21 +51,16 @@ const LeaveUpdate = ({ title }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const leaveData = {
-        reason,
-        startDate: formatDate(startDate),
-        endDate: formatDate(endDate),
-        leaveType,
-        leaveDayType,
-        userId,
-        status,
-        totalDays,
-      };
-      const data = await updateLeave(leaveData, id);
-      if (data.error) {
-        toast.error(data.message);
+      let leaveData
+      if (auth.user.role === "admin") {
+        leaveData = { reason, startDate: formatDate(startDate), endDate: formatDate(endDate), leaveType, leaveDayType, userId, status, totalDays, };
       } else {
-        navigate("/dashboard/leave/list");
+        leaveData = { reason, startDate: formatDate(startDate), endDate: formatDate(endDate), leaveType, leaveDayType, totalDays }
+      }
+      const data = await updateLeave(leaveData, id);
+      if (typeof data !== 'undefined' && data.error === false) {
+        const redirectPath = auth.user.role === "admin" ? "/dashboard/leave/list" : "/dashboard-user/leave/list";
+        navigate(redirectPath);
       }
     } catch (error) {
       console.log(error);
@@ -76,8 +73,10 @@ const LeaveUpdate = ({ title }) => {
   };
 
   useEffect(() => {
-    getUsers();
-  }, []);
+    if (auth.user.role === "admin") {
+      getUsers();
+    }
+  }, [auth.user.role]);
 
   const leaveDaysCount = (startDate, endDate) => {
     const eDate = new Date(endDate);
@@ -125,21 +124,26 @@ const LeaveUpdate = ({ title }) => {
             <h2 className="mb-5 mt-2">Update Leave</h2>
           </div>
           <CForm className="row g-3 mb-3" onSubmit={handleSubmit}>
-            <CCol md={6}>
-              <CFormSelect
-                id="inputUserName"
-                label="User Name"
-                value={userId}
-                onChange={(e) => setUserId(e.target.value)}
-              >
-                {users.map((u) => (
-                  <option
-                    key={u._id}
-                    value={u._id}
-                  >{`${u.firstname} ${u.lastname}`}</option>
-                ))}
-              </CFormSelect>
-            </CCol>
+            {auth.user.role === "admin" && (
+              <CCol md={6}>
+                <CFormSelect
+                  id="inputUserName"
+                  label="User Name"
+                  value={userId}
+                  onChange={(e) => setUserId(e.target.value)}
+                >
+                  <option value="" disabled>
+                    Select User
+                  </option>
+                  {users.map((u) => (
+                    <option
+                      key={u._id}
+                      value={u._id}
+                    >{`${u.firstname} ${u.lastname}`}</option>
+                  ))}
+                </CFormSelect>
+              </CCol>
+            )}
             <CCol md={6}>
               <CFormInput
                 id="inputReason"
@@ -148,14 +152,16 @@ const LeaveUpdate = ({ title }) => {
                 onChange={(e) => setReason(e.target.value)}
               />
             </CCol>
-            <CCol md={6}>
-              <CFormInput
-                id="inputStatus"
-                label="Status"
-                value={status}
-                disabled
-              />
-            </CCol>
+            {auth.user.role === "admin" && (
+              <CCol md={6}>
+                <CFormInput
+                  id="inputStatus"
+                  label="Status"
+                  placeholder="Approved"
+                  disabled
+                />
+              </CCol>
+            )}
             <CCol md={6}>
               <CFormSelect
                 id="inputType"
@@ -200,7 +206,6 @@ const LeaveUpdate = ({ title }) => {
               <label className="form-label">Leave Start</label>
               <Calendar
                 value={startDate}
-                maxDate={endDate}
                 dateFormat="dd-mm-yy"
                 onChange={(e) => setStartDate(e.target.value)}
                 showIcon

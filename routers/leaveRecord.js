@@ -34,9 +34,7 @@ router.post("/createLeaveAdmin",
     check('leaveDayType', 'type is required').notEmpty(),
     auth, isAdmin, createLeave)
 
-router.put("/updateLeave", auth, updateLeave)
-
-router.put("/updateLeave/:id", auth, isAdmin, updateLeave)
+router.put("/updateLeave/:id", auth, updateLeave)
 
 router.put("/updateStatus/:id", auth, isAdmin, updateStatus);
 

@@ -61,7 +61,8 @@ const LeaveList = ({ title }) => {
   }, [globalFilterValue, rowsPerPage, sortField, sortOrder]);
 
   const handleUpdate = async (id) => {
-    navigate(`/dashboard/leave/update/${id}`);
+    const redirectPath = auth.user.role === "admin" ? `/dashboard/leave/update/${id}` : `/dashboard-user/leave/update/${id}`;
+    navigate(redirectPath);
   };
 
   const handleUpdateStatus = async (id, status, fullName) => {

@@ -80,7 +80,6 @@ const LeaveProvider = ({ children }) => {
       const { data } = await axios.put(`${baseURL}/leaves/updateLeave/${id}`, leaveData, { headers });
 
       if (data.error === false) {
-        getLeave();
         setTimeout(function () {
           toast.success(data.message);
         }, 1000);
