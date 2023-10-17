@@ -2,10 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from 'react-router-dom';
 import { useCredential } from "../context/CredentialContext";
 import { useAuth } from '../context/AuthContext';
-import { ScrollPanel } from 'primereact/scrollpanel';
+import { Avatar } from "primereact/avatar";
 import Layout from "./Layout";
 import '../styles/Styles.css'
-import { Avatar } from "primereact/avatar";
 
 function CredentialView({ title }) {
     const { id } = useParams()
@@ -15,18 +14,16 @@ function CredentialView({ title }) {
         title: "",
         description: "",
         users: "",
-        photo: "",
+        photo: [],
     })
     const navigate = useNavigate()
 
     useEffect(() => {
         const fetchCredential = async () => {
             const data = await getSingleCredential(id);
-            console.log(data);
             if (data) {
                 const userNames = data.users.map(user => user.id.fullName);
-                const userPhotos = data.users.map(user => user.id.photo)
-                console.log(userPhotos);
+                const userPhotos = data.users.map(user => user.id)
                 setCredentialDetail({
                     title: data.title,
                     description: data.description,
@@ -37,8 +34,6 @@ function CredentialView({ title }) {
         };
         fetchCredential();
     }, [getSingleCredential, id]);
-
-    console.log(credentialDetail.photo);
 
     return (
         <Layout title={title}>
@@ -53,13 +48,20 @@ function CredentialView({ title }) {
                         >
                             Back
                         </button>
-                        {/* <p className="users">{credentialDetail.users}</p> */}
                     </div>
                     <div className="col-1">
-                        {credentialDetail.photo ? (
-                            <Avatar image={`${credentialDetail.photo}`} size="xlarge" shape="circle" />
+                        {credentialDetail.photo.length > 0 ? (
+                            credentialDetail.photo.map((user, index) => (
+                                <div key={index}>
+                                    {user.photo?.data ? (
+                                        <Avatar image={`data:${user.photo.contentType};base64, ${user.photo.data}`} size="large" shape="circle" className="m-3" title={user.fullName} />
+                                    ) : (
+                                        <Avatar icon="pi pi-user" className="avatar m-3" size="large" shape="circle" title={user.fullName} />
+                                    )}
+                                </div>
+                            ))
                         ) : (
-                            <Avatar icon="pi pi-user" className="avatar" size="large" shape="circle" />
+                            <p>No photos available</p>
                         )}
                     </div>
                 </div>

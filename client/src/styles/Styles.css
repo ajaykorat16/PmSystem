@@ -218,6 +218,18 @@
     color: #ffffff !important;
 }
 
+.credentialAvatar {
+    background-color: #2196F3 !important;
+    color: #ffffff !important;
+    size: 5 0px;
+    font-size: 20px;
+}
+
+/* .p-avatar.p-avatar-lg {
+    height: 4px !important;
+    width: 4px !important;
+} */
+
 .credentialTitle {
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
     font-size: 40px;
@@ -226,21 +238,23 @@
     text-align: center;
 }
 
-.credentialBody{
+.credentialBody {
     border-right: 3px solid black;
 }
+
 /* .credentialDescription {
     font-size: 10px !important;
     min-height: 45rem;
 } */
 
-.credential{
+.credential {
     /* border: 3px solid black; */
     /* border-radius: 15px; */
     /* margin-right: 25px; */
     font-family: 'Poppins', sans-serif;
     padding: 12px;
-    box-shadow: 0px -25px 20px -20px rgba(0, 0, 0, 0.45), 25px 0 20px -20px rgba(0, 0, 0, 0.45), 0px 25px 20px -20px rgba(0, 0, 0, 0.45), -25px 0 20px -20px rgba(0, 0, 0, 0.45);}
+    box-shadow: 0px -25px 20px -20px rgba(0, 0, 0, 0.45), 25px 0 20px -20px rgba(0, 0, 0, 0.45), 0px 25px 20px -20px rgba(0, 0, 0, 0.45), -25px 0 20px -20px rgba(0, 0, 0, 0.45);
+}
 
 .credentialButton {
     border-top: 3px solid black;
