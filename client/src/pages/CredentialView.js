@@ -53,21 +53,23 @@ function CredentialView({ title }) {
                         {credentialDetail.photo.length > 0 ? (
                             credentialDetail.photo.map((user, index) => (
                                 <div key={index}>
-                                    <Avatar
-                                        image={user.photo?.data && `data:${user.photo.contentType};base64, ${user.photo.data}`}
-                                        icon={!user.photo?.data && 'pi pi-user'}
-                                        size={!user.photo?.data && 'large'}
-                                        className="mt-3"
-                                        shape="circle"
-                                        title={user.fullName}
-                                        style={{
-                                            width: '70px',
-                                            height: '70px',
-                                            backgroundColor: (!user.photo?.data) ? '#2196F3' : null,
-                                            color: (!user.photo?.data) ? '#ffffff' : null,
-                                            cursor: "pointer",
-                                        }}
-                                    />
+                                    <>
+                                        <Avatar
+                                            image={user.photo?.data && `data:${user.photo.contentType};base64, ${user.photo.data}`}
+                                            icon={!user.photo?.data && 'pi pi-user'}
+                                            size={!user.photo?.data && 'large'}
+                                            className="credentialAvatar mt-3"
+                                            shape="circle"
+                                            style={{
+                                                width: '70px',
+                                                height: '70px',
+                                                backgroundColor: (!user.photo?.data) ? '#2196F3' : null,
+                                                color: (!user.photo?.data) ? '#ffffff' : null,
+                                                cursor: "pointer",
+                                            }}
+                                        />
+                                        <span className="userName">{user.fullName}</span>   
+                                    </>
                                 </div>
                             ))
                         ) : (
