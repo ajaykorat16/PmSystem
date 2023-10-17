@@ -136,9 +136,15 @@ const CredentialList = ({ title }) => {
                                 header="Description"
                                 sortable
                                 filterField="description"
-                                body={(rowData) => (
-                                    <div>{parseHtmlToText(rowData.description)}</div>
-                                )}
+                                body={(rowData) => {
+                                    let description = parseHtmlToText(rowData.description)
+                                    if (description.length > 30) {
+                                        description = description.substring(0, 30) + '...';
+                                        return description
+                                    } else {
+                                        return description
+                                    }
+                                }}
                                 align="center"
                             />
                             <Column
