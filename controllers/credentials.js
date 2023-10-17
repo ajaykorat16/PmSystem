@@ -69,14 +69,25 @@ const getSingleCredential = asyncHandler(async (req, res) => {
     try {
         const { id } = req.params;
 
-        const credential = await Credential.findById(id).populate({ path: "users.id", select: "-photo", }).lean();
-        
+        const credential = await Credential.findById(id).populate({ path: "users.id" }).lean();
+
+        // Generate photoUrl
+        const photoUrl = credential.users.map(user => {
+            if (user.id.photo && user.id.photo.contentType) {
+                return `data:${user.id.photo.contentType};base64,${user.id.photo.data.toString("base64")}`;
+            }
+            return null;
+        });
+
         return res.status(200).json({
             error: false,
             message: "Single Credential Get Successfully.",
-            credential:{
+            credential: {
                 ...credential,
-                users: credential.users.filter(user => user.id._id != req.user._id)
+                users: credential.users.map(user => ({
+                    ...user,
+                    photo: photoUrl[user.id]
+                })).filter(user => user.id._id != req.user._id)
             },
         });
     } catch (error) {
