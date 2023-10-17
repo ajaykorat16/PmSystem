@@ -69,11 +69,15 @@ const getSingleCredential = asyncHandler(async (req, res) => {
     try {
         const { id } = req.params;
 
-        const project = await Credential.findById(id).populate({ path: "users.id", select: "-photo", });
+        const credential = await Credential.findById(id).populate({ path: "users.id", select: "-photo", }).lean();
+        
         return res.status(200).json({
             error: false,
             message: "Single Credential Get Successfully.",
-            project,
+            credential:{
+                ...credential,
+                users: credential.users.filter(user => user.id._id != req.user._id)
+            },
         });
     } catch (error) {
         console.error(error.message);
@@ -99,7 +103,7 @@ const updateCredential = asyncHandler(async (req, res) => {
             });
         }
 
-        const projectObj = {
+        const credentialObj = {
             title: title ? capitalizeFLetter(title) : existingCredential.title,
             description: description ? capitalizeFLetter(description) : existingCredential.description,
             users: users || existingCredential.users,
@@ -109,10 +113,10 @@ const updateCredential = asyncHandler(async (req, res) => {
             const newUserIds = users.map((p) => {
                 return { id: new mongoose.Types.ObjectId(p) };
             });
-            projectObj.users = [{ id: req.user._id }].concat(newUserIds);
+            credentialObj.users = [{ id: req.user._id }].concat(newUserIds);
         }
 
-        const updatedCredential = await Credential.findByIdAndUpdate(id, projectObj, { new: true, });
+        const updatedCredential = await Credential.findByIdAndUpdate(id, credentialObj, { new: true, });
 
         return res.status(200).json({
             error: false,
