@@ -28,7 +28,8 @@
     "scss": "^0.2.4",
     "simplebar": "^6.2.5",
     "simplebar-react": "^3.2.4",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "xmldom": "^0.6.0"
   },
   "scripts": {
     "start": "react-scripts start",

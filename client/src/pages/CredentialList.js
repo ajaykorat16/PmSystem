@@ -10,6 +10,7 @@ import { useAuth } from "../context/AuthContext";
 import Loader from "../components/Loader";
 import Layout from "./Layout";
 import "../styles/Styles.css";
+const { DOMParser } = require('xmldom')
 
 const CredentialList = ({ title }) => {
     const { getAllCredentials, deleteCredentials } = useCredential()
@@ -61,11 +62,8 @@ const CredentialList = ({ title }) => {
     };
 
     const handleUpdate = async (id) => {
-        if (auth?.user.role === "admin") {
-            navigate(`/dashboard/credential/update/${id}`);
-        } else {
-            navigate(`/dashboard-user/credential/update/${id}`);
-        }
+        const redirectPath = auth.user.role === "admin" ? `/dashboard/credential/update/${id}` : `/dashboard-user/credential/update/${id}`
+        navigate(redirectPath)
     };
 
     const onPageChange = (event) => {
@@ -83,9 +81,15 @@ const CredentialList = ({ title }) => {
         fetchCredential(currentPage, rowsPerPage, globalFilterValue, field, order);
     };
 
-    const handleCredentialDetail = async (credential) => {
-        console.log(credential)
+    const handleCredentialDetail = async (id) => {
+        const redirect = auth?.user.role === "admin" ? `/dashboard/credential/view/${id}` : `/dashboard-user/credential/view/${id}`
+        navigate(redirect)
     };
+
+    function parseHtmlToText(html) {
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        return doc.documentElement.textContent;
+    }
 
     return (
         <Layout title={title}>
@@ -127,7 +131,16 @@ const CredentialList = ({ title }) => {
                             }
                         >
                             <Column field="title" header="Title" sortable filterField="title" align="center" />
-                            <Column field="description" sortable header="Description" filterField="description" align="center" />
+                            <Column
+                                field="description"
+                                header="Description"
+                                sortable
+                                filterField="description"
+                                body={(rowData) => (
+                                    <div>{parseHtmlToText(rowData.description)}</div>
+                                )}
+                                align="center"
+                            />
                             <Column
                                 field="action"
                                 header="Action"
@@ -136,7 +149,7 @@ const CredentialList = ({ title }) => {
                                         <>
                                             <Button icon="pi pi-pencil" title="Edit" rounded severity="success" aria-label="edit" onClick={() => handleUpdate(rowData._id)} />
                                             <Button icon="pi pi-trash" title="Delete" rounded severity="danger" className="ms-2" aria-label="Cancel" onClick={() => handleDelete(rowData._id)} />
-                                            <Button icon="pi pi-eye" title="View Credentials" rounded severity="info" className="ms-2" aria-label="view" onClick={() => handleCredentialDetail(rowData)}
+                                            <Button icon="pi pi-eye" title="View Credentials" rounded severity="info" className="ms-2" aria-label="view" onClick={() => handleCredentialDetail(rowData._id)}
                                             />
                                         </>
                                     </div>

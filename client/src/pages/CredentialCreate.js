@@ -2,13 +2,17 @@ import React, { useEffect, useState } from 'react';
 import Layout from './Layout';
 import { CButton, CCol, CForm, CFormInput } from '@coreui/react';
 import { MultiSelect } from 'primereact/multiselect';
+import { Editor } from 'primereact/editor';
+import { useNavigate } from 'react-router-dom';
 import { useCredential } from '../context/CredentialContext';
 import { useUser } from '../context/UserContext';
-import { Editor } from 'primereact/editor';
+import { useAuth } from '../context/AuthContext';
 
-const ManageCredentials = ({ title }) => {
+const CredentialCreate = ({ title }) => {
     const { userForCredential } = useUser();
     const { addCredentials } = useCredential();
+    const { auth } = useAuth();
+    const navigate = useNavigate()
     const [users, setUsers] = useState([]);
     const [credentialTitle, setCredentialTitle] = useState("");
     const [description, setDescription] = useState("")
@@ -20,7 +24,8 @@ const ManageCredentials = ({ title }) => {
             const credentials = { title: credentialTitle, description, users: developers.map(dev => ({ id: dev._id })) }
             const data = await addCredentials(credentials)
             if (typeof data !== 'undefined' && data.error === false) {
-                // navigate('/dashboard/project/list')
+                const redirectPath = auth.user.role === "admin" ? `/dashboard/credential/list` : `/dashboard-user/credential/list`;
+                navigate(redirectPath);
             }
         } catch (error) {
             console.log(error.message)
@@ -72,4 +77,4 @@ const ManageCredentials = ({ title }) => {
     )
 }
 
-export default ManageCredentials
+export default CredentialCreate

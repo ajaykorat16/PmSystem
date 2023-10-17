@@ -30,8 +30,10 @@ import WorkLogCreate from './pages/WorkLogCreate';
 import UserWorkLogList from './pages/UserWorkLogList';
 import AdminWorkLogList from './pages/AdminWorkLogList';
 import UserWorkLogUpdate from './pages/UserWorkLogUpdate';
-import ManageCredentials from './pages/ManageCredentials';
+import CredentialCreate from './pages/CredentialCreate';
 import CredentialList from './pages/CredentialList';
+import CredentialUpdate from './pages/CredentialUpdate';
+import CredentialView from './pages/CredentialView';
 
 function App() {
   return (
@@ -57,8 +59,10 @@ function App() {
           <Route path="project/create" element={<ProjectCreate title="Create Project " />} />
           <Route path="project/update/:id" element={<ProjectUpdate title="Update Project" />} />
           <Route path="workLog/list" element={<AdminWorkLogList title="Work Log List" />} />
-          <Route path="credential/create" element={<ManageCredentials title="Create Credentials" />} />
+          <Route path="credential/create" element={<CredentialCreate title="Create Credentials" />} />
+          <Route path="credential/update/:id" element={<CredentialUpdate title="Update Credentials" />} />
           <Route path="credential/list" element={<CredentialList title="Credential List" />} />
+          <Route path="credential/view/:id" element={<CredentialView title="Credential Detail" />} />
         </Route>
         <Route path='/dashboard-user' element={<UserRoutes />}>
           <Route path="employee" element={<DefaultLayout />} />
@@ -73,8 +77,10 @@ function App() {
           <Route path="workLog/create" element={<WorkLogCreate title="Create Work Log " />} />
           <Route path="workLog/update/:id" element={<UserWorkLogUpdate title="Update Work Log" />} />
           <Route path="workLog/list" element={<UserWorkLogList title="Work Log List" />} />
-          <Route path="credential/create" element={<ManageCredentials title="Create Credentials" />} />
+          <Route path="credential/create" element={<CredentialCreate title="Create Credentials" />} />
+          <Route path="credential/update/:id" element={<CredentialUpdate title="Update Credentials" />} />
           <Route path="credential/list" element={<CredentialList title="Credential List" />} />
+          <Route path="credential/view/:id" element={<CredentialView title="Credential Detail" />} />
         </Route>
       </Routes>
     </>

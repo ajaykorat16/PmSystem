@@ -12,9 +12,10 @@ const CredentialProvider = ({ children }) => {
         Authorization: auth.token
     };
 
+    //create credentials
     const addCredentials = async (credentials) => {
         try {
-            const data = await axios.post(`${baseURL}/credential/create`, credentials, { headers })
+            const { data } = await axios.post(`${baseURL}/credential/create`, credentials, { headers })
             if (data.error === false) {
                 setTimeout(function () {
                     toast.success(data.message)
@@ -70,8 +71,33 @@ const CredentialProvider = ({ children }) => {
         }
     }
 
+    //update Credentials
+    const updateCredential = async (credentialData, id) => {
+        try {
+            const { data } = await axios.put(`${baseURL}/credential/update/${id}`, credentialData , { headers })
+            if (data.error === false) {
+                setTimeout(function () {
+                    toast.success(data.message)
+                }, 1000);
+            }
+            return data
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    //get single Credentials
+    const getSingleCredential = async (id) => {
+        try {
+            const { data } = await axios.get(`${baseURL}/credential/single-credential/${id}`, { headers });
+            return data.credential;
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     return (
-        <CredentialsContext.Provider value={{ addCredentials, getAllCredentials, deleteCredentials }}>
+        <CredentialsContext.Provider value={{ addCredentials, getAllCredentials, getSingleCredential, updateCredential, deleteCredentials }}>
             {children}
         </CredentialsContext.Provider>
     );
