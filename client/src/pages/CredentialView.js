@@ -37,27 +37,37 @@ function CredentialView({ title }) {
 
     return (
         <Layout title={title}>
-            <div className="m-2 credential">
-                <div className="row">
+            <div className="credential">
+                <div className="row credentialLeftBody">
                     <div className="col-11 credentialBody">
                         <p className="credentialTitle">{credentialDetail.title}</p>
                         <div className="credentialDescription" dangerouslySetInnerHTML={{ __html: credentialDetail.description }}></div>
                         <button
-                            className="btn btn-primary mt-2"
+                            className="btn btn-primary mt-2 mb-3"
                             onClick={() => { auth.user.role === "admin" ? navigate('/dashboard/credential/list') : navigate('/dashboard-user/credential/list') }}
                         >
                             Back
                         </button>
                     </div>
-                    <div className="col-1">
+                    <div className="col-1 text-center credentialRightBody">
                         {credentialDetail.photo.length > 0 ? (
                             credentialDetail.photo.map((user, index) => (
                                 <div key={index}>
-                                    {user.photo?.data ? (
-                                        <Avatar image={`data:${user.photo.contentType};base64, ${user.photo.data}`} size="large" shape="circle" className="m-3" title={user.fullName} />
-                                    ) : (
-                                        <Avatar icon="pi pi-user" className="avatar m-3" size="large" shape="circle" title={user.fullName} />
-                                    )}
+                                    <Avatar
+                                        image={user.photo?.data && `data:${user.photo.contentType};base64, ${user.photo.data}`}
+                                        icon={!user.photo?.data && 'pi pi-user'}
+                                        size={!user.photo?.data && 'large'}
+                                        className="mt-3"
+                                        shape="circle"
+                                        title={user.fullName}
+                                        style={{
+                                            width: '70px',
+                                            height: '70px',
+                                            backgroundColor: (!user.photo?.data) ? '#2196F3' : null,
+                                            color: (!user.photo?.data) ? '#ffffff' : null,
+                                            cursor: "pointer",
+                                        }}
+                                    />
                                 </div>
                             ))
                         ) : (
