@@ -51,13 +51,14 @@ const getCredential = asyncHandler(async (req, res) => {
 
         if (filter) {
             query.$or = [
-                { title: { $regex: filter, $options: "i" } }
+                { title: { $regex: filter, $options: "i" } },
+                { description: { $regex: filter, $options: "i" } }
             ];
         }
 
         const totalCredentialCount = await Credential.countDocuments(query);
 
-        const credential = await Credential.find(query).skip((page - 1) * limit).limit(limit).sort({ [sortField]: sortOrder }).lean();
+        const credential = await Credential.find(query).skip((page - 1) * limit).limit(limit).sort({ [sortField]: sortOrder }).populate({ path: "users.id", select: "fullName", }).lean();
         return res.status(201).json({
             error: false,
             message: "Credential Get Successfully",

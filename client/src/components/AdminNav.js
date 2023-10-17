@@ -108,8 +108,13 @@ const _nav = [
     items: [
       {
         component: CNavItem,
-        name: 'Manage Credentials',
-        to: '/dashboard/mangeCredentials',
+        name: 'Credentials List',
+        to: '/dashboard/credential/list',
+      },
+      {
+        component: CNavItem,
+        name: 'Create Credentials',
+        to: '/dashboard/credential/create',
       }
     ],
   },

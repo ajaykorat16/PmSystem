@@ -40,8 +40,38 @@ const CredentialProvider = ({ children }) => {
         }
     }
 
+    //get All Credentials
+    const getAllCredentials = async (page, limit, query, sortField, sortOrder) => {
+        try {
+            let res;
+            if (query) {
+                res = await axios.post(`${baseURL}/credential/search-credential`, { filter: query }, { params: { page, limit, sortField, sortOrder }, headers: headers });
+            } else {
+                res = await axios.get(`${baseURL}/credential`, { params: { page, limit, sortField, sortOrder } }, { headers });
+            }
+            if (res.data.error === false) {
+                return res.data
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    //delete Credentials
+    const deleteCredentials = async (id) => {
+        try {
+            const { data } = await axios.delete(`${baseURL}/credential/delete/${id}`, { headers });
+            if (data.error === false) {
+                getAllCredentials()
+                toast.success(data.message)
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     return (
-        <CredentialsContext.Provider value={{ addCredentials }}>
+        <CredentialsContext.Provider value={{ addCredentials, getAllCredentials, deleteCredentials }}>
             {children}
         </CredentialsContext.Provider>
     );
