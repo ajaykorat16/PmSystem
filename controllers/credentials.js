@@ -13,14 +13,6 @@ const createCredential = asyncHandler(async (req, res) => {
     try {
         const { title, description, users } = req.body;
 
-        const existingCredential = await Credential.findOne({ title: capitalizeFLetter(title) });
-        if (existingCredential) {
-            return res.status(400).json({
-                error: true,
-                message: "Credential with the same title already exists.",
-            });
-        }
-
         const credentialObj = {
             title: capitalizeFLetter(title),
             description: capitalizeFLetter(description),
@@ -104,13 +96,6 @@ const updateCredential = asyncHandler(async (req, res) => {
             return res.status(404).json({
                 error: true,
                 message: "This credential is not existing in the database.",
-            });
-        }
-
-        if (existingCredential.title === capitalizeFLetter(title)) {
-            return res.status(400).json({
-                error: true,
-                message: "Credential with the same title already exists.",
             });
         }
 
