@@ -132,6 +132,10 @@
     font-size: 12rem !important;
 }
 
+.p-multiselect-header > .p-checkbox{
+    margin-right: 0.5rem ;
+}
+
 .pmSystem {
     font-weight: 700;
     font-size: larger;
@@ -237,12 +241,9 @@
     text-align: center;
 }
 
-.credentialDescription{
+.credentialDescription {
+    word-break: break-word;
     min-height: 38rem;
-}
-
-.credentialBody {
-    border-right: 3px solid black;
 }
 
 .credential {
@@ -253,23 +254,22 @@
     box-shadow: 0px -25px 20px -20px rgba(0, 0, 0, 0.45), 25px 0 20px -20px rgba(0, 0, 0, 0.45), 0px 25px 20px -20px rgba(0, 0, 0, 0.45), -25px 0 20px -20px rgba(0, 0, 0, 0.45);
 }
 
-.credentialButton {
-    border-top: 3px solid black;
-    width: 100%;
-}
-
-.credentialLeftBody{
+.credentialLeftBody {
     margin-right: 10px;
 }
 
-.credentialRightBody{
+.credentialRightBody {
     background-color: #7B95A3;
 }
 
 .userName {
-    visibility: hidden !important;   
+    visibility: hidden !important;
     display: none;
 
+}
+
+.credentialAvatar {
+    border: 3px solid #00000085;
 }
 
 .credentialAvatar:hover+.userName {
@@ -297,4 +297,4 @@
     border-width: 5px;
     border-style: solid;
     border-color: transparent transparent black transparent;
-  }
+}
