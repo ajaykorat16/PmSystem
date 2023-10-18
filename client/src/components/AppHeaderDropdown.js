@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CImage, CDropdown, CDropdownDivider, CDropdownHeader, CDropdownItem, CDropdownMenu, CDropdownToggle } from '@coreui/react';
-import { cilLockLocked, cilUser } from '@coreui/icons';
+import { cilLockLocked, cilUser, cilArrowCircleLeft } from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -111,7 +111,7 @@ const AppHeaderDropdown = () => {
             adminAuth.token !== '' && 
             <>
               <CDropdownItem onClick={handleBackToAdmin}>
-                <MdOutlineLockReset className="me-2" fontSize={20} />
+                <CIcon icon={cilArrowCircleLeft} className="me-2" fontSize={20} />
                 Back To Admin
               </CDropdownItem>
             </>
