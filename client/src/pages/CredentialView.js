@@ -13,7 +13,6 @@ function CredentialView({ title }) {
     const [credentialDetail, setCredentialDetail] = useState({
         title: "",
         description: "",
-        users: "",
         photo: [],
     })
     const navigate = useNavigate()
@@ -22,12 +21,10 @@ function CredentialView({ title }) {
         const fetchCredential = async () => {
             const data = await getSingleCredential(id);
             if (data) {
-                const userNames = data.users.map(user => user.id.fullName);
                 const userPhotos = data.users.map(user => user.id)
                 setCredentialDetail({
                     title: data.title,
                     description: data.description,
-                    users: userNames.join(", "),
                     photo: userPhotos
                 });
             }
@@ -50,7 +47,7 @@ function CredentialView({ title }) {
                         </button>
                     </div>
                     <div className="col-1 text-center credentialRightBody">
-                        {credentialDetail.photo.length > 0 ? (
+                        {credentialDetail.photo.length > 0 && (
                             credentialDetail.photo.map((user, index) => (
                                 <div key={index}>
                                     <>
@@ -68,12 +65,10 @@ function CredentialView({ title }) {
                                                 cursor: "pointer",
                                             }}
                                         />
-                                        <span className="userName">{user.fullName}</span>   
+                                        <span className="userName">{user.fullName}</span>
                                     </>
                                 </div>
                             ))
-                        ) : (
-                            <p>No photos available</p>
                         )}
                     </div>
                 </div>
