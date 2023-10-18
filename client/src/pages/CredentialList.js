@@ -87,11 +87,8 @@ const CredentialList = ({ title }) => {
     };
 
     function parseHtmlToText(html) {
-        if (html !== "") {
-            const doc = new DOMParser().parseFromString(html, 'text/html');
-            return doc.documentElement.textContent;
-        }
-        return "";
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        return doc.documentElement.textContent;
     }
 
     return (
@@ -147,7 +144,6 @@ const CredentialList = ({ title }) => {
                                         }
                                         return description
                                     }
-                                    return "";
                                 }}
                                 align="center"
                             />
