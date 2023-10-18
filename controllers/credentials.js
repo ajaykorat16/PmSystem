@@ -152,7 +152,12 @@ const deleteCredential = asyncHandler(async (req, res) => {
             });
         }
 
-        await Credential.findByIdAndDelete(id);
+        if (existingCredential.users.length > 0) {
+            await Credential.findByIdAndUpdate(id, { $pull: { users: { id: req.user._id } } })
+        } else {
+            await Credential.findByIdAndDelete(id);
+        }
+
         return res.status(200).json({
             error: false,
             message: "Credential is delete successfully.",
