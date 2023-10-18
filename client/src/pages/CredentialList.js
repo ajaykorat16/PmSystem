@@ -53,7 +53,7 @@ const CredentialList = ({ title }) => {
 
     const handleDelete = async (id) => {
         const confirmDelete = window.confirm(
-            "Are you sure you want to delete this user?"
+            "Are you sure you want to delete this Credentials?"
         );
         await deleteCredentials(id)
         if (confirmDelete) {
@@ -87,8 +87,11 @@ const CredentialList = ({ title }) => {
     };
 
     function parseHtmlToText(html) {
-        const doc = new DOMParser().parseFromString(html, 'text/html');
-        return doc.documentElement.textContent;
+        if (html !== "") {
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            return doc.documentElement.textContent;
+        }
+        return "";
     }
 
     return (
@@ -125,7 +128,7 @@ const CredentialList = ({ title }) => {
                             first={(currentPage - 1) * rowsPerPage}
                             onPage={onPageChange}
                             dataKey="_id"
-                            emptyMessage="No user found."
+                            emptyMessage="No credentials found."
                             paginatorLeft={
                                 <Dropdown value={rowsPerPage} options={[10, 25, 50]} onChange={(e) => setRowsPerPage(e.value)} />
                             }
@@ -137,13 +140,14 @@ const CredentialList = ({ title }) => {
                                 sortable
                                 filterField="description"
                                 body={(rowData) => {
-                                    let description = parseHtmlToText(rowData.description)
-                                    if (description.length > 30) {
-                                        description = description.substring(0, 30) + '...';
-                                        return description
-                                    } else {
+                                    if (rowData.description !== "") {
+                                        let description = parseHtmlToText(rowData.description)
+                                        if (description.length > 30) {
+                                            description = description.substring(0, 30) + '...';
+                                        }
                                         return description
                                     }
+                                    return "";
                                 }}
                                 align="center"
                             />

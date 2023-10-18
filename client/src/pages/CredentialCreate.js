@@ -45,7 +45,7 @@ const CredentialCreate = ({ title }) => {
     return (
         <Layout title={title}>
             <div className="mb-3">
-                <h2 className="mb-5 mt-2">Manage Credentials</h2>
+                <h2 className="mb-5 mt-2">Create Credentials</h2>
             </div>
             <CForm className="row g-3" onSubmit={handleSubmit}>
                 <CCol md={12}>
