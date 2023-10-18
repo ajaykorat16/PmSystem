@@ -13,7 +13,7 @@ import { useHelper } from "../context/Helper";
 
 const ProjectUpdate = ({ title }) => {
     const { fetchUsers } = useUser();
-    const { formatDate } = useHelper()
+    const { formatDate, onShow } = useHelper()
     const { getSingleProject, updateProject } = useProject();
     const [users, setUsers] = useState([]);
     const [name, setName] = useState("")
@@ -102,6 +102,7 @@ const ProjectUpdate = ({ title }) => {
                         optionValue='_id'
                         id="developerSelect"
                         className="form-control"
+                        onShow={onShow}
                     />
                 </CCol>
                 <CCol md={12}>

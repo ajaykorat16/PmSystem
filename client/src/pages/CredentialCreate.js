@@ -7,11 +7,13 @@ import { useNavigate } from 'react-router-dom';
 import { useCredential } from '../context/CredentialContext';
 import { useUser } from '../context/UserContext';
 import { useAuth } from '../context/AuthContext';
+import { useHelper } from '../context/Helper';
 
 const CredentialCreate = ({ title }) => {
     const { userForCredential } = useUser();
     const { addCredentials } = useCredential();
     const { auth } = useAuth();
+    const { onShow } = useHelper();
     const navigate = useNavigate()
     const [users, setUsers] = useState([]);
     const [credentialTitle, setCredentialTitle] = useState("");
@@ -39,7 +41,7 @@ const CredentialCreate = ({ title }) => {
     useEffect(() => {
         getUsers();
     }, []);
-
+    
     return (
         <Layout title={title}>
             <div className="mb-3">
@@ -61,6 +63,7 @@ const CredentialCreate = ({ title }) => {
                         placeholder="Select Users"
                         id="developerSelect"
                         className="form-control"
+                        onShow={onShow}
                     />
                 </CCol>
                 <CCol md={12}>

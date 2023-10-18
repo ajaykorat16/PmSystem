@@ -14,8 +14,15 @@ const HelperProvider = ({ children }) => {
         }
     };
 
+    const onShow = () => {
+        let selectAllCheckbox = document.querySelector(
+            ".p-multiselect-header > .p-checkbox"
+        );
+        selectAllCheckbox.after(" Select All");
+    };
+
     return (
-        <HelperContext.Provider value={{ formatDate }}>
+        <HelperContext.Provider value={{ formatDate, onShow }}>
             {children}
         </HelperContext.Provider>
     )

@@ -7,13 +7,15 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useCredential } from '../context/CredentialContext';
 import { useUser } from '../context/UserContext';
 import { useAuth } from '../context/AuthContext';
+import { useHelper } from '../context/Helper';
 
 const CredentialUpdate = ({ title }) => {
     const { id } = useParams()
+    const navigate = useNavigate()
+    const { auth } = useAuth();
+    const { onShow } = useHelper();
     const { userForCredential } = useUser();
     const { getSingleCredential, updateCredential } = useCredential();
-    const { auth } = useAuth();
-    const navigate = useNavigate()
     const [users, setUsers] = useState([]);
     const [credentialTitle, setCredentialTitle] = useState("");
     const [description, setDescription] = useState("")
@@ -38,7 +40,7 @@ const CredentialUpdate = ({ title }) => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            const credentialData = { title: credentialTitle, description, users: developers}
+            const credentialData = { title: credentialTitle, description, users: developers }
             const data = await updateCredential(credentialData, id)
             if (typeof data !== 'undefined' && data.error === false) {
                 const redirectPath = auth.user.role === "admin" ? `/dashboard/credential/list` : `/dashboard-user/credential/list`;
@@ -79,6 +81,7 @@ const CredentialUpdate = ({ title }) => {
                         optionValue='_id'
                         id="developerSelect"
                         className="form-control"
+                        onShow={onShow}
                     />
                 </CCol>
                 <CCol md={12}>

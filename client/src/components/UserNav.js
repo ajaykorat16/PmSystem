@@ -1,6 +1,6 @@
 import React from 'react'
 import CIcon from '@coreui/icons-react'
-import { cilCalendarCheck, cilNoteAdd, cilNotes, cilSpreadsheet, cilUser } from '@coreui/icons'
+import { cilCalendarCheck, cilLockLocked, cilNotes, cilSpreadsheet, cilUser } from '@coreui/icons'
 import { CNavGroup, CNavItem } from '@coreui/react'
 
 const _nav = [
@@ -75,7 +75,7 @@ const _nav = [
     component: CNavGroup,
     name: 'Credentials',
     to: '/credentials',
-    icon: <CIcon icon={cilNoteAdd} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilLockLocked} customClassName="nav-icon" />,
     items: [
       {
         component: CNavItem,

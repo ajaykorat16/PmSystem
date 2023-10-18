@@ -34,7 +34,7 @@ const UserUpdate = ({ title }) => {
     const { getDepartmentList } = useDepartment()
     const [departmentsList, setDepartmentsList] = useState([]);
     const { fetchProjects } = useProject()
-    const { formatDate } = useHelper()
+    const { formatDate, onShow } = useHelper()
     const navigate = useNavigate();
     const params = useParams();
 
@@ -268,6 +268,7 @@ const UserUpdate = ({ title }) => {
                             placeholder="Select Projects"
                             id="date"
                             className="form-control"
+                            onShow={onShow}
                         />
                     </CCol>
                     <CCol xs={12}>
