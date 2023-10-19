@@ -235,7 +235,8 @@
 
 .credentialTitle {
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    font-size: 40px;
+    font-size: 50px;
+    padding: 7px 0 7px 0;
     font-weight: 700;
     border-bottom: 3px solid black;
     text-align: center;
@@ -297,4 +298,8 @@
     border-width: 5px;
     border-style: solid;
     border-color: transparent transparent black transparent;
+}
+
+.createdBy{
+    border-bottom: 4px solid black;
 }

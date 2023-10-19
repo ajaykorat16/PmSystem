@@ -14,6 +14,7 @@ function CredentialView({ title }) {
         title: "",
         description: "",
         photo: [],
+        createdBy: "",
     })
     const navigate = useNavigate()
 
@@ -25,7 +26,8 @@ function CredentialView({ title }) {
                 setCredentialDetail({
                     title: data.title,
                     description: data.description,
-                    photo: userPhotos
+                    photo: userPhotos,
+                    createdBy: data?.createdBy
                 });
             }
         };
@@ -47,6 +49,23 @@ function CredentialView({ title }) {
                         </button>
                     </div>
                     <div className="col-1 text-center credentialRightBody">
+                        <div className="createdBy">
+                            <Avatar
+                                image={credentialDetail.createdBy?.photo?.data && `data:${credentialDetail.createdBy?.photo?.contentType};base64, ${credentialDetail.createdBy?.photo.data}`}
+                                icon={!credentialDetail.createdBy?.photo?.data && 'pi pi-user'}
+                                size={!credentialDetail.createdBy?.photo?.data && 'large'}
+                                className="credentialAvatar mt-3"
+                                shape="circle"
+                                style={{
+                                    width: '70px',
+                                    height: '70px',
+                                    backgroundColor: (!credentialDetail.createdBy?.photo?.data) ? '#2196F3' : null,
+                                    color: (!credentialDetail.createdBy?.photo?.data) ? '#ffffff' : null,
+                                    cursor: "pointer",
+                                }} />
+                            <span className="userName">{credentialDetail.createdBy?.fullName}</span>
+                        </div>
+
                         {credentialDetail.photo.length > 0 && (
                             credentialDetail.photo.map((user, index) => (
                                 <div key={index}>

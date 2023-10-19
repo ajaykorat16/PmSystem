@@ -12,11 +12,13 @@ const createCredential = asyncHandler(async (req, res) => {
 
     try {
         const { title, description, users } = req.body;
+        const createdBy = req.user._id
 
         const credentialObj = {
             title: capitalizeFLetter(title),
             description: capitalizeFLetter(description),
-            users: users ? [{ id: req.user._id }].concat(users) : [{ id: req.user._id }],
+            createdBy,
+            users: users,
         };
 
         const credential = await Credential.create(credentialObj);
@@ -38,8 +40,14 @@ const getCredential = asyncHandler(async (req, res) => {
         const sortField = req.query.sortField || "createdAt";
         const sortOrder = req.query.sortOrder || -1;
         const { filter } = req.body;
+        const userId = req.user._id
 
-        let query = { "users.id": req.user._id };
+        let query = {
+            $or: [
+                { "users.id": userId }, 
+                { createdBy: userId }
+            ]
+        };
 
         if (filter) {
             query.$or = [
@@ -50,7 +58,7 @@ const getCredential = asyncHandler(async (req, res) => {
 
         const totalCredentialCount = await Credential.countDocuments(query);
 
-        const credential = await Credential.find(query).skip((page - 1) * limit).limit(limit).sort({ [sortField]: sortOrder }).populate({ path: "users.id", select: "fullName", }).lean();
+        const credential = await Credential.find(query).skip((page - 1) * limit).limit(limit).sort({ [sortField]: sortOrder }).populate({ path: "users.id", select: "fullName", }).populate({ path: "createdBy", select: "fullName" }).lean();
         return res.status(201).json({
             error: false,
             message: "Credential Get Successfully",
@@ -69,7 +77,7 @@ const getSingleCredential = asyncHandler(async (req, res) => {
     try {
         const { id } = req.params;
 
-        const credential = await Credential.findById(id).populate({ path: "users.id" }).lean();
+        const credential = await Credential.findById(id).populate({ path: "users.id createdBy" }).lean();
 
         // Generate photoUrl
         const photoUrl = credential.users.map(user => {
@@ -78,6 +86,12 @@ const getSingleCredential = asyncHandler(async (req, res) => {
             }
             return null;
         });
+
+        const createdByUser = credential.createdBy;
+
+        const createdByPhotoUrl = createdByUser && createdByUser.photo && createdByUser.photo.data
+            ? `data:${createdByUser.photo.contentType};base64,${createdByUser.photo.data.toString("base64")}`
+            : null;
 
         return res.status(200).json({
             error: false,
@@ -88,6 +102,10 @@ const getSingleCredential = asyncHandler(async (req, res) => {
                     ...user,
                     photo: photoUrl[user.id]
                 })).filter(user => user.id._id != req.user._id)
+            },
+            createdBy: {
+                ...createdByUser,
+                photo: createdByPhotoUrl,
             },
         });
     } catch (error) {
@@ -124,7 +142,14 @@ const updateCredential = asyncHandler(async (req, res) => {
             const newUserIds = users.map((p) => {
                 return { id: new mongoose.Types.ObjectId(p) };
             });
-            credentialObj.users = [{ id: req.user._id }].concat(newUserIds);
+            credentialObj.users = newUserIds;
+        }
+
+        if (existingCredential.createdBy.toString() !== req.user._id.toString()) {
+            return res.status(403).json({
+                error: true,
+                message: "You are not authorized to Update this credential.",
+            });
         }
 
         const updatedCredential = await Credential.findByIdAndUpdate(id, credentialObj, { new: true, });
@@ -152,15 +177,18 @@ const deleteCredential = asyncHandler(async (req, res) => {
             });
         }
 
-        if (existingCredential.users.length > 0) {
-            await Credential.findByIdAndUpdate(id, { $pull: { users: { id: req.user._id } } })
-        } else {
-            await Credential.findByIdAndDelete(id);
+        if (existingCredential.createdBy.toString() !== req.user._id.toString()) {
+            return res.status(403).json({
+                error: true,
+                message: "You are not authorized to delete this credential.",
+            });
         }
+
+        await Credential.findByIdAndDelete(id);
 
         return res.status(200).json({
             error: false,
-            message: "Credential is delete successfully.",
+            message: "Credential deleted successfully.",
         });
     } catch (error) {
         console.error(error.message);

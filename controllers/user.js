@@ -12,6 +12,7 @@ const asyncHandler = require("express-async-handler");
 const moment = require('moment')
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const Credential = require("../models/credentials");
 const saltRounds = 10;
 
 const hashPassword = async (password) => {
@@ -268,6 +269,9 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
     await Worklog.deleteMany({ userId: id });
     await Leaves.deleteMany({ userId: id });
     await Projects.updateMany({ "developers.id": id }, { $pull: { developers: { id } } });
+    await Credential.deleteMany({ createdBy: id });
+    await Credential.updateMany({ "users.id": id }, { $pull: { users: { id } } });
+
 
     return res.status(200).send({
       error: false,
