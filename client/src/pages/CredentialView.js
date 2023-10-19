@@ -54,7 +54,7 @@ function CredentialView({ title }) {
                                 image={credentialDetail.createdBy?.photo?.data && `data:${credentialDetail.createdBy?.photo?.contentType};base64, ${credentialDetail.createdBy?.photo.data}`}
                                 icon={!credentialDetail.createdBy?.photo?.data && 'pi pi-user'}
                                 size={!credentialDetail.createdBy?.photo?.data && 'large'}
-                                className="credentialAvatar mt-3"
+                                className="credentialAvatar"
                                 shape="circle"
                                 style={{
                                     width: '70px',

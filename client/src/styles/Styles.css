@@ -132,8 +132,8 @@
     font-size: 12rem !important;
 }
 
-.p-multiselect-header > .p-checkbox{
-    margin-right: 0.5rem ;
+.p-multiselect-header>.p-checkbox {
+    margin-right: 0.5rem;
 }
 
 .pmSystem {
@@ -300,6 +300,13 @@
     border-color: transparent transparent black transparent;
 }
 
-.createdBy{
-    border-bottom: 4px solid black;
+.createdBy {
+    border: 2px solid black;
+    background-color: #dddddd;
+    width: 84px;
+    height: 84px;
+    margin-top: 10px; 
+    padding: 5px;
+    border-radius: 50%;
+    margin-left: 10px;
 }
