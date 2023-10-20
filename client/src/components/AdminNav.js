@@ -1,6 +1,6 @@
 import React from 'react'
 import CIcon from '@coreui/icons-react'
-import { cilDescription, cilNotes, cilSpreadsheet, cilPeople, cilCalendarCheck, cilHttps } from '@coreui/icons'
+import { cilSitemap, cilCalendar, cilPeople, cilTask, cilHttps, cilFolderOpen } from '@coreui/icons'
 import { CNavGroup, CNavItem } from '@coreui/react'
 
 const _nav = [
@@ -32,7 +32,7 @@ const _nav = [
     component: CNavGroup,
     name: 'Leaves',
     to: '/leave',
-    icon: <CIcon icon={cilNotes} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />,
     items: [
       {
         component: CNavItem,
@@ -55,7 +55,7 @@ const _nav = [
     component: CNavGroup,
     name: 'Department',
     to: '/user',
-    icon: <CIcon icon={cilDescription} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilSitemap} customClassName="nav-icon" />,
     items: [
       {
         component: CNavItem,
@@ -73,7 +73,7 @@ const _nav = [
     component: CNavGroup,
     name: 'Project',
     to: '/user',
-    icon: <CIcon icon={cilSpreadsheet} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilFolderOpen} customClassName="nav-icon" />,
     items: [
       {
         component: CNavItem,
@@ -91,7 +91,7 @@ const _nav = [
     component: CNavGroup,
     name: 'Work Log',
     to: '/workLog',
-    icon: <CIcon icon={cilCalendarCheck} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilTask} customClassName="nav-icon" />,
     items: [
       {
         component: CNavItem,
