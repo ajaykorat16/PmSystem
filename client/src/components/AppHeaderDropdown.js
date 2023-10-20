@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { CImage, CDropdown, CDropdownDivider, CDropdownHeader, CDropdownItem, CDropdownMenu, CDropdownToggle } from '@coreui/react';
-import { cilLockLocked, cilUser, cilArrowCircleLeft } from '@coreui/icons';
-import CIcon from '@coreui/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useUser } from '../context/UserContext';
-import { MdOutlineLockReset } from 'react-icons/md';
+import { MdOutlineLockReset, MdOutlineLogout } from 'react-icons/md';
 import { Avatar } from 'primereact/avatar';
+import { RiAdminLine, RiLoginBoxLine, RiLogoutBoxLine } from "react-icons/ri";
+import { CgProfile } from "react-icons/cg";
 
 const LeaveBalanceDisplay = ({ leaveBalance }) => {
   return (
@@ -50,7 +50,7 @@ const AppHeaderDropdown = () => {
         if (getProfile?.photo === null) {
           setPhoto('')
           setIsPhoto(false)
-          
+
         } else {
           setPhoto(getProfile.photo);
           setIsPhoto(true)
@@ -72,11 +72,11 @@ const AppHeaderDropdown = () => {
     }
   }, [getAuth]);
 
-  const handleBackToAdmin = async () =>{
+  const handleBackToAdmin = async () => {
     await backToAdmin()
     navigate("/")
-  } 
-  
+  }
+
   const redirectPath = auth?.user?.role === "admin" ? `/dashboard/user/admin-profile/${auth?.user?._id}` : `/dashboard-user/user/user-profile/${auth?.user?._id}`;
 
   return (
@@ -97,32 +97,31 @@ const AppHeaderDropdown = () => {
           {getAuth &&
             <>
               <CDropdownItem onClick={() => navigate(redirectPath)}>
-                <CIcon icon={cilUser} className="me-2" />
+                <CgProfile className="me-1" fontSize={20} />
                 Profile
               </CDropdownItem>
               <CDropdownItem onClick={() => navigate(`/dashboard-user/user/resetPassword`)}>
-                <MdOutlineLockReset className="me-2" fontSize={20} />
+                <MdOutlineLockReset className="me-1" fontSize={20} />
                 Reset Password
               </CDropdownItem>
               <CDropdownDivider />
             </>
           }
-          {
-            adminAuth.token !== '' && 
+          {adminAuth.token !== '' &&
             <>
               <CDropdownItem onClick={handleBackToAdmin}>
-                <CIcon icon={cilArrowCircleLeft} className="me-2" fontSize={20} />
+                <RiAdminLine fontSize={20} className='me-1' />
                 Back To Admin
               </CDropdownItem>
             </>
           }
           {getAuth ?
             <CDropdownItem onClick={handleLogout}>
-              <CIcon icon={cilLockLocked} className="me-2" />
+              <RiLogoutBoxLine fontSize={20} className='me-1' />
               Logout
             </CDropdownItem> :
             <CDropdownItem onClick={handleLogin}>
-              <CIcon icon={cilLockLocked} className="me-2" />
+              <RiLoginBoxLine fontSize={20} className='me-1' />
               Login
             </CDropdownItem>
           }
