@@ -153,14 +153,9 @@ const CredentialList = ({ title }) => {
                                 body={(rowData) => (
                                     <div>
                                         <>
-                                            {rowData.createdBy?._id === auth.user._id && (
-                                                <>
-                                                    <Button icon="pi pi-pencil" title="Edit" rounded severity="success" aria-label="edit" onClick={() => handleUpdate(rowData._id)} />
-                                                    <Button icon="pi pi-trash" title="Delete" rounded severity="danger" className="ms-2" aria-label="Cancel" onClick={() => handleDelete(rowData._id)}/>
-                                                </>
-                                            )}
-                                            <Button icon="pi pi-eye" title="View Credentials" rounded severity="info" className="ms-2" aria-label="view" onClick={() => handleCredentialDetail(rowData._id)}
-                                            />
+                                            <Button icon="pi pi-pencil" title="Edit" rounded severity="success" aria-label="edit" onClick={() => handleUpdate(rowData._id)} disabled={rowData.createdBy?._id !== auth.user._id} />
+                                            <Button icon="pi pi-trash" title="Delete" rounded severity="danger" className="ms-2" aria-label="Cancel" onClick={() => handleDelete(rowData._id)} disabled={rowData.createdBy?._id !== auth.user._id} />
+                                            <Button icon="pi pi-eye" title="View Credentials" rounded severity="info" className="ms-2 viewCredential" aria-label="view" onClick={() => handleCredentialDetail(rowData._id)} />
                                         </>
                                     </div>
                                 )}
