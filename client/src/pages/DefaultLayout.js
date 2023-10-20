@@ -8,6 +8,8 @@ import { useProject } from '../context/ProjectContext';
 import { useWorklog } from '../context/WorklogContext';
 import { useUser } from '../context/UserContext';
 import { NavLink } from 'react-router-dom';
+import CIcon from '@coreui/icons-react';
+import { cilCalendar, cilCalendarCheck, cilClock, cilFolderOpen, cilHistory, cilPeople } from '@coreui/icons';
 
 const DefaultLayout = () => {
   const { auth } = useAuth()
@@ -399,6 +401,9 @@ const DefaultLayout = () => {
                 }
                 title="Leave This Month"
                 chart={chart1()}
+                action={
+                  <CIcon icon={cilCalendarCheck} height={45} width={45} />
+                }
               />
             </CNavLink>
           ) : (
@@ -413,6 +418,9 @@ const DefaultLayout = () => {
                 }
                 title="Employee"
                 chart={chart1()}
+                action={
+                  <CIcon icon={cilPeople} height={45} width={45} />
+                }
               />
             </CNavLink>
           )}
@@ -430,6 +438,9 @@ const DefaultLayout = () => {
                 }
                 title="My Projects"
                 chart={chart2()}
+                action={
+                  <CIcon icon={cilFolderOpen} height={45} width={45} />
+                }
               />
             </CNavLink>) : (
             <CNavLink component={NavLink} to="/dashboard/project/list">
@@ -443,6 +454,9 @@ const DefaultLayout = () => {
                 }
                 title="Projects"
                 chart={chart2()}
+                action={
+                  <CIcon icon={cilFolderOpen} height={45} width={45} />
+                }
               />
             </CNavLink>
           )}
@@ -451,6 +465,7 @@ const DefaultLayout = () => {
           <CNavLink component={NavLink} to={userRole === "user" ? "/dashboard-user/employee/birthday/list" : "/dashboard/user/birthday/list"}>
             <CWidgetStatsA
               className="mb-4"
+              // icon={}
               color="warning"
               value={
                 <>
@@ -459,7 +474,11 @@ const DefaultLayout = () => {
               }
               title="Birthday on this month"
               chart={chart3()}
-            />
+              action={
+                <CIcon icon={cilCalendar} height={50} width={50} />
+              }
+            >
+            </CWidgetStatsA>
           </CNavLink>
         </CCol>
         <CCol sm={3}>
@@ -475,6 +494,9 @@ const DefaultLayout = () => {
                 }
                 title="Worklog"
                 chart={chart4()}
+                action={
+                  <CIcon icon={cilClock} height={45} width={45} />
+                }
               />
             </CNavLink>) : (
             <CNavLink component={NavLink} to="/dashboard/admin/workLog/list">
@@ -488,6 +510,9 @@ const DefaultLayout = () => {
                 }
                 title="Worklog"
                 chart={chart4()}
+                action={
+                  <CIcon icon={cilHistory} height={45} width={45} />
+                }
               />
             </CNavLink>
           )
