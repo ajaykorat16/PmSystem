@@ -499,7 +499,7 @@ const DefaultLayout = () => {
                 }
               />
             </CNavLink>) : (
-            <CNavLink component={NavLink} to="/dashboard/admin/workLog/list">
+            <CNavLink component={NavLink} to="/dashboard/workLog/list">
               <CWidgetStatsA
                 className="mb-4"
                 color="danger"
