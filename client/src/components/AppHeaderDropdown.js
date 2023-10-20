@@ -3,7 +3,7 @@ import { CImage, CDropdown, CDropdownDivider, CDropdownHeader, CDropdownItem, CD
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useUser } from '../context/UserContext';
-import { MdOutlineLockReset, MdOutlineLogout } from 'react-icons/md';
+import { MdOutlineLockReset } from 'react-icons/md';
 import { Avatar } from 'primereact/avatar';
 import { RiAdminLine, RiLoginBoxLine, RiLogoutBoxLine } from "react-icons/ri";
 import { CgProfile } from "react-icons/cg";
