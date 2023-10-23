@@ -233,8 +233,8 @@ const updateProject = asyncHandler(async (req, res) => {
     }
 
     const projectObj = {
-      name: capitalizeFLetter(name) || existingProject.name,
-      description: capitalizeFLetter(description) || existingProject.description,
+      name: name ? capitalizeFLetter(name) : existingProject.name,
+      description: description ?  capitalizeFLetter(description) : existingProject.description,
       startDate: startDate || existingProject.startDate,
       developers: developers || existingProject.developers,
     };
