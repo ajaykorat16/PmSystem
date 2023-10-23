@@ -4,9 +4,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom'
 import { useUser } from '../context/UserContext';
 import { useDepartment } from '../context/DepartmentContext';
-import Layout from './Layout';
 import { Calendar } from 'primereact/calendar';
 import { useHelper } from '../context/Helper';
+import { useAuth } from '../context/AuthContext';
+import Layout from './Layout';
 
 const UserCreate = ({ title }) => {
     const [employeeNumber, setEmployeeNumber] = useState("")
@@ -21,7 +22,8 @@ const UserCreate = ({ title }) => {
     const [departmentsList, setDepartmentsList] = useState([]);
     const [dateOfBirth, setDateOfBirth] = useState("");
     const [dateOfJoining, setDateOfJoining] = useState("");
-    const { createUser, toast } = useUser()
+    const { createUser } = useUser()
+    const { toast } = useAuth()
     const { formatDate } = useHelper()
     const { getDepartmentList } = useDepartment()
     const navigate = useNavigate();
