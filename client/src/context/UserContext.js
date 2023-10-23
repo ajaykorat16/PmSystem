@@ -6,7 +6,7 @@ import axios from 'axios';
 const UserContext = createContext();
 
 const UserProvider = ({ children }) => {
-    const { auth, toast, deleteTost } = useAuth();
+    const { auth, toast } = useAuth();
 
     const headers = {
         Authorization: auth.token

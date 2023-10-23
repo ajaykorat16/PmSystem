@@ -18,7 +18,6 @@ const AuthProvider = ({ children }) => {
 
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const toast = useRef(null);
-    const deleteTost = useRef(null);
 
     const logout = () => {
         try {
@@ -180,7 +179,7 @@ const AuthProvider = ({ children }) => {
     }, [])
 
     return (
-        <AuthContext.Provider value={{ auth, login, logout, isLoggedIn, adminAuth, loginUserByAdmin, backToAdmin, toast, deleteTost }}>
+        <AuthContext.Provider value={{ auth, login, logout, isLoggedIn, adminAuth, loginUserByAdmin, backToAdmin, toast }}>
             {children}
         </AuthContext.Provider>
     )

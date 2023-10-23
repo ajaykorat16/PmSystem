@@ -13,7 +13,7 @@ import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 
 const DepartmentList = ({ title }) => {
   const { getDepartment, deleteDepartment } = useDepartment();
-  const { toast, deleteTost } = useAuth()
+  const { toast } = useAuth()
   const [isLoading, setIsLoading] = useState(true);
   const [departmentList, setDepartmentList] = useState([])
   const [totalRecords, setTotalRecords] = useState(0);
@@ -84,7 +84,7 @@ const DepartmentList = ({ title }) => {
   };
 
   return (
-    <Layout title={title} toast={toast} deleteTost={deleteTost} >
+    <Layout title={title} toast={toast} >
       {isLoading ? (
         <Loader />
       ) : (
