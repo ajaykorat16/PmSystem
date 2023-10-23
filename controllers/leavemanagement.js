@@ -32,7 +32,7 @@ const getLeavesMonthWise = asyncHandler(async (req, res) => {
     const leaves = await LeaveManagement.find(query).skip(skip).limit(limit).populate({ path: "user", select: "fullName" }).lean();
     return res.status(200).json({
       error: false,
-      message: "Leaves getting successfully",
+      message: "Leaves is getting successfully.",
       leaves,
       currentPage: page,
       totalPages: Math.ceil(totalLeaves / limit),
@@ -51,7 +51,7 @@ const getSingleLeave = asyncHandler(async (req, res) => {
     const getLeave = await LeaveManagement.findById({ _id: id }).populate({ path: "user", select: "fullName" });
     return res.status(200).json({
       error: false,
-      message: "Single Leave getting successfully !",
+      message: "Single leave is getting successfully.",
       getLeave,
     });
   } catch (error) {
@@ -77,7 +77,7 @@ const updateLeave = asyncHandler(async (req, res) => {
     await Users.findByIdAndUpdate(getLeave.user._id, { $inc: { leaveBalance: leaveChange } }, { new: true });
     return res.status(200).json({
       error: false,
-      message: "Leave update successfully",
+      message: "Manage leave is update successfully.",
       updatedLeave
     });
   } catch (error) {
@@ -96,7 +96,7 @@ const getUserLeaves = asyncHandler(async (req, res) => {
 
     return res.status(200).json({
       error: false,
-      message: "User's Leaves getting successfully",
+      message: "User's Leaves getting successfully.",
       leaves,
     });
   } catch (error) {
@@ -129,7 +129,7 @@ const createManageLeave = asyncHandler(async (req, res) => {
 
     return res.status(201).json({
       error: false,
-      message: "Create Manage Leave Successfully.",
+      message: " Manage leave is create successfully.",
       manageLeave: manageCreateLeave
     })
 

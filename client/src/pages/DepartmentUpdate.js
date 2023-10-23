@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { CCol, CFormInput, CButton, CForm } from "@coreui/react";
 import { useDepartment } from "../context/DepartmentContext";
 import { useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import Loader from '../components/Loader'
 import Layout from "./Layout";
 
@@ -11,6 +12,7 @@ const DepartmentUpdate = ({ title }) => {
   const [name, setName] = useState("");
   const [isLoading, setIsLoading] = useState(true)
   const { updateDepartment, getSingleDepartment } = useDepartment();
+  const { toast } = useAuth();
 
   const singleDepartment = async () => {
     const data = await getSingleDepartment(params.id)
@@ -35,7 +37,7 @@ const DepartmentUpdate = ({ title }) => {
   };
 
   return (
-    <Layout title={title}>
+    <Layout title={title} toast={toast}>
       {isLoading === true && <Loader />}
       {isLoading === false && <>
         <div className="mb-3">

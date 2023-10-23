@@ -12,7 +12,7 @@ router.get("/departmentlist",auth, isAdmin, getDepartmentList)
 router.get("/getSingleDepartment/:id",auth, isAdmin, getSingleDepartment)
 
 router.post("/createDepartment",
-    check('name', 'Department name is required').notEmpty(),
+    check('name', 'Department name is required.').notEmpty(),
     auth, isAdmin, createDepartment)
 
 router.put("/updateDepartment/:id",auth, isAdmin, updateDepartment)

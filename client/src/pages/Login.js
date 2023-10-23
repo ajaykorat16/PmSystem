@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { CButton, CCard, CCardBody, CCardGroup, CCol, CContainer, CForm, CFormInput, CInputGroup, CInputGroupText, CRow, } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
+import { CButton, CCard, CCardBody, CCardGroup, CCol, CContainer, CForm, CFormInput, CInputGroup, CInputGroupText, CRow, } from '@coreui/react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { Toaster } from "react-hot-toast"
+import { Toast } from 'primereact/toast'
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const { auth, login } = useAuth()
+    const { auth, login, toast } = useAuth()
     const navigate = useNavigate()
     const location = useLocation()
 
@@ -31,7 +31,7 @@ const Login = () => {
     return (
         <div className="bg-light min-vh-100 d-flex flex-row align-items-center">
             <CContainer>
-                <Toaster />
+                <Toast ref={toast} />
                 <CRow className="justify-content-center">
                     <CCol md={5}>
                         <CCardGroup>

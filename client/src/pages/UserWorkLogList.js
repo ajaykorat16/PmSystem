@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from "react";
+import { CButton, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from "@coreui/react";
+import { useNavigate } from "react-router-dom";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { useWorklog } from "../context/WorklogContext";
-import { useNavigate } from "react-router-dom";
-import Loader from "../components/Loader";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
-import Layout from "./Layout";
 import { Button } from "primereact/button";
-import "../styles/Styles.css";
-import { CButton, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from "@coreui/react";
 import { ScrollPanel } from "primereact/scrollpanel";
+import { useWorklog } from "../context/WorklogContext";
+import { useAuth } from "../context/AuthContext";
+import Loader from "../components/Loader";
+import Layout from "./Layout";
+import "../styles/Styles.css";
 
 
 const UserWorkLogList = ({ title }) => {
+  const { toast } = useAuth()
   const { getWorklog, deleteWorklog } = useWorklog();
   const [isLoading, setIsLoading] = useState(true);
   const [worklogList, setWorklogList] = useState([]);
@@ -94,7 +96,7 @@ const UserWorkLogList = ({ title }) => {
   }
 
   return (
-    <Layout title={title}>
+    <Layout title={title} toast={toast}>
       {isLoading ? (
         <Loader />
       ) : (

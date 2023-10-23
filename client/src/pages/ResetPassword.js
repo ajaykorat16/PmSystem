@@ -11,13 +11,14 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked } from '@coreui/icons'
 import { useNavigate } from 'react-router-dom'
-import toast from "react-hot-toast"
 import { useUser } from '../context/UserContext'
+import { useAuth } from '../context/AuthContext'
 import Layout from './Layout'
 
 const Login = ({ title }) => {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const { toast, logout } = useAuth()
     const { resetPassword } = useUser()
     const navigate = useNavigate()
 
@@ -25,12 +26,11 @@ const Login = ({ title }) => {
         e.preventDefault()
         try {
             if (password !== confirmPassword) {
-                toast.error("Password and Confirm Password must be same");
+                toast.current.show({ severity: 'error', summary: 'Password', detail: "Password and Confirm Password must be same", life: 3000 })
             } else {
                 const data = await resetPassword(password)
-                if (data.error) {
-                    toast.error(data.message)
-                } else {
+                if (!data.error) {
+                    logout()
                     navigate("/")
                 }
             }
@@ -40,7 +40,7 @@ const Login = ({ title }) => {
     }
 
     return (
-        <Layout title={title}>
+        <Layout title={title} toast={toast}>
             <CForm onSubmit={handleSubmit}>
                 <h1 className="mb-4">Reset Password</h1>
                 <CCol md={4}>

@@ -2,17 +2,17 @@ import React from 'react'
 import { CForm, CCol, CFormInput, CTable, CTableHead, CTableRow, CTableHeaderCell, CTableBody, CTableDataCell } from '@coreui/react';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom'
-import { useUser } from '../context/UserContext';
 import { useEffect } from 'react';
-import Loader from '../components/Loader'
-import Layout from './Layout';
-import toast from 'react-hot-toast';
 import { Avatar } from 'primereact/avatar';
 import { Button } from 'primereact/button';
-import moment from 'moment';
-import { useLeaveManagement } from '../context/LeaveManagementContext';
 import { Calendar } from 'primereact/calendar';
+import { useLeaveManagement } from '../context/LeaveManagementContext';
+import { useUser } from '../context/UserContext';
 import { useHelper } from '../context/Helper';
+import { useAuth } from '../context/AuthContext';
+import Loader from '../components/Loader'
+import Layout from './Layout';
+import moment from 'moment';
 
 const UserUpdate = ({ title }) => {
     const [employeeNumber, setEmployeeNumber] = useState("")
@@ -28,11 +28,12 @@ const UserUpdate = ({ title }) => {
     const [photo, setPhoto] = useState("");
     const [carryForward, setCarryForward] = useState("")
     const [isLoading, setIsLoading] = useState(true)
+    const [leave, setLeave] = useState([])
     const { updateProfile, getUserProfile } = useUser()
-    const params = useParams();
     const { getUserLeave } = useLeaveManagement()
     const { formatDate } = useHelper()
-    const [leave, setLeave] = useState([])
+    const { toast } = useAuth()
+    const params = useParams();
 
     const doj = moment(dateOfJoining).format('DD-MM-YYYY')
     useEffect(() => {
@@ -74,7 +75,7 @@ const UserUpdate = ({ title }) => {
             let updateUsers = { firstname, lastname, phone, address, dateOfBirth: formatDate(dateOfBirth), photo: newPhoto || photo }
             const data = await updateProfile(updateUsers)
             if (data.error) {
-                toast.error(data.message)
+                toast.current.show({ severity: 'error', summary: 'Profile', detail: data.message, life: 3000 })
             }
         } catch (error) {
             console.log(error)
@@ -91,7 +92,7 @@ const UserUpdate = ({ title }) => {
     ];
 
     return (
-        <Layout title={title}>
+        <Layout title={title} toast={toast}>
             {isLoading === true && <Loader />}
             {isLoading === false && <>
                 <CForm onSubmit={handleSubmit}>

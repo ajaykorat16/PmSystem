@@ -2,12 +2,11 @@ import { useContext, createContext } from "react";
 import { useAuth } from "./AuthContext";
 import { baseURL } from "../lib";
 import axios from "axios";
-import toast from "react-hot-toast";
 
 const DepartmentContext = createContext();
 
 const DepartmentProvider = ({ children }) => {
-  const { auth } = useAuth();
+  const { auth, toast } = useAuth();
 
   const headers = {
     Authorization: auth?.token,
@@ -46,26 +45,28 @@ const DepartmentProvider = ({ children }) => {
   const addDepartment = async (name) => {
     try {
       const { data } = await axios.post(`${baseURL}/department/createDepartment`, { name }, { headers });
+
       if (data.error === false) {
         getDepartment()
         setTimeout(function () {
-          toast.success(data.message)
+          toast.current.show({ severity: 'success', summary: 'Department', detail: data.message, life: 3000 })
         }, 1000);
+        return data;
+      } else {
+        toast.current.show({ severity: 'error', summary: 'Department', detail: data.message, life: 3000 })
       }
-      return data;
     } catch (error) {
       if (error.response) {
         const errors = error.response.data.errors;
         if (errors && Array.isArray(errors) && errors.length > 0) {
-          errors.forEach((error) => {
-            toast.error(error.msg);
-          });
-        } else {
-          const errorMessage = error.response.data.message;
-          toast.error(errorMessage);
+          if (errors.length > 1) {
+            toast.current.show({ severity: 'error', summary: 'Department', detail: "Please fill all fields.", life: 3000 })
+          } else {
+            toast.current.show({ severity: 'error', summary: 'Department', detail: errors[0].msg, life: 3000 })
+          }
         }
       } else {
-        toast.error('An error occurred. Please try again later.');
+        toast.current.show({ severity: 'error', summary: 'Department', detail: 'An error occurred. Please try again later.', life: 3000 })
       }
     }
   };
@@ -76,7 +77,7 @@ const DepartmentProvider = ({ children }) => {
       const { data } = await axios.delete(`${baseURL}/department/deleteDepartment/${id}`, { headers })
       if (data.error === false) {
         getDepartment()
-        toast.success(data.message)
+        toast.current.show({ severity: 'success', summary: 'Department', detail: data.message, life: 3000 })
       }
     } catch (error) {
       console.log(error);
@@ -90,9 +91,8 @@ const DepartmentProvider = ({ children }) => {
       if (data.error === false) {
         getDepartment()
         setTimeout(function () {
-          toast.success(data.message)
+          toast.current.show({ severity: 'success', summary: 'Department', detail: data.message, life: 3000 })
         }, 1000);
-
       }
     } catch (error) {
       console.log(error);

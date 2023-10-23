@@ -8,10 +8,12 @@ import { Button } from "primereact/button";
 import { useLeaveManagement } from "../context/LeaveManagementContext";
 import { CButton, CForm, CFormInput, CFormSelect, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle, } from "@coreui/react";
 import { useUser } from "../context/UserContext";
+import { useAuth } from "../context/AuthContext";
 
 const LeaveManagementList = ({ title }) => {
   const { getLeavesMonthWise, getSingleLeave, updateLeave, createLeave } = useLeaveManagement();
   const { fetchUsers } = useUser();
+  const { toast } = useAuth()
   const [isLoading, setIsLoading] = useState(true);
   const [leavelist, setLeaveList] = useState([]);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -123,7 +125,7 @@ const LeaveManagementList = ({ title }) => {
   const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
   return (
-    <Layout title={title}>
+    <Layout title={title} toast={toast}>
       {isLoading ? (
         <Loader />
       ) : (

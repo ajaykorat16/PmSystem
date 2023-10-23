@@ -12,7 +12,7 @@ import { useHelper } from '../context/Helper';
 const CredentialCreate = ({ title }) => {
     const { userForCredential } = useUser();
     const { addCredentials } = useCredential();
-    const { auth } = useAuth();
+    const { auth, toast } = useAuth();
     const { onShow } = useHelper();
     const navigate = useNavigate()
     const [users, setUsers] = useState([]);
@@ -43,7 +43,7 @@ const CredentialCreate = ({ title }) => {
     }, []);
     
     return (
-        <Layout title={title}>
+        <Layout title={title} toast={toast}>
             <div className="mb-3">
                 <h2 className="mb-5 mt-2">Create Credentials</h2>
             </div>

@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { CButton, CForm, CFormTextarea, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from "@coreui/react";
 import { useLeave } from "../context/LeaveContext";
 import { useNavigate } from "react-router-dom";
-import Loader from "../components/Loader";
-import Layout from "./Layout";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { DataTable } from "primereact/datatable";
@@ -10,11 +9,12 @@ import { Column } from "primereact/column";
 import { useAuth } from "../context/AuthContext";
 import { Tag } from "primereact/tag";
 import { Button } from "primereact/button";
-import { toast } from "react-hot-toast";
-import { CButton, CForm, CFormTextarea, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from "@coreui/react";
+import Loader from "../components/Loader";
+import Layout from "./Layout";
 
 const LeaveList = ({ title }) => {
   const { getLeave, getUserLeave, updateStatus, deleteLeave } = useLeave();
+  const { auth, toast } = useAuth();
   const [leaveList, setLeaveList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -28,7 +28,6 @@ const LeaveList = ({ title }) => {
   const [id, setId] = useState(null);
   const [reasonForLeaveReject, setReasonForLeaveReject] = useState("");
   const navigate = useNavigate();
-  const { auth } = useAuth();
 
   const fetchLeaves = async (currentPage, rowsPerPage, query, sortField, sortOrder) => {
     setIsLoading(true);
@@ -73,7 +72,7 @@ const LeaveList = ({ title }) => {
         setId(id);
       } else {
         await updateStatus(status, id);
-        toast.success("Leave approved successfully!!");
+        toast.current.show({ severity: 'success', summary: 'Leave', detail: "Leave is approved successfully.", life: 3000 })
         fetchLeaves(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
       }
     } catch (error) {
@@ -126,16 +125,16 @@ const LeaveList = ({ title }) => {
   const handleSubmitReject = async () => {
     if (reasonForLeaveReject !== "") {
       await updateStatus("rejected", id, reasonForLeaveReject);
-      toast.success("Leave rejected successfully!!");
+      toast.current.show({ severity: 'success', summary: 'Leave', detail: "Leave is rejected successfully!!", life: 3000 })
       fetchLeaves(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
       setVisible(false);
     } else {
-      toast.error("Please write a reason for leave rejection!");
+      toast.current.show({ severity: 'info', summary: 'Leave', detail: "Please write a reason for leave rejection!", life: 3000 })
     }
   };
 
   return (
-    <Layout title={title}>
+    <Layout title={title} toast={toast}>
       {isLoading ? (
         <Loader />
       ) : (

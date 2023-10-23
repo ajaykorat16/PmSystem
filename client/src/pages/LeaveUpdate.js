@@ -4,11 +4,10 @@ import { useLeave } from "../context/LeaveContext";
 import { useUser } from "../context/UserContext";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
-import Loader from "../components/Loader";
-import Layout from "./Layout";
-import toast from "react-hot-toast";
 import { Calendar } from "primereact/calendar";
 import { useHelper } from "../context/Helper";
+import Loader from "../components/Loader";
+import Layout from "./Layout";
 
 const LeaveUpdate = ({ title }) => {
   const [userId, setUserId] = useState("");
@@ -23,12 +22,12 @@ const LeaveUpdate = ({ title }) => {
   const [users, setUsers] = useState([]);
   const { updateLeave, getLeaveById } = useLeave();
   const { fetchUsers } = useUser();
-  const { auth } = useAuth();
+  const { auth, toast } = useAuth();
   const { formatDate } = useHelper()
+  const { id } = useParams();
   const typeList = ["paid", "lwp"];
   const dayTypeList = ["Single Day", "Multiple Day", "First Half", "Second Half"];
   const navigate = useNavigate();
-  const { id } = useParams();
 
   useEffect(() => {
     const setValues = async () => {
@@ -57,6 +56,7 @@ const LeaveUpdate = ({ title }) => {
       } else {
         leaveData = { reason, startDate: formatDate(startDate), endDate: formatDate(endDate), leaveType, leaveDayType, totalDays }
       }
+      
       const data = await updateLeave(leaveData, id);
       if (typeof data !== 'undefined' && data.error === false) {
         const redirectPath = auth.user.role === "admin" ? "/dashboard/leave/list" : "/dashboard-user/leave/list";
@@ -116,7 +116,7 @@ const LeaveUpdate = ({ title }) => {
   };
 
   return (
-    <Layout title={title}>
+    <Layout title={title} toast={toast}>
       {isLoading === true && <Loader />}
       {isLoading === false && (
         <>

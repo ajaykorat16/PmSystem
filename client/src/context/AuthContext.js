@@ -1,7 +1,6 @@
-import { useState, useEffect, useContext, createContext } from "react";
+import { useState, useEffect, useContext, createContext, useRef } from "react";
 import { baseURL } from "../lib";
 import axios from 'axios'
-import toast from "react-hot-toast"
 
 const AuthContext = createContext()
 
@@ -18,6 +17,8 @@ const AuthProvider = ({ children }) => {
     })
 
     const [isLoggedIn, setIsLoggedIn] = useState(false)
+    const toast = useRef(null);
+    const deleteTost = useRef(null);
 
     const logout = () => {
         try {
@@ -50,10 +51,11 @@ const AuthProvider = ({ children }) => {
     const login = async (email, password) => {
         try {
             const { data } = await axios.post(`${baseURL}/user/login`, { email, password });
+
             if (data.error === false) {
                 setIsLoggedIn(true)
                 setTimeout(function () {
-                    toast.success(data.message)
+                    toast.current.show({ severity: 'success', summary: data.user.fullName, detail: data.message, life: 3000 })
                 }, 500);
                 setAuth({
                     ...auth,
@@ -66,13 +68,13 @@ const AuthProvider = ({ children }) => {
             if (error.response) {
                 const errors = error.response.data.errors;
                 if (errors && Array.isArray(errors) && errors.length > 0) {
-                    toast.error("Please fill all fields")
+                    toast.current.show({ severity: 'error', summary: 'Login', detail: "Please fill all fields.", life: 3000 })
                 } else {
                     const errorMessage = error.response.data.message;
-                    toast.error(errorMessage);
+                    toast.current.show({ severity: 'error', summary: 'Login', detail: errorMessage, life: 3000 })
                 }
             } else {
-                toast.error('An error occurred. Please try again later.');
+                toast.current.show({ severity: 'error', summary: 'Login', detail: 'An error occurred. Please try again later.', life: 3000 })
             }
         }
     };
@@ -105,13 +107,13 @@ const AuthProvider = ({ children }) => {
             if (error.response) {
                 const errors = error.response.data.errors;
                 if (errors && Array.isArray(errors) && errors.length > 0) {
-                    toast.error("Please fill all fields")
+                    toast.current.show({ severity: 'error', summary: 'Login', detail: "Please fill all fields.", life: 3000 })
                 } else {
                     const errorMessage = error.response.data.message;
-                    toast.error(errorMessage);
+                    toast.current.show({ severity: 'error', summary: 'Login', detail: errorMessage, life: 3000 })
                 }
             } else {
-                toast.error('An error occurred. Please try again later.');
+                toast.current.show({ severity: 'error', summary: 'Login', detail: 'An error occurred. Please try again later.', life: 3000 })
             }
         }
     };
@@ -144,13 +146,13 @@ const AuthProvider = ({ children }) => {
             if (error.response) {
                 const errors = error.response.data.errors;
                 if (errors && Array.isArray(errors) && errors.length > 0) {
-                    toast.error("Please fill all fields")
+                    toast.current.show({ severity: 'error', summary: 'Login', detail: "Please fill all fields.", life: 3000 })
                 } else {
                     const errorMessage = error.response.data.message;
-                    toast.error(errorMessage);
+                    toast.current.show({ severity: 'error', summary: 'Login', detail: errorMessage, life: 3000 })
                 }
             } else {
-                toast.error('An error occurred. Please try again later.');
+                toast.current.show({ severity: 'error', summary: 'Login', detail: 'An error occurred. Please try again later.', life: 3000 })
             }
         }
     }
@@ -178,7 +180,7 @@ const AuthProvider = ({ children }) => {
     }, [])
 
     return (
-        <AuthContext.Provider value={{ auth, login, logout, isLoggedIn, adminAuth, loginUserByAdmin, backToAdmin }}>
+        <AuthContext.Provider value={{ auth, login, logout, isLoggedIn, adminAuth, loginUserByAdmin, backToAdmin, toast, deleteTost }}>
             {children}
         </AuthContext.Provider>
     )

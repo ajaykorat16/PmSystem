@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
+import { cilCalendar, cilCalendarCheck, cilClock, cilFolderOpen, cilHistory, cilPeople } from '@coreui/icons';
 import { CRow, CCol, CWidgetStatsA, CNavLink } from '@coreui/react';
 import { CChartLine, CChartBar } from '@coreui/react-chartjs';
 import { useAuth } from '../context/AuthContext';
-import Layout from './Layout';
 import { useLeave } from '../context/LeaveContext';
 import { useProject } from '../context/ProjectContext';
 import { useWorklog } from '../context/WorklogContext';
 import { useUser } from '../context/UserContext';
 import { NavLink } from 'react-router-dom';
 import CIcon from '@coreui/icons-react';
-import { cilCalendar, cilCalendarCheck, cilClock, cilFolderOpen, cilHistory, cilPeople } from '@coreui/icons';
+import Layout from './Layout';
 
 const DefaultLayout = () => {
-  const { auth } = useAuth()
+  const { auth, toast } = useAuth()
   const { getUserLeave } = useLeave()
   const { getAdminWorklog, getWorklog } = useWorklog()
   const { userProject, getProject } = useProject()
@@ -326,7 +326,7 @@ const DefaultLayout = () => {
 
   if (userRole === null || userRole === undefined) {
     return (
-      <Layout>
+      <Layout toast={toast}>
         <CRow>
           <CCol sm={3}>
             <CWidgetStatsA
@@ -386,7 +386,7 @@ const DefaultLayout = () => {
   }
 
   return (
-    <Layout>
+    <Layout toast={toast}>
       <CRow>
         <CCol sm={3}>
           {userRole === "user" ? (

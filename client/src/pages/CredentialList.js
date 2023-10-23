@@ -14,7 +14,7 @@ const { DOMParser } = require('xmldom')
 
 const CredentialList = ({ title }) => {
     const { getAllCredentials, deleteCredentials } = useCredential()
-    const { auth } = useAuth()
+    const { auth, toast } = useAuth()
     const [isLoading, setIsLoading] = useState(true);
     const [credentialList, setCredentialList] = useState([]);
     const [totalRecords, setTotalRecords] = useState(0);
@@ -92,7 +92,7 @@ const CredentialList = ({ title }) => {
     }
 
     return (
-        <Layout title={title}>
+        <Layout title={title} toast={toast}>
             {isLoading ? (
                 <Loader />
             ) : (

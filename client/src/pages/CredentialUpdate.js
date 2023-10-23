@@ -11,8 +11,7 @@ import { useHelper } from '../context/Helper';
 
 const CredentialUpdate = ({ title }) => {
     const { id } = useParams()
-    const navigate = useNavigate()
-    const { auth } = useAuth();
+    const { auth, toast } = useAuth();
     const { onShow } = useHelper();
     const { userForCredential } = useUser();
     const { getSingleCredential, updateCredential } = useCredential();
@@ -20,6 +19,7 @@ const CredentialUpdate = ({ title }) => {
     const [credentialTitle, setCredentialTitle] = useState("");
     const [description, setDescription] = useState("")
     const [developers, setDevelopers] = useState([])
+    const navigate = useNavigate()
 
     useEffect(() => {
         const currentCredential = async () => {
@@ -55,12 +55,13 @@ const CredentialUpdate = ({ title }) => {
         const { getAllUsers } = await userForCredential();
         setUsers(getAllUsers);
     };
+    
     useEffect(() => {
         getUsers();
     }, []);
 
     return (
-        <Layout title={title}>
+        <Layout title={title} toast={toast}>
             <div className="mb-3">
                 <h2 className="mb-5 mt-2">Update Credentials</h2>
             </div>

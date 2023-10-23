@@ -2,12 +2,11 @@ import { useContext, createContext } from "react";
 import { useAuth } from "./AuthContext";
 import { baseURL } from "../lib";
 import axios from "axios";
-import toast from "react-hot-toast";
 
 const ProjectContext = createContext();
 
 const ProjectProvider = ({ children }) => {
-    const { auth } = useAuth();
+    const { auth, toast } = useAuth();
 
     const headers = {
         Authorization: auth?.token,
@@ -60,25 +59,24 @@ const ProjectProvider = ({ children }) => {
             if (data.error === false) {
                 getProject()
                 setTimeout(function () {
-                    toast.success(data.message)
+                    toast.current.show({ severity: 'success', summary: 'Project', detail: data.message, life: 3000 })
                 }, 1000);
+                return data;
+            } else {
+                toast.current.show({ severity: 'info', summary: 'Project', detail: data.message, life: 3000 })
             }
-            return data;
         } catch (error) {
             if (error.response) {
                 const errors = error.response.data.errors;
                 if (errors && Array.isArray(errors) && errors.length > 0) {
                     if (errors.length > 1) {
-                        toast.error("Please fill all fields")
+                        toast.current.show({ severity: 'error', summary: 'Project', detail: "Please fill all fields.", life: 3000 })
                     } else {
-                        toast.error(errors[0].msg)
+                        toast.current.show({ severity: 'error', summary: 'Project', detail: errors[0].msg, life: 3000 })
                     }
-                } else {
-                    const errorMessage = error.response.data.message;
-                    toast.error(errorMessage);
                 }
             } else {
-                toast.error('An error occurred. Please try again later.');
+                toast.current.show({ severity: 'error', summary: 'Project', detail: 'An error occurred. Please try again later.', life: 3000 })
             }
         }
     }
@@ -87,13 +85,16 @@ const ProjectProvider = ({ children }) => {
     const updateProject = async (project, id) => {
         try {
             const { data } = await axios.put(`${baseURL}/projects/update-project/${id}`, project, { headers });
+
             if (data.error === false) {
                 getProject()
                 setTimeout(function () {
-                    toast.success(data.message)
+                    toast.current.show({ severity: 'success', summary: 'Project', detail: data.message, life: 3000 })
                 }, 1000);
+                return data;
+            } else {
+                toast.current.show({ severity: 'info', summary: 'Project', detail: data.message, life: 3000 })
             }
-            return data;
         } catch (error) {
             console.log(error);
         }
@@ -105,7 +106,7 @@ const ProjectProvider = ({ children }) => {
             const { data } = await axios.delete(`${baseURL}/projects/delete-project/${id}`, { headers });
             if (data.error === false) {
                 getProject()
-                toast.success(data.message)
+                toast.current.show({ severity: 'success', summary: 'Project', detail: data.message, life: 3000 })
             }
         } catch (error) {
             console.log(error);

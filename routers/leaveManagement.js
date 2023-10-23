@@ -8,9 +8,9 @@ const { getLeavesMonthWise, getSingleLeave, updateLeave, getUserLeaves, createMa
 router.get("/", auth, isAdmin, getLeavesMonthWise)
 
 router.post("/create-manageLeave",
-    check('user', 'User is reruired').notEmpty(),
-    check('monthly', 'Month is reruired').notEmpty(),
-    check('leave', 'Leave is reruired').notEmpty(),
+    check('user', 'User is reruired.').notEmpty(),
+    check('monthly', 'Month is reruired.').notEmpty(),
+    check('leave', 'Leave is reruired.').notEmpty(),
     auth, isAdmin, createManageLeave)
 
 router.post("/search", auth, isAdmin, getLeavesMonthWise)

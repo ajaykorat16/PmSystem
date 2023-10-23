@@ -24,7 +24,7 @@ const createCredential = asyncHandler(async (req, res) => {
         const credential = await Credential.create(credentialObj);
         return res.status(201).json({
             error: false,
-            message: "Credential created successfully",
+            message: "Credential created successfully.",
             credential,
         });
     } catch (error) {
@@ -61,7 +61,7 @@ const getCredential = asyncHandler(async (req, res) => {
         const credential = await Credential.find(query).skip((page - 1) * limit).limit(limit).sort({ [sortField]: sortOrder }).populate({ path: "users.id", select: "fullName", }).populate({ path: "createdBy", select: "fullName" }).lean();
         return res.status(201).json({
             error: false,
-            message: "Credential Get Successfully",
+            message: "Credential get successfully.",
             credential,
             currentPage: page,
             totalPages: Math.ceil(totalCredentialCount / limit),
@@ -95,7 +95,7 @@ const getSingleCredential = asyncHandler(async (req, res) => {
 
         return res.status(200).json({
             error: false,
-            message: "Single Credential Get Successfully.",
+            message: "Single credential get successfully.",
             credential: {
                 ...credential,
                 users: credential.users.map(user => ({

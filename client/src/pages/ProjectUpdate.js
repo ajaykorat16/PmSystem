@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
 import "react-quill/dist/quill.snow.css";
-import { CCol, CFormInput, CButton, CForm } from "@coreui/react";
-import Layout from "./Layout";
-import { MultiSelect } from "primereact/multiselect";
-import { useUser } from "../context/UserContext";
-import { Editor } from 'primereact/editor';
-import { useProject } from "../context/ProjectContext";
 import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-hot-toast";
+import { CCol, CFormInput, CButton, CForm } from "@coreui/react";
+import { MultiSelect } from "primereact/multiselect";
+import { Editor } from 'primereact/editor';
 import { Calendar } from "primereact/calendar";
+import { useUser } from "../context/UserContext";
+import { useProject } from "../context/ProjectContext";
 import { useHelper } from "../context/Helper";
+import { useAuth } from "../context/AuthContext";
+import Layout from "./Layout";
 
 const ProjectUpdate = ({ title }) => {
+    const { toast } = useAuth()
     const { fetchUsers } = useUser();
     const { formatDate, onShow } = useHelper()
     const { getSingleProject, updateProject } = useProject();
@@ -50,7 +51,7 @@ const ProjectUpdate = ({ title }) => {
 
             const data = await updateProject(project, id)
             if (data.error) {
-                toast.error(data.message)
+                toast.current.show({ severity: 'error', summary: 'Project', detail: data.message, life: 3000 })
             } else {
                 navigate('/dashboard/project/list')
             }
@@ -69,7 +70,7 @@ const ProjectUpdate = ({ title }) => {
     }, []);
 
     return (
-        <Layout title={title}>
+        <Layout title={title} toast={toast}>
             <div className="mb-3">
                 <h2 className="mb-5 mt-2">Update Project</h2>
             </div>

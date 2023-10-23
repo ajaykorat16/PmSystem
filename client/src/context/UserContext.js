@@ -2,12 +2,11 @@ import React, { useContext, createContext } from "react";
 import { useAuth } from "./AuthContext";
 import { baseURL } from "../lib";
 import axios from 'axios';
-import toast from "react-hot-toast";
 
 const UserContext = createContext();
 
 const UserProvider = ({ children }) => {
-    const { auth } = useAuth();
+    const { auth, toast, deleteTost } = useAuth();
 
     const headers = {
         Authorization: auth.token
@@ -84,25 +83,24 @@ const UserProvider = ({ children }) => {
             if (data.error === false) {
                 fetchUsers()
                 setTimeout(function () {
-                    toast.success(data.message)
+                    toast.current.show({ severity: 'success', summary: 'User', detail: data.message, life: 3000 })
                 }, 1000);
+                return data;
+            } else {
+                toast.current.show({ severity: 'error', summary: 'User', detail: data.message, life: 3000 })
             }
-            return data;
         } catch (error) {
             if (error.response) {
                 const errors = error.response.data.errors;
                 if (errors && Array.isArray(errors) && errors.length > 0) {
                     if (errors.length > 1) {
-                        toast.error("Please fill all fields")
+                        toast.current.show({ severity: 'error', summary: 'User', detail: "Please fill all fields.", life: 3000 })
                     } else {
-                        toast.error(errors[0].msg)
+                        toast.current.show({ severity: 'error', summary: 'User', detail: errors[0].msg, life: 3000 })
                     }
-                } else {
-                    const errorMessage = error.response.data.message;
-                    toast.error(errorMessage);
                 }
             } else {
-                toast.error('An error occurred. Please try again later.');
+                toast.current.show({ severity: 'error', summary: 'User', detail: 'An error occurred. Please try again later.', life: 3000 })
             }
         }
     }
@@ -129,10 +127,12 @@ const UserProvider = ({ children }) => {
             if (data.error === false) {
                 fetchUsers()
                 setTimeout(function () {
-                    toast.success(data.message)
+                    toast.current.show({ severity: 'success', summary: 'User', detail: 'User detail is updated successfully.', life: 3000 })
                 }, 1000);
+                return data;
+            } else {
+                toast.current.show({ severity: 'error', summary: 'User', detail: data.message, life: 3000 })
             }
-            return data;
         } catch (error) {
             console.log(error);
         }
@@ -153,9 +153,9 @@ const UserProvider = ({ children }) => {
 
             const { data } = await axios.put(`${baseURL}/user/updateProfile`, editUser, { headers });
             if (data.error === false) {
-                toast.success(data.message)
+                toast.current.show({ severity: 'success', summary: 'Profile', detail: 'Your profile is updated successfully.', life: 3000 })
+                return data;
             }
-            return data;
         } catch (error) {
             console.log(error);
         }
@@ -167,7 +167,7 @@ const UserProvider = ({ children }) => {
             const { data } = await axios.delete(`${baseURL}/user/deleteProfile/${id}`, { headers });
             if (data.error === false) {
                 fetchUsers()
-                toast.success(data.message)
+                toast.current.show({ severity: 'success', summary: 'User', detail: data.message, life: 3000 })
             }
         } catch (error) {
             console.log(error);
@@ -190,25 +190,24 @@ const UserProvider = ({ children }) => {
             const { data } = await axios.put(`${baseURL}/user/resetPassword`, { password }, { headers })
             if (data.error === false) {
                 setTimeout(function () {
-                    toast.success(data.message)
+                    toast.current.show({ severity: 'success', summary: 'Password', detail: data.message, life: 3000 })
                 }, 500);
+                return data;
+            } else {
+                toast.current.show({ severity: 'error', summary: 'Password', detail: data.message, life: 3000 })
             }
-            return data;
         } catch (error) {
             if (error.response) {
                 const errors = error.response.data.errors;
                 if (errors && Array.isArray(errors) && errors.length > 0) {
                     if (errors.length > 1) {
-                        toast.error("Please fill all fields")
+                        toast.current.show({ severity: 'error', summary: 'Password', detail: "Please fill all fields.", life: 3000 })
                     } else {
-                        toast.error(errors[0].msg)
+                        toast.current.show({ severity: 'error', summary: 'Password', detail: errors[0].msg, life: 3000 })
                     }
-                } else {
-                    const errorMessage = error.response.data.message;
-                    toast.error(errorMessage);
                 }
             } else {
-                toast.error('An error occurred. Please try again later.');
+                toast.current.show({ severity: 'error', summary: 'Password', detail: 'An error occurred. Please try again later.', life: 3000 })
             }
         }
     }

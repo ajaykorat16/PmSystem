@@ -27,7 +27,7 @@ const createWorkLog = asyncHandler(async (req, res) => {
 
         return res.status(201).json({
             error: false,
-            message: "Worklog  created successfully",
+            message: "Worklog created successfully.",
             worklog
         });
 
@@ -107,7 +107,7 @@ const userGetWorklog = asyncHandler(async (req, res) => {
 
         return res.status(200).json({
             error: false,
-            message: "Worklog get successfully",
+            message: "Worklog get successfully.",
             dayWiseTotals: dayWiseTotals,
             totalWeekTime: totalWeekTime,
             worklog: formattedWorklog,
@@ -208,7 +208,7 @@ const getAllWorklog = asyncHandler(async (req, res) => {
 
         return res.status(200).json({
             error: false,
-            message: "Worklog get successfully",
+            message: "Worklog get successfully.",
             worklog: formattedWorklog,
             currentPage: page,
             totalPages: Math.ceil(totalWorklogCount / limit),
@@ -234,7 +234,7 @@ const getSingleWorklog = asyncHandler(async (req, res) => {
         const worklog = await Worklog.findById({ _id: id }).populate({ path: "userId", select: "fullName" }).populate({ path: "project", select: "name" });
         return res.status(200).json({
             error: false,
-            message: "single worklog get successfully",
+            message: "single worklog get successfully.",
             worklog
         });
 
@@ -258,7 +258,7 @@ const updateWorklog = asyncHandler(async (req, res) => {
         if (!worklog) {
             return res.status(404).json({
                 error: true,
-                message: "Worklog does not exist"
+                message: "Worklog does not exist."
             })
         }
 
@@ -272,7 +272,7 @@ const updateWorklog = asyncHandler(async (req, res) => {
         const updateworklog = await Worklog.findByIdAndUpdate(id, updatedFeilds, { new: true })
         return res.status(200).json({
             error: false,
-            message: "Update worklog successfully",
+            message: "Worklog update successfully.",
             worklog: updateworklog
         });
 
@@ -295,14 +295,14 @@ const deleteWorklog = asyncHandler(async (req, res) => {
         if (!worklog) {
             return res.status(404).json({
                 error: true,
-                message: "Worklog does not exist"
+                message: "Worklog does not exist."
             })
         }
 
         await Worklog.findByIdAndDelete(id)
         return res.status(200).json({
             error: false,
-            message: "Delete worklog successfully",
+            message: "Worklog delete successfully.",
         });
 
     } catch (error) {

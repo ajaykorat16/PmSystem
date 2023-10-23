@@ -12,8 +12,8 @@ router.post("/search-credential", auth, getCredential)
 router.get("/single-credential/:id", auth, getSingleCredential)
 
 router.post("/create",
-    check('title', 'Title is required').notEmpty(),
-    check('description', 'Description is required').notEmpty(),
+    check('title', 'Title is required.').notEmpty(),
+    check('description', 'Description is required.').notEmpty(),
     auth, createCredential)
 
 router.put("/update/:id", auth, updateCredential)

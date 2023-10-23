@@ -6,12 +6,12 @@ import { useUser } from '../context/UserContext';
 import { useEffect } from 'react';
 import Loader from '../components/Loader'
 import Layout from './Layout';
-import toast from 'react-hot-toast';
 import { Avatar } from 'primereact/avatar';
 import { Button } from 'primereact/button';
 import moment from 'moment';
 import { Calendar } from 'primereact/calendar';
 import { useHelper } from '../context/Helper';
+import { useAuth } from '../context/AuthContext';
 
 const UserUpdate = ({ title }) => {
     const [employeeNumber, setEmployeeNumber] = useState("")
@@ -27,6 +27,7 @@ const UserUpdate = ({ title }) => {
     const [photo, setPhoto] = useState("");
     const [isLoading, setIsLoading] = useState(true)
     const { updateProfile, getUserProfile } = useUser()
+    const { toast } = useAuth()
     const { formatDate } = useHelper();
     const params = useParams();
 
@@ -62,7 +63,7 @@ const UserUpdate = ({ title }) => {
             let updateUsers = { firstname, lastname, phone, address, dateOfBirth: formatDate(dateOfBirth), photo: newPhoto || photo }
             const data = await updateProfile(updateUsers)
             if (data.error) {
-                toast.error(data.message)
+                toast.current.show({ severity: 'error', summary: 'User', detail: data.message, life: 3000 })
             }
         } catch (error) {
             console.log(error)
@@ -74,7 +75,7 @@ const UserUpdate = ({ title }) => {
     };
 
     return (
-        <Layout title={title}>
+        <Layout title={title} toast={toast}>
             {isLoading === true && <Loader />}
             {isLoading === false &&
                 <>

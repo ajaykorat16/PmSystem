@@ -49,7 +49,7 @@ const createProject = asyncHandler(async (req, res) => {
 
     return res.status(201).json({
       error: false,
-      message: "Project created successfully",
+      message: "Project is created successfully.",
       project,
     });
   } catch (error) {
@@ -71,7 +71,7 @@ const getAllProjects = asyncHandler(async (req, res) => {
 
     return res.status(200).json({
       error: false,
-      message: "All Projects retrieved successfully",
+      message: "All projects retrieved successfully.",
       getAllProjects: formatteProject,
     });
   } catch (error) {
@@ -138,7 +138,7 @@ const getProjects = asyncHandler(async (req, res) => {
 
     return res.status(200).json({
       error: false,
-      message: "Project retrieved successfully",
+      message: "Project retrieved successfully.",
       projects: formatteProject,
       currentPage: page,
       totalPages: Math.ceil(totalProjects / limit),
@@ -202,7 +202,7 @@ const getUserProjects = asyncHandler(async (req, res) => {
 
     return res.status(200).json({
       error: false,
-      message: "Projects retrieved successfully",
+      message: "Projects retrieved successfully.",
       projects: formattedProjects,
       currentPage: page,
       totalPages: Math.ceil(totalProjectsCount / limit),
@@ -258,7 +258,7 @@ const updateProject = asyncHandler(async (req, res) => {
 
     return res.status(200).json({
       error: false,
-      message: "Project updated successfully",
+      message: "Project updated successfully.",
       project: updatedProject,
     });
   } catch (error) {
@@ -308,7 +308,7 @@ const delelteProject = asyncHandler(async (req, res) => {
     }
     return res.status(200).json({
       error: false,
-      message: "Delete Project Successfully",
+      message: "Delete Project Successfully.",
     });
   } catch (error) {
     console.error(error.message);
@@ -322,7 +322,7 @@ const userProjects = asyncHandler(async (req, res) => {
     const project = await Projects.find({ "developers.id": id });
     return res.status(200).json({
       error: false,
-      message: "Project get Successfully",
+      message: "Project get Successfully.",
       project,
     });
   } catch (error) {

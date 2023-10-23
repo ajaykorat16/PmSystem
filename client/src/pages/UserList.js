@@ -14,7 +14,7 @@ import "../styles/Styles.css";
 
 const UserList = ({ title }) => {
   const { deleteUser, getAllUsers, getUserProfile } = useUser();
-  const { loginUserByAdmin } = useAuth()
+  const { loginUserByAdmin, toast, deleteTost } = useAuth()
   const [isLoading, setIsLoading] = useState(true);
   const [userList, setUserList] = useState([]);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -85,7 +85,7 @@ const UserList = ({ title }) => {
   }
 
   return (
-    <Layout title={title}>
+    <Layout title={title} toast={toast} deleteTost={deleteTost}>
       {isLoading ? (
         <Loader />
       ) : (

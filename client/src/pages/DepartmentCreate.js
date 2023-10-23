@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { CCol, CFormInput, CButton, CForm } from "@coreui/react";
 import { useDepartment } from "../context/DepartmentContext";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import Layout from "./Layout";
 
 const DepartmentCreate = ({ title }) => {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const { addDepartment } = useDepartment();
+  const { toast } = useAuth()
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,7 +24,7 @@ const DepartmentCreate = ({ title }) => {
   };
 
   return (
-    <Layout title={title}>
+    <Layout title={title} toast={toast}>
       <div className="mb-3">
         <h2 className="mb-5 mt-2">Create Department</h2>
       </div>

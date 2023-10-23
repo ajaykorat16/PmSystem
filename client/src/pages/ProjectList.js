@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import Layout from "./Layout";
 import { useProject } from '../context/ProjectContext';
-import Loader from '../components/Loader';
 import { InputText } from 'primereact/inputtext';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -10,9 +8,13 @@ import { Button } from 'primereact/button';
 import { useNavigate } from 'react-router-dom';
 import { CButton, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react';
 import { ScrollPanel } from 'primereact/scrollpanel';
+import { useAuth } from '../context/AuthContext';
+import Loader from '../components/Loader';
+import Layout from "./Layout";
 
 const ProjectList = ({ title }) => {
   const { getProject, deleteProject } = useProject()
+  const { toast } = useAuth()
   const [projectList, setProjectList] = useState([])
   const [isLoading, setIsLoading] = useState(true);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -33,7 +35,7 @@ const ProjectList = ({ title }) => {
   const fetchProjects = async (currentPage, rowsPerPage, query, sortField, sortOrder) => {
     setIsLoading(true);
     let projectData = await getProject(currentPage, rowsPerPage, query, sortField, sortOrder);
-    
+
     const totalRecordsCount = projectData.totalProjects;
     setTotalRecords(totalRecordsCount);
     setProjectList(projectData.projects);
@@ -99,7 +101,7 @@ const ProjectList = ({ title }) => {
   };
 
   return (
-    <Layout title={title}>
+    <Layout title={title} toast={toast}>
       {isLoading ? (
         <Loader />
       ) : (

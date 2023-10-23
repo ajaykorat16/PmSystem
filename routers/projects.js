@@ -10,9 +10,9 @@ router.get("/project-list", auth, getAllProjects)
 router.get("/user-project-list", auth, userProjects)
 
 router.post("/create",
-    check('name', 'Project name is required').notEmpty(),
-    check('startDate', 'Project start date is required').notEmpty(),
-    check('description', 'Project description is required').notEmpty(),
+    check('name', 'Project name is required.').notEmpty(),
+    check('startDate', 'Project start date is required.').notEmpty(),
+    check('description', 'Project description is required.').notEmpty(),
     auth, isAdmin, createProject)
 
 router.get("/", auth, isAdmin, getProjects)

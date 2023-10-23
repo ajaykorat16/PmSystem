@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { Calendar } from 'primereact/calendar';
 import { Editor } from 'primereact/editor';
 import { useHelper } from '../context/Helper';
+import { useAuth } from '../context/AuthContext';
 
 
 const WorkLogCreate = ({ title }) => {
@@ -19,6 +20,7 @@ const WorkLogCreate = ({ title }) => {
     const { createWorkLog } = useWorklog()
     const { getUserProject } = useProject()
     const { formatDate } = useHelper()
+    const { toast } = useAuth()
     const navigate = useNavigate()
 
     const getProjects = async () => {
@@ -43,7 +45,7 @@ const WorkLogCreate = ({ title }) => {
     }
 
     return (
-        <Layout title={title}>
+        <Layout title={title} toast={toast}>
             <div className="mb-3">
                 <h2 className="mb-5 mt-2">Create Work Log</h2>
             </div>

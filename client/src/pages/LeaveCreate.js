@@ -3,10 +3,10 @@ import { CForm, CCol, CFormInput, CFormSelect, CButton } from "@coreui/react";
 import { useLeave } from "../context/LeaveContext";
 import { useUser } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
-import Layout from "./Layout";
 import { useAuth } from "../context/AuthContext";
 import { Calendar } from "primereact/calendar";
 import { useHelper } from "../context/Helper";
+import Layout from "./Layout";
 
 const LeaveCreate = ({ title }) => {
   const [users, setUsers] = useState([]);
@@ -18,7 +18,7 @@ const LeaveCreate = ({ title }) => {
   const [leaveType, setLeaveType] = useState("");
   const [leaveDayType, setLeaveDayType] = useState("Single Day");
   const { formatDate } = useHelper()
-  const { auth } = useAuth();
+  const { auth, toast } = useAuth();
   const { addLeave, addUserLeave } = useLeave();
   const { fetchUsers } = useUser();
   const typeList = ["paid", "lwp"];
@@ -34,6 +34,7 @@ const LeaveCreate = ({ title }) => {
       } else {
         leaveData = { reason, startDate: formatDate(startDate), endDate: formatDate(endDate), leaveType, leaveDayType, totalDays }
       }
+      
       const data = auth.user.role === "admin" ? await addLeave(leaveData) : await addUserLeave(leaveData);
       if (typeof data !== 'undefined' && data.error === false) {
         const redirectPath = auth.user.role === "admin" ? "/dashboard/leave/list" : "/dashboard-user/leave/list";
@@ -93,7 +94,7 @@ const LeaveCreate = ({ title }) => {
   };
 
   return (
-    <Layout title={title}>
+    <Layout title={title} toast={toast}>
       <div className="mb-3">
         <h2 className="mb-5 mt-2">Create Leave</h2>
       </div>

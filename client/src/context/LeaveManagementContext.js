@@ -2,12 +2,11 @@ import { useContext, createContext } from "react";
 import { useAuth } from "./AuthContext";
 import { baseURL } from "../lib";
 import axios from "axios";
-import toast from "react-hot-toast";
 
 const LeaveManagementContext = createContext();
 
 const LeaveManagementProvider = ({ children }) => {
-  const { auth } = useAuth();
+  const { auth, toast } = useAuth();
 
   const headers = {
     Authorization: auth?.token,
@@ -47,7 +46,7 @@ const LeaveManagementProvider = ({ children }) => {
       if (data.error === false) {
         getLeavesMonthWise()
         setTimeout(function () {
-          toast.success(data.message)
+          toast.current.show({ severity: 'success', summary: 'Leave Manage', detail: data.message, life: 3000 })
         }, 1000);
 
       }
@@ -72,30 +71,28 @@ const LeaveManagementProvider = ({ children }) => {
   const createLeave = async (leave) => {
     try {
       const { data } = await axios.post(`${baseURL}/leaveManagement/create-manageLeave`, leave, { headers });
+      
       if (data.error === false) {
         getLeavesMonthWise()
         setTimeout(function () {
-          toast.success(data.message)
+          toast.current.show({ severity: 'success', summary: 'Leave Manage', detail: data.message, life: 3000 })
         }, 1000);
         return data;
       } else {
-        toast.error(data.message)
+        toast.current.show({ severity: 'info', summary: 'Leave Manage', detail: data.message, life: 3000 })
       }
     } catch (error) {
       if (error.response) {
         const errors = error.response.data.errors;
         if (errors && Array.isArray(errors) && errors.length > 0) {
           if (errors.length > 1) {
-            toast.error("Please fill all fields")
+            toast.current.show({ severity: 'error', summary: 'Leave Manage', detail: "Please fill all fields.", life: 3000 })
           } else {
-            toast.error(errors[0].msg)
+            toast.current.show({ severity: 'error', summary: 'Leave Manage', detail: errors[0].msg, life: 3000 })
           }
-        } else {
-          const errorMessage = error.response.data.message;
-          toast.error(errorMessage);
         }
       } else {
-        toast.error('An error occurred. Please try again later.');
+        toast.current.show({ severity: 'error', summary: 'Leave Manage', detail: 'An error occurred. Please try again later.', life: 3000 })
       }
     }
   }

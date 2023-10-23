@@ -88,7 +88,7 @@ const getAllLeaves = asyncHandler(async (req, res) => {
     });
     return res.status(200).json({
       error: false,
-      message: "Get All Leave successfully !!",
+      message: "Get All Leave successfully.",
       leaves: formattedLeaves,
     });
   } catch (error) {
@@ -152,7 +152,7 @@ const getLeaves = asyncHandler(async (req, res) => {
     });
     return res.status(200).json({
       error: false,
-      message: "Leaves retrieved successfully !!",
+      message: "Leaves is retrieved successfully.",
       leaves: formattedLeaves,
       currentPage: page,
       totalPages: Math.ceil(totalLeaves / limit),
@@ -205,7 +205,7 @@ const userGetLeave = asyncHandler(async (req, res) => {
 
     return res.status(200).json({
       error: false,
-      message: "Get All Leave successfully !!",
+      message: "Get All Leave successfully.",
       leaves: formattedLeaves,
       currentPage: page,
       totalPages: Math.ceil(totalLeaves / limit),
@@ -281,7 +281,7 @@ const updateLeave = asyncHandler(async (req, res) => {
 
     return res.status(201).send({
       error: false,
-      message: "Leave Updated Successfully !!",
+      message: "Leave is updated successfully.",
       leave: updateLeave,
     });
   } catch (error) {
@@ -297,7 +297,7 @@ const deleteLeave = asyncHandler(async (req, res) => {
     await Leaves.findByIdAndDelete({ _id: id });
     return res.status(201).send({
       error: false,
-      message: "Leave Delete Successfully !!",
+      message: "Leave is delete successfully.",
     });
   } catch (error) {
     console.log(error.message);
@@ -327,7 +327,7 @@ const updateStatus = asyncHandler(async (req, res) => {
 
     return res.status(201).send({
       error: false,
-      message: "Status Updated Successfully !!",
+      message: "Status is updated successfully.",
       leave: updateLeave,
     });
   } catch (error) {

@@ -3,14 +3,17 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { useDepartment } from '../context/DepartmentContext';
 import { useNavigate } from 'react-router-dom';
-import Layout from './Layout';
-import Loader from '../components/Loader';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
+import { CButton } from '@coreui/react';
+import { useAuth } from '../context/AuthContext';
+import Layout from './Layout';
+import Loader from '../components/Loader';
 
 const DepartmentList = ({ title }) => {
   const { getDepartment, deleteDepartment } = useDepartment();
+  const { toast, deleteTost } = useAuth()
   const [isLoading, setIsLoading] = useState(true);
   const [departmentList, setDepartmentList] = useState([])
   const [totalRecords, setTotalRecords] = useState(0);
@@ -19,6 +22,7 @@ const DepartmentList = ({ title }) => {
   const [globalFilterValue, setGlobalFilterValue] = useState('');
   const [sortField, setSortField] = useState('createdAt');
   const [sortOrder, setSortOrder] = useState(-1);
+  const [visible, setVisible] = useState(false);
   const navigate = useNavigate();
 
   const fetchDepartments = async (currentPage, rowsPerPage, query, sortField, sortOrder) => {
@@ -47,14 +51,46 @@ const DepartmentList = ({ title }) => {
     fetchDepartments(1, rowsPerPage, globalFilterValue, sortField, sortOrder)
   };
 
+  const clear = () => {
+    deleteTost.current.clear();
+    setVisible(false);
+  };
+
+  const departmentDelete = async (id) => {
+    await deleteDepartment(id);
+    fetchDepartments(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
+    clear()
+  }
+
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm(
-      'Are you sure you want to delete this department?'
-    );
-    if (confirmDelete) {
-      await deleteDepartment(id);
-      fetchDepartments(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
+
+    if (!visible) {
+      setVisible(true);
+      deleteTost.current.clear();
+      deleteTost.current.show({
+        severity: 'info',
+        sticky: true,
+        content: (
+          <div className="flex flex-column align-items-center" style={{ flex: '1'}}>
+            <div className="text-center">
+              <i className="pi pi-exclamation-triangle" style={{ fontSize: '3rem' }}></i>
+              <div className="font-bold text-xl my-3">Are you sure you want to delete this department?</div>
+            </div>
+            <div class="text-end">
+              <CButton color="info" onClick={(e) => clear(false)} className='ms-3'>No</CButton>
+              <CButton color="success" className="ms-3" onClick={() => departmentDelete(id)}>Yes</CButton>
+            </div>
+          </div>
+        )
+      });
     }
+    // const confirmDelete = window.confirm(
+    //   'Are you sure you want to delete this department?'
+    // );
+    // if (confirmDelete) {
+    //   await deleteDepartment(id);
+    //   fetchDepartments(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
+    // }
   };
 
   const handleUpdate = async (id) => {
@@ -78,7 +114,7 @@ const DepartmentList = ({ title }) => {
   };
 
   return (
-    <Layout title={title}>
+    <Layout title={title} toast={toast} deleteTost={deleteTost} >
       {isLoading ? (
         <Loader />
       ) : (

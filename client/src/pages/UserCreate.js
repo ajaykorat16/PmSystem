@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom'
 import { useUser } from '../context/UserContext';
 import { useDepartment } from '../context/DepartmentContext';
 import Layout from './Layout';
-import toast from "react-hot-toast"
 import { Calendar } from 'primereact/calendar';
 import { useHelper } from '../context/Helper';
 
@@ -22,7 +21,7 @@ const UserCreate = ({ title }) => {
     const [departmentsList, setDepartmentsList] = useState([]);
     const [dateOfBirth, setDateOfBirth] = useState("");
     const [dateOfJoining, setDateOfJoining] = useState("");
-    const { createUser } = useUser()
+    const { createUser, toast } = useUser()
     const { formatDate } = useHelper()
     const { getDepartmentList } = useDepartment()
     const navigate = useNavigate();
@@ -31,7 +30,7 @@ const UserCreate = ({ title }) => {
         e.preventDefault()
         try {
             if (password !== confirmPassword) {
-                toast.error("Password and Confirm Password must be same");
+                toast.current.show({ severity: 'error', summary: 'User', detail: "Password and Confirm Password must be same.", life: 3000 })
             } else {
                 let addUser = { employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth: formatDate(dateOfBirth), department: departments, dateOfJoining: formatDate(dateOfJoining) }
                 const data = await createUser(addUser)
@@ -54,7 +53,7 @@ const UserCreate = ({ title }) => {
     }, [])
 
     return (
-        <Layout title={title}>
+        <Layout title={title} toast={toast}>
             <div className="mb-3">
                 <h2 className='mb-5 mt-2'>Create User</h2>
             </div>

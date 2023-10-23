@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "react-quill/dist/quill.snow.css";
 import { CCol, CFormInput, CButton, CForm } from "@coreui/react";
-import Layout from "./Layout";
 import { MultiSelect } from "primereact/multiselect";
 import { useUser } from "../context/UserContext";
 import { useProject } from "../context/ProjectContext";
@@ -9,11 +8,14 @@ import { Editor } from 'primereact/editor';
 import { useNavigate } from "react-router-dom";
 import { Calendar } from "primereact/calendar";
 import { useHelper } from "../context/Helper";
+import { useAuth } from "../context/AuthContext";
+import Layout from "./Layout";
 
 const ProjectCreate = ({ title }) => {
   const { fetchUsers } = useUser();
   const { formatDate, onShow } = useHelper()
   const { createProject } = useProject();
+  const { toast } = useAuth()
   const [users, setUsers] = useState([]);
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
@@ -43,7 +45,7 @@ const ProjectCreate = ({ title }) => {
   }, []);
 
   return (
-    <Layout title={title}>
+    <Layout title={title} toast={toast}>
       <div className="mb-3">
         <h2 className="mb-5 mt-2">Create Project</h2>
       </div>

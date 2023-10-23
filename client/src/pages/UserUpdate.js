@@ -10,9 +10,9 @@ import { useEffect } from 'react';
 import { CImage } from '@coreui/react'
 import Loader from '../components/Loader'
 import Layout from './Layout';
-import toast from 'react-hot-toast';
 import { Calendar } from 'primereact/calendar';
 import { useHelper } from '../context/Helper';
+import { useAuth } from '../context/AuthContext';
 
 
 const UserUpdate = ({ title }) => {
@@ -31,6 +31,7 @@ const UserUpdate = ({ title }) => {
     const [newProjects, setNewProjects] = useState([])
     const [isLoading, setIsLoading] = useState(true)
     const { updateUser, getUserProfile } = useUser()
+    const { toast } = useAuth
     const { getDepartmentList } = useDepartment()
     const [departmentsList, setDepartmentsList] = useState([]);
     const { fetchProjects } = useProject()
@@ -84,7 +85,7 @@ const UserUpdate = ({ title }) => {
             let id = params.id
             const data = await updateUser(updateUsers, id)
             if (data.error) {
-                toast.error(data.message)
+                toast.current.show({ severity: 'error', summary: 'User', detail: data.message, life: 3000 })
             } else {
                 navigate('/dashboard/user/list')
             }
@@ -107,7 +108,7 @@ const UserUpdate = ({ title }) => {
     }, []);
 
     return (
-        <Layout title={title}>
+        <Layout title={title} toast={toast}>
             {isLoading === true && <Loader />}
             {isLoading === false && <>
                 <div className="mb-3">

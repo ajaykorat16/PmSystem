@@ -9,6 +9,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Calendar } from 'primereact/calendar';
 import { Editor } from 'primereact/editor';
 import { useHelper } from '../context/Helper';
+import { useAuth } from '../context/AuthContext';
 
 const UserWorkLogUpdate = ({ title }) => {
     const [projects, setProjects] = useState([]);
@@ -19,6 +20,7 @@ const UserWorkLogUpdate = ({ title }) => {
     const { updateWorklog, getSingleWorklog } = useWorklog()
     const { fetchProjects } = useProject()
     const { formatDate } = useHelper()
+    const { toast } = useAuth()
     const navigate = useNavigate()
     const params = useParams()
 
@@ -54,7 +56,7 @@ const UserWorkLogUpdate = ({ title }) => {
             let id = params.id
             const data = await updateWorklog(worklog, id)
             if (data.error) {
-                toast.error(data.message)
+                toast.current.show({ severity: 'error', summary: 'Worklog', detail: data.message, life: 3000 })
             } else {
                 navigate('/dashboard-user/workLog/list')
             }
@@ -64,7 +66,7 @@ const UserWorkLogUpdate = ({ title }) => {
     }
 
     return (
-        <Layout title={title}>
+        <Layout title={title} toast={toast}>
             <div className="mb-3">
                 <h2 className="mb-5 mt-2">Update Work Log</h2>
             </div>

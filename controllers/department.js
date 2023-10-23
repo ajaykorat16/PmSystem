@@ -13,18 +13,18 @@ const createDepartment = asyncHandler(async (req, res) => {
     try {
         const { name } = req.body
 
-        const existingDepartment = await Department.findOne({ name })
+        const existingDepartment = await Department.findOne({ name: capitalizeFLetter(name) })
         if (existingDepartment) {
             return res.status(400).json({
                 error: true,
-                message: "Department Is Already Existing"
+                message: "Department Is Already Existing."
             })
         }
 
         const newDepartment = await new Department({ name: capitalizeFLetter(name) }).save()
         res.status(201).send({
             error: false,
-            message: "Department Create Successfully !!",
+            message: "Department is create successfully.",
             department: newDepartment
         })
     } catch (error) {
@@ -42,14 +42,14 @@ const updateDepartment = asyncHandler(async (req, res) => {
         if (!existingDepartment) {
             return res.status(400).json({
                 error: true,
-                message: "Department is not existing"
+                message: "Department is not existing."
             })
         }
 
         const updateDepartment = await Department.findByIdAndUpdate({ _id: id }, { name: capitalizeFLetter(name) }, { new: true })
         return res.status(201).json({
             error: false,
-            message: "Department update successfully!!",
+            message: "Department is update successfully.",
             updateDepartment
         })
     } catch (error) {
@@ -77,12 +77,12 @@ const deleteDepartment = asyncHandler(async (req, res) => {
             await Users.updateMany({ department: id }, { $unset: { department: "" } })
             return res.status(200).json({
                 error: false,
-                message: "Department delete successfully!!",
+                message: "Department is delete successfully.",
             })
         }
         return res.status(200).json({
             error: false,
-            message: "Department delete successfully!!",
+            message: "Department is delete successfully.",
         })
     } catch (error) {
         console.log(error.message)
@@ -107,7 +107,7 @@ const getAllDepartment = asyncHandler(async (req, res) => {
         const departments = await Department.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit);
         return res.status(200).json({
             error: false,
-            message: 'Departments retrieved successfully',
+            message: 'Departments is retrieved successfully.',
             departments,
             currentPage: page,
             totalPages: Math.ceil(totalDepartments / limit),
@@ -124,7 +124,7 @@ const getDepartmentList = asyncHandler(async (req, res) => {
         const departments = await Department.find()
         return res.status(200).json({
             error: false,
-            message: "Departments retrieved successfully",
+            message: "Departments is retrieved successfully.",
             departments,
         });
     } catch (error) {
@@ -141,14 +141,14 @@ const getSingleDepartment = asyncHandler(async (req, res) => {
         if (!existingDepartment) {
             return res.status(400).json({
                 error: true,
-                message: "Department is not existing"
+                message: "Department is not existing."
             })
         }
 
         const getSingle = await Department.findById({ _id: id })
         return res.status(200).json({
             error: false,
-            message: "Single Department getting successfull !",
+            message: "Single department getting successfully.",
             getSingle
         })
     } catch (error) {

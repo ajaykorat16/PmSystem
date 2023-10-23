@@ -40,18 +40,11 @@ const createUser = asyncHandler(async (req, res) => {
   try {
     const { employeeNumber, firstname, lastname, email, password, phone, address, dateOfBirth, department, dateOfJoining, } = req.body;
 
-    if (!moment(dateOfBirth).isValid() || !moment(dateOfJoining).isValid()) {
-      return res.status(400).json({
-        error: true,
-        message: 'Invalid date format for dateOfBirth or dateOfJoining',
-      });
-    }
-
     const existingEmployeeNumber = await Users.findOne({ employeeNumber });
     if (existingEmployeeNumber) {
       return res.status(200).json({
         error: true,
-        message: "Employee Number should be unique",
+        message: "Employee Number should be unique.",
       });
     }
 
@@ -59,7 +52,7 @@ const createUser = asyncHandler(async (req, res) => {
     if (existingUser) {
       return res.status(200).json({
         error: true,
-        message: "User already register with this email",
+        message: "User already register with this email.",
       });
     }
 
@@ -67,7 +60,7 @@ const createUser = asyncHandler(async (req, res) => {
     if (existingPhone) {
       return res.status(200).json({
         error: true,
-        message: "Phone Number should be unique",
+        message: "Phone Number should be unique.",
       });
     }
 
@@ -99,7 +92,7 @@ const createUser = asyncHandler(async (req, res) => {
 
     return res.status(201).json({
       error: false,
-      message: "User created successfully",
+      message: "User created successfully.",
       user: newUser,
     });
   } catch (error) {
@@ -128,7 +121,7 @@ const loginUser = asyncHandler(async (req, res) => {
     if (!match) {
       return res.status(401).json({
         error: true,
-        message: "Invalid Password",
+        message: "Invalid Password.",
       });
     }
 
@@ -200,7 +193,7 @@ const updateUser = asyncHandler(async (req, res) => {
     if (existingPhone !== null) {
       return res.status(200).json({
         error: true,
-        message: "Phone Number should be unique",
+        message: "Phone Number should be unique.",
       });
     }
 
@@ -260,7 +253,7 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
     if (!user) {
       return res.status(400).json({
         error: true,
-        message: "Invalid User",
+        message: "Invalid User.",
       });
     }
 
@@ -272,10 +265,9 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
     await Credential.deleteMany({ createdBy: id });
     await Credential.updateMany({ "users.id": id }, { $pull: { users: { id } } });
 
-
     return res.status(200).send({
       error: false,
-      message: "User Delete Successfully !!",
+      message: "User is delete successfully.",
     });
   } catch (error) {
     console.log(error.message);
@@ -389,7 +381,7 @@ const getUsers = asyncHandler(async (req, res) => {
 
     return res.status(200).json({
       error: false,
-      message: "Users retrieved successfully",
+      message: "Users retrieved successfully.",
       users: formattedUsers,
       currentPage: page,
       totalPages: Math.ceil(totalUsers / limit),
@@ -483,7 +475,7 @@ const getUserByBirthDayMonth = asyncHandler(async (req, res) => {
 
     return res.status(200).json({
       error: false,
-      message: "Users retrieved successfully",
+      message: "Users retrieved successfully.",
       users: formattedUsers,
       currentPage: page,
       totalPages: Math.ceil(totalUsers / limit),
@@ -501,7 +493,7 @@ const getAllUser = asyncHandler(async (req, res) => {
 
     return res.status(200).json({
       error: false,
-      message: "All users retrieved successfully",
+      message: "All users retrieved successfully.",
       getAllUsers,
     });
   } catch (error) {
@@ -517,7 +509,7 @@ const userForCredential = asyncHandler(async (req, res) => {
 
     return res.status(200).json({
       error: false,
-      message: "All users retrieved successfully",
+      message: "All users is retrieved successfully.",
       getAllUsers,
     });
   } catch (error) {
@@ -570,7 +562,7 @@ const changePasswordController = asyncHandler(async (req, res) => {
     await Users.findByIdAndUpdate(user, { password: hashed });
     res.status(200).send({
       error: false,
-      message: "Password Reset Successfully",
+      message: "Password Reset Successfully.",
     });
   } catch (error) {
     console.log(error);

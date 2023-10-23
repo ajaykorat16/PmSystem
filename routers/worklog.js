@@ -6,10 +6,10 @@ const { auth, isAdmin } = require("../middleware/auth")
 const { createWorkLog, userGetWorklog, getAllWorklog, getSingleWorklog, updateWorklog, deleteWorklog } = require("../controllers/worklog")
 
 router.post("/create",
-    check('project', 'Project name is required').notEmpty(),
-    check('logDate', 'Work log date is required').notEmpty(),
-    check('time', 'Work log time is required').notEmpty(),
-    check('description', 'Work log description is required').notEmpty(),
+    check('project', 'Project name is required.').notEmpty(),
+    check('logDate', 'Work log date is required.').notEmpty(),
+    check('time', 'Work log time is required.').notEmpty(),
+    check('description', 'Work log description is required.').notEmpty(),
     auth, createWorkLog)
 
 router.get('/user-worklog', auth, userGetWorklog)
