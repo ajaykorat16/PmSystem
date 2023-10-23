@@ -9,8 +9,10 @@ import { useNavigate } from 'react-router-dom';
 import { CButton, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react';
 import { ScrollPanel } from 'primereact/scrollpanel';
 import { useAuth } from '../context/AuthContext';
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import Loader from '../components/Loader';
 import Layout from "./Layout";
+import "../styles/Styles.css";
 
 const ProjectList = ({ title }) => {
   const { getProject, deleteProject } = useProject()
@@ -59,13 +61,16 @@ const ProjectList = ({ title }) => {
   }, [globalFilterValue, rowsPerPage, sortField, sortOrder]);
 
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this project?"
-    );
-    if (confirmDelete) {
-      await deleteProject(id);
-      fetchProjects(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
-    }
+    confirmDialog({
+      message: 'Are you sure you want to delete this project?',
+      header: 'Delete Confirmation',
+      icon: 'pi pi-info-circle',
+      position: 'top',
+      accept: async () => {
+        await deleteProject(id);
+        fetchProjects(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
+      },
+    });
   };
 
   const handleUpdate = async (id) => {
@@ -106,6 +111,7 @@ const ProjectList = ({ title }) => {
         <Loader />
       ) : (
         <>
+          <ConfirmDialog />
           <CModal
             alignment="center"
             visible={visible}

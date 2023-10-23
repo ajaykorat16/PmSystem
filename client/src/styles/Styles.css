@@ -305,8 +305,60 @@
     background-color: #dddddd;
     width: 84px;
     height: 84px;
-    margin-top: 10%; 
+    margin-top: 10%;
     padding: 5px;
     border-radius: 50%;
     margin-left: 10%;
+}
+
+.p-dialog .p-dialog-footer {
+    border: 0px !important;
+    background-color: white !important;
+    color: black !important;
+}
+
+.p-dialog .p-dialog-header {
+    border: 0px !important;
+    background-color: white !important;
+    color: black !important;
+}
+
+.p-dialog-title{
+    font-size: 25px !important;
+    font-weight: 700;
+}
+
+.p-confirm-dialog-message{
+    font-size: 20px !important;
+    font-weight: 600;
+}
+
+.p-confirm-dialog-reject {
+    width: 70px !important;
+    height: 40px !important;
+    background-color: #696969 !important;
+    color: rgb(255, 255, 255) !important;
+    font-weight: 700 !important;
+    padding: 3px !important;
+    border-radius: 6px !important;
+}
+
+.p-confirm-dialog-accept {
+    width: 70px !important;
+    height: 40px !important;
+    background-color: #035699 !important;
+    color: rgb(255, 255, 255) !important;
+    font-weight: 700 !important;
+    padding: 3px !important;
+    border-radius: 5px !important;
+}
+
+.p-dialog-header-icon{
+    color: rgb(131, 131, 131) !important;
+}
+
+.p-dialog{
+    width: 35rem !important;
+    height: 15rem !important;
+    border-radius: 6px !important;
 }

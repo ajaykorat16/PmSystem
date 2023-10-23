@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { CButton, CForm, CFormTextarea, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from "@coreui/react";
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { useLeave } from "../context/LeaveContext";
 import { useNavigate } from "react-router-dom";
 import { InputText } from "primereact/inputtext";
@@ -81,13 +82,16 @@ const LeaveList = ({ title }) => {
   };
 
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm(
-      'Are you sure you want to delete this leave?'
-    );
-    if (confirmDelete) {
-      await deleteLeave(id);
-      fetchLeaves(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
-    }
+    confirmDialog({
+      message: 'Are you sure you want to delete this leave?',
+      header: 'Delete Confirmation',
+      icon: 'pi pi-info-circle',
+      position: 'top',
+      accept: async () => {
+        await deleteLeave(id);
+        fetchLeaves(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
+      },
+    });
   };
 
   const onPageChange = (event) => {
@@ -139,6 +143,7 @@ const LeaveList = ({ title }) => {
         <Loader />
       ) : (
         <>
+          <ConfirmDialog />
           <CModal
             alignment="center"
             visible={visible}

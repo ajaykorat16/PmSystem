@@ -10,6 +10,7 @@ import Layout from "./Layout";
 import { Button } from "primereact/button";
 import { Avatar } from "primereact/avatar";
 import { useAuth } from "../context/AuthContext";
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import "../styles/Styles.css";
 
 const UserList = ({ title }) => {
@@ -52,13 +53,16 @@ const UserList = ({ title }) => {
   }, [globalFilterValue, rowsPerPage, sortField, sortOrder]);
 
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this user?"
-    );
-    if (confirmDelete) {
-      await deleteUser(id);
-      fetchUsers(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
-    }
+    confirmDialog({
+      message: 'Are you sure you want to delete this user?',
+      header: 'Delete Confirmation',
+      icon: 'pi pi-info-circle',
+      position: 'top',
+      accept: async () => {
+        await deleteUser(id);
+        fetchUsers(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
+      },
+    });
   };
 
   const handleUpdate = async (id) => { navigate(`/dashboard/user/update/${id}`); };
@@ -90,6 +94,7 @@ const UserList = ({ title }) => {
         <Loader />
       ) : (
         <>
+          <ConfirmDialog />
           <div className="card mb-5">
             <div className="mainHeader d-flex align-items-center justify-content-between">
               <div>

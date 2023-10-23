@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { CButton, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from "@coreui/react";
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { useNavigate } from "react-router-dom";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
@@ -56,13 +57,16 @@ const UserWorkLogList = ({ title }) => {
   }, [globalFilterValue, rowsPerPage, sortField, sortOrder]);
 
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this user?"
-    );
-    if (confirmDelete) {
-      await deleteWorklog(id);
-      fetchWorklog(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
-    }
+    confirmDialog({
+      message: 'Are you sure you want to delete this worklog?',
+      header: 'Delete Confirmation',
+      icon: 'pi pi-info-circle',
+      position: 'top',
+      accept: async () => {
+        await deleteWorklog(id);
+        fetchWorklog(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
+      },
+    });
   };
 
   const handleUpdate = async (id) => {
@@ -101,6 +105,7 @@ const UserWorkLogList = ({ title }) => {
         <Loader />
       ) : (
         <>
+          <ConfirmDialog />
           <CModal
             alignment="center"
             visible={visible}
