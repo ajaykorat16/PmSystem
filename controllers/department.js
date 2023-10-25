@@ -24,7 +24,7 @@ const createDepartment = asyncHandler(async (req, res) => {
         const newDepartment = await new Department({ name: capitalizeFLetter(name) }).save()
         res.status(201).send({
             error: false,
-            message: "Department is create successfully.",
+            message: "Department created successfully.",
             department: newDepartment
         })
     } catch (error) {
@@ -49,7 +49,7 @@ const updateDepartment = asyncHandler(async (req, res) => {
         const updateDepartment = await Department.findByIdAndUpdate({ _id: id }, { name: capitalizeFLetter(name) }, { new: true })
         return res.status(201).json({
             error: false,
-            message: "Department is update successfully.",
+            message: "Department updated successfully.",
             updateDepartment
         })
     } catch (error) {
@@ -77,12 +77,12 @@ const deleteDepartment = asyncHandler(async (req, res) => {
             await Users.updateMany({ department: id }, { $unset: { department: "" } })
             return res.status(200).json({
                 error: false,
-                message: "Department is delete successfully.",
+                message: "Department deleted successfully.",
             })
         }
         return res.status(200).json({
             error: false,
-            message: "Department is delete successfully.",
+            message: "Department deleted successfully.",
         })
     } catch (error) {
         console.log(error.message)
@@ -107,7 +107,7 @@ const getAllDepartment = asyncHandler(async (req, res) => {
         const departments = await Department.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit);
         return res.status(200).json({
             error: false,
-            message: 'Departments is retrieved successfully.',
+            message: 'Departments retrieved successfully.',
             departments,
             currentPage: page,
             totalPages: Math.ceil(totalDepartments / limit),
@@ -124,7 +124,7 @@ const getDepartmentList = asyncHandler(async (req, res) => {
         const departments = await Department.find()
         return res.status(200).json({
             error: false,
-            message: "Departments is retrieved successfully.",
+            message: "Departments retrieved successfully.",
             departments,
         });
     } catch (error) {
@@ -148,7 +148,7 @@ const getSingleDepartment = asyncHandler(async (req, res) => {
         const getSingle = await Department.findById({ _id: id })
         return res.status(200).json({
             error: false,
-            message: "Single department getting successfully.",
+            message: "Single department is getting successfully.",
             getSingle
         })
     } catch (error) {

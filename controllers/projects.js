@@ -49,7 +49,7 @@ const createProject = asyncHandler(async (req, res) => {
 
     return res.status(201).json({
       error: false,
-      message: "Project is created successfully.",
+      message: "Project created successfully.",
       project,
     });
   } catch (error) {
@@ -273,7 +273,7 @@ const getSingleProject = asyncHandler(async (req, res) => {
     const project = await Projects.findById(id).populate({ path: "developers.id", select: "-photo", });
     return res.status(200).json({
       error: false,
-      message: "Single project get successfully.",
+      message: "Single project getting successfully.",
       project,
     });
   } catch (error) {
@@ -308,7 +308,7 @@ const delelteProject = asyncHandler(async (req, res) => {
     }
     return res.status(200).json({
       error: false,
-      message: "Delete Project Successfully.",
+      message: "Project deleted successfully.",
     });
   } catch (error) {
     console.error(error.message);
@@ -322,7 +322,7 @@ const userProjects = asyncHandler(async (req, res) => {
     const project = await Projects.find({ "developers.id": id });
     return res.status(200).json({
       error: false,
-      message: "Project get Successfully.",
+      message: "Projects getting Successfully.",
       project,
     });
   } catch (error) {

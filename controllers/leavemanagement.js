@@ -77,7 +77,7 @@ const updateLeave = asyncHandler(async (req, res) => {
     await Users.findByIdAndUpdate(getLeave.user._id, { $inc: { leaveBalance: leaveChange } }, { new: true });
     return res.status(200).json({
       error: false,
-      message: "Manage leave is update successfully.",
+      message: "Manage leave updated successfully.",
       updatedLeave
     });
   } catch (error) {
@@ -129,7 +129,7 @@ const createManageLeave = asyncHandler(async (req, res) => {
 
     return res.status(201).json({
       error: false,
-      message: " Manage leave is create successfully.",
+      message: " Manage leave created successfully.",
       manageLeave: manageCreateLeave
     })
 

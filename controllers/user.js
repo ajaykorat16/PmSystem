@@ -267,7 +267,7 @@ const deleteUserProfile = asyncHandler(async (req, res) => {
 
     return res.status(200).send({
       error: false,
-      message: "User is delete successfully.",
+      message: "User deleted successfully.",
     });
   } catch (error) {
     console.log(error.message);

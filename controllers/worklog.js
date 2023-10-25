@@ -107,7 +107,7 @@ const userGetWorklog = asyncHandler(async (req, res) => {
 
         return res.status(200).json({
             error: false,
-            message: "Worklog get successfully.",
+            message: "Worklog getting successfully.",
             dayWiseTotals: dayWiseTotals,
             totalWeekTime: totalWeekTime,
             worklog: formattedWorklog,
@@ -208,7 +208,7 @@ const getAllWorklog = asyncHandler(async (req, res) => {
 
         return res.status(200).json({
             error: false,
-            message: "Worklog get successfully.",
+            message: "All Worklogs getting successfully.",
             worklog: formattedWorklog,
             currentPage: page,
             totalPages: Math.ceil(totalWorklogCount / limit),
@@ -234,7 +234,7 @@ const getSingleWorklog = asyncHandler(async (req, res) => {
         const worklog = await Worklog.findById({ _id: id }).populate({ path: "userId", select: "fullName" }).populate({ path: "project", select: "name" });
         return res.status(200).json({
             error: false,
-            message: "single worklog get successfully.",
+            message: "Single worklog getting successfully.",
             worklog
         });
 
@@ -272,7 +272,7 @@ const updateWorklog = asyncHandler(async (req, res) => {
         const updateworklog = await Worklog.findByIdAndUpdate(id, updatedFeilds, { new: true })
         return res.status(200).json({
             error: false,
-            message: "Worklog update successfully.",
+            message: "Worklog updated successfully.",
             worklog: updateworklog
         });
 
@@ -302,7 +302,7 @@ const deleteWorklog = asyncHandler(async (req, res) => {
         await Worklog.findByIdAndDelete(id)
         return res.status(200).json({
             error: false,
-            message: "Worklog delete successfully.",
+            message: "Worklog deleted successfully.",
         });
 
     } catch (error) {
