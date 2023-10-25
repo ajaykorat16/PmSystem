@@ -5,14 +5,13 @@ const Department = require("../models/departmentModel");
 const Worklog = require("../models/workLogmodel");
 const Projects = require("../models/projects");
 const LeaveManagement = require("../models/leaveManagementModel");
+const Credential = require("../models/credentials");
 const fs = require("fs");
 const { validationResult } = require("express-validator");
 const { formattedDate, capitalizeFLetter } = require("../helper/mail");
 const asyncHandler = require("express-async-handler");
-const moment = require('moment')
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const Credential = require("../models/credentials");
 const saltRounds = 10;
 
 const hashPassword = async (password) => {

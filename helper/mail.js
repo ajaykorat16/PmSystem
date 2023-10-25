@@ -94,7 +94,6 @@ const sendMailForLeaveStatus = async (data, reasonForLeaveReject) => {
                 const mailOptions = {
                     from: `"Kriva Technolabs" <${process.env.MAIL_FROM_EMAIL}>`,
                     to: employee.email,
-                    name: "Jasmin Korat",
                     subject: "Your Leave Request Update",
                     html: body
                 };
