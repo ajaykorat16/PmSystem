@@ -51,10 +51,9 @@ const UserWorkLogList = ({ title }) => {
 
   useEffect(() => {
     if (globalFilterValue.trim() === "") {
-      setCurrentPage(1);
-      fetchWorklog(1, rowsPerPage, "", sortField, sortOrder);
+      fetchWorklog(currentPage, rowsPerPage, "", sortField, sortOrder);
     }
-  }, [globalFilterValue, rowsPerPage, sortField, sortOrder]);
+  }, [globalFilterValue]);
 
   const handleDelete = async (id) => {
     confirmDialog({
@@ -181,7 +180,7 @@ const UserWorkLogList = ({ title }) => {
                 <Dropdown value={rowsPerPage} options={[10, 25, 50]} onChange={(e) => setRowsPerPage(e.value)} />
               }
             >
-              <Column field="project.name" header="Project Name" sortable filterField="Project" align="center" />
+              <Column field="project.name" sortField="project" header="Project Name" sortable filterField="Project" align="center" />
               <Column field="logDate" sortable header="Log Date" filterField="logDate" align="center" />
               <Column field="time" sortable header="Time" filterField="time" align="center" />
               <Column
