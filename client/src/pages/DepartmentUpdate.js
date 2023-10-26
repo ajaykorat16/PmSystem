@@ -53,9 +53,6 @@ const DepartmentUpdate = ({ title }) => {
             />
           </CCol>
           <CCol xs="auto">
-            <CButton className="me-md-2" onClick={() => navigate('/dashboard/department/list')}>
-              Back
-            </CButton>
             <CButton type="submit" className="me-md-2">Submit</CButton>
           </CCol>
         </CForm>

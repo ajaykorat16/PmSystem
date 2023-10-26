@@ -14,6 +14,7 @@ import Loader from "../components/Loader";
 import Layout from "./Layout";
 
 const LeaveList = ({ title }) => {
+  const navigate = useNavigate();
   const { getLeave, getUserLeave, updateStatus, deleteLeave } = useLeave();
   const { auth, toast } = useAuth();
   const [leaveList, setLeaveList] = useState([]);
@@ -28,7 +29,19 @@ const LeaveList = ({ title }) => {
   const [fullName, setFullName] = useState(null);
   const [id, setId] = useState(null);
   const [reasonForLeaveReject, setReasonForLeaveReject] = useState("");
-  const navigate = useNavigate();
+  const [viewLeave, setViewLeave] = useState(false);
+  const [leaveDetail, setLeaveDetail] = useState({
+    name: "",
+    startDate: "",
+    endDate: "",
+    days: "",
+    leaveType: "",
+    leaveDayType: "",
+    reason: "",
+    reasonForReject: "",
+    status: "",
+  });
+
 
   const fetchLeaves = async (currentPage, rowsPerPage, query, sortField, sortOrder) => {
     setIsLoading(true);
@@ -137,6 +150,21 @@ const LeaveList = ({ title }) => {
     }
   };
 
+  const handleViewLeaveDetail = async (leaveDetail) => {
+    setViewLeave(true)
+    setLeaveDetail({
+      name: leaveDetail.userId.fullName,
+      startDate: leaveDetail.startDate,
+      endDate: leaveDetail.endDate,
+      days: leaveDetail.totalDays,
+      leaveType: leaveDetail.leaveType,
+      leaveDayType: leaveDetail.leaveDayType,
+      reason: leaveDetail.reason,
+      reasonForReject: leaveDetail.reasonForLeaveReject,
+      status: leaveDetail.status,
+    })
+  }
+
   return (
     <Layout title={title} toast={toast}>
       {isLoading ? (
@@ -144,52 +172,123 @@ const LeaveList = ({ title }) => {
       ) : (
         <>
           <ConfirmDialog />
-          <CModal
-            alignment="center"
-            visible={visible}
-            onClose={() => setVisible(false)}
-          >
-            <CModalHeader>
-              <CModalTitle>{fullName}</CModalTitle>
-            </CModalHeader>
-            <CForm onSubmit={handleUpdateStatus}>
+          <div>
+            <CModal
+              alignment="center"
+              visible={visible}
+              onClose={() => setVisible(false)}
+            >
+              <CModalHeader>
+                <CModalTitle>{fullName}</CModalTitle>
+              </CModalHeader>
+              <CForm onSubmit={handleUpdateStatus}>
+                <CModalBody>
+                  <CFormTextarea
+                    type="text"
+                    id="leave"
+                    label="Rasone For Reject Leave"
+                    value={reasonForLeaveReject}
+                    onChange={(e) => setReasonForLeaveReject(e.target.value)}
+                    rows={3}
+                  />
+                </CModalBody>
+                <CModalFooter>
+                  <CButton color="secondary" onClick={() => setVisible(false)}>
+                    Close
+                  </CButton>
+                  <CButton color="primary" onClick={() => handleSubmitReject()}>Submit</CButton>
+                </CModalFooter>
+              </CForm>
+            </CModal>
+          </div>
+          <div>
+            <CModal
+              backdrop="static"
+              alignment="center"
+              visible={viewLeave}
+              onClose={() => setViewLeave(false)}
+              className='mainBody'
+            >
+              <CModalHeader>
+                <CModalTitle><strong>Leave Details</strong></CModalTitle>
+              </CModalHeader>
               <CModalBody>
-                <CFormTextarea
-                  type="text"
-                  id="leave"
-                  label="Rasone For Reject Leave"
-                  value={reasonForLeaveReject}
-                  onChange={(e) => setReasonForLeaveReject(e.target.value)}
-                  rows={3}
-                />
+                <div className="row">
+                  <div className="col userInfo">
+                    <div className='detail'>
+                      {auth.user.role === "admin" && (
+                        <div className='row userDetail'>
+                          <div className='col'><strong> Name </strong> </div>
+                          <div className='col'>{leaveDetail.name}</div>
+                        </div>
+                      )}
+                      <div className='row userDetail'>
+                        <div className='col'><strong> Start Date </strong> </div>
+                        <div className='col'>{leaveDetail.startDate}</div>
+                      </div>
+                      <div className='row userDetail'>
+                        <div className='col'><strong>End Date</strong></div>
+                        <div className='col'>{leaveDetail.endDate}</div>
+                      </div>
+                      <div className='row userDetail'>
+                        <div className='col'> <strong> Days </strong></div>
+                        <div className='col'>{leaveDetail.days}</div>
+                      </div>
+                      <div className='row userDetail'>
+                        <div className='col'><strong> Leave Type </strong> </div>
+                        <div className='col'>{leaveDetail.leaveType}</div>
+                      </div>
+                      <div className='row userDetail'>
+                        <div className='col'><strong> Leave Day Type </strong> </div>
+                        <div className='col'>{leaveDetail.leaveDayType}</div>
+                      </div>
+                      <div className='row userDetail'>
+                        <div className='col'><strong> Reason </strong> </div>
+                        <div className='col' style={{ wordBreak: 'break-all' }}>{leaveDetail.reason}</div>
+                      </div>
+                      <div className='row userDetail'>
+                        <div className='col'><strong> Reason For Reject </strong> </div>
+                        <div className='col' style={{ wordBreak: 'break-all' }}>{leaveDetail.reasonForReject}</div>
+                      </div>
+                      <div className='row userDetail'>
+                        <div className='col'><strong> Status </strong> </div>
+                        <div className='col' >{leaveDetail.status}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </CModalBody>
               <CModalFooter>
-                <CButton color="secondary" onClick={() => setVisible(false)}>
-                  Close
+                <CButton color="primary" onClick={() => setViewLeave(false)}>
+                  Ok
                 </CButton>
-                <CButton color="primary" onClick={() => handleSubmitReject()}>Submit</CButton>
               </CModalFooter>
-            </CForm>
-          </CModal>
+            </CModal>
+          </div>
           <div className="card mb-5">
             <div className="mainHeader d-flex align-items-center justify-content-between">
               <div>
                 <h4>Leaves</h4>
               </div>
-              <div>
+              <div className="d-flex">
                 <form onSubmit={handleSubmit}>
                   <div className="p-inputgroup ">
                     <span className="p-inputgroup-addon">
                       <i className="pi pi-search" />
                     </span>
-                    <InputText
-                      type="search"
-                      value={globalFilterValue}
-                      onChange={(e) => setGlobalFilterValue(e.target.value)}
-                      placeholder="Search"
-                    />
+                    <InputText type="search" value={globalFilterValue} onChange={(e) => setGlobalFilterValue(e.target.value)} placeholder="Search" />
                   </div>
                 </form>
+                <div className="ms-3">
+                  <CButton
+                    onClick={() => { auth.user.role === "admin" ? navigate('/dashboard/leave/create') : navigate('/dashboard-user/leave/create') }}
+                    title="Create Leave"
+                    className="btn btn-light"
+                    style={{ height: "40px" }}
+                  >
+                    <i className="pi pi-plus" />
+                  </CButton>
+                </div>
               </div>
             </div>
             <DataTable
@@ -210,16 +309,13 @@ const LeaveList = ({ title }) => {
                 <Dropdown value={rowsPerPage} options={[10, 25, 50]} onChange={(e) => setRowsPerPage(e.value)} />
               }
             >
+              <Column field="startDate" header="Start Date" sortable filterField="start" align="center" />
+              <Column field="endDate" header="End Date" filterField="end" align="center" />
               {auth.user.role === "admin" && (
                 <Column field="userId.fullName" sortable header="Name" filterField="name" align="center" />
               )}
-              <Column field="reason" header="Reason" filterField="reason" alignHeader="center" style={{ minWidth: "15rem", maxWidth: "15rem" }} />
-              <Column field="reasonForLeaveReject" header="Reason For Leave Reject" filterField="reason" alignHeader="center" style={{ minWidth: "15rem", maxWidth: "15rem" }} />
-              <Column field="startDate" header="Start Date" sortable filterField="start" align="center" />
-              <Column field="endDate" header="End Date" filterField="end" align="center" />
               <Column field="totalDays" header="Days" filterField="days" align="center" />
               <Column field="leaveType" header="Leave Type" filterField="leaveType" align="center" />
-              <Column field="leaveDayType" header="Leave Day Type" filterField="leaveDayType" align="center" />
               <Column
                 header="Status"
                 alignHeader="center"
@@ -276,11 +372,20 @@ const LeaveList = ({ title }) => {
                       raised
                       disabled={rowData.status !== "Pending"}
                     />
+                    <Button
+                      icon="pi pi-eye"
+                      title="View Leave Details"
+                      rounded
+                      className="ms-2"
+                      severity="success"
+                      aria-label="view"
+                      onClick={() => handleViewLeaveDetail(rowData)}
+                    />
                   </div>
                 )}
                 align="right"
                 alignHeader="center"
-                style={{ maxWidth: "8rem" }}
+              // style={{ maxWidth: "8rem" }}
               />
             </DataTable>
           </div>

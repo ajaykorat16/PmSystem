@@ -227,12 +227,6 @@ const LeaveUpdate = ({ title }) => {
               />
             </CCol>
             <CCol xs={12}>
-              <CButton
-                className="me-md-2"
-                onClick={() => {auth.user.role === "admin" ? navigate('/dashboard/leave/list') : navigate('/dashboard-user/leave/list')}}
-              >
-                Back
-              </CButton>
               <CButton type="submit" className="me-md-2">
                 Submit
               </CButton>

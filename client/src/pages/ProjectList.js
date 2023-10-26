@@ -15,8 +15,9 @@ import Layout from "./Layout";
 import "../styles/Styles.css";
 
 const ProjectList = ({ title }) => {
-  const { getProject, deleteProject } = useProject()
-  const { toast } = useAuth()
+  const navigate = useNavigate()
+  const { toast, auth } = useAuth()
+  const { getProject, deleteProject, userProject } = useProject()
   const [projectList, setProjectList] = useState([])
   const [isLoading, setIsLoading] = useState(true);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -26,7 +27,6 @@ const ProjectList = ({ title }) => {
   const [sortField, setSortField] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState(-1);
   const [visible, setVisible] = useState(false);
-  const navigate = useNavigate()
   const [project, setProject] = useState({
     name: "",
     developers: "",
@@ -36,8 +36,12 @@ const ProjectList = ({ title }) => {
 
   const fetchProjects = async (currentPage, rowsPerPage, query, sortField, sortOrder) => {
     setIsLoading(true);
-    let projectData = await getProject(currentPage, rowsPerPage, query, sortField, sortOrder);
-
+    let projectData;
+    if (auth.user.role === "admin") {
+      projectData = await getProject(currentPage, rowsPerPage, query, sortField, sortOrder);
+    } else {
+      projectData = await userProject(currentPage, rowsPerPage, query, sortField, sortOrder);
+    }
     const totalRecordsCount = projectData.totalProjects;
     setTotalRecords(totalRecordsCount);
     setProjectList(projectData.projects);
@@ -124,21 +128,16 @@ const ProjectList = ({ title }) => {
               </CModalTitle>
             </CModalHeader>
             <CModalBody>
-              <div>
-                <strong>Developers:</strong>
-                <p>
-                  {project.developers}
-                </p>
-              </div>
+              {auth.user.role === "admin" &&
+                <div>
+                  <strong>Developers:</strong>
+                  <p>{project.developers}</p>
+                </div>
+              }
               <div className="description">
                 <strong>Description:</strong>
-                <ScrollPanel
-                  className="custom"
-                >
-                  <div
-                    className="description"
-                    dangerouslySetInnerHTML={{ __html: project.description }}
-                  />
+                <ScrollPanel className="custom">
+                  <div className="description" dangerouslySetInnerHTML={{ __html: project.description }} />
                 </ScrollPanel>
               </div>
               <div className="d-flex justify-content-end ">
@@ -158,7 +157,7 @@ const ProjectList = ({ title }) => {
               <div>
                 <h4>Projects</h4>
               </div>
-              <div>
+              <div className='d-flex'>
                 <form onSubmit={handleSubmit}>
                   <div className="p-inputgroup ">
                     <span className="p-inputgroup-addon">
@@ -172,6 +171,18 @@ const ProjectList = ({ title }) => {
                     />
                   </div>
                 </form>
+                {auth.user.role === "admin" &&
+                  <div className="ms-3">
+                    <CButton
+                      onClick={() => navigate('/dashboard/project/create')}
+                      title="Create Project"
+                      className="btn btn-light"
+                      style={{ height: "40px" }}
+                    >
+                      <i className="pi pi-plus" />
+                    </CButton>
+                  </div>
+                }
               </div>
             </div>
             <DataTable
@@ -201,17 +212,19 @@ const ProjectList = ({ title }) => {
                 filterField="name"
                 align="center"
               />
-              <Column
-                header="Developers"
-                body={(rowData) => {
-                  const developerNames = rowData.developers.map(
-                    (developer) => developer.id.fullName
-                  );
-                  return developerNames.join(', ');
-                }}
-                align="center"
-                style={{ maxWidth: "15rem" }}
-              />
+              {auth.user.role === "admin" &&
+                <Column
+                  header="Developers"
+                  body={(rowData) => {
+                    const developerNames = rowData.developers.map(
+                      (developer) => developer.id.fullName
+                    );
+                    return developerNames.join(', ');
+                  }}
+                  align="center"
+                  style={{ maxWidth: "15rem" }}
+                />
+              }
               <Column
                 field="startDate"
                 header="Start Date"
@@ -233,24 +246,28 @@ const ProjectList = ({ title }) => {
                         aria-label="Cancel"
                         onClick={() => handleProjectDetail(rowData)}
                       />
-                      <Button
-                        icon="pi pi-pencil"
-                        title='Edit'
-                        rounded
-                        severity="success"
-                        className="ms-2"
-                        aria-label="edit"
-                        onClick={() => handleUpdate(rowData._id)}
-                      />
-                      <Button
-                        icon="pi pi-trash"
-                        title='Delete'
-                        rounded
-                        severity="danger"
-                        className="ms-2"
-                        aria-label="Cancel"
-                        onClick={() => handleDelete(rowData._id)}
-                      />
+                      {auth.user.role === "admin" &&
+                        <>
+                          <Button
+                            icon="pi pi-pencil"
+                            title='Edit'
+                            rounded
+                            severity="success"
+                            className="ms-2"
+                            aria-label="edit"
+                            onClick={() => handleUpdate(rowData._id)}
+                          />
+                          <Button
+                            icon="pi pi-trash"
+                            title='Delete'
+                            rounded
+                            severity="danger"
+                            className="ms-2"
+                            aria-label="Cancel"
+                            onClick={() => handleDelete(rowData._id)}
+                          />
+                        </>
+                      }
                     </>
                   </div>
                 )}

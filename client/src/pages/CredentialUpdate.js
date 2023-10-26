@@ -55,7 +55,7 @@ const CredentialUpdate = ({ title }) => {
         const { getAllUsers } = await userForCredential();
         setUsers(getAllUsers);
     };
-    
+
     useEffect(() => {
         getUsers();
     }, []);
@@ -92,12 +92,6 @@ const CredentialUpdate = ({ title }) => {
                     </div>
                 </CCol>
                 <CCol xs={12}>
-                    <CButton
-                        className="me-md-2"
-                        onClick={() => { auth.user.role === "admin" ? navigate('/dashboard/credential/list') : navigate('/dashboard-user/credential/list') }}
-                    >
-                        Back
-                    </CButton>
                     <CButton type="submit">Submit</CButton>
                 </CCol>
             </CForm>

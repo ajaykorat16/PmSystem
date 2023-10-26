@@ -6,24 +6,6 @@ import { CNavGroup, CNavItem } from '@coreui/react'
 const _nav = [
   {
     component: CNavGroup,
-    name: 'Leaves',
-    to: '/leave',
-    icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />,
-    items: [
-      {
-        component: CNavItem,
-        name: 'Leaves List',
-        to: '/dashboard-user/leave/list',
-      },
-      {
-        component: CNavItem,
-        name: 'Create Leave',
-        to: '/dashboard-user/leave/create',
-      }
-    ],
-  },
-  {
-    component: CNavGroup,
     name: 'Employee',
     to: '/employee',
     icon: <CIcon icon={cilPeople} customClassName="nav-icon" />,
@@ -41,53 +23,28 @@ const _nav = [
     ],
   },
   {
-    component: CNavGroup,
+    component: CNavItem,
+    name: 'Leaves',
+    to: '/dashboard-user/leave/list',
+    icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />
+  },
+  {
+    component: CNavItem,
     name: 'Projects',
-    to: '/project',
-    icon: <CIcon icon={cilFolderOpen} customClassName="nav-icon" />,
-    items: [
-      {
-        component: CNavItem,
-        name: 'Project List',
-        to: '/dashboard-user/project/list',
-      }
-    ],
+    to: '/dashboard-user/project/list',
+    icon: <CIcon icon={cilFolderOpen} customClassName="nav-icon" />
   },
   {
-    component: CNavGroup,
+    component: CNavItem,
     name: 'Work Log',
-    to: '/workLog',
-    icon: <CIcon icon={cilTask} customClassName="nav-icon" />,
-    items: [
-      {
-        component: CNavItem,
-        name: 'Work Log',
-        to: '/dashboard-user/workLog/list',
-      },
-      {
-        component: CNavItem,
-        name: 'Create Work Log',
-        to: '/dashboard-user/workLog/create',
-      }
-    ],
+    to: '/dashboard-user/workLog/list',
+    icon: <CIcon icon={cilTask} customClassName="nav-icon" />
   },
   {
-    component: CNavGroup,
+    component: CNavItem,
     name: 'Credentials',
-    to: '/credentials',
-    icon: <CIcon icon={cilHttps} customClassName="nav-icon" />,
-    items: [
-      {
-        component: CNavItem,
-        name: 'Credentials List',
-        to: '/dashboard-user/credential/list',
-      },
-      {
-        component: CNavItem,
-        name: 'Create Credentials',
-        to: '/dashboard-user/credential/create',
-      }
-    ],
+    to: '/dashboard-user/credential/list',
+    icon: <CIcon icon={cilHttps} customClassName="nav-icon" />
   },
 ]
 

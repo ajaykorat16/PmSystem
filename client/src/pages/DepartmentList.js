@@ -10,6 +10,7 @@ import { useAuth } from '../context/AuthContext';
 import Layout from './Layout';
 import Loader from '../components/Loader';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { CButton } from '@coreui/react';
 
 const DepartmentList = ({ title }) => {
   const { getDepartment, deleteDepartment } = useDepartment();
@@ -95,7 +96,7 @@ const DepartmentList = ({ title }) => {
               <div>
                 <h4>Departments</h4>
               </div>
-              <div>
+              <div className='d-flex'>
                 <form onSubmit={handleSubmit}>
                   <div className="p-inputgroup ">
                     <span className="p-inputgroup-addon">
@@ -109,6 +110,16 @@ const DepartmentList = ({ title }) => {
                     />
                   </div>
                 </form>
+                <div className="ms-3">
+                  <CButton
+                    onClick={() => navigate('/dashboard/department/create')}
+                    title="Create Department"
+                    className="btn btn-light"
+                    style={{ height: "40px" }}
+                  >
+                    <i className="pi pi-plus" />
+                  </CButton>
+                </div>
               </div>
             </div>
             <DataTable

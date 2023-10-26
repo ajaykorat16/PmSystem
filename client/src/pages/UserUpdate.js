@@ -273,9 +273,6 @@ const UserUpdate = ({ title }) => {
                         />
                     </CCol>
                     <CCol xs={12}>
-                        <CButton className="me-md-2" onClick={() => navigate('/dashboard/user/list')}>
-                            Back
-                        </CButton>
                         <CButton type="submit" className="me-md-2">
                             Submit
                         </CButton>

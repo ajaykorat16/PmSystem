@@ -20,12 +20,10 @@ import "primereact/resources/themes/rhea/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import LeaveManagementList from './pages/LeavemanagementList';
-import EmployeeList from './pages/EmployeeList';
 import EmployeeByBirthMonth from './pages/EmployeeByBirhtMonth';
 import ProjectCreate from './pages/ProjectCreate';
 import ProjectList from './pages/ProjectList';
 import ProjectUpdate from './pages/ProjectUpdate';
-import UserProjects from './pages/UserProjects';
 import WorkLogCreate from './pages/WorkLogCreate';
 import UserWorkLogList from './pages/UserWorkLogList';
 import AdminWorkLogList from './pages/AdminWorkLogList';
@@ -51,7 +49,7 @@ function App() {
           <Route path="leave/list" element={<LeaveList title="Leave List" />} />
           <Route path="leave/create" element={<LeaveCreate title="Leave Create" />} />
           <Route path="leave/update/:id" element={<LeaveUpdate title="Leave Update" />} />
-          <Route path="leaveManagement/list" element={<LeaveManagementList title="Leave Manage" />} />
+          <Route path="manageMonthlyLeave/list" element={<LeaveManagementList title="Manage Monthly Leave" />} />
           <Route path="department/list" element={<DepartmentList title="Department List" />} />
           <Route path="department/create" element={<DepartmentCreate title="Create Department" />} />
           <Route path="department/update/:id" element={<DepartmentUpdate title="Deaprtment Update" />} />
@@ -67,13 +65,13 @@ function App() {
         <Route path='/dashboard-user' element={<UserRoutes />}>
           <Route path="employee" element={<DefaultLayout />} />
           <Route path="leave/list" element={<LeaveList title="Leave List" />} />
-          <Route path="employee/list" element={<EmployeeList title="Employee List" />} />
+          <Route path="employee/list" element={<UserList title="Employee List" />} />
           <Route path="employee/birthday/list" element={<EmployeeByBirthMonth title="Employee By Birth Month" />} />
           <Route path="leave/create" element={<LeaveCreate title="Leave Create" />} />
           <Route path="leave/update/:id" element={<LeaveUpdate title="Leave Update" />} />
           <Route path="user/user-profile/:id" element={<UserProfile title="Profile" />} />
           <Route path="user/resetPassword" element={<ResetPassword title="Reset Password" />} />
-          <Route path="project/list" element={<UserProjects title="Your Projects" />} />
+          <Route path="project/list" element={<ProjectList title="Your Projects" />} />
           <Route path="workLog/create" element={<WorkLogCreate title="Create Work Log " />} />
           <Route path="workLog/update/:id" element={<UserWorkLogUpdate title="Update Work Log" />} />
           <Route path="workLog/list" element={<UserWorkLogList title="Work Log List" />} />

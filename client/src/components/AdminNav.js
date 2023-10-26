@@ -4,7 +4,6 @@ import { cilSitemap, cilCalendar, cilPeople, cilTask, cilHttps, cilFolderOpen } 
 import { CNavGroup, CNavItem } from '@coreui/react'
 
 const _nav = [
-
   {
     component: CNavGroup,
     name: 'Users',
@@ -21,11 +20,6 @@ const _nav = [
         name: 'Birthday this Month',
         to: '/dashboard/user/birthday/list',
       },
-      {
-        component: CNavItem,
-        name: 'Create User',
-        to: '/dashboard/user/create',
-      },
     ],
   },
   {
@@ -41,82 +35,34 @@ const _nav = [
       },
       {
         component: CNavItem,
-        name: 'Create Leave',
-        to: '/dashboard/leave/create',
-      },
-      {
-        component: CNavItem,
-        name: 'Manage Leave',
-        to: '/dashboard/leaveManagement/list',
+        name: 'Manage Monthly Leave',
+        to: '/dashboard/manageMonthlyLeave/list',
       },
     ],
   },
   {
-    component: CNavGroup,
+    component: CNavItem,
     name: 'Department',
-    to: '/user',
-    icon: <CIcon icon={cilSitemap} customClassName="nav-icon" />,
-    items: [
-      {
-        component: CNavItem,
-        name: 'Department List',
-        to: '/dashboard/department/list',
-      },
-      {
-        component: CNavItem,
-        name: 'Create Department',
-        to: '/dashboard/department/create',
-      },
-    ],
+    to: '/dashboard/department/list',
+    icon: <CIcon icon={cilSitemap} customClassName="nav-icon" />
   },
   {
-    component: CNavGroup,
+    component: CNavItem,
     name: 'Project',
-    to: '/user',
-    icon: <CIcon icon={cilFolderOpen} customClassName="nav-icon" />,
-    items: [
-      {
-        component: CNavItem,
-        name: 'Project List',
-        to: '/dashboard/project/list',
-      },
-      {
-        component: CNavItem,
-        name: 'Create Project',
-        to: '/dashboard/project/create',
-      },
-    ],
+    to: '/dashboard/project/list',
+    icon: <CIcon icon={cilFolderOpen} customClassName="nav-icon" />
   },
   {
-    component: CNavGroup,
+    component: CNavItem,
     name: 'Work Log',
-    to: '/workLog',
+    to: '/dashboard/workLog/list',
     icon: <CIcon icon={cilTask} customClassName="nav-icon" />,
-    items: [
-      {
-        component: CNavItem,
-        name: 'Work Log List',
-        to: '/dashboard/workLog/list',
-      }
-    ],
   },
   {
-    component: CNavGroup,
+    component: CNavItem,
     name: 'Credentials',
-    to: '/credentials',
+    to: '/dashboard/credential/list',
     icon: <CIcon icon={cilHttps} customClassName="nav-icon" />,
-    items: [
-      {
-        component: CNavItem,
-        name: 'Credentials List',
-        to: '/dashboard/credential/list',
-      },
-      {
-        component: CNavItem,
-        name: 'Create Credentials',
-        to: '/dashboard/credential/create',
-      }
-    ],
   },
 ]
 

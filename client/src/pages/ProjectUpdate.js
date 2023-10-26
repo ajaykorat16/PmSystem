@@ -117,9 +117,6 @@ const ProjectUpdate = ({ title }) => {
                     </div>
                 </CCol>
                 <CCol xs={12}>
-                    <CButton className="me-md-2" onClick={() => navigate('/dashboard/project/list')}>
-                        Back
-                    </CButton>
                     <CButton type="submit">Submit</CButton>
                 </CCol>
             </CForm>

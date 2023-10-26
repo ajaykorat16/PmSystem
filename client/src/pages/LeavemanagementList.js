@@ -157,7 +157,7 @@ const LeaveManagementList = ({ title }) => {
               onClose={() => setNewVisible(false)}
             >
               <CModalHeader>
-                <CModalTitle>Manage Leave</CModalTitle>
+                <CModalTitle>Manage Monthly Leave</CModalTitle>
               </CModalHeader>
               <CForm onSubmit={addLeave}>
                 <CModalBody>
@@ -210,7 +210,7 @@ const LeaveManagementList = ({ title }) => {
           <div className="card mb-5">
             <div className="mainHeader d-flex align-items-center justify-content-between ">
               <div>
-                <h4>Manage Leave</h4>
+                <h4>Monthly Leaves</h4>
               </div>
               <div className="d-flex align-items-center justify-content-between">
                 <select

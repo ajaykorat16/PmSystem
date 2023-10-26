@@ -11,6 +11,7 @@ import { useAuth } from "../context/AuthContext";
 import Loader from "../components/Loader";
 import Layout from "./Layout";
 import "../styles/Styles.css";
+import { CButton } from "@coreui/react";
 const { DOMParser } = require('xmldom')
 
 const CredentialList = ({ title }) => {
@@ -107,7 +108,7 @@ const CredentialList = ({ title }) => {
                             <div>
                                 <h4>Credentials</h4>
                             </div>
-                            <div>
+                            <div className="d-flex">
                                 <form onSubmit={handleSubmit}>
                                     <div className="p-inputgroup ">
                                         <span className="p-inputgroup-addon">
@@ -116,6 +117,16 @@ const CredentialList = ({ title }) => {
                                         <InputText type="search" value={globalFilterValue} onChange={(e) => setGlobalFilterValue(e.target.value)} placeholder="Search" />
                                     </div>
                                 </form>
+                                <div className="ms-3">
+                                    <CButton
+                                        onClick={() => { auth.user.role === "admin" ? navigate('/dashboard/credential/create') : navigate('/dashboard-user/credential/create') }}
+                                        title="Create Credentials"
+                                        className="btn btn-light"
+                                        style={{ height: "40px" }}
+                                    >
+                                        <i className="pi pi-plus" />
+                                    </CButton>
+                                </div>
                             </div>
                         </div>
                         <DataTable

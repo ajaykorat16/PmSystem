@@ -143,7 +143,7 @@ const UserWorkLogList = ({ title }) => {
               <div>
                 <h4>Work Log</h4>
               </div>
-              <div>
+              <div className="d-flex">
                 <form onSubmit={handleSubmit}>
                   <div className="p-inputgroup ">
                     <span className="p-inputgroup-addon">
@@ -152,6 +152,16 @@ const UserWorkLogList = ({ title }) => {
                     <InputText type="search" value={globalFilterValue} onChange={(e) => setGlobalFilterValue(e.target.value)} placeholder="Search" />
                   </div>
                 </form>
+                <div className="ms-3">
+                  <CButton
+                    onClick={() => navigate('/dashboard-user/workLog/create')}
+                    title="Create Work Log"
+                    className="btn btn-light"
+                    style={{ height: "40px" }}
+                  >
+                    <i className="pi pi-plus" />
+                  </CButton>
+                </div>
               </div>
             </div>
             <DataTable

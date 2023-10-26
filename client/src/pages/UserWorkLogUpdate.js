@@ -105,9 +105,6 @@ const UserWorkLogUpdate = ({ title }) => {
                     </div>
                 </CCol>
                 <CCol xs={12}>
-                    <CButton className="me-md-2" onClick={() => navigate('/dashboard-user/workLog/list')}>
-                        Back
-                    </CButton>
                     <CButton type="submit">Submit</CButton>
                 </CCol>
             </CForm>

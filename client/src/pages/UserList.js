@@ -12,10 +12,12 @@ import { Avatar } from "primereact/avatar";
 import { useAuth } from "../context/AuthContext";
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import "../styles/Styles.css";
+import { CButton, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from "@coreui/react";
 
 const UserList = ({ title }) => {
-  const { deleteUser, getAllUsers, getUserProfile } = useUser();
-  const { loginUserByAdmin, toast } = useAuth()
+  const navigate = useNavigate();
+  const { deleteUser, getAllUsers, getUserProfile, getAllEmployee } = useUser();
+  const { loginUserByAdmin, toast, auth } = useAuth()
   const [isLoading, setIsLoading] = useState(true);
   const [userList, setUserList] = useState([]);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -24,15 +26,29 @@ const UserList = ({ title }) => {
   const [globalFilterValue, setGlobalFilterValue] = useState("");
   const [sortField, setSortField] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState(-1);
-  const navigate = useNavigate();
+  const [visible, setVisible] = useState(false);
+  const [userDetail, setUserDetail] = useState({
+    photo: "",
+    phone: "",
+    fullName: "",
+    email: "",
+    address: "",
+    departments: "",
+    dateOfBirth: "",
+    dateOfJoining: "",
+  })
 
   const fetchUsers = async (currentPage, rowsPerPage, query, sortField, sortOrder) => {
     setIsLoading(true);
-    let usertData = await getAllUsers(currentPage, rowsPerPage, query, sortField, sortOrder);
-
-    const totalRecordsCount = usertData.totalUsers;
+    let userData;
+    if (auth.user.role === "admin") {
+      userData = await getAllUsers(currentPage, rowsPerPage, query, sortField, sortOrder);
+    } else {
+      userData = await getAllEmployee(currentPage, rowsPerPage, query, sortField, sortOrder);
+    }
+    const totalRecordsCount = userData.totalUsers;
     setTotalRecords(totalRecordsCount);
-    setUserList(usertData.users);
+    setUserList(userData.users);
     setIsLoading(false);
   };
 
@@ -88,6 +104,20 @@ const UserList = ({ title }) => {
     navigate("/")
   }
 
+  const handleViewEmployeeProfile = async (user) => {
+    setVisible(true)
+    setUserDetail({
+      photo: user.photo,
+      phone: user.phone,
+      fullName: user.fullName,
+      email: user.email,
+      address: user.address,
+      departments: user.department,
+      dateOfBirth: user.dateOfBirth,
+      dateOfJoining: user.dateOfJoining,
+    })
+  }
+
   return (
     <Layout title={title} toast={toast}>
       {isLoading ? (
@@ -95,12 +125,75 @@ const UserList = ({ title }) => {
       ) : (
         <>
           <ConfirmDialog />
+          <CModal
+            alignment="center"
+            visible={visible}
+            onClose={() => setVisible(false)}
+            className='mainBody'
+          >
+            <CModalHeader>
+              <CModalTitle><strong>{userDetail.fullName}</strong></CModalTitle>
+            </CModalHeader>
+            <CModalBody>
+              <div className="row">
+                <div className="col d-flex justify-content image-container mb-3">
+                  <>
+                    <Avatar
+                      image={userDetail.photo}
+                      icon={!userDetail.photo ? 'pi pi-user' : null}
+                      size={!userDetail.photo ? 'xlarge' : null}
+                      shape="circle"
+                      style={{
+                        width: '250px',
+                        height: '250px',
+                        backgroundColor: !userDetail.photo ? '#2196F3' : null,
+                        color: !userDetail.photo ? '#ffffff' : null
+                      }}
+                    />
+                  </>
+                </div>
+                <div className="col userInfo">
+                  <div className='detail'>
+                    <div className='row userDetail'>
+                      <div className='col'><strong> Email </strong> </div>
+                      <div className='col'>{userDetail.email}</div>
+                    </div>
+                    <div className='row userDetail'>
+                      <div className='col'><strong> Department </strong> </div>
+                      <div className='col'>{userDetail.departments}</div>
+                    </div>
+                    <div className='row userDetail'>
+                      <div className='col'><strong> Phone </strong> </div>
+                      <div className='col'>{userDetail.phone}</div>
+                    </div>
+                    <div className='row userDetail'>
+                      <div className='col'><strong>Date Of Birth</strong></div>
+                      <div className='col'>{userDetail.dateOfBirth}</div>
+                    </div>
+                    <div className='row userDetail'>
+                      <div className='col'> <strong> Date Of Joining </strong></div>
+                      <div className='col'>{userDetail.dateOfJoining}</div>
+                    </div>
+                    <div className='row userDetail'>
+                      <div className='col'><strong> Address </strong> </div>
+                      <div className='col'>{userDetail.address}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CModalBody>
+            <CModalFooter>
+              <CButton color="primary" onClick={() => setVisible(false)}>
+                Ok
+              </CButton>
+            </CModalFooter>
+          </CModal>
           <div className="card mb-5">
             <div className="mainHeader d-flex align-items-center justify-content-between">
               <div>
                 <h4>Users</h4>
               </div>
-              <div>
+              <div className="d-flex">
                 <form onSubmit={handleSubmit}>
                   <div className="p-inputgroup ">
                     <span className="p-inputgroup-addon">
@@ -109,6 +202,18 @@ const UserList = ({ title }) => {
                     <InputText type="search" value={globalFilterValue} onChange={(e) => setGlobalFilterValue(e.target.value)} placeholder="Search" />
                   </div>
                 </form>
+                {auth.user.role === "admin" &&
+                  <div className="ms-3">
+                    <CButton
+                      onClick={() => navigate('/dashboard/user/create')}
+                      title="Create User"
+                      className="btn btn-light"
+                      style={{ height: "40px" }}
+                    >
+                      <i className="pi pi-plus" />
+                    </CButton>
+                  </div>
+                }
               </div>
             </div>
             <DataTable
@@ -146,20 +251,28 @@ const UserList = ({ title }) => {
               <Column field="fullName" sortable header="Name" filterField="firstname" align="center" />
               <Column field="email" sortable header="Email" filterField="email" align="center" />
               <Column field="phone" header="Phone" filterField="phone" align="center" />
-              <Column field="dateOfBirth" header="DOB" filterField="dateOfBirth" align="center" />
-              <Column field="dateOfJoining" header="DOJ" filterField="dateOfJoining" align="center" />
               <Column field="department" header="Department" filterField="department" align="center" />
               <Column
                 field="action"
                 header="Action"
                 body={(rowData) => (
                   <div>
-                    {rowData.role === "user" && (
+                    {rowData.role === "user" && auth.user.role === "admin" && (
                       <>
                         <Button icon="pi pi-pencil" title="Edit" rounded severity="success" aria-label="edit" onClick={() => handleUpdate(rowData._id)} />
                         <Button icon="pi pi-trash" title="Delete" rounded severity="danger" className="ms-2" aria-label="Cancel" onClick={() => handleDelete(rowData._id)} />
                         <Button icon="pi pi-lock" title="User Login" rounded severity="info" className="ms-2" aria-label="login" onClick={() => handleLogin(rowData._id)} />
                       </>
+                    )}
+                    {auth.user.role === "user" && (
+                      <Button
+                        icon="pi pi-eye"
+                        title="View Profile"
+                        rounded
+                        severity="success"
+                        aria-label="view"
+                        onClick={() => handleViewEmployeeProfile(rowData)}
+                      />
                     )}
                   </div>
                 )}
