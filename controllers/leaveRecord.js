@@ -185,10 +185,20 @@ const userGetLeave = asyncHandler(async (req, res) => {
     const totalLeaves = await Leaves.countDocuments(query);
     const skip = (page - 1) * limit;
 
-    const approvedLeave = await Leaves.countDocuments({
+    const currentYear = new Date().getFullYear();
+
+    const approvedLeaves = await Leaves.find({
       userId: req.user._id,
       status: "approved",
     });
+
+    let totalApprovedLeaveDays = 0;
+
+    for (const leave of approvedLeaves) {
+      if (new Date(leave.startDate).getFullYear() === currentYear) {
+        totalApprovedLeaveDays += leave.totalDays;
+      }
+    }
 
     const leaves = await Leaves.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate({ path: "userId", select: "fullName" }).lean();
 
@@ -210,7 +220,7 @@ const userGetLeave = asyncHandler(async (req, res) => {
       currentPage: page,
       totalPages: Math.ceil(totalLeaves / limit),
       totalLeaves,
-      approvedLeave,
+      approvedLeave: totalApprovedLeaveDays,
     });
   } catch (error) {
     console.log(error.message);

@@ -337,7 +337,7 @@ const DefaultLayout = () => {
                   {leaveCount}
                 </>
               }
-              title="Leave This Month"
+              title="Leave Of This Year"
               chart={chart1()}
             />
           </CCol>
@@ -399,7 +399,7 @@ const DefaultLayout = () => {
                     {leaveCount}
                   </>
                 }
-                title="Leave This Month"
+                title="Leaves Of This Year"
                 chart={chart1()}
                 action={
                   <CIcon icon={cilCalendarCheck} height={45} width={45} />
