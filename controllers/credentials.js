@@ -101,7 +101,7 @@ const getSingleCredential = asyncHandler(async (req, res) => {
                 users: credential.users.map(user => ({
                     ...user,
                     photo: photoUrl[user.id]
-                })).filter(user => user.id._id != req.user._id)
+                }))
             },
             createdBy: {
                 ...createdByUser,
