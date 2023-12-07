@@ -3,7 +3,7 @@ const router = express.Router();
 const { check } = require('express-validator');
 const { auth, isAdmin } = require("../middleware/auth")
 
-const { createLeave, getAllLeaves, updateLeave, deleteLeave, userGetLeave, getLeaveById, getLeaves, updateStatus } = require("../controllers/leaveRecord")
+const { createLeave, getAllLeaves, updateLeave, deleteLeave, userGetLeave, getLeaveById, getLeaves, updateStatus, getAllPendingLeave } = require("../controllers/leaveRecord")
 
 router.get("/", auth, isAdmin, getAllLeaves)
 
@@ -16,6 +16,10 @@ router.get("/userLeaves", auth, userGetLeave)
 router.post("/userLeaves-search", auth, userGetLeave)
 
 router.get("/getLeaveById/:id", auth, getLeaveById)
+
+router.get("/getAllPendingLeaves", auth, isAdmin, getAllPendingLeave)
+
+router.post("/getAllPendingLeaves-search", auth, isAdmin, getAllPendingLeave)
 
 router.post("/createLeave",
     check('reason', 'Reason is required.').notEmpty(),

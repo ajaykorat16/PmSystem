@@ -156,8 +156,25 @@ const LeaveProvider = ({ children }) => {
     }
   };
 
+  //Get All Pending Leaves
+  const getAllPendingLeaves = async(page, limit, query, sortField, sortOrder)=>{
+    try {
+      let res;
+      if (query) {
+        res = await axios.post(`${baseURL}/leaves/getAllPendingLeaves-search`, { filter: query }, { params: { page, limit, sortField, sortOrder }, headers });
+      } else {
+        res = await axios.get(`${baseURL}/leaves/getAllPendingLeaves`, { params: { page, limit, sortField, sortOrder } }, { headers });
+      }
+      if (res.data.error === false) {
+        return res.data;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
-    <LeaveContext.Provider value={{ getLeave, addLeave, deleteLeave, updateLeave, getLeaveById, addUserLeave, getUserLeave, updateStatus, }}>
+    <LeaveContext.Provider value={{ getLeave, addLeave, deleteLeave, updateLeave, getLeaveById, addUserLeave, getUserLeave, updateStatus, getAllPendingLeaves}}>
       {children}
     </LeaveContext.Provider>
   );

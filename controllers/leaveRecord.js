@@ -166,7 +166,7 @@ const getLeaves = asyncHandler(async (req, res) => {
 const userGetLeave = asyncHandler(async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 5;
+    const limit = parseInt(req.query.limit) || 10;
     const { filter } = req.body;
     const sortField = req.query.sortField || "createdAt";
     const sortOrder = req.query.sortOrder || -1;
@@ -271,10 +271,6 @@ const updateLeave = asyncHandler(async (req, res) => {
       totalDays: totalDays || userLeave.totalDays,
     };
 
-    if (req.user.role === 1) {
-      updatedFields.status = status || userLeave.status;
-    }
-
     const user = await Users.findById({ _id: updatedFields.userId }).select("-photo");
 
     let updateLeave;
@@ -346,4 +342,71 @@ const updateStatus = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { createLeave, getAllLeaves, updateLeave, deleteLeave, userGetLeave, getLeaveById, getLeaves, updateStatus, };
+const getAllPendingLeave = asyncHandler(async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const { filter } = req.body;
+    const sortField = req.query.sortField || "createdAt";
+    const sortOrder = req.query.sortOrder || -1;
+
+    let query = {status: "pending"};
+    if (filter) {
+      let fullName = [];
+      let searchUser = await Users.find({
+        fullName: { $regex: filter, $options: "i" },
+      });
+      if (searchUser.length !== 0) {
+        fullName = searchUser.map((u) => {
+          return u._id;
+        });
+      }
+      query = {
+        status:"pending",
+        $or: [
+          { leaveType: { $regex: filter.toLowerCase() } },
+          { userId: { $in: fullName } },
+        ],
+      };
+    }
+
+    const totalLeaves = await Leaves.countDocuments(query);
+    const skip = (page - 1) * limit;
+    let leaves;
+
+    if (sortField === "userId.fullName") {
+      leaves = await Leaves.find(query).populate({ path: "userId", select: "fullName" }).skip(skip).limit(limit).lean();
+      leaves.sort((a, b) => {
+        const nameA = a.userId?.fullName || "";
+        const nameB = b.userId?.fullName || "";
+        return sortOrder * nameA.localeCompare(nameB);
+      });
+    } else {
+      leaves = await Leaves.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate({ path: "userId", select: "fullName" }).lean();
+    }
+
+    const formattedLeaves = leaves.map((leave) => {
+      return {
+        ...leave,
+        leaveType: capitalizeFLetter(leave.leaveType),
+        leaveDayType: formatteDayType(leave.leaveDayType),
+        status: capitalizeFLetter(leave.status),
+        startDate: formattedDate(leave.startDate),
+        endDate: formattedDate(leave.endDate),
+      };
+    });
+
+    return res.status(200).json({
+      error: false,
+      message: "Pending Leaves is retrieved successfully.",
+      leaves: formattedLeaves,
+      currentPage: page,
+      totalPages: Math.ceil(totalLeaves / limit),
+      totalLeaves,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+module.exports = { createLeave, getAllLeaves, updateLeave, deleteLeave, userGetLeave, getLeaveById, getLeaves, updateStatus, getAllPendingLeave};

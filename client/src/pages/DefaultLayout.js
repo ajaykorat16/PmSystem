@@ -10,6 +10,7 @@ import { useUser } from '../context/UserContext';
 import { NavLink } from 'react-router-dom';
 import CIcon from '@coreui/icons-react';
 import Layout from './Layout';
+import PendingLeaves from './PendingLeaves';
 
 const DefaultLayout = () => {
   const { auth, toast } = useAuth()
@@ -519,6 +520,7 @@ const DefaultLayout = () => {
           }
         </CCol>
       </CRow>
+      {userRole === "admin" && ( <PendingLeaves/>)}
     </Layout>
   )
 }
