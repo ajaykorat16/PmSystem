@@ -8,8 +8,9 @@ const LeaveManagement = require("../models/leaveManagementModel");
 const Credential = require("../models/credentials");
 const fs = require("fs");
 const { validationResult } = require("express-validator");
-const { formattedDate, capitalizeFLetter } = require("../helper/mail");
+const { formattedDate, capitalizeFLetter, decodeBase64Image } = require("../helper/mail");
 const asyncHandler = require("express-async-handler");
+const mimeTypes = require('mime-types');
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
@@ -172,8 +173,7 @@ const updateUser = asyncHandler(async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
   try {
-    const { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining, projects, } = req.fields;
-    const { photo } = req.files;
+    const { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining, projects, photo } = req.fields;
     const { id } = req.params;
 
     let projectArr = [];
@@ -206,15 +206,27 @@ const updateUser = asyncHandler(async (req, res) => {
       dateOfBirth: dateOfBirth || user.dateOfBirth,
       department: department || user.department,
       dateOfJoining: dateOfJoining ? dateOfJoining : user.dateOfJoining,
-      photo: photo || user.photo,
       fullName: (firstname ? capitalizeFLetter(firstname) : user.firstname) + " " + (lastname ? capitalizeFLetter(lastname) : user.lastname)
     };
 
     if (photo) {
-      updatedFields.photo = {
-        data: fs.readFileSync(photo.path),
-        contentType: photo.type,
-      };
+      const decodedImg = decodeBase64Image(photo);
+      const imageBuffer = decodedImg.data;
+      const type = decodedImg.type;
+      const extension = mimeTypes.extension(type) || 'png';
+      const fileName = `${updatedFields.employeeNumber}.${extension}`;
+
+      const uploadPath = "./uploads/images/"
+      if (!fs.existsSync(uploadPath)) {
+        fs.mkdirSync(uploadPath);
+      }
+
+      try {
+        fs.writeFileSync(uploadPath + fileName, imageBuffer, 'utf8');
+        updatedFields.photo = fileName;
+      } catch (err) {
+        console.error("Image upload error", err);
+      }
     }
 
     if (projectArr && Array.isArray(projectArr)) {
@@ -360,12 +372,7 @@ const getUsers = asyncHandler(async (req, res) => {
     }
 
     const formattedUsers = users.map((user) => {
-      const photoUrl =
-        user.photo && user.photo.contentType
-          ? `data:${user.photo.contentType};base64,${user.photo.data.toString(
-            "base64"
-          )}`
-          : null;
+      const photoUrl = !user.photo ? null : `${DOMAIN}/images/${user.photo}`
       const avatar = user.firstname.charAt(0) + user.lastname.charAt(0);
 
       return {
@@ -454,12 +461,7 @@ const getUserByBirthDayMonth = asyncHandler(async (req, res) => {
     const users = await Users.aggregate(aggregationPipeline);
 
     const formattedUsers = users.map((user) => {
-      const photoUrl =
-        user.photo && user.photo.contentType
-          ? `data:${user.photo.contentType};base64,${user.photo.data.toString(
-            "base64"
-          )}`
-          : null;
+      const photoUrl = !user.photo ? null : `${DOMAIN}/images/${user.photo}`
       const avatar = user.firstname.charAt(0) + user.lastname.charAt(0);
 
       return {
@@ -528,11 +530,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
       getProfile = await Users.findById({ _id: req.user._id }).populate("department").populate("projects.id");
     }
 
-    const photoUrl =
-      getProfile.photo && getProfile.photo.contentType
-        ? `data:${getProfile.photo.contentType
-        };base64,${getProfile.photo.data.toString("base64")}`
-        : null;
+    const photoUrl = !getProfile.photo ? null : `${DOMAIN}/images/${getProfile.photo}`
 
     return res.status(200).json({
       error: false,

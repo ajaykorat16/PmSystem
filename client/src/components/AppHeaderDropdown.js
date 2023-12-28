@@ -50,7 +50,6 @@ const AppHeaderDropdown = () => {
         if (getProfile?.photo === null) {
           setPhoto('')
           setIsPhoto(false)
-
         } else {
           setPhoto(getProfile.photo);
           setIsPhoto(true)

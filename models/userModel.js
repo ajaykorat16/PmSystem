@@ -60,14 +60,8 @@ const userSchema = new mongoose.Schema({
         default: 0
     },
     photo: {
-        data: {
-            type: Buffer,
-            default: null
-        },
-        contentType: {
-            type: String,
-            default: null
-        }
+        type: String,
+        default: null
     },
     role: {
         type: String,

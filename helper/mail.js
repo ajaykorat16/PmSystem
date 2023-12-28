@@ -66,6 +66,20 @@ function parsedDayType(dayType) {
     }
 }
 
+function decodeBase64Image(dataString) {
+    var matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
+        response = {};
+
+    if (!matches || matches.length !== 3) {
+        return new Error('Invalid input string');
+    }
+
+    response.type = matches[1];
+    response.data = Buffer.from(matches[2], 'base64');
+
+    return response;
+}
+
 const sendMailForLeaveStatus = async (data, reasonForLeaveReject) => {
     try {
         fs.readFile('./templates/email_leaveResponse.html', 'utf8', async function (err, content) {
@@ -161,4 +175,4 @@ const sendMailForLeaveRequest = async (data) => {
     }
 };
 
-module.exports = { sendMailForLeaveStatus, sendMailForLeaveRequest, formattedDate, capitalizeFLetter, parsedDate, parseIndianDate, formatteDayType, parsedDayType }
+module.exports = { sendMailForLeaveStatus, sendMailForLeaveRequest, formattedDate, capitalizeFLetter, parsedDate, parseIndianDate, formatteDayType, parsedDayType, decodeBase64Image }

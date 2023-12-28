@@ -47,7 +47,17 @@ const UserUpdate = ({ title }) => {
                     setDepartments(getProfile.department ? getProfile.department.name : "")
                     setDateOfBirth(new Date(getProfile.dateOfBirth))
                     setDateOfJoining(getProfile.dateOfJoining)
-                    setPhoto(getProfile.photo)
+                    if (getProfile.photo !== null) {
+                        const response = await fetch(getProfile.photo);
+                        const blob = await response.blob();
+
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                            const base64String = reader.result;
+                            setPhoto(base64String);
+                        };
+                        reader.readAsDataURL(blob);
+                    }
                     setIsLoading(false)
                 }
             } catch (error) {
@@ -60,7 +70,7 @@ const UserUpdate = ({ title }) => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            let updateUsers = { firstname, lastname, phone, address, dateOfBirth: formatDate(dateOfBirth), photo: newPhoto || photo }
+            let updateUsers = { firstname, lastname, phone, address, dateOfBirth: formatDate(dateOfBirth), photo: newPhoto ? newPhoto : photo }
             const data = await updateProfile(updateUsers)
             if (data.error) {
                 toast.current.show({ severity: 'error', summary: 'User', detail: data.message, life: 3000 })
@@ -71,7 +81,16 @@ const UserUpdate = ({ title }) => {
     }
 
     const handlePhoto = async (e) => {
-        setNewPhoto(e.target.files[0]);
+        const file = e.target.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onloadend = () => {
+                setNewPhoto(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     return (
@@ -86,7 +105,7 @@ const UserUpdate = ({ title }) => {
                                     <CCol className="mb-3">
                                         <div className="mt-3 d-flex justify-content image-container">
                                             <Avatar
-                                                image={newPhoto ? URL.createObjectURL(newPhoto) : photo || null}
+                                                image={newPhoto ? newPhoto : photo || null}
                                                 icon={!photo && !newPhoto ? 'pi pi-user' : null}
                                                 size={!photo && !newPhoto ? 'xlarge' : null}
                                                 shape="circle"

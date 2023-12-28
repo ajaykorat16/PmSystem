@@ -53,7 +53,17 @@ const UserUpdate = ({ title }) => {
                     setDepartments(getProfile.department ? getProfile.department._id : "")
                     setDateOfBirth(new Date(getProfile.dateOfBirth))
                     setDateOfJoining(new Date(getProfile.dateOfJoining))
-                    setPhoto(getProfile.photo)
+                    if (getProfile.photo !== null) {
+                        const response = await fetch(getProfile.photo);
+                        const blob = await response.blob();
+
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                            const base64String = reader.result;
+                            setPhoto(base64String);
+                        };
+                        reader.readAsDataURL(blob);
+                    }
                     if (getProfile.projects && getProfile.projects.length > 0) {
                         setNewProjects(getProfile.projects.map((e) => e.id._id));
                     } else {
@@ -79,9 +89,9 @@ const UserUpdate = ({ title }) => {
 
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
+                e.preventDefault()
         try {
-            let updateUsers = { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth: formatDate(dateOfBirth), department: departments, dateOfJoining: formatDate(dateOfJoining), photo: newPhoto || photo, projects: newProjects }
+            let updateUsers = { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth: formatDate(dateOfBirth), department: departments, dateOfJoining: formatDate(dateOfJoining), photo: newPhoto ? newPhoto : photo, projects: newProjects }
             let id = params.id
             const data = await updateUser(updateUsers, id)
             if (data.error) {
@@ -95,7 +105,16 @@ const UserUpdate = ({ title }) => {
     }
 
     const handlePhoto = async (e) => {
-        setNewPhoto(e.target.files[0]);
+        const file = e.target.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onloadend = () => {
+                setNewPhoto(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     const getProjects = async () => {
@@ -130,9 +149,9 @@ const UserUpdate = ({ title }) => {
                     {!photo && newPhoto && (
                         <CCol xs={12}>
                             <CImage
-                                align="left"
+                                align="start"
                                 rounded
-                                src={URL.createObjectURL(newPhoto)}
+                                src={newPhoto}
                                 width={200}
                                 height={200}
                             />
@@ -142,9 +161,9 @@ const UserUpdate = ({ title }) => {
                     {photo && newPhoto && (
                         <CCol xs={12}>
                             <CImage
-                                align="left"
+                                align="start"
                                 rounded
-                                src={URL.createObjectURL(newPhoto)}
+                                src={newPhoto}
                                 width={200}
                                 height={200}
                             />
