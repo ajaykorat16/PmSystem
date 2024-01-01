@@ -94,10 +94,17 @@ const getUserLeaves = asyncHandler(async (req, res) => {
       .populate({ path: "user", select: "fullName" })
       .lean();
 
+    const currentYear = new Date().getFullYear();
+
+    const currentYearLeaves = leaves.filter((leave) => {
+      const leaveYear = new Date(leave.monthly).getFullYear();
+      return leaveYear === currentYear;
+    });
+
     return res.status(200).json({
       error: false,
       message: "User's Leaves getting successfully.",
-      leaves,
+      leaves: currentYearLeaves,
     });
   } catch (error) {
     console.log(error.message);
