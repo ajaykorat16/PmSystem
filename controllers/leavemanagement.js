@@ -13,18 +13,14 @@ const getLeavesMonthWise = asyncHandler(async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const filter = req.body.filter || month;
 
-    let query;
-    if (filter) {
-      query = {
-        $or: [
-          {
-            $expr: {
-              $eq: [{ $month: "$monthly" }, isNaN(filter) ? null : filter],
-            },
-          },
+    let query = {
+      $expr: {
+        $and: [
+          { $eq: [{ $year: "$monthly" }, d.getFullYear()] },
+          { $eq: [{ $month: "$monthly" }, isNaN(filter) ? month : filter] },
         ],
-      };
-    }
+      },
+    };
 
     const totalLeaves = await LeaveManagement.countDocuments(query);
     const skip = (page - 1) * limit;
@@ -32,7 +28,7 @@ const getLeavesMonthWise = asyncHandler(async (req, res) => {
     const leaves = await LeaveManagement.find(query).skip(skip).limit(limit).populate({ path: "user", select: "fullName" }).lean();
     return res.status(200).json({
       error: false,
-      message: "Leaves is getting successfully.",
+      message: "Leaves are retrieved successfully.",
       leaves,
       currentPage: page,
       totalPages: Math.ceil(totalLeaves / limit),
