@@ -96,7 +96,7 @@ const CredentialProvider = ({ children }) => {
     const getSingleCredential = async (id) => {
         try {
             const { data } = await axios.get(`${baseURL}/credential/single-credential/${id}`, { headers });
-            return data.credential;
+            return data;
         } catch (error) {
             console.log(error);
         }

@@ -44,7 +44,7 @@ const getCredential = asyncHandler(async (req, res) => {
 
         let query = {
             $or: [
-                { "users.id": userId }, 
+                { "users.id": userId },
                 { createdBy: userId }
             ]
         };
@@ -79,19 +79,9 @@ const getSingleCredential = asyncHandler(async (req, res) => {
 
         const credential = await Credential.findById(id).populate({ path: "users.id createdBy" }).lean();
 
-        // Generate photoUrl
-        const photoUrl = credential.users.map(user => {
-            if (user.id.photo && user.id.photo.contentType) {
-                return `data:${user.id.photo.contentType};base64,${user.id.photo.data.toString("base64")}`;
-            }
-            return null;
-        });
-
         const createdByUser = credential.createdBy;
 
-        const createdByPhotoUrl = createdByUser && createdByUser.photo && createdByUser.photo.data
-            ? `data:${createdByUser.photo.contentType};base64,${createdByUser.photo.data.toString("base64")}`
-            : null;
+        const createdByPhotoUrl = createdByUser && createdByUser.photo ? `${DOMAIN}/images/${createdByUser.photo}` : null;
 
         return res.status(200).json({
             error: false,
@@ -100,7 +90,7 @@ const getSingleCredential = asyncHandler(async (req, res) => {
                 ...credential,
                 users: credential.users.map(user => ({
                     ...user,
-                    photo: photoUrl[user.id]
+                    photo: user.id.photo ? `${DOMAIN}/images/${user.id.photo}` : null
                 }))
             },
             createdBy: {

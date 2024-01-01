@@ -20,19 +20,24 @@ function CredentialView({ title }) {
 
     useEffect(() => {
         const fetchCredential = async () => {
-            const data = await getSingleCredential(id);
-            if (data) {
-                const userPhotos = data.users.map(user => user.id)
-                setCredentialDetail({
-                    title: data.title,
-                    description: data.description,
-                    photo: userPhotos,
-                    createdBy: data?.createdBy
-                });
+            try {
+                const data = await getSingleCredential(id);
+
+                if (data) {
+                    setCredentialDetail({
+                        title: data.credential.title,
+                        description: data.credential.description,
+                        photo: data.credential.users,
+                        createdBy: data?.createdBy,
+                    });
+                }
+            } catch (error) {
+                console.error("Error fetching credential:", error);
             }
         };
+
         fetchCredential();
-    }, [getSingleCredential, id]);
+    }, [getSingleCredential, id, setCredentialDetail]);
 
     return (
         <Layout title={title}>
@@ -51,16 +56,16 @@ function CredentialView({ title }) {
                     <div className="col-1 text-center credentialRightBody">
                         <div className="createdBy">
                             <Avatar
-                                image={credentialDetail.createdBy?.photo?.data && `data:${credentialDetail.createdBy?.photo?.contentType};base64, ${credentialDetail.createdBy?.photo.data}`}
-                                icon={!credentialDetail.createdBy?.photo?.data && 'pi pi-user'}
-                                size={!credentialDetail.createdBy?.photo?.data && 'large'}
+                                image={credentialDetail.createdBy.photo && credentialDetail.createdBy.photo}
+                                icon={!credentialDetail.createdBy?.photo && 'pi pi-user'}
+                                size={!credentialDetail.createdBy?.photo && 'large'}
                                 className="credentialAvatar"
                                 shape="circle"
                                 style={{
                                     width: '70px',
                                     height: '70px',
-                                    backgroundColor: (!credentialDetail.createdBy?.photo?.data) ? '#2196F3' : null,
-                                    color: (!credentialDetail.createdBy?.photo?.data) ? '#ffffff' : null,
+                                    backgroundColor: (!credentialDetail.createdBy?.photo) ? '#2196F3' : null,
+                                    color: (!credentialDetail.createdBy?.photo) ? '#ffffff' : null,
                                     cursor: "pointer",
                                 }} />
                             <span className="userName">{credentialDetail.createdBy?.fullName}</span>
@@ -71,16 +76,16 @@ function CredentialView({ title }) {
                                 <div key={index}>
                                     <>
                                         <Avatar
-                                            image={user.photo?.data && `data:${user.photo.contentType};base64, ${user.photo.data}`}
-                                            icon={!user.photo?.data && 'pi pi-user'}
-                                            size={!user.photo?.data && 'large'}
+                                            image={user.photo && user?.photo}
+                                            icon={!user?.photo && 'pi pi-user'}
+                                            size={!user?.photo && 'large'}
                                             className="credentialAvatar mt-3"
                                             shape="circle"
                                             style={{
                                                 width: '70px',
                                                 height: '70px',
-                                                backgroundColor: (!user.photo?.data) ? '#2196F3' : null,
-                                                color: (!user.photo?.data) ? '#ffffff' : null,
+                                                backgroundColor: (!user.photo) ? '#2196F3' : null,
+                                                color: (!user.photo) ? '#ffffff' : null,
                                                 cursor: "pointer",
                                             }}
                                         />
