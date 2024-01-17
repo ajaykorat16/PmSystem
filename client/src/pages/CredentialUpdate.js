@@ -25,10 +25,10 @@ const CredentialUpdate = ({ title }) => {
         const currentCredential = async () => {
             const data = await getSingleCredential(id);
             if (data) {
-                setCredentialTitle(data.title);
-                setDescription(data.description);
-                if (data.users && data.users.length > 0) {
-                    setDevelopers(data.users.map((e) => e.id._id));
+                setCredentialTitle(data.credential.title);
+                setDescription(data.credential.description);
+                if (data.credential.users && data.credential.users.length > 0) {
+                    setDevelopers(data.credential.users.map((e) => e.id._id));
                 } else {
                     setDevelopers([]);
                 }
@@ -42,12 +42,13 @@ const CredentialUpdate = ({ title }) => {
         try {
             const credentialData = { title: credentialTitle, description, users: developers }
             const data = await updateCredential(credentialData, id)
-            if (typeof data !== 'undefined' && data.error === false) {
-                const redirectPath = auth.user.role === "admin" ? `/dashboard/credential/list` : `/dashboard-user/credential/list`;
-                navigate(redirectPath);
+            if (data.error) {
+                toast.current.show({ severity: 'error', summary: 'Credential', detail: data.message, life: 3000 })
+            }else{
+                navigate('/dashboard/credential/list')
             }
         } catch (error) {
-            console.log(error.message)
+            console.log(error)
         }
     }
 
