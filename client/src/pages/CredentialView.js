@@ -89,7 +89,7 @@ function CredentialView({ title }) {
                                                 cursor: "pointer",
                                             }}
                                         />
-                                        <span className="userName">{user.fullName}</span>
+                                        <span className="userName">{user.id.fullName}</span>
                                     </>
                                 </div>
                             ))
