@@ -1,4 +1,11 @@
-const mongoose = require('mongoose');
+const knex = require('knex')({
+  client: 'mysql2',
+  connection: {
+    host: process.env.MYSQL_HOSTNAME,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_DATABASE
+  }
+});
 
-mongoose.connect(process.env.DATABASE_URL)
-  .then(() => console.log('Connected Database!')).catch((error)=>console.log(`error : ${error.message}`));
+module.exports = { knex }
