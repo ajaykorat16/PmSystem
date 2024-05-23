@@ -1,9 +1,9 @@
-const Worklog = require("../models/workLogmodel")
-const Projects = require("../models/projects");
 const asyncHandler = require('express-async-handler');
 const moment = require('moment');
 const { validationResult } = require('express-validator');
 const { capitalizeFLetter, formattedDate } = require("../helper/mail");
+const { knex } = require('../database/db');
+const { WORKLOGS, PROJECTS, USERS } = require("../constants/tables");
 
 const createWorkLog = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
@@ -13,7 +13,7 @@ const createWorkLog = asyncHandler(async (req, res) => {
 
     try {
         const { project, description, logDate, time } = req.body;
-        const userId = req.user._id
+        const userId = req.user.id
 
         const logObj = {
             userId,
@@ -23,12 +23,11 @@ const createWorkLog = asyncHandler(async (req, res) => {
             time
         };
 
-        const worklog = await Worklog.create(logObj);
+        const worklog = await knex(WORKLOGS).insert(logObj);
 
         return res.status(201).json({
             error: false,
             message: "Worklog created successfully.",
-            worklog
         });
 
     } catch (error) {
@@ -48,10 +47,12 @@ const userGetWorklog = asyncHandler(async (req, res) => {
         const limit = parseInt(req.query.limit) || 10;
         const sortField = req.query.sortField || 'createdAt';
         const sortOrder = req.query.sortOrder || -1;
-        const userId = req.user._id;
+        const userId = req.user.id;
         const { filter } = req.body;
 
-        let query = { userId: userId };
+        let query = {};
+        let projects = [];
+        let dateSearch = null;
 
         if (filter) {
             function isValidDate(filter) {
@@ -59,27 +60,40 @@ const userGetWorklog = asyncHandler(async (req, res) => {
                 return dateRegex.test(filter);
             }
 
-            let dateSearch = null;
             if (typeof filter === "string" && isValidDate(filter)) {
-                dateSearch = new Date(filter.split("-").reverse().join("-"));
+                dateSearch = filter.split("-").reverse().join("-");
             }
 
-            let projects = [];
-            let searchProjects = await Projects.find({ name: { $regex: filter, $options: 'i' } });
+            let searchProjects = await knex(PROJECTS).where('name', 'like', `%${filter}%`)
             if (searchProjects.length !== 0) {
-                projects = searchProjects.map((d) => d._id);
+                projects = searchProjects.map((d) => d.id);
             }
 
-            query.$or = [
-                { description: { $regex: filter, $options: "i" } },
-                { project: { $in: projects } },
-                { logDate: dateSearch },
-            ];
-        }
+            query = function() {
+                this.where('w.description', 'like', `%${filter}%`)
+                  .orWhereIn('w.project', projects)
+                  .orWhereRaw('DATE(w.logDate) = ?', dateSearch);
+                };
+            }
 
-        const totalWorklogCount = await Worklog.countDocuments(query);
+        const result = await knex(WORKLOGS).where('userId', userId).where(function() {
+            this.where('description', 'like', `%${filter}%`)
+            .orWhereIn('project', projects)
+            .orWhereRaw('DATE(logDate) = ?', dateSearch);
+        }).count({ count: '*' });
 
-        const worklog = await Worklog.find(query).populate({ path: "project", select: "name" }).skip((page - 1) * limit).limit(limit).sort({ [sortField]: sortOrder }).lean();
+        const totalWorklogCount = result[0].count;
+
+        const worklog = await knex
+            .select('w.*', 'p.name as projectName')
+            .from(`${WORKLOGS} as w`)
+            .where('w.userId', userId)
+            .where(query)
+            .innerJoin(`${PROJECTS} as p`, 'w.project', 'p.id')
+            .offset((page - 1) * limit)
+            .limit(limit)
+            .orderBy(sortField, sortOrder === -1 ? "desc" : "asc");
+
         const formattedWorklog = worklog.map((log) => {
             return {
                 ...log,
@@ -110,12 +124,11 @@ const userGetWorklog = asyncHandler(async (req, res) => {
             message: "Worklog getting successfully.",
             dayWiseTotals: dayWiseTotals,
             totalWeekTime: totalWeekTime,
-            worklog: formattedWorklog,
+            data: formattedWorklog,
             currentPage: page,
             totalPages: Math.ceil(totalWorklogCount / limit),
             totalWorklog: totalWorklogCount,
         });
-
     } catch (error) {
         console.error(error.message);
         res.status(500).send('Server error');
@@ -124,31 +137,29 @@ const userGetWorklog = asyncHandler(async (req, res) => {
 
 async function generateWorklogQuery(filter) {
     return new Promise(async (resolve, reject) => {
-        const query = {};
-
-        if (filter.project) {
-            query.project = filter.project;
-        }
-
-        if (filter.userId) {
-            query.userId = filter.userId;
-        }
-
-        if (filter.description) {
-            query.description = { $regex: filter.description, $options: "i" };
-        }
-
-        if (filter.logDate) {
-            const dateSearch = new Date(filter.logDate);
-            dateSearch.setMinutes(dateSearch.getMinutes() - dateSearch.getTimezoneOffset());
-            query.logDate = dateSearch.toISOString();
+        const query = function() {
+            if (filter.project) {
+                this.where('name', filter.project)
+            }
+    
+            if (filter.userId) {
+                this.where('userId', filter.userId);
+            }
+    
+            if (filter.description) {
+                this.where('w.description', 'like', `%${filter.description}%`)
+            }
+    
+            if (filter.logDate) {
+                let formattedDate = filter.logDate.split("-").reverse().join("-");
+                this.whereRaw('DATE(logDate) = ?', [formattedDate])
+            }
         }
         resolve(query);
     });
 }
 
 const getAllWorklog = asyncHandler(async (req, res) => {
-
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
@@ -157,46 +168,19 @@ const getAllWorklog = asyncHandler(async (req, res) => {
         const filter = req.body.filter;
         const yesterday = moment().subtract(1, 'days').startOf('day');
         let query = {}
-
+        let initialQuery;
         if (typeof filter !== 'undefined') {
             query = await generateWorklogQuery(filter);
         }
 
-        const workLogQuery = {
-            logDate: {
-                $gte: yesterday.toDate(),
-                $lt: moment(yesterday).endOf('day').toDate()
-            }
-        };
-
-        const userCountPipeline = [
-            {
-                $match: workLogQuery
-            },
-            {
-                $group: {
-                    _id: "$userId",
-                }
-            },
-            {
-                $group: {
-                    _id: null,
-                    userCount: { $sum: 1 }
-                }
-            }
-        ];
-
-        const userCountResult = await Worklog.aggregate(userCountPipeline);
-        const worklogUserCount = userCountResult.length > 0 ? userCountResult[0].userCount : 0;
-
-        const totalWorklogCount = await Worklog.countDocuments(query);
-        const worklog = await Worklog.find(query)
-            .populate({ path: "userId", select: "fullName" })
-            .populate({ path: "project", select: "name" })
-            .skip((page - 1) * limit)
-            .limit(limit)
-            .sort({ [sortField]: sortOrder })
-            .lean();
+        const userIds = await knex(WORKLOGS).select('userId').where('logDate', '>=', yesterday.startOf('day').format('YYYY-MM-DD HH:mm:ss')).andWhere('logDate', '<', yesterday.endOf('day').format('YYYY-MM-DD HH:mm:ss')).groupBy('userId').countDistinct('userId as userCount');
+        
+        const worklogUserCount = userIds[0] ? userIds[0].userCount : 0;
+        
+        let totalWorklogCount = await knex.select('w.*', 'p.name as projectName').from(`${WORKLOGS} as w`).where(query).innerJoin(`${PROJECTS} as p`, 'w.project', 'p.id').count('*');
+        totalWorklogCount = totalWorklogCount[0]['count(*)'];
+        
+        const worklog = await knex.select('w.*', 'u.fullName', 'p.name as projectName').from(`${WORKLOGS} as w`).where(query).innerJoin(`${USERS} as u`, 'w.userId','u.id').innerJoin(`${PROJECTS} as p`, 'w.project', 'p.id').offset((page - 1) * limit).limit(limit).orderBy(sortField, sortOrder === -1 ? "desc" : "asc");
 
         const formattedWorklog = worklog.map((log) => {
             return {
@@ -205,13 +189,12 @@ const getAllWorklog = asyncHandler(async (req, res) => {
             };
         });
 
-
         return res.status(200).json({
             error: false,
             message: "All Worklogs getting successfully.",
-            worklog: formattedWorklog,
+            data: formattedWorklog,
             currentPage: page,
-            totalPages: Math.ceil(totalWorklogCount / limit),
+            totalPages: Math.ceil(worklogUserCount / limit),
             totalWorklog: totalWorklogCount,
             worklogUserCount
         });
@@ -222,7 +205,6 @@ const getAllWorklog = asyncHandler(async (req, res) => {
     }
 });
 
-
 const getSingleWorklog = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -231,11 +213,11 @@ const getSingleWorklog = asyncHandler(async (req, res) => {
 
     try {
         const { id } = req.params
-        const worklog = await Worklog.findById({ _id: id }).populate({ path: "userId", select: "fullName" }).populate({ path: "project", select: "name" });
+        const worklog = await knex.select('w.*', 'u.fullName as username', 'p.name as projectName').from(`${WORKLOGS} as w`).where('w.id', id).innerJoin(`${USERS} as u`, 'w.userId', 'u.id').innerJoin(`${PROJECTS} as p`, 'w.project', 'p.id');
         return res.status(200).json({
             error: false,
             message: "Single worklog getting successfully.",
-            worklog
+            data: worklog
         });
 
     } catch (error) {
@@ -254,7 +236,7 @@ const updateWorklog = asyncHandler(async (req, res) => {
         const { id } = req.params
         const { project, description, logDate, time } = req.body;
 
-        const worklog = await Worklog.findById({ _id: id });
+        const worklog = await knex(WORKLOGS).where('id', id).first();
         if (!worklog) {
             return res.status(404).json({
                 error: true,
@@ -262,20 +244,18 @@ const updateWorklog = asyncHandler(async (req, res) => {
             })
         }
 
-        const updatedFeilds = {
+        const updatedFields = {
             project: project || worklog.project,
             description: capitalizeFLetter(description) || worklog.description,
             logDate: logDate || worklog.logDate,
             time: time || worklog.time
         }
 
-        const updateworklog = await Worklog.findByIdAndUpdate(id, updatedFeilds, { new: true })
+        await knex(WORKLOGS).where('id', id).update({ ...updatedFields, updatedAt: new Date() });
         return res.status(200).json({
             error: false,
             message: "Worklog updated successfully.",
-            worklog: updateworklog
         });
-
     } catch (error) {
         console.error(error.message);
         res.status(500).send('Server error');
@@ -291,7 +271,7 @@ const deleteWorklog = asyncHandler(async (req, res) => {
     try {
         const { id } = req.params
 
-        const worklog = await Worklog.findById({ _id: id });
+        const worklog = await knex(WORKLOGS).where('id', id).first();
         if (!worklog) {
             return res.status(404).json({
                 error: true,
@@ -299,12 +279,11 @@ const deleteWorklog = asyncHandler(async (req, res) => {
             })
         }
 
-        await Worklog.findByIdAndDelete(id)
+        await knex(WORKLOGS).where('id', id).del();
         return res.status(200).json({
             error: false,
             message: "Worklog deleted successfully.",
         });
-
     } catch (error) {
         console.error(error.message);
         res.status(500).send('Server error');
