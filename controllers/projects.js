@@ -1,10 +1,8 @@
-const mongoose = require("mongoose");
-const Projects = require("../models/projects");
-const Users = require("../models/userModel");
-const Worklog = require("../models/workLogmodel");
 const asyncHandler = require("express-async-handler");
 const { validationResult } = require("express-validator");
 const { capitalizeFLetter, formattedDate } = require("../helper/mail");
+const { knex } = require("../database/db");
+const { PROJECTS, USER_PROJECT_RELATION, USERS, WORKLOGS } = require("../constants/tables");
 
 const createProject = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
@@ -19,10 +17,9 @@ const createProject = asyncHandler(async (req, res) => {
       name: capitalizeFLetter(name),
       description: capitalizeFLetter(description),
       startDate: startDate,
-      developers,
     };
 
-    const projectName = await Projects.findOne({ name: projectObj.name });
+    const projectName = await knex(PROJECTS).where("name", projectObj.name).first();
     if (projectName) {
       return res.status(200).json({
         error: true,
@@ -30,27 +27,17 @@ const createProject = asyncHandler(async (req, res) => {
       });
     }
 
-    const project = await Projects.create(projectObj);
-    for (const developer of project.developers) {
-      let id = developer.id;
-      let projectId = project._id;
-      await Users.findOneAndUpdate(
-        { _id: id },
-        {
-          $push: {
-            projects: {
-              id: projectId
-            }
-          }
-        },
-        { new: true }
-      );
+    const project = await knex(PROJECTS).insert(projectObj);
+
+    if (developers) {
+      for (const developer of developers) {
+        await knex(USER_PROJECT_RELATION).insert({ userId: developer.id, projectId: project[0] });
+      }
     }
 
     return res.status(201).json({
       error: false,
       message: "Project created successfully.",
-      project,
     });
   } catch (error) {
     console.error(error.message);
@@ -60,7 +47,7 @@ const createProject = asyncHandler(async (req, res) => {
 
 const getAllProjects = asyncHandler(async (req, res) => {
   try {
-    const getAllProjects = await Projects.find().lean();
+    const getAllProjects = await knex(PROJECTS);
 
     const formatteProject = getAllProjects.map((project) => {
       return {
@@ -89,9 +76,8 @@ const getProjects = asyncHandler(async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const sortField = req.query.sortField || "createdAt";
-    const sortOrder = req.query.sortOrder || -1;
+    const sortOrder = parseInt(req.query.sortOrder) || -1;
     const { filter } = req.body;
-
     let query = {};
 
     if (filter) {
@@ -100,36 +86,58 @@ const getProjects = asyncHandler(async (req, res) => {
         return dateRegex.test(filter);
       }
 
-      let dateSearch;
+      let formattedDate = null;
       if (typeof filter === "string" && isValidDate(filter)) {
-        dateSearch = new Date(filter.split("-").reverse().join("-"));
-      } else {
-        dateSearch = null;
+        formattedDate = filter.split("-").reverse().join("-");
       }
 
-      query = {
-        $or: [
-          { name: { $regex: filter, $options: "i" } },
-          { description: { $regex: filter, $options: "i" } },
-          {
-            $expr: {
-              $eq: [{ $month: "$startDate" }, isNaN(filter) ? null : filter],
-            },
-          },
-          {
-            $expr: {
-              $eq: [{ $year: "$startDate" }, isNaN(filter) ? null : filter],
-            },
-          },
-          { startDate: { $eq: dateSearch } },
-        ],
+      query = function () {
+        this.where(function() {
+          this.orWhere("p.name", "like", `%${filter}%`)
+              .orWhere("description", "like", `%${filter}%`)
+              .orWhereRaw("MONTH(p.startDate) = ?", [isNaN(filter) ? null : parseInt(filter)])
+              .orWhereRaw("YEAR(p.startDate) = ?", [isNaN(filter) ? null : parseInt(filter)])
+              .orWhere("p.startDate", formattedDate);
+        })
+        .orWhereExists(function() {
+          this.select(knex.raw(1))
+              .from(`${USER_PROJECT_RELATION} as up`)
+              .innerJoin(`${USERS} as u`, "up.userId", "u.id")
+              .whereRaw("up.projectId = p.id")
+              .andWhere("u.fullName", "like", `%${filter}%`);
+        });
       };
     }
-    const totalProjects = await Projects.countDocuments(query);
+
+    let totalProjects = await knex(PROJECTS).count("id").first();
+    totalProjects = totalProjects["count(`id`)"];
     const skip = (page - 1) * limit;
 
-    let projects = await Projects.find(query).sort({ [sortField]: sortOrder }).skip(skip).limit(limit).populate({ path: "developers.id", select: "fullName", }).lean();
-    const formatteProject = projects.map((project) => {
+    const projectsQuery = await knex.select(
+      "u.fullName as username", 
+      "p.name as projectName",
+      "p.id as projectId", 
+      "p.startDate",
+      'p.description as description',
+      knex.raw('GROUP_CONCAT(JSON_OBJECT("id", u.id, "fullName", u.fullName)) as developers')
+    )
+    .from(`${PROJECTS} as p`)
+    .innerJoin(`${USER_PROJECT_RELATION} as up`, "p.id", "up.projectId")
+    .innerJoin(`${USERS} as u`, "up.userId", "u.id")
+    .where(query)
+    .groupBy('p.id')
+    .orderBy(`p.${sortField}`, sortOrder === -1 ? "desc" : "asc")
+    .offset(skip)
+    .limit(limit);    
+
+    const projects = projectsQuery.map(row => {
+      return {
+        ...row,
+        developers: JSON.parse(`[${row.developers}]`)
+      };
+    });
+
+    const formattedProject = projects.map((project) => {
       return {
         ...project,
         startDate: formattedDate(project.startDate),
@@ -139,7 +147,7 @@ const getProjects = asyncHandler(async (req, res) => {
     return res.status(200).json({
       error: false,
       message: "Project retrieved successfully.",
-      projects: formatteProject,
+      data: formattedProject,
       currentPage: page,
       totalPages: Math.ceil(totalProjects / limit),
       totalProjects,
@@ -155,11 +163,11 @@ const getUserProjects = asyncHandler(async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const sortField = req.query.sortField || "createdAt";
-    const sortOrder = req.query.sortOrder || -1;
-    const userId = req.user._id;
+    const sortOrder = parseInt(req.query.sortOrder) || -1;
+    const userId = req.user.id;
     const { filter } = req.body;
 
-    let query = { "developers.id": userId };
+    let query = {};
 
     if (filter) {
       function isValidDate(filter) {
@@ -167,35 +175,48 @@ const getUserProjects = asyncHandler(async (req, res) => {
         return dateRegex.test(filter);
       }
 
-      let dateSearch;
+      let formattedDate = null;
       if (typeof filter === "string" && isValidDate(filter)) {
-        dateSearch = new Date(filter.split("-").reverse().join("-"));
-      } else {
-        dateSearch = null;
+        formattedDate = filter.split('-').reverse().join('-');
       }
-
-      query.$or = [
-        { name: { $regex: filter, $options: "i" } },
-        { description: { $regex: filter, $options: "i" } },
-        {
-          $expr: {
-            $eq: [{ $month: "$startDate" }, isNaN(filter) ? null : filter],
-          },
-        },
-        {
-          $expr: {
-            $eq: [{ $year: "$startDate" }, isNaN(filter) ? null : filter],
-          },
-        },
-        { startDate: { $eq: dateSearch } },
-      ];
+      query = function () {
+        this.where("p.name", "like", `%${filter}%`)
+        .orWhere("description", "like", `%${filter}%`)
+        .orWhereRaw("MONTH(startDate) = ?", [isNaN(filter) ? null : parseInt(filter)])
+        .orWhereRaw("YEAR(startDate) = ?", [isNaN(filter) ? null : parseInt(filter)])
+        .orWhere("p.startDate", '=', formattedDate)
+      };
     }
 
-    const totalProjectsCount = await Projects.countDocuments(query);
+    let totalProjectsCount = await knex(PROJECTS).count("id").first();
+    totalProjectsCount = totalProjectsCount["count(`id`)"];
 
-    const matchingProjects = await Projects.find(query).skip((page - 1) * limit).limit(limit).sort({ [sortField]: sortOrder }).lean();
+    const projectsQuery = await knex.select(
+        "u.fullName as username", 
+        "p.name as projectName",
+        "p.id as projectId", 
+        "p.startDate",
+        'p.description as description',
+        knex.raw('GROUP_CONCAT(JSON_OBJECT("id", u.id, "fullName", u.fullName)) as developers')
+      )
+      .from(`${USER_PROJECT_RELATION} as up`)
+      .innerJoin(`${USERS} as u`, "up.userId", "u.id")
+      .innerJoin(`${PROJECTS} as p`, "up.projectId", "p.id")
+      .where('up.userId', userId)
+      .where(query)
+      .groupBy('p.id')
+      .orderBy(`p.${sortField}`, sortOrder === -1 ? "desc" : "asc")
+      .offset((page - 1) * limit)
+      .limit(limit);
 
-    const formattedProjects = matchingProjects.map((project) => ({
+    const projects = projectsQuery.map(row => {
+      return {
+        ...row,
+        developers: JSON.parse(`[${row.developers}]`)
+      };
+    });
+
+    const formattedProjects = projects.map((project) => ({
       ...project,
       startDate: formattedDate(project.startDate),
     }));
@@ -203,7 +224,7 @@ const getUserProjects = asyncHandler(async (req, res) => {
     return res.status(200).json({
       error: false,
       message: "Projects retrieved successfully.",
-      projects: formattedProjects,
+      data: formattedProjects,
       currentPage: page,
       totalPages: Math.ceil(totalProjectsCount / limit),
       totalProjects: totalProjectsCount,
@@ -224,42 +245,33 @@ const updateProject = asyncHandler(async (req, res) => {
     const { name, description, startDate, developers } = req.body;
     const { id } = req.params;
 
-    const existingProject = await Projects.findById(id);
+    const existingProject = await knex(PROJECTS).where("id", id).first();
+
     if (!existingProject) {
       return res.status(404).json({
         error: true,
-        message: "This project is not existing in the database.",
+        message: "This project does not exist in the database.",
       });
     }
 
     const projectObj = {
       name: name ? capitalizeFLetter(name) : existingProject.name,
-      description: description ?  capitalizeFLetter(description) : existingProject.description,
+      description: description ? capitalizeFLetter(description) : existingProject.description,
       startDate: startDate || existingProject.startDate,
-      developers: developers || existingProject.developers,
     };
 
-    if (developers && Array.isArray(developers)) {
-      const newdevelopersIds = developers.map((p) => {
-        return { id: new mongoose.Types.ObjectId(p) };
-      });
-      projectObj.developers = newdevelopersIds;
-    }
+    await knex(PROJECTS).where("id", id).update({ ...projectObj, updatedAt: new Date() });
 
-    const updatedProject = await Projects.findByIdAndUpdate(id, projectObj, { new: true, });
-
-    for (const developerId of existingProject.developers) {
-      await Users.findByIdAndUpdate(developerId.id, { $pull: { projects: { id: id } }, });
-    }
-
-    for (const developerId of developers) {
-      await Users.findByIdAndUpdate(developerId, { $addToSet: { projects: { id: id } }, });
+    if(developers) {
+      await knex(USER_PROJECT_RELATION).where("projectId", id).del();
+      for (const developer of developers) {
+        await knex(USER_PROJECT_RELATION).insert({ userId: developer, projectId: id, });
+      }
     }
 
     return res.status(200).json({
       error: false,
       message: "Project updated successfully.",
-      project: updatedProject,
     });
   } catch (error) {
     console.error(error.message);
@@ -270,11 +282,35 @@ const updateProject = asyncHandler(async (req, res) => {
 const getSingleProject = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
-    const project = await Projects.findById(id).populate({ path: "developers.id", select: "-photo", });
+
+      const projectQuery = await knex.select(
+        'p.*',
+        knex.raw('GROUP_CONCAT(JSON_OBJECT("id", u.id, "fullName", u.fullName)) as developers')
+      )
+      .from(`${USER_PROJECT_RELATION} as up`)
+      .where('projectId', id)
+      .innerJoin(`${USERS} as u`, "up.userId", "u.id")
+      .innerJoin(`${PROJECTS} as p`, "up.projectId", "p.id")
+      .groupBy('p.id')
+
+      let project = projectQuery.map(row => {
+        return {
+          ...row,
+          developers: JSON.parse(`[${row.developers}]`)
+        };
+      });
+
+    if (project.length === 0) {
+      return res.status(400).json({
+        error: false,
+        message: "Project doesn't exist.",
+      });
+    }
+
     return res.status(200).json({
       error: false,
       message: "Single project getting successfully.",
-      project,
+      data: project,
     });
   } catch (error) {
     console.error(error.message);
@@ -285,27 +321,18 @@ const getSingleProject = asyncHandler(async (req, res) => {
 const delelteProject = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
-    const project = await Projects.findByIdAndDelete(id);
-    if (project) {
-      await Users.updateMany(
-        {
-          projects:
-          {
-            $elemMatch: {
-              id: id
-            }
-          }
-        },
-        {
-          $pull: {
-            projects: {
-              id: id
-            }
-          }
-        }
-      );
-      await Worklog.deleteMany({ project: id });
+
+    const existingProject = await knex(PROJECTS).where('id', id).first();
+    if(!existingProject) {
+      return res.status(400).json({
+        error: true,
+        message: "Project doesn't exist.",
+      });
     }
+    
+    await knex(USER_PROJECT_RELATION).where("projectId", id).del();
+    await knex(PROJECTS).where("id", id).del();
+    await knex(WORKLOGS).where('project', id).del();
     return res.status(200).json({
       error: false,
       message: "Project deleted successfully.",
@@ -318,12 +345,19 @@ const delelteProject = asyncHandler(async (req, res) => {
 
 const userProjects = asyncHandler(async (req, res) => {
   try {
-    const id = req.user._id;
-    const project = await Projects.find({ "developers.id": id });
+    const id = req.user.id;
+
+    let projects = await knex
+      .select("up.*", "u.fullName as username", "p.*")
+      .from(`${USER_PROJECT_RELATION} as up`)
+      .innerJoin(`${USERS} as u`, "up.userId", "u.id")
+      .innerJoin(`${PROJECTS} as p`, "up.projectId", "p.id")
+      .where("userId", id);
+
     return res.status(200).json({
       error: false,
       message: "Projects getting Successfully.",
-      project,
+      data: projects,
     });
   } catch (error) {
     console.error(error.message);
@@ -331,4 +365,13 @@ const userProjects = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { createProject, getAllProjects, getProjects, getUserProjects, updateProject, delelteProject, getSingleProject, userProjects, };
+module.exports = {
+  createProject, 
+  getAllProjects,
+  getProjects, 
+  getUserProjects, 
+  updateProject, 
+  delelteProject,
+  getSingleProject,
+  userProjects,
+};
