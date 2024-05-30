@@ -1,9 +1,15 @@
+const { knex } = require("../database/db");
 const asyncHandler = require("express-async-handler");
 const { validationResult } = require("express-validator");
-const { sendMailForLeaveStatus, sendMailForLeaveRequest, formattedDate, capitalizeFLetter, formatteDayType, parsedDayType } = require("../helper/mail");
-const { USERS, LEAVES } = require('../constants/tables');
-const { knex } = require('../database/db');
-
+const {
+  sendMailForLeaveStatus,
+  sendMailForLeaveRequest,
+  formattedDate,
+  capitalizeFLetter,
+  formatteDayType,
+  parsedDayType,
+} = require("../helper/mail");
+const { USERS, LEAVES } = require("../constants/tables");
 
 const createLeave = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
@@ -11,13 +17,13 @@ const createLeave = asyncHandler(async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
   try {
-    const { reason, startDate, endDate, leaveType, leaveDayType, userId, status, totalDays } = req.body;
+    const { reason, startDate, endDate, leaveType, leaveDayType, userId, status, totalDays, } = req.body;
 
     if (startDate > endDate) {
       return res.status(200).json({
         error: true,
-        message: "Please select proper date."
-      })
+        message: "Please select proper date.",
+      });
     }
 
     let uId;
@@ -30,7 +36,7 @@ const createLeave = asyncHandler(async (req, res) => {
     const user = await knex(USERS).where("id", uId).first();
 
     let createLeaves;
-    if (user.leaveBalance >= totalDays && leaveType === "paid" && user.leaveBalance !== 0) {
+    if ( user.leaveBalance >= totalDays && leaveType === "paid" && user.leaveBalance !== 0 ) {
       const leaveData = {
         userId: uId,
         reason,
@@ -60,13 +66,13 @@ const createLeave = asyncHandler(async (req, res) => {
         message: "Your leave balance is not enough to take paid leave!",
       });
     }
-
-    await sendMailForLeaveRequest(createLeaves);
+    const createdLeave = await knex(LEAVES).where('id', createLeaves[0]).first();
+    await sendMailForLeaveRequest(createdLeave);
 
     if (status === "approved" && leaveType === "paid") {
       if (user.leaveBalance >= totalDays) {
         await knex(USERS).where("id", uId).decrement("leaveBalance", totalDays);
-        await sendMailForLeaveStatus(createLeaves, "-");
+        await sendMailForLeaveStatus(createdLeave, "-");
       } else {
         return res.status(201).json({
           error: true,
@@ -125,9 +131,7 @@ const getLeaves = asyncHandler(async (req, res) => {
       let searchUser = await knex(USERS).select().where("fullName", "like", `%${filter}%`);
 
       if (searchUser.length !== 0) {
-        fullName = searchUser.map((u) => {
-          return u.id;
-        });
+        fullName = searchUser.map((u) => u.id);
       }
 
       query = function () {
@@ -137,14 +141,17 @@ const getLeaves = asyncHandler(async (req, res) => {
       };
     }
 
-    let totalLeaves = await knex(LEAVES).count("id").first();
-    totalLeaves = totalLeaves["count(`id`)"];
+    let totalLeaves = await knex(`${LEAVES} as l`)
+        .where(query)
+        .innerJoin(`${USERS} as u`, "l.userId", "u.id")
+        .count('l.id as count')
+        .first();
+    totalLeaves = totalLeaves.count ? totalLeaves.count : 0;
 
     const skip = (page - 1) * limit;
     let leaves;
 
-    // sortField is createdAt by default.
-    if (sortField === "userId.fullName") {
+    if (sortField === "username") {
       leaves = await knex
         .select("l.*", "u.fullName as username")
         .from(`${LEAVES} as l`)
@@ -153,8 +160,8 @@ const getLeaves = asyncHandler(async (req, res) => {
         .offset(skip)
         .limit(limit);
       leaves.sort((a, b) => {
-        const nameA = a.userId?.fullName || "";
-        const nameB = b.userId?.fullName || "";
+        const nameA = a.username || "";
+        const nameB = b.username || "";
         return sortOrder * nameA.localeCompare(nameB);
       });
     } else {
@@ -181,13 +188,13 @@ const getLeaves = asyncHandler(async (req, res) => {
     return res.status(200).json({
       error: false,
       message: "Leaves is retrieved successfully.",
-      leaves: formattedLeaves,
+      data: formattedLeaves,
       currentPage: page,
       totalPages: Math.ceil(totalLeaves / limit),
       totalLeaves,
     });
   } catch (error) {
-    console.log(error);
+    console.log(error.message);
   }
 });
 
@@ -197,32 +204,35 @@ const userGetLeave = asyncHandler(async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const { filter } = req.body;
     const sortField = req.query.sortField || "createdAt";
-    const sortOrder = req.query.sortOrder || -1;
+    const sortOrder = parseInt(req.query.sortOrder) || -1;
     let query = { userId: req.user.id };
-
+    
     if (filter) {
       query = function () {
         this.where("l.leaveType", filter.toLowerCase())
           .orWhere("l.status",filter.toLowerCase());
       };
     }
-
-    let totalLeaves = await knex(LEAVES).count("id").first();
-    totalLeaves = totalLeaves["count(`id`)"];
+    
+    totalLeaves = await knex(`${LEAVES} as l`)
+      .where("l.userId", req.user.id)
+      .andWhere(query)
+      .orderBy(`l.${sortField}`, sortOrder === -1 ? "desc" : "asc")
+      .innerJoin(`${USERS} as u`, "l.userId", "u.id")
+      .count("l.id as count")
+      .first();
+    totalLeaves = totalLeaves.count ? totalLeaves.count : 0;
 
     const skip = (page - 1) * limit;
 
     const currentYear = new Date().getFullYear();
 
-    const approvedLeaves = await knex(LEAVES).where({
-      userId: req.user.id,
-      status: "approved",
-    });
+    const approvedLeaves = await knex(LEAVES).where({ userId: req.user.id, status: "approved" });
     let totalApprovedLeaveDays = 0;
 
     for (const leave of approvedLeaves) {
       if (new Date(leave.startDate).getFullYear() === currentYear) {
-        totalApprovedLeaveDays += leave.totalDays;
+        totalApprovedLeaveDays += parseFloat(leave.totalDays);
       }
     }
 
@@ -250,7 +260,7 @@ const userGetLeave = asyncHandler(async (req, res) => {
     return res.status(200).json({
       error: false,
       message: "All Leaves getting successfully.",
-      leaves: formattedLeaves,
+      data: formattedLeaves,
       currentPage: page,
       totalPages: Math.ceil(totalLeaves / limit),
       totalLeaves,
@@ -265,7 +275,7 @@ const userGetLeave = asyncHandler(async (req, res) => {
 const getLeaveById = asyncHandler(async (req, res) => {
   try {
     const leaves = await knex
-      .select("l.*", "u.*")
+      .select("l.*", 'l.status as leaveStatus', "u.*")
       .from(`${LEAVES} as l`)
       .where("l.id", req.params.id)
       .innerJoin(`${USERS} as u`, "l.userId", "u.id")
@@ -276,7 +286,7 @@ const getLeaveById = asyncHandler(async (req, res) => {
     return res.status(200).json({
       error: false,
       message: "Single Leave getting successfully !!",
-      leaves: {
+      data: {
         ...rest,
         leaveDayType: formatteDayType(rest.leaveDayType),
         startDate: rest.startDate.toISOString().split("T")[0],
@@ -341,7 +351,7 @@ const deleteLeave = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
 
-    await knex(LEAVES).where("id", id).del();
+    await knex(LEAVES).where("id", id).delete();
     return res.status(201).send({
       error: false,
       message: "Leave deleted successfully.",
@@ -406,42 +416,53 @@ const getAllPendingLeave = asyncHandler(async (req, res) => {
     const { filter } = req.body;
     const sortField = req.query.sortField || "createdAt";
     const sortOrder = parseInt(req.query.sortOrder) || -1;
-
-    let query = { 'l.status': "pending" };
+    let query = {};
     if (filter) {
       let fullName = [];
 
-      let searchUser = await knex(USERS).select().where("fullName", "like", `%${filter}%`);
+      let searchUser = await knex("users")
+        .select()
+        .where("fullName", "like", `%${filter}%`);
 
       if (searchUser.length !== 0) {
         fullName = searchUser.map((u) => {
           return u.id;
         });
       }
+
       query = function () {
-        this.where("l.leaveType", filter.toLowerCase())
-        .orWhereIn("userId", fullName);
+        this.where("l.status", "pending")
+          .andWhere(function() {
+            this.orWhere("l.leaveType", filter.toLowerCase())
+                .orWhereIn("l.userId", fullName);
+        });
       };
     }
 
-    let totalLeaves = await knex(LEAVES).count("id").first();
-    totalLeaves = totalLeaves["count(`id`)"];
+    totalLeaves = await knex(`${LEAVES} as l`)
+        .innerJoin(`${USERS} as u`, "l.userId", "u.id")
+        .orWhere(query)
+        .andWhere('l.status', 'pending')
+        .count('l.id as count')
+        .first();
+    totalLeaves = totalLeaves.count ? totalLeaves.count : 0;
+
 
     const skip = (page - 1) * limit;
     let leaves;
-
-    if (sortField === "userId.fullName") {
-
-      leaves = await knex.select("l.*", "u.fullName as username").from(`${LEAVES} as l`)
+    if (sortField === "username") {
+      leaves = await knex
+        .select("l.*", "u.fullName as username")
+        .from(`${LEAVES} as l`)
         .innerJoin(`${USERS} as u`, "l.userId", "u.id")
-        .where("l.status", "pending")
         .orWhere(query)
+        .andWhere("l.status", "pending")
         .offset(skip)
         .limit(limit);
-
+      
       leaves.sort((a, b) => {
-        const nameA = a.userId?.fullName || "";
-        const nameB = b.userId?.fullName || "";
+        const nameA = a.username || "";
+        const nameB = b.username || "";
         return sortOrder * nameA.localeCompare(nameB);
       });
     } else {
@@ -449,8 +470,8 @@ const getAllPendingLeave = asyncHandler(async (req, res) => {
         .select("l.*", "u.fullName as username")
         .from(`${LEAVES} as l`)
         .innerJoin(`${USERS} as u`, "l.userId", "u.id")
-        .where("l.status", "pending")
         .orWhere(query)
+        .andWhere("l.status", "pending")
         .orderBy(sortField, sortOrder === -1 ? "desc" : "asc")
         .offset(skip)
         .limit(limit);
@@ -470,14 +491,24 @@ const getAllPendingLeave = asyncHandler(async (req, res) => {
     return res.status(200).json({
       error: false,
       message: "Pending Leaves is retrieved successfully.",
-      leaves: formattedLeaves,
+      data: formattedLeaves,
       currentPage: page,
       totalPages: Math.ceil(totalLeaves / limit),
       totalLeaves,
     });
   } catch (error) {
-    console.log(error);
+    console.log(error.message);
   }
 });
 
-module.exports = { createLeave, getAllLeaves, updateLeave, deleteLeave, userGetLeave, getLeaveById, getLeaves, updateStatus, getAllPendingLeave};
+module.exports = {
+  createLeave,
+  getAllLeaves,
+  updateLeave,
+  deleteLeave,
+  userGetLeave,
+  getLeaveById,
+  getLeaves,
+  updateStatus,
+  getAllPendingLeave,
+};

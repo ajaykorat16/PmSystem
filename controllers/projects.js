@@ -2,7 +2,7 @@ const asyncHandler = require("express-async-handler");
 const { validationResult } = require("express-validator");
 const { capitalizeFLetter, formattedDate } = require("../helper/mail");
 const { knex } = require("../database/db");
-const { PROJECTS, USER_PROJECT_RELATION, USERS, WORKLOGS } = require("../constants/tables");
+const {  PROJECTS, USER_PROJECT_RELATION, USERS, WORKLOGS } = require("../constants/tables");
 
 const createProject = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
@@ -59,7 +59,7 @@ const getAllProjects = asyncHandler(async (req, res) => {
     return res.status(200).json({
       error: false,
       message: "All projects retrieved successfully.",
-      getAllProjects: formatteProject,
+      data: formatteProject,
     });
   } catch (error) {
     console.log(error.message);
@@ -109,26 +109,33 @@ const getProjects = asyncHandler(async (req, res) => {
       };
     }
 
-    let totalProjects = await knex(PROJECTS).count("id").first();
-    totalProjects = totalProjects["count(`id`)"];
+    let totalProjects =  await knex(`${PROJECTS} as p`)
+      .leftJoin(`${USER_PROJECT_RELATION} as up`, "p.id", "up.projectId")
+      .leftJoin(`${USERS} as u`, "up.userId", "u.id")
+      .where(query)
+      .countDistinct("p.id as count")
+      .first();
+
+    totalProjects = totalProjects.count ? totalProjects.count : 0;
+
     const skip = (page - 1) * limit;
 
     const projectsQuery = await knex.select(
-      "u.fullName as username", 
-      "p.name as projectName",
-      "p.id as projectId", 
-      "p.startDate",
-      'p.description as description',
-      knex.raw('GROUP_CONCAT(JSON_OBJECT("id", u.id, "fullName", u.fullName)) as developers')
-    )
-    .from(`${PROJECTS} as p`)
-    .innerJoin(`${USER_PROJECT_RELATION} as up`, "p.id", "up.projectId")
-    .innerJoin(`${USERS} as u`, "up.userId", "u.id")
-    .where(query)
-    .groupBy('p.id')
-    .orderBy(`p.${sortField}`, sortOrder === -1 ? "desc" : "asc")
-    .offset(skip)
-    .limit(limit);    
+        "u.fullName as username", 
+        "p.name as projectName",
+        "p.id as projectId", 
+        "p.startDate",
+        'p.description as description',
+        knex.raw('GROUP_CONCAT(JSON_OBJECT("id", u.id, "fullName", u.fullName)) as developers')
+      )
+      .from(`${PROJECTS} as p`)
+      .leftJoin(`${USER_PROJECT_RELATION} as up`, "p.id", "up.projectId")
+      .leftJoin(`${USERS} as u`, "up.userId", "u.id")
+      .where(query)
+      .groupBy('p.id')
+      .orderBy(`p.${sortField}`, sortOrder === -1 ? "desc" : "asc")
+      .offset(skip)
+      .limit(limit);    
 
     const projects = projectsQuery.map(row => {
       return {
@@ -188,10 +195,16 @@ const getUserProjects = asyncHandler(async (req, res) => {
       };
     }
 
-    let totalProjectsCount = await knex(PROJECTS).count("id").first();
-    totalProjectsCount = totalProjectsCount["count(`id`)"];
+    let totalProjectsCount = await knex(`${USER_PROJECT_RELATION} as up`)
+      .innerJoin(`${USERS} as u`, "up.userId", "u.id")
+      .innerJoin(`${PROJECTS} as p`, "up.projectId", "p.id")
+      .where('up.userId', userId)
+      .where(query)
+      .count("p.id as count")
+      .first();
 
-    const projectsQuery = await knex.select(
+    totalProjectsCount = totalProjectsCount ? totalProjectsCount.count : 0;
+      const projectsQuery = await knex.select(
         "u.fullName as username", 
         "p.name as projectName",
         "p.id as projectId", 
@@ -209,12 +222,12 @@ const getUserProjects = asyncHandler(async (req, res) => {
       .offset((page - 1) * limit)
       .limit(limit);
 
-    const projects = projectsQuery.map(row => {
-      return {
-        ...row,
-        developers: JSON.parse(`[${row.developers}]`)
-      };
-    });
+      const projects = projectsQuery.map(row => {
+        return {
+          ...row,
+          developers: JSON.parse(`[${row.developers}]`)
+        };
+      });
 
     const formattedProjects = projects.map((project) => ({
       ...project,
@@ -283,34 +296,33 @@ const getSingleProject = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
 
-      const projectQuery = await knex.select(
+    const projectQuery = await knex.select(
         'p.*',
-        knex.raw('GROUP_CONCAT(JSON_OBJECT("id", u.id, "fullName", u.fullName)) as developers')
+        knex.raw('IFNULL(' +
+        'GROUP_CONCAT(' +
+          'IF(u.id IS NOT NULL, JSON_OBJECT("id", u.id, "fullName", u.fullName), NULL)' +
+        '), "") as developers'),
       )
-      .from(`${USER_PROJECT_RELATION} as up`)
-      .where('projectId', id)
-      .innerJoin(`${USERS} as u`, "up.userId", "u.id")
-      .innerJoin(`${PROJECTS} as p`, "up.projectId", "p.id")
+      .from(`${PROJECTS} as p`)
+      .where('p.id', id)
+      .leftJoin(`${USER_PROJECT_RELATION} as up`, "p.id", "up.projectId")
+      .leftJoin(`${USERS} as u`, "up.userId", "u.id")
       .groupBy('p.id')
-
-      let project = projectQuery.map(row => {
-        return {
-          ...row,
-          developers: JSON.parse(`[${row.developers}]`)
-        };
-      });
-
-    if (project.length === 0) {
+      .first();
+      
+    if (!projectQuery) {
       return res.status(400).json({
-        error: false,
+        error: true,
         message: "Project doesn't exist.",
       });
+    } else {
+      projectQuery.developers = JSON.parse(`[${projectQuery.developers}]`);
     }
 
     return res.status(200).json({
       error: false,
       message: "Single project getting successfully.",
-      data: project,
+      data: projectQuery,
     });
   } catch (error) {
     console.error(error.message);
@@ -346,7 +358,7 @@ const delelteProject = asyncHandler(async (req, res) => {
 const userProjects = asyncHandler(async (req, res) => {
   try {
     const id = req.user.id;
-
+    
     let projects = await knex
       .select("up.*", "u.fullName as username", "p.*")
       .from(`${USER_PROJECT_RELATION} as up`)

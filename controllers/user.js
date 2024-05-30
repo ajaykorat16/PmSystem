@@ -50,7 +50,7 @@ const createUser = asyncHandler(async (req, res) => {
         message: "User already register with this email.",
       });
     }
-    
+
     const existingPhone = await knex(USERS).where("phone", phone).first();
 
     if (existingPhone) {
@@ -77,7 +77,9 @@ const createUser = asyncHandler(async (req, res) => {
     };
     const newUser = await knex(USERS).insert(userDetail);
 
-    const doj = new Date(newUser.dateOfJoining);
+    const user = await knex(USERS).where('id', newUser[0]).first();
+
+    const doj = new Date(user.dateOfJoining);
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
     const currentYear = currentDate.getFullYear();
@@ -106,7 +108,7 @@ const loginUser = asyncHandler(async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await knex("users").where("email", email).first();
+    const user = await knex(USERS).where("email", email).first();
 
     if (!user) {
       return res.status(401).json({
@@ -146,7 +148,7 @@ const loginUserByAdmin = asyncHandler(async (req, res) => {
   try {
     const { email } = req.body;
 
-    const user = await knex("users").where("email", email).first();
+    const user = await knex(USERS).where("email", email).first();
 
     if (!user) {
       return res.status(401).json({
@@ -177,6 +179,7 @@ const updateUser = asyncHandler(async (req, res) => {
   }
   try {
     const { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining, projects, photo, } = req.fields;
+    
     const { id } = req.params;
     let user;
     if (id) {
@@ -241,10 +244,21 @@ const updateUser = asyncHandler(async (req, res) => {
 
     await knex(USERS).where("id", user.id).update({ ...updatedFields, updatedAt: new Date() });
 
+    let userProjects;
+    try {
+      userProjects = JSON.parse(projects);
+    } catch (error) {
+      userProjects = []
+    }
+
     if(projects) {
-      await knex(USER_PROJECT_RELATION).where('userId', user.id).del();
-      for (const projectId of projects) {
-        await knex(USER_PROJECT_RELATION).insert({ userId: user.id, projectId })
+      if(userProjects.length > 0) {
+        await knex(USER_PROJECT_RELATION).where('userId', user.id).del();
+        for (const projectId of userProjects) {
+          await knex(USER_PROJECT_RELATION).insert({ userId: user.id, projectId })
+        }
+      } else {
+        await knex(USER_PROJECT_RELATION).where('userId', user.id).del();
       }
     }
 
@@ -253,7 +267,7 @@ const updateUser = asyncHandler(async (req, res) => {
       message: "Updated Successfully !!",
     });
   } catch (error) {
-    console.log(error);
+    console.log(error.message);
     res.status(500).send("Server error");
   }
 });
@@ -261,7 +275,7 @@ const updateUser = asyncHandler(async (req, res) => {
 const deleteUserProfile = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     const user = await knex(USERS).where("id", id).first();
 
     if (!user) {
@@ -293,10 +307,10 @@ const getUsers = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const sortField = req.query.sortField || "createdAt";
-  const sortOrder = req.query.sortOrder || -1;
+  const sortOrder = parseInt(req.query.sortOrder) || -1;
   const { filter } = req.body;
   const authUser = req.user;
-
+  
   try {
     let query = {};
 
@@ -340,7 +354,6 @@ const getUsers = asyncHandler(async (req, res) => {
     }
 
     const skip = (page - 1) * limit;
-
     let totalEmployee = await knex(USERS).where("role", "user").count({ count: "*" });
     totalEmployee = totalEmployee[0].count;
 
@@ -349,11 +362,24 @@ const getUsers = asyncHandler(async (req, res) => {
     if (authUser.role === "user") {
       totalUsers = await knex(USERS).where('role', 'user').where(query).count({ count: '*' }).first();
       totalUsers = totalUsers.count;
-      users = await knex.select('u.*', 'd.name as department').from(`${USERS} as u`).where('role', 'user').where(query).leftJoin(`${DEPARTMENTS} as d`, 'u.department', 'd.id').orderBy(sortField, sortOrder === -1 ? "desc" : "asc").offset(skip).limit(limit);
+      users = await knex.select('u.*', 'd.name as department')
+        .from(`${USERS} as u`)
+        .where('role', 'user')
+        .where(query)
+        .leftJoin(`${DEPARTMENTS} as d`, 'u.department', 'd.id')
+        .orderBy(sortField, sortOrder === -1 ? "desc" : "asc")
+        .offset(skip)
+        .limit(limit);
     } else {
       totalUsers = await knex(USERS).where(query).count({ count: '*' }).first();
       totalUsers = totalUsers.count;
-      users = await knex.select('u.*', 'd.name as department').from(`${USERS} as u`).where(query).leftJoin(`${DEPARTMENTS} as d`, 'u.department', 'd.id').orderBy(sortField, sortOrder === -1 ? "desc" : "asc").offset(skip).limit(limit);
+      users = await knex.select('u.*', 'd.name as department')
+        .from(`${USERS} as u`)
+        .where(query)
+        .leftJoin(`${DEPARTMENTS} as d`, 'u.department', 'd.id')
+        .orderBy(sortField, sortOrder === -1 ? "desc" : "asc")
+        .offset(skip)
+        .limit(limit);
     }
 
     const usersWithoutPassword = users.map((user) => {
@@ -385,7 +411,7 @@ const getUsers = asyncHandler(async (req, res) => {
       totalEmployee,
     });
   } catch (error) {
-    console.log(error);
+    console.log(error.message);
     res.status(500).json({ error: true, message: "Server error" });
   }
 });
@@ -401,17 +427,22 @@ const getUserByBirthDayMonth = asyncHandler(async (req, res) => {
     let query = {};
     if (filter) {
       const filterMonth = isNaN(filter) ? month : parseInt(filter);
-
       query = function() {
         this.whereRaw('MONTH(dateOfBirth) = ?', filterMonth);
       }
     }
 
-    totalUsers = await knex(USERS).where(query).count({ count: '*' }).first();
-    totalUsers = totalUsers.count;
+    let totalUsers = await knex(USERS).where(query).count('id as count').first();
+    totalUsers = totalUsers.count ? totalUsers.count : 0;
+
     const skip = (page - 1) * limit;
 
-    const users = await knex.select('u.*', 'd.name as department').from(`${USERS} as u`).innerJoin(`${DEPARTMENTS} as d`, 'd.id', 'u.department').where(query);
+    const users = await knex.select('u.*', 'd.name as department')
+      .from(`${USERS} as u`)
+      .leftJoin(`${DEPARTMENTS} as d`, 'd.id', 'u.department')
+      .where(query)
+      .offset(skip)
+      .limit(limit);
     
     const usersWithoutPassword = users.map((user) => {
       const { password, ...dataWithoutPassword } = user;
@@ -453,6 +484,7 @@ const getAllUser = asyncHandler(async (req, res) => {
       const { password, ...dataWithoutPassword } = userData;
       return dataWithoutPassword;
     });
+    
     return res.status(200).json({
       error: false,
       message: "All users retrieved successfully.",
@@ -493,7 +525,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
         'up.*', 
         'u.*', 
         'd.name as departmentName',
-        knex.raw('IFNULL(GROUP_CONCAT(IF(p.id IS NOT NULL, JSON_OBJECT("id", p.id, "name", p.name), NULL)), "[]") as projects')
+        knex.raw('IFNULL(GROUP_CONCAT(IF(p.id IS NOT NULL, JSON_OBJECT("id", p.id, "name", p.name), NULL)), "") as projects')
       )
       .from(`${USERS} as u`)
       .leftJoin(`${DEPARTMENTS} as d`, 'd.id', 'u.department')
@@ -507,11 +539,9 @@ const getUserProfile = asyncHandler(async (req, res) => {
     } else {
       getProfile = await getProfile.where('u.id', req.user.id)
     }
-
-    if (getProfile && getProfile.projects) {
-      getProfile.projects = JSON.parse(`[${getProfile.projects}]`);
-    }
-
+    
+    getProfile.projects = JSON.parse(`[${getProfile.projects}]`);
+    
     const photoUrl = !getProfile?.photo ? null : `${DOMAIN}/images/${getProfile?.photo}`;
     const { password, ...dataWithoutPassword } = getProfile;
     
@@ -539,14 +569,13 @@ const changePasswordController = asyncHandler(async (req, res) => {
     const { password } = req.body;
 
     const hashed = await hashPassword(password);
-    
     await knex(USERS).where("id", user).update({ password: hashed, updatedAt: new Date() });
     res.status(200).send({
       error: false,
       message: "Password Reset Successfully.",
     });
   } catch (error) {
-    console.log(error);
+    console.log(error.message);
     res.status(500).send({
       error: true,
       message: "Something went wrong",

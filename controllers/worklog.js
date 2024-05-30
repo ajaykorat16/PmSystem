@@ -46,7 +46,7 @@ const userGetWorklog = asyncHandler(async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const sortField = req.query.sortField || 'createdAt';
-        const sortOrder = req.query.sortOrder || -1;
+        const sortOrder = parseInt(req.query.sortOrder) || -1;
         const userId = req.user.id;
         const { filter } = req.body;
 
@@ -76,14 +76,15 @@ const userGetWorklog = asyncHandler(async (req, res) => {
                 };
             }
 
-        const result = await knex(WORKLOGS).where('userId', userId).where(function() {
-            this.where('description', 'like', `%${filter}%`)
-            .orWhereIn('project', projects)
-            .orWhereRaw('DATE(logDate) = ?', dateSearch);
-        }).count({ count: '*' });
+        let totalWorklogCount = await knex(`${WORKLOGS} as w`)
+            .where('w.userId', userId)
+            .where(query)
+            .innerJoin(`${PROJECTS} as p`, 'w.project', 'p.id')
+            .count('w.id as count')
+            .first();
 
-        const totalWorklogCount = result[0].count;
-
+        totalWorklogCount = totalWorklogCount.count ? totalWorklogCount.count : 0;
+        
         const worklog = await knex
             .select('w.*', 'p.name as projectName')
             .from(`${WORKLOGS} as w`)
@@ -93,7 +94,7 @@ const userGetWorklog = asyncHandler(async (req, res) => {
             .offset((page - 1) * limit)
             .limit(limit)
             .orderBy(sortField, sortOrder === -1 ? "desc" : "asc");
-
+            
         const formattedWorklog = worklog.map((log) => {
             return {
                 ...log,
@@ -139,7 +140,7 @@ async function generateWorklogQuery(filter) {
     return new Promise(async (resolve, reject) => {
         const query = function() {
             if (filter.project) {
-                this.where('name', filter.project)
+                this.where('p.id', filter.project)
             }
     
             if (filter.userId) {
@@ -151,7 +152,7 @@ async function generateWorklogQuery(filter) {
             }
     
             if (filter.logDate) {
-                let formattedDate = filter.logDate.split("-").reverse().join("-");
+                let formattedDate = moment(filter.logDate).format('YYYY-MM-DD');
                 this.whereRaw('DATE(logDate) = ?', [formattedDate])
             }
         }
@@ -164,23 +165,37 @@ const getAllWorklog = asyncHandler(async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const sortField = req.query.sortField || 'createdAt';
-        const sortOrder = req.query.sortOrder || -1;
+        const sortOrder = parseInt(req.query.sortOrder) || -1;
         const filter = req.body.filter;
         const yesterday = moment().subtract(1, 'days').startOf('day');
         let query = {}
-        let initialQuery;
         if (typeof filter !== 'undefined') {
             query = await generateWorklogQuery(filter);
         }
 
-        const userIds = await knex(WORKLOGS).select('userId').where('logDate', '>=', yesterday.startOf('day').format('YYYY-MM-DD HH:mm:ss')).andWhere('logDate', '<', yesterday.endOf('day').format('YYYY-MM-DD HH:mm:ss')).groupBy('userId').countDistinct('userId as userCount');
+        const userIds = await knex(WORKLOGS)
+            .select('userId')
+            .where('logDate', '>=', yesterday.startOf('day').format('YYYY-MM-DD HH:mm:ss'))
+            .andWhere('logDate', '<', yesterday.endOf('day').format('YYYY-MM-DD HH:mm:ss'))
+            .groupBy('userId')
+            .countDistinct('userId as userCount');
         
         const worklogUserCount = userIds[0] ? userIds[0].userCount : 0;
         
-        let totalWorklogCount = await knex.select('w.*', 'p.name as projectName').from(`${WORKLOGS} as w`).where(query).innerJoin(`${PROJECTS} as p`, 'w.project', 'p.id').count('*');
+        let totalWorklogCount = await knex
+            .select('w.*', 'p.name as projectName')
+            .from(`${WORKLOGS} as w`)
+            .where(query)
+            .innerJoin(`${PROJECTS} as p`, 'w.project', 'p.id')
+            .count('*');
         totalWorklogCount = totalWorklogCount[0]['count(*)'];
         
-        const worklog = await knex.select('w.*', 'u.fullName', 'p.name as projectName').from(`${WORKLOGS} as w`).where(query).innerJoin(`${USERS} as u`, 'w.userId','u.id').innerJoin(`${PROJECTS} as p`, 'w.project', 'p.id').offset((page - 1) * limit).limit(limit).orderBy(sortField, sortOrder === -1 ? "desc" : "asc");
+        const worklog = await knex
+            .select('w.*', 'u.fullName', 'p.name as projectName')
+            .from(`${WORKLOGS} as w`)
+            .where(query)
+            .innerJoin(`${USERS} as u`, 'w.userId','u.id')
+            .innerJoin(`${PROJECTS} as p`, 'w.project', 'p.id').offset((page - 1) * limit).limit(limit).orderBy(sortField, sortOrder === -1 ? "desc" : "asc");
 
         const formattedWorklog = worklog.map((log) => {
             return {
@@ -213,7 +228,13 @@ const getSingleWorklog = asyncHandler(async (req, res) => {
 
     try {
         const { id } = req.params
-        const worklog = await knex.select('w.*', 'u.fullName as username', 'p.name as projectName').from(`${WORKLOGS} as w`).where('w.id', id).innerJoin(`${USERS} as u`, 'w.userId', 'u.id').innerJoin(`${PROJECTS} as p`, 'w.project', 'p.id');
+        const worklog = await knex
+            .select('w.*', 'u.fullName as username', 'p.name as projectName')
+            .from(`${WORKLOGS} as w`)
+            .where('w.id', id)
+            .innerJoin(`${USERS} as u`, 'w.userId', 'u.id')
+            .innerJoin(`${PROJECTS} as p`, 'w.project', 'p.id');
+
         return res.status(200).json({
             error: false,
             message: "Single worklog getting successfully.",

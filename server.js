@@ -25,10 +25,10 @@ app.use(bodyParser.json({ limit: '10mb' }));
 app.use("/images/", express.static('uploads/images'))
 
 const corsOptions = { origin: "*" }
-app.use(express.static(path.join(__dirname, "/client/build")));
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname + "/client/build/index.html"));
-});
+// app.use(express.static(path.join(__dirname, "/client/build")));
+// app.get("/", (req, res) => {
+//   res.sendFile(path.join(__dirname + "/client/build/index.html"));
+// });
 
 app.use(cors(corsOptions))
 app.use(express.json())
@@ -40,7 +40,6 @@ app.use("/leaveManagement", leaveManagement)
 app.use("/projects", projects)
 app.use("/worklog", worklog)
 app.use("/credential", credential)
-
 
 app.listen(PORT, () => {
   console.log(`Server running in http://localhost:${PORT}`);

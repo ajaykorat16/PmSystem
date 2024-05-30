@@ -17,13 +17,17 @@ const getLeavesMonthWise = asyncHandler(async (req, res) => {
       this.whereRaw('YEAR(monthly) = ?', [d.getFullYear()])
         .andWhereRaw('MONTH(monthly) = ?', isNaN(filter) ? month : filter)
     }
-
-    let totalLeaves = await knex(LEAVEMANAGEMENTS).count("id").first();
-    totalLeaves = totalLeaves["count(`id`)"];
+    let totalLeaves = await knex(`${LEAVEMANAGEMENTS} as lm`)
+      .innerJoin(`${USERS} as u`, 'lm.user', 'u.id')
+      .where(query)
+      .count('lm.id as count')
+      .first();
+    totalLeaves = totalLeaves ? totalLeaves.count : 0;
 
     const skip = (page - 1) * limit;
 
     const leaves = await knex.select('lm.*', 'u.fullName').from(`${LEAVEMANAGEMENTS} as lm`).where(query).innerJoin(`${USERS} as u`, 'lm.user', 'u.id').offset(skip).limit(limit);
+
     return res.status(200).json({
       error: false,
       message: "Leaves are retrieved successfully.",
@@ -41,8 +45,13 @@ const getLeavesMonthWise = asyncHandler(async (req, res) => {
 const getSingleLeave = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
+    
+    const getLeave = await knex.select('lm.*', 'u.fullName')
+      .where('lm.id', id)
+      .from(`${LEAVEMANAGEMENTS} as lm`)
+      .innerJoin(`${USERS} as u`, 'lm.user', 'u.id')
+      .first();
 
-    const getLeave = await knex.select('lm.*', 'u.fullName').where('lm.id', id).from(`${LEAVEMANAGEMENTS} as lm`).innerJoin(`${USERS} as u`, 'lm.user', 'u.id').first();
     return res.status(200).json({
       error: false,
       message: "Single leave is getting successfully.",
@@ -58,15 +67,15 @@ const updateLeave = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
     const { leave } = req.body;
-    
+
     const getLeave = await knex.select('lm.*', 'u.fullName', 'u.leaveBalance').from(`${LEAVEMANAGEMENTS} as lm`).where('lm.id', id).innerJoin(`${USERS} as u`, 'lm.user', 'u.id').first();
     if (!getLeave) {
       return res.status(404).json({ error: true, message: "Leave record not found" });
     }
     const leaveChange = parseFloat(leave) - parseFloat(getLeave.leave);
-    
-    await knex(LEAVEMANAGEMENTS).where('id', id).update({ leave });
-    
+
+    await knex(LEAVEMANAGEMENTS).where('id', id).update({ leave, updatedAt: new Date() });
+
     await knex(USERS).where('id', getLeave.user).increment('leaveBalance', leaveChange);
     return res.status(200).json({
       error: false,
@@ -122,8 +131,8 @@ const createManageLeave = asyncHandler(async (req, res) => {
     const monthlyDate = moment(new Date(currentYear, monthly - 1, 1)).format('YYYY-MM-DD');
 
     const createdLeave = { user, monthly: parsedDate(monthlyDate), leave };
-
     await knex(LEAVEMANAGEMENTS).insert(createdLeave);
+    
     await knex(USERS).where('id', user).increment('leaveBalance', leave);
 
     return res.status(201).json({

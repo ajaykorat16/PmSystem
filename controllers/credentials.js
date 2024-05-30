@@ -23,7 +23,10 @@ const createCredential = asyncHandler(async (req, res) => {
     const credential = await knex(CREDENTIALS).insert(credentialObj);
     if (users.length > 0) {
       for (const user of users) {
-        await knex(USER_CREDENTIAL_RELATION).insert({ userId: user, credentialId: credential[0], });
+        await knex(USER_CREDENTIAL_RELATION).insert({
+          userId: user.id,
+          credentialId: credential[0],
+        });
       }
     }
     return res.status(201).json({
@@ -41,7 +44,7 @@ const getCredential = asyncHandler(async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const sortField = req.query.sortField || "createdAt";
-    const sortOrder = req.query.sortOrder || -1;
+    const sortOrder = parseInt(req.query.sortOrder) || -1;
     const { filter } = req.body;
     const userId = req.user.id;
 
@@ -49,29 +52,42 @@ const getCredential = asyncHandler(async (req, res) => {
       this.where("uc.userId", userId).orWhere("c.createdBy", userId);
     };
 
-    let totalCredentialCount = await knex
-        .select("uc.*", "u.fullName as username", "c.*")
-        .from(`${USER_CREDENTIAL_RELATION} as uc`)
-        .innerJoin(`${USERS} as u`, "uc.userId", "u.id")
-        .innerJoin(`${CREDENTIALS} as c`, "uc.credentialId", "c.id")
-        .where(query)
-        .count("u.id")
-        .first();
-    totalCredentialCount = totalCredentialCount["count(`u`.`id`)"];
+    let filterQuery = {};
+    if(filter) {
+      filterQuery = function() {
+        this.where("c.title", "like", `%${filter}%`)
+            .orWhere("c.description", "like", `%${filter}%`);
+      }
+    }
+
+    let totalCredentialCount = await knex(`${CREDENTIALS} as c`)
+      .leftJoin(`${USER_CREDENTIAL_RELATION} as uc`, "uc.credentialId", "c.id")
+      .leftJoin(`${USERS} as u`, "uc.userId", "u.id")
+      .where(function() {
+        this.where("c.createdBy", userId)
+            .orWhere("uc.userId", userId);
+      })
+      .andWhere(filterQuery)
+      .countDistinct('c.id as count')
+      .first();
+
+    totalCredentialCount = totalCredentialCount.count ? totalCredentialCount.count : 0;
 
     const credential = await knex
-      .select("uc.*", "u.fullName as username", "c.*")
-      .from(`${USER_CREDENTIAL_RELATION} as uc`)
-      .innerJoin(`${USERS} as u`, "uc.userId", "u.id")
-      .innerJoin(`${CREDENTIALS} as c`, "uc.credentialId", "c.id")
-      .where("c.createdBy", userId)
-      .orWhere("uc.userId", userId)
-      .orWhere("c.title", "like", `%${filter}%`)
-      .orWhere("c.description", "like", `%${filter}%`)
+      .select("uc.*", "u.fullName as username", "c.id as credentialId", "c.title", "c.description", "c.createdBy", "c.createdAt", 'c.updatedAt')
+      .from(`${CREDENTIALS} as c`)
+      .leftJoin(`${USER_CREDENTIAL_RELATION} as uc`, "uc.credentialId", "c.id")
+      .leftJoin(`${USERS} as u`, "uc.userId", "u.id")
+      .where(function() {
+        this.where("c.createdBy", userId)
+            .orWhere("uc.userId", userId);
+      })
+      .andWhere(filterQuery)
+      .groupBy('c.id')
       .offset((page - 1) * limit)
       .limit(limit)
-      .orderBy(sortField, sortOrder === -1 ? "desc" : "asc");
-
+      .orderBy(`c.${sortField}`, sortOrder === -1 ? "desc" : "asc");
+      
     return res.status(201).json({
       error: false,
       message: "Credential is getting successfully.",
@@ -90,37 +106,39 @@ const getSingleCredential = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
 
-    const credential = await knex(CREDENTIALS)
-      .where(`${CREDENTIALS}.id`, id)
-      .innerJoin(`${USER_CREDENTIAL_RELATION}`, `${CREDENTIALS}.id`, `${USER_CREDENTIAL_RELATION}.credentialId`)
-      .innerJoin(`${USERS}`, `${USER_CREDENTIAL_RELATION}.userId`, `${USERS}.id`);
+    const credential = await knex.select(
+        'c.*', 
+        'c.id as credentialId', 'uc.*',
+        knex.raw('IFNULL(GROUP_CONCAT(IF(u.id IS NOT NULL, JSON_OBJECT("id", u.id, "fullName", u.fullName, "photo", u.photo), NULL)), "") as users') 
+      )
+      .from(`${CREDENTIALS} as c`)
+      .where(`c.id`, id)
+      .leftJoin(`${USER_CREDENTIAL_RELATION} as uc`, `c.id`, `uc.credentialId`)
+      .leftJoin(`${USERS} as u`, `uc.userId`, `u.id`).first();
+
+    credential.users = JSON.parse(`[${credential.users}]`);
 
     const createdBy = await knex(CREDENTIALS)
-      .where(`createdBy`, credential[0].createdBy)
-      .innerJoin(`${USERS} as createdBy`, `${CREDENTIALS}.createdBy`, `createdBy.id`)
+      .where(`createdBy`, credential.createdBy)
+      .innerJoin(`${USERS} as u`, `${CREDENTIALS}.createdBy`, `u.id`)
       .first();
 
     const transformedCreatedBy = {
       id: createdBy.id,
       name: createdBy.fullName,
-      photo: createdBy.photo,
+      photo: createdBy.photo ? `${DOMAIN}/images/${createdBy.photo}` : null,
     };
 
     const transformedData = {
-      id: credential[0].id,
-      title: credential[0].title,
-      description: credential[0].description,
+      id: credential.id,
+      title: credential.title,
+      description: credential.description,
       createdBy: transformedCreatedBy,
-      createdAt: credential[0].createdAt,
-      updatedAt: credential[0].updatedAt,
-      credentialId: credential[0].credentialId,
-      users: credential.map((item) => {
-        const { id, userId, fullName, photo } = item;
-        return { id, userId, fullName, photo };
-      }),
+      createdAt: credential.createdAt,
+      updatedAt: credential.updatedAt,
+      credentialId: credential.credentialId,
+      users: credential.users,
     };
-
-    const createdByPhotoUrl = transformedData.createdBy.photo ? `${DOMAIN}/images/${transformedData.createdBy.photo}` : null;
 
     return res.status(200).json({
       error: false,
@@ -131,14 +149,10 @@ const getSingleCredential = asyncHandler(async (req, res) => {
           ...user,
           photo: user.photo ? `${DOMAIN}/images/${user.photo}` : null,
         })),
-      },
-      createdBy: {
-        ...transformedCreatedBy,
-        photo: createdByPhotoUrl,
-      },
+      }
     });
   } catch (error) {
-    console.error(error.message);
+    console.error(error);
     res.status(500).send("Server error");
   }
 });
@@ -165,7 +179,6 @@ const updateCredential = asyncHandler(async (req, res) => {
       title: title ? capitalizeFLetter(title) : existingCredential.title,
       description: description ? capitalizeFLetter(description) : existingCredential.description,
     };
-
       
     if (existingCredential.createdBy.toString() !== req.user.id.toString()) {
       return res.status(403).json({
@@ -173,11 +186,11 @@ const updateCredential = asyncHandler(async (req, res) => {
         message: "You are not authorized to Update this credential.",
       });
     }
-      
+    
     if (users && Array.isArray(users)) {
       await knex(USER_CREDENTIAL_RELATION).where('credentialId', id).del();
       for (const user of users) {
-        await knex(USER_CREDENTIAL_RELATION).insert({ userId: user.id, credentialId: id });
+        await knex(USER_CREDENTIAL_RELATION).insert({ userId: user, credentialId: id });
       }
     }
 
@@ -196,7 +209,7 @@ const updateCredential = asyncHandler(async (req, res) => {
 const deleteCredential = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     const existingCredential = await knex(CREDENTIALS).where("id", id).first();
 
     if (!existingCredential) {
@@ -230,6 +243,6 @@ module.exports = {
   createCredential,
   getCredential,
   getSingleCredential,
-  updateCredential, 
+  updateCredential,
   deleteCredential,
 };

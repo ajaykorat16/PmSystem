@@ -1,4 +1,5 @@
-const Users = require("../models/userModel")
+const { knex } = require('../database/db');
+const { USERS, DEPARTMENTS } = require('../constants/tables');
 var fs = require("fs");
 const momentTimezone = require('moment-timezone')
 const moment = require('moment')
@@ -89,12 +90,21 @@ const sendMailForLeaveStatus = async (data, reasonForLeaveReject) => {
                 let body = content;
                 const { startDate, endDate, reason, totalDays, status, leaveType, leaveDayType, userId } = data
 
-                const adminUser = await Users.findOne({ email: process.env.ADMIN_EMAIL }).select("-photo");
-                const employee = await Users.findOne({ _id: userId }).select("-photo").populate('department');
+                const adminUser = await knex(USERS).where({ email: process.env.ADMIN_EMAIL }).first();
+
+                const employee = await knex.select(
+                    'u.*',
+                    knex.raw(`IFNULL(GROUP_CONCAT(IF(d.id IS NOT NULL, JSON_OBJECT('id', d.id,'name', d.name), NULL)), '') as department`)
+                )
+                .from(`${USERS} as u`)
+                .where('u.id', userId)
+                .leftJoin(`${DEPARTMENTS} as d`, 'd.id', 'u.department')
+                .first();
+                employee.department = employee.department ? JSON.parse(`${employee.department}`) : null;
 
                 body = body.replace('{userName}', employee.fullName)
                 body = body.replace('{userName}', employee.fullName)
-                body = body.replace('{department}', employee?.department?.name)
+                body = body.replace('{department}', employee?.department?.name ? employee.department.name : ' - ')
                 body = body.replace('{reason}', capitalizeFLetter(reason))
                 body = body.replace('{leaveType}', capitalizeFLetter(leaveType))
                 body = body.replace('{leaveDayType}', formatteDayType(leaveDayType))
@@ -137,12 +147,21 @@ const sendMailForLeaveRequest = async (data) => {
                 let body = content;
                 const { reason, startDate, endDate, userId, totalDays, leaveType, leaveDayType } = data;
 
-                const adminUser = await Users.findOne({ email: process.env.ADMIN_EMAIL }).select("-photo");
-                const employee = await Users.findOne({ _id: userId }).select("-photo").populate('department');
+                const adminUser = await knex(USERS).where({ email: process.env.ADMIN_EMAIL }).first();
+
+                const employee = await knex.select(
+                    'u.*',
+                    knex.raw(`IFNULL(GROUP_CONCAT(IF(d.id IS NOT NULL, JSON_OBJECT('id', d.id,'name', d.name), NULL)), '') as department`)
+                )
+                .from(`${USERS} as u`)
+                .where('u.id', userId)
+                .leftJoin(`${DEPARTMENTS} as d`, 'd.id', 'u.department')
+                .first();
+                employee.department = employee.department ? JSON.parse(`${employee.department}`) : null;
 
                 body = body.replace('{adminName}', adminUser.fullName)
                 body = body.replace('{userName}', employee.fullName)
-                body = body.replace('{department}', employee?.department?.name)
+                body = body.replace('{department}', employee?.department?.name ? employee.department.name : ' - ')
                 body = body.replace('{leaveType}', capitalizeFLetter(leaveType))
                 body = body.replace('{leaveDayType}', formatteDayType(leaveDayType))
                 body = body.replace('{startDate}', formattedDate(startDate))

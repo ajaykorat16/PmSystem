@@ -23,7 +23,7 @@ const createDepartment = asyncHandler(async (req, res) => {
     }
 
     const departmentName = capitalizeFLetter(name);
-    const newDepartment = await knex(DEPARTMENTS).insert({ name: departmentName });
+    await knex(DEPARTMENTS).insert({ name: departmentName });
 
     return res.status(201).send({
       error: false,
@@ -58,7 +58,7 @@ const updateDepartment = asyncHandler(async (req, res) => {
       });
     }
 
-    const updateDepartment = await knex(DEPARTMENTS).where("id", id).update({ name: capitalizeFLetter(name) });
+    await knex(DEPARTMENTS).where("id", id).update({ name: capitalizeFLetter(name), updatedAt: new Date() });
     
     return res.status(201).json({
       error: false,
@@ -88,7 +88,7 @@ const deleteDepartment = asyncHandler(async (req, res) => {
     const users = await knex(USERS).where('department', id);
 
     if (users.length > 0) {
-      await knex(USERS).where("department", id).update({ department: "" });
+      await knex(USERS).where("department", id).update({ department: "", updatedAt: new Date() });
     }
 
     return res.status(200).json({
@@ -107,16 +107,24 @@ const getAllDepartment = asyncHandler(async (req, res) => {
   const filter = req.query.query || "";
   const sortField = req.query.sortField || "createdAt";
   const sortOrder = parseInt(req.query.sortOrder) || -1;
-
+  
   try {
-    let totalDepartments = await knex("departments").count("id").first();
-    totalDepartments = totalDepartments['count(`id`)'];
+    
     const skip = (page - 1) * limit;
+    let query = {};
+    
+    if(filter) {
+      query = function(){
+        this.where("name", "like", `%${filter}%`)
+      }
+    }
+    
+    let totalDepartments = await knex(DEPARTMENTS).where(query).count('id as count').first();
+    totalDepartments = totalDepartments.count ? totalDepartments.count : 0;
 
     const departments = await knex(DEPARTMENTS)
-      .select()
-      .where("name", "like", `%${filter}%`)
-      .orderBy(sortField, sortOrder === -1 ? "desc" : "asc")
+      .where(query)
+      .orderBy("name", sortOrder === -1 ? "desc" : "asc")
       .offset(skip)
       .limit(limit);
 
