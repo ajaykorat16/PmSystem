@@ -24,8 +24,8 @@ const WorkLogCreate = ({ title }) => {
     const navigate = useNavigate()
 
     const getProjects = async () => {
-        const { project } = await getUserProject();
-        setProjects(project);
+        const { data } = await getUserProject();
+        setProjects(data);
     };
     useEffect(() => {
         getProjects();
@@ -54,7 +54,7 @@ const WorkLogCreate = ({ title }) => {
                     <CFormSelect id="inputProject" label="Project" value={selectproject} onChange={(e) => setSelectProject(e.target.value)} >
                         <option value="" disabled>Select a project</option>
                         {projects.map((p) => (
-                            <option key={p._id} value={p._id}>{p.name}</option>
+                            <option key={p.id} value={p.id}>{p.name}</option>
                         ))}
                     </CFormSelect>
                 </CCol>

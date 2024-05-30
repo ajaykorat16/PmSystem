@@ -28,9 +28,14 @@ const DepartmentUpdate = ({ title }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      if(!name.trim()) {
+        return toast.current.show({ severity: 'error', summary: 'Department', detail:  "Department Name Must not be Empty.", life: 3000 })
+      }
       const id = params.id
-      await updateDepartment(name, id);
-      navigate("/dashboard/department/list");
+      const data = await updateDepartment(name, id);
+      if(typeof data !== 'undefined' && data.error === false) {
+        navigate("/dashboard/department/list");
+      }
     } catch (error) {
       console.log(error);
     }

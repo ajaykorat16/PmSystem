@@ -23,12 +23,12 @@ const CredentialUpdate = ({ title }) => {
 
     useEffect(() => {
         const currentCredential = async () => {
-            const data = await getSingleCredential(id);
+            const { data } = await getSingleCredential(id);
             if (data) {
-                setCredentialTitle(data.credential.title);
-                setDescription(data.credential.description);
-                if (data.credential.users && data.credential.users.length > 0) {
-                    setDevelopers(data.credential.users.map((e) => e.id._id));
+                setCredentialTitle(data.title);
+                setDescription(data.description);
+                if (data.users && data.users.length > 0) {
+                    setDevelopers(data.users.map((e) => e.id));
                 } else {
                     setDevelopers([]);
                 }
@@ -45,7 +45,7 @@ const CredentialUpdate = ({ title }) => {
             if (data.error) {
                 toast.current.show({ severity: 'error', summary: 'Credential', detail: data.message, life: 3000 })
             }else{
-                navigate('/dashboard/credential/list')
+                navigate('/dashboard-user/credential/list')
             }
         } catch (error) {
             console.log(error)
@@ -53,8 +53,8 @@ const CredentialUpdate = ({ title }) => {
     }
 
     const getUsers = async () => {
-        const { getAllUsers } = await userForCredential();
-        setUsers(getAllUsers);
+        const { data } = await userForCredential();
+        setUsers(data);
     };
 
     useEffect(() => {
@@ -80,7 +80,7 @@ const CredentialUpdate = ({ title }) => {
                         style={{ border: "1px solid var(--cui-input-border-color, #b1b7c1)", borderRadius: "6px" }}
                         optionLabel="fullName"
                         placeholder="Select Users"
-                        optionValue='_id'
+                        optionValue='id'
                         id="developerSelect"
                         className="form-control"
                         onShow={onShow}

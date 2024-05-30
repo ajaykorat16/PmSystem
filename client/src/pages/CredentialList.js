@@ -33,25 +33,28 @@ const CredentialList = ({ title }) => {
 
         const totalRecordsCount = credentialData?.totalCredential;
         setTotalRecords(totalRecordsCount);
-        setCredentialList(credentialData?.credential);
+        setCredentialList(credentialData?.data);
         setIsLoading(false);
     };
 
-    useEffect(() => {
-        fetchCredential(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
-    }, [currentPage, rowsPerPage, sortField, sortOrder]);
-
+    
     const handleSubmit = async () => {
         setCurrentPage(1);
-        fetchCredential(1, rowsPerPage, globalFilterValue, sortField, sortOrder);
+        fetchCredential(1, rowsPerPage, globalFilterValue.trim(), sortField, sortOrder);
     };
-
+    
     useEffect(() => {
-        if (globalFilterValue.trim() === "") {
-            setCurrentPage(1);
-            fetchCredential(1, rowsPerPage, "", sortField, sortOrder);
+        if(globalFilterValue.length > 0) {
+          fetchCredential(currentPage, rowsPerPage, globalFilterValue.trim(), sortField, sortOrder);
         }
-    }, [globalFilterValue, rowsPerPage, sortField, sortOrder]);
+      }, [currentPage, rowsPerPage, sortField, sortOrder]);
+      
+    useEffect(() => {
+        if (globalFilterValue.trim() === '') {
+          // setCurrentPage(1);
+          fetchCredential(currentPage, rowsPerPage, "", sortField, sortOrder);
+        }
+    }, [globalFilterValue, sortField, sortOrder, rowsPerPage, currentPage])
 
     const handleDelete = async (id) => {
         confirmDialog({
@@ -61,7 +64,7 @@ const CredentialList = ({ title }) => {
             position: 'top',
             accept: async () => {
                 await deleteCredentials(id)
-                fetchCredential(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
+                fetchCredential(currentPage, rowsPerPage, globalFilterValue.trim(), sortField, sortOrder);
             },
         });
     };
@@ -83,7 +86,6 @@ const CredentialList = ({ title }) => {
         const order = e.sortOrder;
         setSortField(field);
         setSortOrder(order);
-        fetchCredential(currentPage, rowsPerPage, globalFilterValue, field, order);
     };
 
     const handleCredentialDetail = async (id) => {
@@ -140,7 +142,7 @@ const CredentialList = ({ title }) => {
                             value={credentialList}
                             first={(currentPage - 1) * rowsPerPage}
                             onPage={onPageChange}
-                            dataKey="_id"
+                            dataKey="credentialId"
                             emptyMessage="No credentials found."
                             paginatorLeft={
                                 <Dropdown value={rowsPerPage} options={[10, 25, 50]} onChange={(e) => setRowsPerPage(e.value)} />
@@ -169,9 +171,9 @@ const CredentialList = ({ title }) => {
                                 body={(rowData) => (
                                     <div>
                                         <>
-                                            <Button icon="pi pi-pencil" title="Edit" rounded severity="success" aria-label="edit" onClick={() => handleUpdate(rowData._id)} disabled={rowData.createdBy?._id !== auth.user._id} />
-                                            <Button icon="pi pi-trash" title="Delete" rounded severity="danger" className="ms-2" aria-label="Cancel" onClick={() => handleDelete(rowData._id)} disabled={rowData.createdBy?._id !== auth.user._id} />
-                                            <Button icon="pi pi-eye" title="View Credentials" rounded severity="info" className="ms-2 viewCredential" aria-label="view" onClick={() => handleCredentialDetail(rowData._id)} />
+                                            <Button icon="pi pi-pencil" title="Edit" rounded severity="success" aria-label="edit" onClick={() => handleUpdate(rowData.credentialId)} disabled={rowData.createdBy !== auth.user.id} />
+                                            <Button icon="pi pi-trash" title="Delete" rounded severity="danger" className="ms-2" aria-label="Cancel" onClick={() => handleDelete(rowData.credentialId)} disabled={rowData.createdBy !== auth.user.id} />
+                                            <Button icon="pi pi-eye" title="View Credentials" rounded severity="info" className="ms-2 viewCredential" aria-label="view" onClick={() => handleCredentialDetail(rowData.credentialId)} />
                                         </>
                                     </div>
                                 )}

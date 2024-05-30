@@ -1,4 +1,4 @@
-import React, { useContext, createContext } from "react";
+import React, { useContext, createContext, useState, useEffect } from "react";
 import { useAuth } from "./AuthContext";
 import { baseURL } from "../lib";
 import axios from 'axios';
@@ -7,6 +7,7 @@ const CredentialsContext = createContext();
 
 const CredentialProvider = ({ children }) => {
     const { auth, toast } = useAuth();
+
     const headers = {
         Authorization: auth.token
     };
@@ -15,7 +16,7 @@ const CredentialProvider = ({ children }) => {
     const addCredentials = async (credentials) => {
         try {
             const { data } = await axios.post(`${baseURL}/credential/create`, credentials, { headers })
-
+            
             if (data.error === false) {
                 setTimeout(function () {
                     toast.current.show({ severity: 'success', summary: 'Credential', detail: data.message, life: 3000 })
@@ -77,12 +78,10 @@ const CredentialProvider = ({ children }) => {
     const updateCredential = async (credentialData, id) => {
         try {
             const { data } = await axios.put(`${baseURL}/credential/update/${id}`, credentialData, { headers })
-
             if (data.error === false) {
                 setTimeout(function () {
                     toast.current.show({ severity: 'success', summary: 'Credential', detail: data.message, life: 3000 })
                 }, 1000);
-
                 return data
             } else {
                 toast.current.show({ severity: 'info', summary: 'Credential', detail: data.message, life: 3000 })

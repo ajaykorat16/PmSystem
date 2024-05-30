@@ -31,24 +31,27 @@ const DepartmentList = ({ title }) => {
 
     const totalRecordsCount = departmentData.totalDepartments;
     setTotalRecords(totalRecordsCount);
-    setDepartmentList(departmentData.departments)
+    setDepartmentList(departmentData.data)
     setIsLoading(false);
   };
 
   useEffect(() => {
-    fetchDepartments(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
+    if(globalFilterValue.length > 0) {
+      fetchDepartments(currentPage, rowsPerPage, globalFilterValue.trim(), sortField, sortOrder);
+    }
   }, [currentPage, rowsPerPage, sortField, sortOrder]);
-
+  
   useEffect(() => {
     if (globalFilterValue.trim() === '') {
-      setCurrentPage(1);
-      fetchDepartments(1, rowsPerPage, "", sortField, sortOrder);
+      // setCurrentPage(1);
+      fetchDepartments(currentPage, rowsPerPage, "", sortField, sortOrder);
     }
-  }, [globalFilterValue, rowsPerPage, sortField, sortOrder])
+  }, [globalFilterValue, sortField, sortOrder, rowsPerPage, currentPage])
+
 
   const handleSubmit = async () => {
     setCurrentPage(1);
-    fetchDepartments(1, rowsPerPage, globalFilterValue, sortField, sortOrder)
+    fetchDepartments(1, rowsPerPage, globalFilterValue.trim(), sortField, sortOrder)
   };
 
   const handleDelete = (id) => {
@@ -78,7 +81,7 @@ const DepartmentList = ({ title }) => {
   const handleSorting = async (e) => {
     const field = e.sortField;
     const order = e.sortOrder;
-
+    console.log(field);
     setSortField(field);
     setSortOrder(order);
     fetchDepartments(currentPage, rowsPerPage, globalFilterValue, field, order)
@@ -133,7 +136,7 @@ const DepartmentList = ({ title }) => {
               value={departmentList}
               first={(currentPage - 1) * rowsPerPage}
               onPage={onPageChange}
-              dataKey="_id"
+              dataKey="id"
               emptyMessage="No departments found."
               paginatorLeft={
                 <Dropdown
@@ -156,8 +159,8 @@ const DepartmentList = ({ title }) => {
                 header="Action"
                 body={(rowData) => (
                   <div>
-                    <Button icon="pi pi-pencil" title='Edit' rounded severity="success" aria-label="edit" onClick={() => handleUpdate(rowData._id)} />
-                    <Button icon="pi pi-trash" title='Delete' rounded severity="danger" className="ms-2" aria-label="Cancel" onClick={() => handleDelete(rowData._id)} />
+                    <Button icon="pi pi-pencil" title='Edit' rounded severity="success" aria-label="edit" onClick={() => handleUpdate(rowData.id)} />
+                    <Button icon="pi pi-trash" title='Delete' rounded severity="danger" className="ms-2" aria-label="Cancel" onClick={() => handleDelete(rowData.id)} />
                   </div>
                 )}
                 style={{ width: '8rem' }}

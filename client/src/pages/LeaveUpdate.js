@@ -33,9 +33,9 @@ const LeaveUpdate = ({ title }) => {
     const setValues = async () => {
       const data = await getLeaveById(id);
       if (data) {
-        setUserId(data.userId ? data.userId._id : "");
+        setUserId(data.userId ? data.userId : "");
         setReason(data.reason);
-        setStatus(data.status);
+        setStatus(data.leaveStatus);
         setStartDate(new Date(data.startDate));
         setEndDate(new Date(data.endDate));
         setTotalDays(data.totalDays);
@@ -68,8 +68,8 @@ const LeaveUpdate = ({ title }) => {
   };
 
   const getUsers = async () => {
-    const { getAllUsers } = await fetchUsers();
-    setUsers(getAllUsers);
+    const { data } = await fetchUsers();
+    setUsers(data);
   };
 
   useEffect(() => {
@@ -137,8 +137,8 @@ const LeaveUpdate = ({ title }) => {
                   </option>
                   {users.map((u) => (
                     <option
-                      key={u._id}
-                      value={u._id}
+                      key={u.id}
+                      value={u.id}
                     >{`${u.firstname} ${u.lastname}`}</option>
                   ))}
                 </CFormSelect>
@@ -157,7 +157,7 @@ const LeaveUpdate = ({ title }) => {
                 <CFormInput
                   id="inputStatus"
                   label="Status"
-                  placeholder="Approved"
+                  placeholder="Pending"
                   disabled
                 />
               </CCol>

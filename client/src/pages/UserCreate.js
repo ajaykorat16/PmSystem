@@ -46,8 +46,8 @@ const UserCreate = ({ title }) => {
     }
 
     const fetchDepartment = async () => {
-        const { departments } = await getDepartmentList()
-        setDepartmentsList(departments)
+        const { data } = await getDepartmentList()
+        setDepartmentsList(data)
     }
 
     useEffect(() => {
@@ -88,7 +88,7 @@ const UserCreate = ({ title }) => {
                     <CFormSelect id="inputDepartment" label="Department" value={departments} onChange={(e) => setDepartments(e.target.value)}>
                         <option value="" disabled>Select a department</option>
                         {departmentsList.map((d) => (
-                            <option key={d._id} value={d._id}>{d.name}</option>
+                            <option key={d.id} value={d.id}>{d.name}</option>
                         ))}
                     </CFormSelect>
                 </CCol>

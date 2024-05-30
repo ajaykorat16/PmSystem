@@ -14,6 +14,9 @@ const DepartmentCreate = ({ title }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      if(!name.trim()) {
+        return toast.current.show({ severity: 'error', summary: 'Department', detail:  "Department Name Must not be Empty.", life: 3000 })
+      }
       const data = await addDepartment(name);
       if (typeof data !== 'undefined' && data.error === false) {
         navigate("/dashboard/department/list");

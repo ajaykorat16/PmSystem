@@ -35,7 +35,7 @@ function AdminWorkLogList({ title }) {
         let worklogData = await getAdminWorklog(currentPage, rowsPerPage, filter, sortField, sortOrder);
         const totalRecordsCount = worklogData.totalWorklog;
         setTotalRecords(totalRecordsCount);
-        setWorklogList(worklogData.worklog);
+        setWorklogList(worklogData.data);
         setIsLoading(false);
     };
 
@@ -44,10 +44,10 @@ function AdminWorkLogList({ title }) {
     }, [currentPage, rowsPerPage, filter, sortField, sortOrder]);
 
     const getRecords = async () => {
-        const { getAllUsers } = await fetchUsers();
-        setUsers(getAllUsers);
-        const { getAllProjects } = await fetchProjects();
-        setProjects(getAllProjects);
+        const { data } = await fetchUsers();
+        setUsers(data);
+        const { data: projectList } = await fetchProjects();
+        setProjects(projectList);
     };
 
     useEffect(() => {
@@ -69,8 +69,8 @@ function AdminWorkLogList({ title }) {
         fetchWorklog(null, field, order);
     };
 
-    const userOptions = users.map((user) => ({ label: user.fullName, value: user._id, }));
-    const projectOptions = projects.map((project) => ({ label: project.name, value: project._id, }));
+    const userOptions = users?.map((user) => ({ label: user.fullName, value: user.id, }));
+    const projectOptions = projects?.map((project) => ({ label: project.name, value: project.id, }));
 
     const handleWorklogDetail = async (worklog) => {
         setVisible(true);
@@ -155,14 +155,15 @@ function AdminWorkLogList({ title }) {
                             value={worklogList}
                             first={(currentPage - 1) * rowsPerPage}
                             onPage={onPageChange}
-                            dataKey="_id"
+                            dataKey="id"
                             emptyMessage="No work log found."
                             paginatorLeft={
                                 <Dropdown value={rowsPerPage} options={[10, 25, 50]} onChange={(e) => setRowsPerPage(e.value)} />
                             }
                         >
                             <Column
-                                field="userId.fullName"
+                                // field="userId.fullName"
+                                field="fullName"
                                 header="Developer"
                                 showFilterMenu={false}
                                 filter
@@ -172,7 +173,7 @@ function AdminWorkLogList({ title }) {
                                 align="center"
                             />
                             <Column
-                                field="project.name"
+                                field="projectName"
                                 header="Project"
                                 showFilterMenu={false}
                                 filter

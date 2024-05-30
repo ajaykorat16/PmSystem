@@ -16,6 +16,7 @@ const ProjectProvider = ({ children }) => {
     const fetchProjects = async () => {
         try {
             const { data } = await axios.get(`${baseURL}/projects/project-list`, { headers });
+            
             if (data.error === false) {
                 return data
             }
@@ -96,6 +97,9 @@ const ProjectProvider = ({ children }) => {
                 toast.current.show({ severity: 'info', summary: 'Project', detail: data.message, life: 3000 })
             }
         } catch (error) {
+            if (error.response.status === 500) {
+                toast.current.show({ severity: 'error', summary: 'Project', detail: 'Project Already Exists.', life: 3000 });
+            }
             console.log(error);
         }
     }

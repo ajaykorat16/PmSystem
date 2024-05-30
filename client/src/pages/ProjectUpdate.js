@@ -27,12 +27,12 @@ const ProjectUpdate = ({ title }) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                let { project } = await getSingleProject(params.id);
-                setName(project.name)
-                setStartDate(new Date(project.startDate));
-                setDescription(project.description);
-                if (project.developers && project.developers.length > 0) {
-                    setDevelopers(project.developers.map((e) => e.id._id));
+                let { data } = await getSingleProject(params.id);
+                setName(data.name)
+                setStartDate(new Date(data.startDate));
+                setDescription(data.description);
+                if (data.developers && data.developers.length > 0) {
+                    setDevelopers(data.developers.map((e) => e.id));
                 } else {
                     setDevelopers([]);
                 }
@@ -42,11 +42,12 @@ const ProjectUpdate = ({ title }) => {
         };
         fetchData();
     }, [params.id, getSingleProject]);
+    
 
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            let project = { name, description, startDate: formatDate(startDate), developers: developers }
+            let project = { name, description, startDate: formatDate(startDate), developers }
             let id = params.id
 
             const data = await updateProject(project, id)
@@ -61,8 +62,8 @@ const ProjectUpdate = ({ title }) => {
     }
 
     const getUsers = async () => {
-        const { getAllUsers } = await fetchUsers();
-        setUsers(getAllUsers);
+        const { data } = await fetchUsers();
+        setUsers(data);
     };
 
     useEffect(() => {
@@ -100,7 +101,7 @@ const ProjectUpdate = ({ title }) => {
                         style={{ border: "1px solid var(--cui-input-border-color, #b1b7c1)", borderRadius: "6px" }}
                         optionLabel="fullName"
                         placeholder="Select Users"
-                        optionValue='_id'
+                        optionValue='id'
                         id="developerSelect"
                         className="form-control"
                         onShow={onShow}

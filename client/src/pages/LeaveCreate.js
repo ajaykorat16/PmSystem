@@ -46,8 +46,8 @@ const LeaveCreate = ({ title }) => {
   };
 
   const getUsers = async () => {
-    const { getAllUsers } = await fetchUsers();
-    setUsers(getAllUsers);
+    const { data } = await fetchUsers();
+    setUsers(data);
   };
 
   useEffect(() => {
@@ -112,8 +112,8 @@ const LeaveCreate = ({ title }) => {
               </option>
               {users.map((u) => (
                 <option
-                  key={u._id}
-                  value={u._id}
+                  key={u.id}
+                  value={u.id}
                 >{`${u.firstname} ${u.lastname}`}</option>
               ))}
             </CFormSelect>

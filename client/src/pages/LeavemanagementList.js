@@ -40,25 +40,26 @@ const LeaveManagementList = ({ title }) => {
     }
     const totalRecordsCount = leaveManagementData.totalLeaves;
     setTotalRecords(totalRecordsCount);
-    setLeaveList(leaveManagementData.leaves);
+    setLeaveList(leaveManagementData.data);
     setIsLoading(false);
   };
 
   const getUsers = async () => {
-    const { getAllUsers } = await fetchUsers();
-    setUsers(getAllUsers);
+    const { data } = await fetchUsers();
+    setUsers(data);
   };
 
   useEffect(() => {
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth() + 1;
     setGlobalFilterValue(currentMonth.toString());
-    fetchLeaves(currentMonth);
     getUsers();
   }, []);
 
   useEffect(() => {
-    fetchLeaves(globalFilterValue);
+    if(globalFilterValue){
+      fetchLeaves(globalFilterValue);
+    }
   }, [currentPage, rowsPerPage, globalFilterValue]);
 
   const singleLeave = async () => {
@@ -171,7 +172,7 @@ const LeaveManagementList = ({ title }) => {
                       Select User
                     </option>
                     {users.map((u) => (
-                      <option key={u._id} value={u._id}>
+                      <option key={u.id} value={u.id}>
                         {`${u.firstname} ${u.lastname}`}
                       </option>
                     ))}
@@ -244,13 +245,13 @@ const LeaveManagementList = ({ title }) => {
               value={leavelist}
               first={(currentPage - 1) * rowsPerPage}
               onPage={onPageChange}
-              dataKey="_id"
+              dataKey="id"
               emptyMessage="No data found."
               paginatorLeft={
                 <Dropdown value={rowsPerPage} options={[10, 25, 50]} onChange={(e) => setRowsPerPage(e.value)} />
               }
             >
-              <Column field="user.fullName" header="Emp. Name" filterField="employeeName" align="center" />
+              <Column field="fullName" header="Emp. Name" filterField="employeeName" align="center" />
               <Column field="leave" header="Leaves" filterField="leaves" align="center" />
               <Column
                 header="Action"
@@ -262,7 +263,7 @@ const LeaveManagementList = ({ title }) => {
                       severity="info"
                       className="ms-2"
                       title="Edit"
-                      onClick={() => handleUpdate(rowData._id, rowData.user.fullName, rowData.monthly)}
+                      onClick={() => handleUpdate(rowData.id, rowData.user.fullName, rowData.monthly)}
                       raised
                     />
                   </div>

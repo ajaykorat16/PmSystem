@@ -36,7 +36,7 @@ const UserUpdate = ({ title }) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                let { getProfile } = await getUserProfile(params.id);
+                let { data: getProfile } = await getUserProfile(params.id);
                 if (getProfile) {
                     setEmployeeNumber(getProfile.employeeNumber)
                     setFirstname(getProfile.firstname);
@@ -44,7 +44,7 @@ const UserUpdate = ({ title }) => {
                     setEmail(getProfile.email);
                     setAddress(getProfile.address)
                     setPhone(getProfile.phone)
-                    setDepartments(getProfile.department ? getProfile.department.name : "")
+                    setDepartments(getProfile.departmentName ? getProfile.departmentName : "")
                     setDateOfBirth(new Date(getProfile.dateOfBirth))
                     setDateOfJoining(getProfile.dateOfJoining)
                     if (getProfile.photo !== null) {
@@ -154,7 +154,7 @@ const UserUpdate = ({ title }) => {
                                         <div className='col'>
                                             <div className="btn-sm float-end submitButton">
                                                 <CCol>
-                                                    <Button icon="pi pi-check" type='submit' rounded aria-label="Filter" />
+                                                    <Button icon="pi pi-check" type='submit' rounded aria-label="Filter" title='submit' />
                                                 </CCol>
                                             </div>
                                         </div>

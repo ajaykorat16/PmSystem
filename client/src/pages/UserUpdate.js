@@ -42,7 +42,7 @@ const UserUpdate = ({ title }) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                let { getProfile } = await getUserProfile(params.id);
+                let { data: getProfile } = await getUserProfile(params.id);
                 if (getProfile) {
                     setEmployeeNumber(getProfile.employeeNumber)
                     setFirstname(getProfile.firstname);
@@ -50,7 +50,7 @@ const UserUpdate = ({ title }) => {
                     setEmail(getProfile.email);
                     setAddress(getProfile.address)
                     setPhone(getProfile.phone)
-                    setDepartments(getProfile.department ? getProfile.department._id : "")
+                    setDepartments(getProfile.department ? getProfile.department : "")
                     setDateOfBirth(new Date(getProfile.dateOfBirth))
                     setDateOfJoining(new Date(getProfile.dateOfJoining))
                     if (getProfile.photo !== null) {
@@ -64,8 +64,9 @@ const UserUpdate = ({ title }) => {
                         };
                         reader.readAsDataURL(blob);
                     }
+                    
                     if (getProfile.projects && getProfile.projects.length > 0) {
-                        setNewProjects(getProfile.projects.map((e) => e.id._id));
+                        setNewProjects(getProfile.projects.map((e) => e.id));
                     } else {
                         setNewProjects([]);
                     }
@@ -79,17 +80,16 @@ const UserUpdate = ({ title }) => {
     }, [params.id, getUserProfile]);
 
     const fetchDepartment = async () => {
-        const { departments } = await getDepartmentList()
-        setDepartmentsList(departments)
+        const { data } = await getDepartmentList()
+        setDepartmentsList(data);
     }
 
     useEffect(() => {
         fetchDepartment()
     }, [])
 
-
     const handleSubmit = async (e) => {
-                e.preventDefault()
+        e.preventDefault()
         try {
             let updateUsers = { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth: formatDate(dateOfBirth), department: departments, dateOfJoining: formatDate(dateOfJoining), photo: newPhoto ? newPhoto : photo, projects: newProjects }
             let id = params.id
@@ -118,8 +118,8 @@ const UserUpdate = ({ title }) => {
     };
 
     const getProjects = async () => {
-        const { getAllProjects } = await fetchProjects();
-        setProjects(getAllProjects);
+        const { data } = await fetchProjects();
+        setProjects(data);
     };
 
     useEffect(() => {
@@ -235,7 +235,7 @@ const UserUpdate = ({ title }) => {
                         >
                             <option value="" disabled>Select a Department</option>
                             {departmentsList.map((d) => (
-                                <option key={d._id} value={d._id}>
+                                <option key={d.id} value={d.id}>
                                     {d.name}
                                 </option>
                             ))}
@@ -284,7 +284,7 @@ const UserUpdate = ({ title }) => {
                             options={projects}
                             size={6}
                             optionLabel="name"
-                            optionValue='_id'
+                            optionValue='id'
                             placeholder="Select Projects"
                             id="date"
                             className="form-control"

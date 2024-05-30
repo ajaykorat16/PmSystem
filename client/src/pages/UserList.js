@@ -48,25 +48,27 @@ const UserList = ({ title }) => {
     }
     const totalRecordsCount = userData.totalUsers;
     setTotalRecords(totalRecordsCount);
-    setUserList(userData.users);
+    setUserList(userData.data);
     setIsLoading(false);
   };
 
-  useEffect(() => {
-    fetchUsers(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
-  }, [currentPage, rowsPerPage, sortField, sortOrder]);
-
   const handleSubmit = async () => {
     setCurrentPage(1);
-    fetchUsers(1, rowsPerPage, globalFilterValue, sortField, sortOrder);
+    fetchUsers(1, rowsPerPage, globalFilterValue.trim(), sortField, sortOrder);
   };
 
   useEffect(() => {
-    if (globalFilterValue.trim() === "") {
-      setCurrentPage(1);
-      fetchUsers(1, rowsPerPage, "", sortField, sortOrder);
+    if(globalFilterValue.length > 0) {
+      fetchUsers(currentPage, rowsPerPage, globalFilterValue.trim(), sortField, sortOrder);
     }
-  }, [globalFilterValue, rowsPerPage, sortField, sortOrder]);
+  }, [currentPage, rowsPerPage, sortField, sortOrder]);
+  
+  useEffect(() => {
+    if (globalFilterValue.trim() === '') {
+      // setCurrentPage(1);
+      fetchUsers(currentPage, rowsPerPage, "", sortField, sortOrder);
+    }
+  }, [globalFilterValue, sortField, sortOrder, rowsPerPage, currentPage])
 
   const handleDelete = async (id) => {
     confirmDialog({
@@ -76,7 +78,7 @@ const UserList = ({ title }) => {
       position: 'top',
       accept: async () => {
         await deleteUser(id);
-        fetchUsers(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
+        fetchUsers(currentPage, rowsPerPage, globalFilterValue.trim(), sortField, sortOrder);
       },
     });
   };
@@ -95,12 +97,11 @@ const UserList = ({ title }) => {
     const order = e.sortOrder;
     setSortField(field);
     setSortOrder(order);
-    fetchUsers(currentPage, rowsPerPage, globalFilterValue, field, order);
   };
 
   const handleLogin = async (id) => {
-    const { getProfile } = await getUserProfile(id)
-    await loginUserByAdmin(getProfile.email)
+    const { data } = await getUserProfile(id)
+    await loginUserByAdmin(data.email)
     navigate("/")
   }
 
@@ -188,6 +189,8 @@ const UserList = ({ title }) => {
               </CButton>
             </CModalFooter>
           </CModal>
+
+          {/* Users Table head starts... */}
           <div className="card mb-5">
             <div className="mainHeader d-flex align-items-center justify-content-between">
               <div>
@@ -227,7 +230,7 @@ const UserList = ({ title }) => {
               value={userList}
               first={(currentPage - 1) * rowsPerPage}
               onPage={onPageChange}
-              dataKey="_id"
+              dataKey="id"
               emptyMessage="No user found."
               paginatorLeft={
                 <Dropdown value={rowsPerPage} options={[10, 25, 50]} onChange={(e) => setRowsPerPage(e.value)} />
@@ -259,9 +262,9 @@ const UserList = ({ title }) => {
                   <div>
                     {rowData.role === "user" && auth.user.role === "admin" && (
                       <>
-                        <Button icon="pi pi-pencil" title="Edit" rounded severity="success" aria-label="edit" onClick={() => handleUpdate(rowData._id)} />
-                        <Button icon="pi pi-trash" title="Delete" rounded severity="danger" className="ms-2" aria-label="Cancel" onClick={() => handleDelete(rowData._id)} />
-                        <Button icon="pi pi-lock" title="User Login" rounded severity="info" className="ms-2" aria-label="login" onClick={() => handleLogin(rowData._id)} />
+                        <Button icon="pi pi-pencil" title="Edit" rounded severity="success" aria-label="edit" onClick={() => handleUpdate(rowData.id)} />
+                        <Button icon="pi pi-trash" title="Delete" rounded severity="danger" className="ms-2" aria-label="Cancel" onClick={() => handleDelete(rowData.id)} />
+                        <Button icon="pi pi-lock" title="User Login" rounded severity="info" className="ms-2" aria-label="login" onClick={() => handleLogin(rowData.id)} />
                       </>
                     )}
                     {auth.user.role === "user" && (
@@ -280,6 +283,7 @@ const UserList = ({ title }) => {
               />
             </DataTable>
           </div>
+          {/* User Table ends... */}
         </>
       )}
     </Layout>

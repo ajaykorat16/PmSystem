@@ -30,28 +30,28 @@ const EmployeeByBirthMonth = ({ title }) => {
 
   const fetchUsers = async (query) => {
     setIsLoading(true);
-    let usertData
+    let userData
     if (!query) {
-      usertData = await getAllUsersByBirthMonth(currentPage, rowsPerPage);
+      userData = await getAllUsersByBirthMonth(currentPage, rowsPerPage);
     } else {
       let month = parseInt(query, 10);
-      usertData = await getAllUsersByBirthMonth(currentPage, rowsPerPage, month);
+      userData = await getAllUsersByBirthMonth(currentPage, rowsPerPage, month);
     }
-
-    const totalRecordsCount = usertData.totalUsers;
+    const totalRecordsCount = userData.totalUsers;
     setTotalRecords(totalRecordsCount);
-    setUserList(usertData.users);
+    setUserList(userData.data);
     setIsLoading(false);
   };
   useEffect(() => {
-    fetchUsers(globalFilterValue);
+    if(globalFilterValue) {
+      fetchUsers(globalFilterValue);
+    }
   }, [currentPage, rowsPerPage, globalFilterValue]);
 
   useEffect(() => {
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth() + 1;
     setGlobalFilterValue(currentMonth.toString());
-    fetchUsers(currentMonth);
   }, []);
 
   const onPageChange = (event) => {
@@ -167,7 +167,7 @@ const EmployeeByBirthMonth = ({ title }) => {
               value={userList}
               first={(currentPage - 1) * rowsPerPage}
               onPage={onPageChange}
-              dataKey="_id"
+              dataKey="id"
               emptyMessage="No data found."
               paginatorLeft={
                 <Dropdown

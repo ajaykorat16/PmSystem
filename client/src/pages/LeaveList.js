@@ -23,6 +23,7 @@ const LeaveList = ({ title }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [globalFilterValue, setGlobalFilterValue] = useState("");
+
   const [sortField, setSortField] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState(-1);
   const [visible, setVisible] = useState(false);
@@ -42,36 +43,38 @@ const LeaveList = ({ title }) => {
     status: "",
   });
 
-
   const fetchLeaves = async (currentPage, rowsPerPage, query, sortField, sortOrder) => {
     setIsLoading(true);
     let leaveData;
     if (auth.user.role === "admin") {
+      //Initially: getleave(1, 10, '', 'createdAt', -1);
       leaveData = await getLeave(currentPage, rowsPerPage, query, sortField, sortOrder);
     } else {
       leaveData = await getUserLeave(currentPage, rowsPerPage, query, sortField, sortOrder);
     }
     const totalRecordsCount = leaveData?.totalLeaves;
     setTotalRecords(totalRecordsCount);
-    setLeaveList(leaveData?.leaves);
+    setLeaveList(leaveData?.data);
     setIsLoading(false);
   };
 
-  useEffect(() => {
-    fetchLeaves(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
-  }, [currentPage, rowsPerPage, sortField, sortOrder]);
-
+  
   const handleSubmit = async () => {
     setCurrentPage(1);
-    fetchLeaves(1, rowsPerPage, globalFilterValue, sortField, sortOrder);
+    fetchLeaves(1, rowsPerPage, globalFilterValue.trim(), sortField, sortOrder);
   };
 
   useEffect(() => {
-    if (globalFilterValue.trim() === "") {
-      setCurrentPage(1);
-      fetchLeaves(1, rowsPerPage, "", sortField, sortOrder);
+    if(globalFilterValue.length > 0) {
+      fetchLeaves(currentPage, rowsPerPage, globalFilterValue.trim(), sortField, sortOrder);
     }
-  }, [globalFilterValue, rowsPerPage, sortField, sortOrder]);
+  }, [currentPage, rowsPerPage, sortField, sortOrder]);
+  
+  useEffect(() => {
+    if (globalFilterValue.trim() === '') {
+      fetchLeaves(currentPage, rowsPerPage, "", sortField, sortOrder);
+    }
+  }, [globalFilterValue, sortField, sortOrder, rowsPerPage, currentPage])
 
   const handleUpdate = async (id) => {
     const redirectPath = auth.user.role === "admin" ? `/dashboard/leave/update/${id}` : `/dashboard-user/leave/update/${id}`;
@@ -87,7 +90,7 @@ const LeaveList = ({ title }) => {
       } else {
         await updateStatus(status, id);
         toast.current.show({ severity: 'success', summary: 'Leave', detail: "Leave is approved successfully.", life: 3000 })
-        fetchLeaves(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
+        fetchLeaves(currentPage, rowsPerPage, globalFilterValue.trim(), sortField, sortOrder);
       }
     } catch (error) {
       console.log(error);
@@ -102,7 +105,7 @@ const LeaveList = ({ title }) => {
       position: 'top',
       accept: async () => {
         await deleteLeave(id);
-        fetchLeaves(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
+        fetchLeaves(currentPage, rowsPerPage, globalFilterValue.trim(), sortField, sortOrder);
       },
     });
   };
@@ -120,7 +123,6 @@ const LeaveList = ({ title }) => {
 
     setSortField(field);
     setSortOrder(order);
-    fetchLeaves(currentPage, rowsPerPage, globalFilterValue, field, order);
   };
 
   const getSeverity = (status) => {
@@ -143,7 +145,7 @@ const LeaveList = ({ title }) => {
     if (reasonForLeaveReject !== "") {
       await updateStatus("rejected", id, reasonForLeaveReject);
       toast.current.show({ severity: 'success', summary: 'Leave', detail: "Leave is rejected successfully!!", life: 3000 })
-      fetchLeaves(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
+      fetchLeaves(currentPage, rowsPerPage, globalFilterValue.trim(), sortField, sortOrder);
       setVisible(false);
     } else {
       toast.current.show({ severity: 'info', summary: 'Leave', detail: "Please write a reason for leave rejection!", life: 3000 })
@@ -152,8 +154,9 @@ const LeaveList = ({ title }) => {
 
   const handleViewLeaveDetail = async (leaveDetail) => {
     setViewLeave(true)
+    
     setLeaveDetail({
-      name: leaveDetail.userId.fullName,
+      name: leaveDetail.username,
       startDate: leaveDetail.startDate,
       endDate: leaveDetail.endDate,
       days: leaveDetail.totalDays,
@@ -281,7 +284,8 @@ const LeaveList = ({ title }) => {
                 </form>
                 <div className="ms-3">
                   <CButton
-                    onClick={() => { auth.user.role === "admin" ? navigate('/dashboard/leave/create') : navigate('/dashboard-user/leave/create') }}
+                    onClick={
+                      () => { auth.user.role === "admin" ? navigate('/dashboard/leave/create') : navigate('/dashboard-user/leave/create') }}
                     title="Create Leave"
                     className="btn btn-light"
                     style={{ height: "40px" }}
@@ -303,7 +307,7 @@ const LeaveList = ({ title }) => {
               value={leaveList}
               first={(currentPage - 1) * rowsPerPage}
               onPage={onPageChange}
-              dataKey="_id"
+              dataKey="id"
               emptyMessage="No leave found."
               paginatorLeft={
                 <Dropdown value={rowsPerPage} options={[10, 25, 50]} onChange={(e) => setRowsPerPage(e.value)} />
@@ -312,7 +316,7 @@ const LeaveList = ({ title }) => {
               <Column field="startDate" header="Start Date" sortable filterField="start" align="center" />
               <Column field="endDate" header="End Date" filterField="end" align="center" />
               {auth.user.role === "admin" && (
-                <Column field="userId.fullName" sortable header="Name" filterField="name" align="center" />
+                <Column field="username" sortable header="Name" filterField="name" align="center" />
               )}
               <Column field="totalDays" header="Days" filterField="days" align="center" />
               <Column field="leaveType" header="Leave Type" filterField="leaveType" align="center" />
@@ -320,7 +324,7 @@ const LeaveList = ({ title }) => {
                 header="Status"
                 alignHeader="center"
                 body={(rowData) => (
-                  <Tag value={rowData.status} severity={getSeverity(rowData.status)} />
+                <Tag value={rowData.status} severity={getSeverity(rowData.status)} />
                 )}
                 filterField="status"
                 align="center"
@@ -336,7 +340,7 @@ const LeaveList = ({ title }) => {
                           title="Approve"
                           rounded
                           severity="success"
-                          onClick={() => handleUpdateStatus(rowData._id, "approved")}
+                          onClick={() => handleUpdateStatus(rowData.id, "approved")}
                           raised
                         />
                         <Button
@@ -344,7 +348,7 @@ const LeaveList = ({ title }) => {
                           title="Reject"
                           rounded
                           severity="danger"
-                          onClick={() => handleUpdateStatus(rowData._id, "rejected", rowData.userId.fullName)}
+                          onClick={() => handleUpdateStatus(rowData.id, "rejected", rowData.userId.fullName)}
                           className="ms-2"
                           raised
                         />
@@ -357,7 +361,7 @@ const LeaveList = ({ title }) => {
                           title="Delete"
                           rounded
                           severity="danger"
-                          onClick={() => handleDelete(rowData._id)}
+                          onClick={() => handleDelete(rowData.id)}
                           raised
                         />
                       </>
@@ -368,7 +372,7 @@ const LeaveList = ({ title }) => {
                       severity="info"
                       className="ms-2"
                       title="Edit"
-                      onClick={() => handleUpdate(rowData._id)}
+                      onClick={() => handleUpdate(rowData.id)}
                       raised
                       disabled={rowData.status !== "Pending"}
                     />

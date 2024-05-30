@@ -33,7 +33,7 @@ const LeaveManagementProvider = ({ children }) => {
   const getSingleLeave = async (id) => {
     try {
       const { data } = await axios.get(`${baseURL}/leaveManagement/singleLeave/${id}`, { headers })
-      return data.getLeave
+      return data.data
     } catch (error) {
       console.log(error);
     }

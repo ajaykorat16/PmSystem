@@ -25,8 +25,8 @@ const UserWorkLogUpdate = ({ title }) => {
     const params = useParams()
 
     const getProjects = async () => {
-        const { getAllProjects } = await fetchProjects();
-        setProjects(getAllProjects);
+        const { data } = await fetchProjects();
+        setProjects(data);
     };
     useEffect(() => {
         getProjects();
@@ -35,12 +35,12 @@ const UserWorkLogUpdate = ({ title }) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                let { worklog } = await getSingleWorklog(params.id);
-                if (worklog) {
-                    setSelectProject(worklog.project ? worklog.project._id : "")
-                    setDescription(worklog.description)
-                    setLogDate(new Date(worklog.logDate));
-                    setTime(worklog.time);
+                let { data } = await getSingleWorklog(params.id);
+                if (data.length>0) {
+                    setSelectProject(data[0].project ? data[0].project : "")
+                    setDescription(data[0].description)
+                    setLogDate(new Date(data[0].logDate));
+                    setTime(data[0].time);
                 }
             } catch (error) {
                 console.log(error.message);
@@ -75,7 +75,7 @@ const UserWorkLogUpdate = ({ title }) => {
                     <CFormSelect id="inputProject" label="Project" value={selectproject} onChange={(e) => setSelectProject(e.target.value)} >
                         <option value="" disabled>Select a project</option>
                         {projects.map((p) => (
-                            <option key={p._id} value={p._id}>{p.name}</option>
+                            <option key={p.id} value={p.id}>{p.name}</option>
                         ))}
                     </CFormSelect>
                 </CCol>

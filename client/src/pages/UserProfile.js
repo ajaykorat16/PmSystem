@@ -39,7 +39,8 @@ const UserUpdate = ({ title }) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                let { getProfile } = await getUserProfile(params.id);
+                let { data: getProfile } = await getUserProfile(params.id);
+                
                 if (getProfile) {
                     setEmployeeNumber(getProfile.employeeNumber)
                     setFirstname(getProfile.firstname);
@@ -47,7 +48,7 @@ const UserUpdate = ({ title }) => {
                     setEmail(getProfile.email);
                     setAddress(getProfile.address)
                     setPhone(getProfile.phone)
-                    setDepartments(getProfile.department ? getProfile.department.name : "")
+                    setDepartments(getProfile.departmentName ? getProfile.departmentName : "")
                     setDateOfBirth(new Date(getProfile.dateOfBirth))
                     setDateOfJoining(getProfile.dateOfJoining)
                     if (getProfile.photo !== null) {
@@ -72,8 +73,8 @@ const UserUpdate = ({ title }) => {
     }, [params.id, getUserProfile]);
 
     const fetchLeave = async () => {
-        const { leaves } = await getUserLeave()
-        setLeave(leaves)
+        const { data } = await getUserLeave()
+        setLeave(data)
     }
     useEffect(() => {
         fetchLeave()
@@ -83,7 +84,7 @@ const UserUpdate = ({ title }) => {
         e.preventDefault()
         try {
             let updateUsers = { firstname, lastname, phone, address, dateOfBirth: formatDate(dateOfBirth), photo: newPhoto ? newPhoto : photo }
-            const data = await updateProfile(updateUsers)
+            const data = await updateProfile(updateUsers);
             if (data.error) {
                 toast.current.show({ severity: 'error', summary: 'Profile', detail: data.message, life: 3000 })
             }
@@ -112,8 +113,8 @@ const UserUpdate = ({ title }) => {
 
     return (
         <Layout title={title} toast={toast}>
-            {isLoading === true && <Loader />}
-            {isLoading === false && <>
+            { isLoading && <Loader />}
+            { !isLoading && <>
                 <CForm onSubmit={handleSubmit}>
                     <div className='mainBody'>
                         <div className='row'>

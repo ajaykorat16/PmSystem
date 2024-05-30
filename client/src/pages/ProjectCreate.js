@@ -26,7 +26,7 @@ const ProjectCreate = ({ title }) => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      const addProject = { name, description, startDate: formatDate(startDate), developers: developers.map(dev => ({ id: dev._id })) }
+      const addProject = { name, description, startDate: formatDate(startDate), developers: developers.map(dev => ({ id: dev.id })) }
       const data = await createProject(addProject)
       if (typeof data !== 'undefined' && data.error === false) {
         navigate('/dashboard/project/list')
@@ -37,8 +37,8 @@ const ProjectCreate = ({ title }) => {
   }
 
   const getUsers = async () => {
-    const { getAllUsers } = await fetchUsers();
-    setUsers(getAllUsers);
+    const { data } = await fetchUsers();
+    setUsers(data);
   };
   useEffect(() => {
     getUsers();

@@ -42,7 +42,7 @@ const PendingLeaves = () => {
         let leaveData = await getAllPendingLeaves(currentPage, rowsPerPage, query, sortField, sortOrder);
         const totalRecordsCount = leaveData?.totalLeaves;
         setTotalRecords(totalRecordsCount);
-        setLeaveList(leaveData?.leaves);
+        setLeaveList(leaveData?.data);
     };
 
     useEffect(() => {
@@ -55,6 +55,7 @@ const PendingLeaves = () => {
         fetchLeaves(1, rowsPerPage, globalFilterValue, sortField, sortOrder);
     };
 
+    //When serach is empty after clearing the search.
     useEffect(() => {
         if (globalFilterValue.trim() === "") {
             setCurrentPage(1);
@@ -128,7 +129,7 @@ const PendingLeaves = () => {
     const handleViewLeaveDetail = async (leaveDetail) => {
         setViewLeave(true)
         setLeaveDetail({
-            name: leaveDetail.userId.fullName,
+            name: leaveDetail.username,
             startDate: leaveDetail.startDate,
             endDate: leaveDetail.endDate,
             days: leaveDetail.totalDays,
@@ -156,7 +157,7 @@ const PendingLeaves = () => {
                             <CFormTextarea
                                 type="text"
                                 id="leave"
-                                label="Rasone For Reject Leave"
+                                label="Reason For Reject Leave"
                                 value={reasonForLeaveReject}
                                 onChange={(e) => setReasonForLeaveReject(e.target.value)}
                                 rows={3}
@@ -244,7 +245,9 @@ const PendingLeaves = () => {
                                 <span className="p-inputgroup-addon">
                                     <i className="pi pi-search" />
                                 </span>
-                                <InputText type="search" value={globalFilterValue} onChange={(e) => setGlobalFilterValue(e.target.value)} placeholder="Search" />
+                                <InputText type="search" value={globalFilterValue} 
+                                onChange={(e) => setGlobalFilterValue(e.target.value)} 
+                                placeholder="Search" />
                             </div>
                         </form>
                         <div className="ms-3">
@@ -271,7 +274,7 @@ const PendingLeaves = () => {
                     value={leaveList}
                     first={(currentPage - 1) * rowsPerPage}
                     onPage={onPageChange}
-                    dataKey="_id"
+                    dataKey="id"
                     emptyMessage="No Pending leaves found."
                     paginatorLeft={
                         <Dropdown value={rowsPerPage} options={[5, 10, 25, 50]} onChange={(e) => setRowsPerPage(e.value)} />
@@ -279,7 +282,7 @@ const PendingLeaves = () => {
                 >
                     <Column field="startDate" header="Start Date" sortable filterField="start" align="center" />
                     <Column field="endDate" header="End Date" filterField="end" align="center" />
-                    <Column field="userId.fullName" sortable header="Name" filterField="name" align="center" />
+                    <Column field="username" sortable header="Name" filterField="name" align="center" />
                     <Column field="totalDays" header="Days" filterField="days" align="center" />
                     <Column field="leaveType" header="Leave Type" filterField="leaveType" align="center" />
                     <Column
@@ -301,7 +304,7 @@ const PendingLeaves = () => {
                                         title="Approve"
                                         rounded
                                         severity="success"
-                                        onClick={() => handleUpdateStatus(rowData._id, "approved")}
+                                        onClick={() => handleUpdateStatus(rowData.id, "approved")}
                                         raised
                                     />
                                     <Button
@@ -309,7 +312,7 @@ const PendingLeaves = () => {
                                         title="Reject"
                                         rounded
                                         severity="danger"
-                                        onClick={() => handleUpdateStatus(rowData._id, "rejected", rowData.userId.fullName)}
+                                        onClick={() => handleUpdateStatus(rowData.id, "rejected", rowData.userId.fullName)}
                                         className="ms-2"
                                         raised
                                     />
@@ -320,7 +323,7 @@ const PendingLeaves = () => {
                                     severity="info"
                                     className="ms-2"
                                     title="Edit"
-                                    onClick={() => handleUpdate(rowData._id)}
+                                    onClick={() => handleUpdate(rowData.id)}
                                     raised
                                     disabled={rowData.status !== "Pending"}
                                 />

@@ -16,7 +16,6 @@ const DepartmentProvider = ({ children }) => {
   const getDepartment = async (page, limit, query, sortField, sortOrder) => {
     try {
       let queryUrl = ''
-
       if (query) {
         queryUrl = `&query=${query}`
       }
@@ -45,7 +44,6 @@ const DepartmentProvider = ({ children }) => {
   const addDepartment = async (name) => {
     try {
       const { data } = await axios.post(`${baseURL}/department/createDepartment`, { name }, { headers });
-
       if (data.error === false) {
         getDepartment()
         setTimeout(function () {
@@ -56,6 +54,9 @@ const DepartmentProvider = ({ children }) => {
         toast.current.show({ severity: 'error', summary: 'Department', detail: data.message, life: 3000 })
       }
     } catch (error) {
+      if (error.response.status === 400) {
+        return toast.current.show({ severity: 'error', summary: 'Department', detail:  "Department Already Exists.", life: 3000 })
+      }
       if (error.response) {
         const errors = error.response.data.errors;
         if (errors && Array.isArray(errors) && errors.length > 0) {
@@ -93,8 +94,12 @@ const DepartmentProvider = ({ children }) => {
         setTimeout(function () {
           toast.current.show({ severity: 'success', summary: 'Department', detail: data.message, life: 3000 })
         }, 1000);
+        return data;
       }
     } catch (error) {
+      if (error.response.status === 400) {
+        return toast.current.show({ severity: 'error', summary: 'Department', detail:  "Department Already Exists.", life: 3000 })
+      }
       console.log(error);
     }
   }
@@ -103,7 +108,7 @@ const DepartmentProvider = ({ children }) => {
   const getSingleDepartment = async (id) => {
     try {
       const { data } = await axios.get(`${baseURL}/department/getSingleDepartment/${id}`, { headers })
-      return data.getSingle
+      return data.data
     } catch (error) {
       console.log(error);
     }

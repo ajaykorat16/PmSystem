@@ -33,27 +33,28 @@ const UserWorkLogList = ({ title }) => {
   const fetchWorklog = async (currentPage, rowsPerPage, query, sortField, sortOrder) => {
     setIsLoading(true);
     let worklogData = await getWorklog(currentPage, rowsPerPage, query, sortField, sortOrder);
-
     const totalRecordsCount = worklogData.totalWorklog;
     setTotalRecords(totalRecordsCount);
-    setWorklogList(worklogData.worklog);
+    setWorklogList(worklogData.data);
     setIsLoading(false);
   };
 
-  useEffect(() => {
-    fetchWorklog(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
-  }, [currentPage, rowsPerPage, sortField, sortOrder]);
-
   const handleSubmit = async () => {
     setCurrentPage(1);
-    fetchWorklog(1, rowsPerPage, globalFilterValue, sortField, sortOrder);
+    fetchWorklog(1, rowsPerPage, globalFilterValue.trim(), sortField, sortOrder);
   };
 
   useEffect(() => {
-    if (globalFilterValue.trim() === "") {
+    if(globalFilterValue.length > 0) {
+      fetchWorklog(currentPage, rowsPerPage, globalFilterValue.trim(), sortField, sortOrder);
+    }
+  }, [currentPage, rowsPerPage, sortField, sortOrder]);
+  
+  useEffect(() => {
+    if (globalFilterValue.trim() === '') {
       fetchWorklog(currentPage, rowsPerPage, "", sortField, sortOrder);
     }
-  }, [globalFilterValue]);
+  }, [globalFilterValue, sortField, sortOrder, rowsPerPage, currentPage])
 
   const handleDelete = async (id) => {
     confirmDialog({
@@ -63,7 +64,7 @@ const UserWorkLogList = ({ title }) => {
       position: 'top',
       accept: async () => {
         await deleteWorklog(id);
-        fetchWorklog(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
+        fetchWorklog(currentPage, rowsPerPage, globalFilterValue.trim(), sortField, sortOrder);
       },
     });
   };
@@ -84,7 +85,6 @@ const UserWorkLogList = ({ title }) => {
     const order = e.sortOrder;
     setSortField(field);
     setSortOrder(order);
-    fetchWorklog(currentPage, rowsPerPage, globalFilterValue, field, order);
   };
 
   const handleWorklogDetail = async (worklog) => {
@@ -174,13 +174,13 @@ const UserWorkLogList = ({ title }) => {
               value={worklogList}
               first={(currentPage - 1) * rowsPerPage}
               onPage={onPageChange}
-              dataKey="_id"
+              dataKey="id"
               emptyMessage="No work log found."
               paginatorLeft={
                 <Dropdown value={rowsPerPage} options={[10, 25, 50]} onChange={(e) => setRowsPerPage(e.value)} />
               }
             >
-              <Column field="project.name" sortField="project" header="Project Name" sortable filterField="Project" align="center" />
+              <Column field="projectName" sortField="projectName" header="Project Name" sortable filterField="projectName" align="center" />
               <Column field="logDate" sortable header="Log Date" filterField="logDate" align="center" />
               <Column field="time" sortable header="Time" filterField="time" align="center" />
               <Column
@@ -190,8 +190,8 @@ const UserWorkLogList = ({ title }) => {
                   <div>
                     <>
                       <Button icon="pi pi-eye" title="View Work Log" rounded severity="info" aria-label="view" onClick={() => handleWorklogDetail(rowData)} />
-                      <Button icon="pi pi-pencil" title="Edit" rounded className="ms-2" severity="success" aria-label="edit" onClick={() => handleUpdate(rowData._id)} />
-                      <Button icon="pi pi-trash" title="Delete" rounded severity="danger" className="ms-2" aria-label="delete" onClick={() => handleDelete(rowData._id)} />
+                      <Button icon="pi pi-pencil" title="Edit" rounded className="ms-2" severity="success" aria-label="edit" onClick={() => handleUpdate(rowData.id)} />
+                      <Button icon="pi pi-trash" title="Delete" rounded severity="danger" className="ms-2" aria-label="delete" onClick={() => handleDelete(rowData.id)} />
                     </>
                   </div>
                 )}

@@ -93,7 +93,7 @@ const LeaveProvider = ({ children }) => {
     try {
       const { data } = await axios.put(`${baseURL}/leaves/updateStatus/${id}`, { status, reasonForLeaveReject }, { headers })
       if (data.error === false) {
-        getLeave()
+        getLeave();
       }
     } catch (error) {
       console.log(error);
@@ -104,7 +104,7 @@ const LeaveProvider = ({ children }) => {
   const getLeaveById = async (id) => {
     try {
       const { data } = await axios.get(`${baseURL}/leaves/getLeaveById/${id}`, { headers });
-      return data.leaves;
+      return data.data;
     } catch (error) {
       console.log(error);
     }

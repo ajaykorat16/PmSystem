@@ -45,13 +45,13 @@ const AppHeaderDropdown = () => {
   const fetchData = async () => {
     try {
       if (getAuth && getAuth.user) {
-        const { getProfile } = await getUserProfile(auth.user._id);
-        setLeaveBalance(getProfile.leaveBalance);
-        if (getProfile?.photo === null) {
+        const { data } = await getUserProfile(auth.user.id);
+        setLeaveBalance(data.leaveBalance);
+        if (data?.photo === null) {
           setPhoto('')
           setIsPhoto(false)
         } else {
-          setPhoto(getProfile.photo);
+          setPhoto(data.photo);
           setIsPhoto(true)
         }
       }
@@ -76,7 +76,7 @@ const AppHeaderDropdown = () => {
     navigate("/")
   }
 
-  const redirectPath = auth?.user?.role === "admin" ? `/dashboard/user/admin-profile/${auth?.user?._id}` : `/dashboard-user/user/user-profile/${auth?.user?._id}`;
+  const redirectPath = auth?.user?.role === "admin" ? `/dashboard/user/admin-profile/${auth?.user?.id}` : `/dashboard-user/user/user-profile/${auth?.user?.id}`;
 
   return (
     <>

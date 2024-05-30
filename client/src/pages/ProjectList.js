@@ -23,7 +23,7 @@ const ProjectList = ({ title }) => {
   const [totalRecords, setTotalRecords] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [globalFilterValue, setGlobalFilterValue] = useState("");
+  const [globalFilterValue, setGlobalFilterValue] = useState('');
   const [sortField, setSortField] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState(-1);
   const [visible, setVisible] = useState(false);
@@ -42,27 +42,28 @@ const ProjectList = ({ title }) => {
     } else {
       projectData = await userProject(currentPage, rowsPerPage, query, sortField, sortOrder);
     }
-    const totalRecordsCount = projectData.totalProjects;
+    const totalRecordsCount = projectData?.totalProjects;
     setTotalRecords(totalRecordsCount);
-    setProjectList(projectData.projects);
+    setProjectList(projectData.data);
     setIsLoading(false);
   };
-
-  useEffect(() => {
-    fetchProjects(currentPage, rowsPerPage, globalFilterValue, sortField, sortOrder);
-  }, [currentPage, rowsPerPage, sortField, sortOrder]);
-
+  
   const handleSubmit = async () => {
     setCurrentPage(1);
-    fetchProjects(1, rowsPerPage, globalFilterValue, sortField, sortOrder);
+    fetchProjects(1, rowsPerPage, globalFilterValue?.trim(), sortField, sortOrder);
   };
 
   useEffect(() => {
-    if (globalFilterValue.trim() === "") {
-      setCurrentPage(1);
-      fetchProjects(1, rowsPerPage, "", sortField, sortOrder);
+    if(globalFilterValue.length > 0) {
+      fetchProjects(currentPage, rowsPerPage, globalFilterValue.trim(), sortField, sortOrder);
     }
-  }, [globalFilterValue, rowsPerPage, sortField, sortOrder]);
+  }, [currentPage, rowsPerPage, sortField, sortOrder]);
+  
+  useEffect(() => {
+    if (globalFilterValue.trim() === '') {
+      fetchProjects(currentPage, rowsPerPage, "", sortField, sortOrder);
+    }
+  }, [globalFilterValue, sortField, sortOrder, rowsPerPage, currentPage])
 
   const handleDelete = async (id) => {
     confirmDialog({
@@ -93,13 +94,13 @@ const ProjectList = ({ title }) => {
     const order = e.sortOrder;
     setSortField(field);
     setSortOrder(order);
-    fetchProjects(currentPage, rowsPerPage, globalFilterValue, field, order);
+    fetchProjects(currentPage, rowsPerPage, globalFilterValue?.trim(), field, order);
   };
 
   const handleProjectDetail = async (project) => {
     setVisible(true);
     const developerNames = project.developers.map(
-      (developer) => developer.id.fullName
+      (developer) => developer.fullName
     );
     setProject({
       name: project.name,
@@ -196,7 +197,7 @@ const ProjectList = ({ title }) => {
               value={projectList}
               first={(currentPage - 1) * rowsPerPage}
               onPage={onPageChange}
-              dataKey="_id"
+              dataKey="id"
               emptyMessage="No project found."
               paginatorLeft={
                 <Dropdown
@@ -207,7 +208,7 @@ const ProjectList = ({ title }) => {
               }
             >
               <Column
-                field="name"
+                field="projectName"
                 header="Name"
                 filterField="name"
                 align="center"
@@ -217,7 +218,7 @@ const ProjectList = ({ title }) => {
                   header="Developers"
                   body={(rowData) => {
                     const developerNames = rowData.developers.map(
-                      (developer) => developer.id.fullName
+                      (developer) => developer.fullName
                     );
                     return developerNames.join(', ');
                   }}
@@ -255,7 +256,7 @@ const ProjectList = ({ title }) => {
                             severity="success"
                             className="ms-2"
                             aria-label="edit"
-                            onClick={() => handleUpdate(rowData._id)}
+                            onClick={() => handleUpdate(rowData.projectId)}
                           />
                           <Button
                             icon="pi pi-trash"
@@ -264,7 +265,7 @@ const ProjectList = ({ title }) => {
                             severity="danger"
                             className="ms-2"
                             aria-label="Cancel"
-                            onClick={() => handleDelete(rowData._id)}
+                            onClick={() => handleDelete(rowData.projectId)}
                           />
                         </>
                       }

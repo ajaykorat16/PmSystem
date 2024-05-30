@@ -21,13 +21,13 @@ function CredentialView({ title }) {
     useEffect(() => {
         const fetchCredential = async () => {
             try {
-                const data = await getSingleCredential(id);
-
+                const { data }  = await getSingleCredential(id);
+                
                 if (data) {
                     setCredentialDetail({
-                        title: data.credential.title,
-                        description: data.credential.description,
-                        photo: data.credential.users,
+                        title: data.title,
+                        description: data.description,
+                        photo: data.users,
                         createdBy: data?.createdBy,
                     });
                 }
@@ -68,7 +68,7 @@ function CredentialView({ title }) {
                                     color: (!credentialDetail.createdBy?.photo) ? '#ffffff' : null,
                                     cursor: "pointer",
                                 }} />
-                            <span className="userName">{credentialDetail.createdBy?.fullName}</span>
+                            <span className="userName">{credentialDetail.createdBy?.name}</span>
                         </div>
 
                         {credentialDetail.photo.length > 0 && (
@@ -89,7 +89,7 @@ function CredentialView({ title }) {
                                                 cursor: "pointer",
                                             }}
                                         />
-                                        <span className="userName">{user.id.fullName}</span>
+                                        <span className="userName">{user.fullName}</span>
                                     </>
                                 </div>
                             ))

@@ -23,7 +23,7 @@ const CredentialCreate = ({ title }) => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            const credentials = { title: credentialTitle, description, users: developers.map(dev => ({ id: dev._id })) }
+            const credentials = { title: credentialTitle, description, users: developers.map(dev => ({ id: dev.id })) }
             const data = await addCredentials(credentials)
             if (typeof data !== 'undefined' && data.error === false) {
                 const redirectPath = auth.user.role === "admin" ? `/dashboard/credential/list` : `/dashboard-user/credential/list`;
@@ -35,8 +35,8 @@ const CredentialCreate = ({ title }) => {
     }
 
     const getUsers = async () => {
-        const { getAllUsers } = await userForCredential();
-        setUsers(getAllUsers);
+        const { data } = await userForCredential();
+        setUsers(data);
     };
     useEffect(() => {
         getUsers();

@@ -16,7 +16,7 @@ const AppSidebar = () => {
   const sidebarShow = useSelector((state) => state.sidebarShow)
   const { auth } = useAuth()
   const [role, setRole] = useState("")
-
+  
   useEffect(() => {
     if (auth?.user?.role) {
       setRole(auth?.user?.role)
@@ -34,6 +34,7 @@ const AppSidebar = () => {
         dispatch({ type: 'set', sidebarShow: visible })
       }}
     >
+      {/* Logo starts */}
       <CSidebarBrand className="d-none d-md-flex pmSystem" to="/">
         <CNavLink to={userRole === "user" ? '/dashboard-user/employee' : "/dashboard/admin"} component={NavLink} className="d-none d-md-flex">
           <Avatar
@@ -43,6 +44,9 @@ const AppSidebar = () => {
           />  PM SYSTEM
         </CNavLink>
       </CSidebarBrand>
+      {/* Logo ends */}
+
+      {/* Side navbar starts */}
       <CSidebarNav>
         <SimpleBar>
           {role && role === "admin" && <AppSidebarNav items={adminNavigatiion} />}
@@ -50,6 +54,8 @@ const AppSidebar = () => {
           {role === "" && <AppSidebarNav items={userNavigation} />}
         </SimpleBar>
       </CSidebarNav>
+      {/* Side navbar ends */}
+      
       <CSidebarToggler
         className="d-none d-lg-flex"
         onClick={() => dispatch({ type: 'set', sidebarUnfoldable: !unfoldable })}
@@ -58,4 +64,5 @@ const AppSidebar = () => {
   )
 }
 
+//memo is used for not re-rendering AppSidebar everytime(Because it is static and doesn't need to re-render)
 export default React.memo(AppSidebar)
