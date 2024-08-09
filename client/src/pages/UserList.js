@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
-import { useUser } from "../context/UserContext";
+import { CButton, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from "@coreui/react";
 import { useNavigate } from "react-router-dom";
-import Loader from "../components/Loader";
-import { InputText } from "primereact/inputtext";
-import { Dropdown } from "primereact/dropdown";
-import Layout from "./Layout";
+import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { Avatar } from "primereact/avatar";
-import { useAuth } from "../context/AuthContext";
+import { Dropdown } from "primereact/dropdown";
+import { InputText } from "primereact/inputtext";
+import { DataTable } from "primereact/datatable";
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { useUser } from "../context/UserContext";
+import { useAuth } from "../context/AuthContext";
+import Layout from "./Layout";
+import Loader from "../components/Loader";
 import "../styles/Styles.css";
-import { CButton, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from "@coreui/react";
 
 const UserList = ({ title }) => {
   const navigate = useNavigate();
-  const { deleteUser, getAllUsers, getUserProfile, getAllEmployee } = useUser();
+  const { deleteUser, getAllUsers, getUserProfile } = useUser();
   const { loginUserByAdmin, toast, auth } = useAuth()
   const [isLoading, setIsLoading] = useState(true);
   const [userList, setUserList] = useState([]);
@@ -33,22 +33,21 @@ const UserList = ({ title }) => {
     fullName: "",
     email: "",
     address: "",
-    departments: "",
+    department: "",
     dateOfBirth: "",
     dateOfJoining: "",
   })
 
   const fetchUsers = async (currentPage, rowsPerPage, query, sortField, sortOrder) => {
     setIsLoading(true);
-    let userData;
-    if (auth.user.role === "admin") {
-      userData = await getAllUsers(currentPage, rowsPerPage, query, sortField, sortOrder);
-    } else {
-      userData = await getAllEmployee(currentPage, rowsPerPage, query, sortField, sortOrder);
+
+    const userData = await getAllUsers(currentPage, rowsPerPage, query, sortField, sortOrder);
+    if (userData.data.length > 0) {
+      const totalRecordsCount = userData.totalUsers;
+      setTotalRecords(totalRecordsCount);
+      setUserList(userData.data);
     }
-    const totalRecordsCount = userData.totalUsers;
-    setTotalRecords(totalRecordsCount);
-    setUserList(userData.data);
+
     setIsLoading(false);
   };
 
@@ -58,14 +57,13 @@ const UserList = ({ title }) => {
   };
 
   useEffect(() => {
-    if(globalFilterValue.length > 0) {
+    if (globalFilterValue.length > 0) {
       fetchUsers(currentPage, rowsPerPage, globalFilterValue.trim(), sortField, sortOrder);
     }
   }, [currentPage, rowsPerPage, sortField, sortOrder]);
-  
+
   useEffect(() => {
     if (globalFilterValue.trim() === '') {
-      // setCurrentPage(1);
       fetchUsers(currentPage, rowsPerPage, "", sortField, sortOrder);
     }
   }, [globalFilterValue, sortField, sortOrder, rowsPerPage, currentPage])
@@ -82,8 +80,6 @@ const UserList = ({ title }) => {
       },
     });
   };
-
-  const handleUpdate = async (id) => { navigate(`/dashboard/user/update/${id}`); };
 
   const onPageChange = (event) => {
     const newCurrentPage = Math.floor(event.first / event.rows) + 1;
@@ -106,17 +102,10 @@ const UserList = ({ title }) => {
   }
 
   const handleViewEmployeeProfile = async (user) => {
+    console.log(user);
+    
     setVisible(true)
-    setUserDetail({
-      photo: user.photo,
-      phone: user.phone,
-      fullName: user.fullName,
-      email: user.email,
-      address: user.address,
-      departments: user.department,
-      dateOfBirth: user.dateOfBirth,
-      dateOfJoining: user.dateOfJoining,
-    })
+    setUserDetail(user)
   }
 
   return (
@@ -161,7 +150,7 @@ const UserList = ({ title }) => {
                     </div>
                     <div className='row userDetail'>
                       <div className='col'><strong> Department </strong> </div>
-                      <div className='col'>{userDetail.departments}</div>
+                      <div className='col'>{userDetail.department}</div>
                     </div>
                     <div className='row userDetail'>
                       <div className='col'><strong> Phone </strong> </div>
@@ -233,7 +222,10 @@ const UserList = ({ title }) => {
               dataKey="id"
               emptyMessage="No user found."
               paginatorLeft={
-                <Dropdown value={rowsPerPage} options={[10, 25, 50]} onChange={(e) => setRowsPerPage(e.value)} />
+                <Dropdown
+                  value={rowsPerPage}
+                  options={[10, 25, 50]}
+                  onChange={(e) => setRowsPerPage(e.value)} />
               }
             >
               <Column
@@ -241,20 +233,43 @@ const UserList = ({ title }) => {
                 filterField="representative"
                 body={(rowData) => (
                   <div className="flex align-items-center gap-2">
-                    {rowData.photo ? (
-                      <Avatar image={`${rowData.photo}`} size="large" shape="circle" />
-                    ) : (
-                      <Avatar icon="pi pi-user" className="avatar" size="large" shape="circle" />
-                    )}
+                    {
+                      rowData.photo ? (
+                        <Avatar image={`${rowData.photo}`} size="large" shape="circle" />
+                      ) : (
+                        <Avatar icon="pi pi-user" className="avatar" size="large" shape="circle" />
+                      )}
                   </div>
                 )}
                 align="center"
               />
-              <Column field="employeeNumber" header="Emp. ID." sortable filterField="employeeNumber" align="center" />
-              <Column field="fullName" sortable header="Name" filterField="firstname" align="center" />
-              <Column field="email" sortable header="Email" filterField="email" align="center" />
-              <Column field="phone" header="Phone" filterField="phone" align="center" />
-              <Column field="department" header="Department" filterField="department" align="center" />
+              <Column
+                field="employeeNumber"
+                header="Emp. ID."
+                sortable
+                filterField="employeeNumber"
+                align="center" />
+              <Column
+                field="fullName"
+                sortable
+                header="Name"
+                filterField="firstname"
+                align="center" />
+              <Column
+                field="email"
+                sortable header="Email"
+                filterField="email"
+                align="center" />
+              <Column
+                field="phone"
+                header="Phone"
+                filterField="phone"
+                align="center" />
+              <Column
+                field="department"
+                header="Department"
+                filterField="department"
+                align="center" />
               <Column
                 field="action"
                 header="Action"
@@ -262,9 +277,29 @@ const UserList = ({ title }) => {
                   <div>
                     {rowData.role === "user" && auth.user.role === "admin" && (
                       <>
-                        <Button icon="pi pi-pencil" title="Edit" rounded severity="success" aria-label="edit" onClick={() => handleUpdate(rowData.id)} />
-                        <Button icon="pi pi-trash" title="Delete" rounded severity="danger" className="ms-2" aria-label="Cancel" onClick={() => handleDelete(rowData.id)} />
-                        <Button icon="pi pi-lock" title="User Login" rounded severity="info" className="ms-2" aria-label="login" onClick={() => handleLogin(rowData.id)} />
+                        <Button
+                          icon="pi pi-pencil"
+                          title="Edit"
+                          rounded
+                          severity="success"
+                          aria-label="edit"
+                          onClick={() => navigate(`/dashboard/user/update/${rowData.id}`)} />
+                        <Button
+                          icon="pi pi-trash"
+                          title="Delete"
+                          rounded
+                          severity="danger"
+                          className="ms-2"
+                          aria-label="Cancel"
+                          onClick={() => handleDelete(rowData.id)} />
+                        <Button
+                          icon="pi pi-lock"
+                          title="User Login"
+                          rounded
+                          severity="info"
+                          className="ms-2"
+                          aria-label="login"
+                          onClick={() => handleLogin(rowData.id)} />
                       </>
                     )}
                     {auth.user.role === "user" && (

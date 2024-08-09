@@ -42,9 +42,12 @@ const ProjectList = ({ title }) => {
     } else {
       projectData = await userProject(currentPage, rowsPerPage, query, sortField, sortOrder);
     }
-    const totalRecordsCount = projectData?.totalProjects;
-    setTotalRecords(totalRecordsCount);
-    setProjectList(projectData.data);
+
+    if(projectData){
+      const totalRecordsCount = projectData?.totalProjects;
+      setTotalRecords(totalRecordsCount);
+      setProjectList(projectData.data);
+    }
     setIsLoading(false);
   };
   

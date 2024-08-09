@@ -94,6 +94,8 @@ const UserUpdate = ({ title }) => {
             let updateUsers = { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth: formatDate(dateOfBirth), department: departments, dateOfJoining: formatDate(dateOfJoining), photo: newPhoto ? newPhoto : photo, projects: newProjects }
             let id = params.id
             const data = await updateUser(updateUsers, id)
+console.log("data-----------", data);
+
             if (data.error) {
                 toast.current.show({ severity: 'error', summary: 'User', detail: data.message, life: 3000 })
             } else {
@@ -116,6 +118,17 @@ const UserUpdate = ({ title }) => {
             reader.readAsDataURL(file);
         }
     };
+
+    // const handleImageChange = (e) => {
+    //     const file = e.target.files[0];
+    //     if (file) {
+    //         const reader = new FileReader();
+    //         reader.onloadend = () => {
+    //             setCredential({ ...credential, image: reader.result });
+    //         };
+    //         reader.readAsDataURL(file);
+    //     }
+    // };
 
     const getProjects = async () => {
         const { data } = await fetchProjects();

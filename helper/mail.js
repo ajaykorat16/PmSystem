@@ -29,6 +29,34 @@ const parsedDate = (date, format = 'YYYY-MM-DD') => {
     return indianDateTime.format(format);
 };
 
+function isValidDate(filter) {
+    const dateRegex = /^(0?[1-9]|[1-2]\d|3[0-1])-(0?[1-9]|1[0-2])-\d{4}$/;
+    return dateRegex.test(filter);
+}
+
+function uploadImage(image, uploadPath) {
+    const decodedImg = decodeBase64Image(image);
+    const imageBuffer = decodedImg.data;
+    const type = decodedImg.type;
+    const extension = mimeTypes.extension(type) || 'png';
+    const fileName = `${Date.now()}.${extension}`;
+
+    if (!fs.existsSync(uploadPath)) {
+        fs.mkdirSync(uploadPath);
+    }
+
+    try {
+        fs.writeFileSync(uploadPath + fileName, imageBuffer, 'utf8');
+        return fileName;
+    } catch (err) {
+        console.error("Image upload error", err);
+    }
+}
+
+const isBase64Image = (str) => {
+    return /^data:image\/([a-zA-Z+]+);base64,/.test(str);
+};
+
 function capitalizeFLetter(string) {
     if (typeof string !== 'undefined') {
         return string[0].toUpperCase() + string.slice(1);
@@ -96,10 +124,10 @@ const sendMailForLeaveStatus = async (data, reasonForLeaveReject) => {
                     'u.*',
                     knex.raw(`IFNULL(GROUP_CONCAT(IF(d.id IS NOT NULL, JSON_OBJECT('id', d.id,'name', d.name), NULL)), '') as department`)
                 )
-                .from(`${USERS} as u`)
-                .where('u.id', userId)
-                .leftJoin(`${DEPARTMENTS} as d`, 'd.id', 'u.department')
-                .first();
+                    .from(`${USERS} as u`)
+                    .where('u.id', userId)
+                    .leftJoin(`${DEPARTMENTS} as d`, 'd.id', 'u.department')
+                    .first();
                 employee.department = employee.department ? JSON.parse(`${employee.department}`) : null;
 
                 body = body.replace('{userName}', employee.fullName)
@@ -153,10 +181,10 @@ const sendMailForLeaveRequest = async (data) => {
                     'u.*',
                     knex.raw(`IFNULL(GROUP_CONCAT(IF(d.id IS NOT NULL, JSON_OBJECT('id', d.id,'name', d.name), NULL)), '') as department`)
                 )
-                .from(`${USERS} as u`)
-                .where('u.id', userId)
-                .leftJoin(`${DEPARTMENTS} as d`, 'd.id', 'u.department')
-                .first();
+                    .from(`${USERS} as u`)
+                    .where('u.id', userId)
+                    .leftJoin(`${DEPARTMENTS} as d`, 'd.id', 'u.department')
+                    .first();
                 employee.department = employee.department ? JSON.parse(`${employee.department}`) : null;
 
                 body = body.replace('{adminName}', adminUser.fullName)
@@ -194,4 +222,4 @@ const sendMailForLeaveRequest = async (data) => {
     }
 };
 
-module.exports = { sendMailForLeaveStatus, sendMailForLeaveRequest, formattedDate, capitalizeFLetter, parsedDate, parseIndianDate, formatteDayType, parsedDayType, decodeBase64Image }
+module.exports = { sendMailForLeaveStatus, sendMailForLeaveRequest, formattedDate, capitalizeFLetter, parsedDate, parseIndianDate, formatteDayType, parsedDayType, decodeBase64Image, isValidDate, uploadImage, isBase64Image }

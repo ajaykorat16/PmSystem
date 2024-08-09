@@ -27,12 +27,7 @@ const UserProvider = ({ children }) => {
     //get All Users
     const getAllUsers = async (page, limit, query, sortField, sortOrder) => {
         try {
-            let res;
-            if (query) {
-                res = await axios.post(`${baseURL}/user/user-search`, { filter: query }, { params: { page, limit, sortField, sortOrder }, headers: headers });
-            } else {
-                res = await axios.get(`${baseURL}/user`, { params: { page, limit, sortField, sortOrder } }, { headers });
-            }
+            const res = await axios.get(`${baseURL}/user`, { params: { page, limit, sortField, sortOrder, filter: query } }, { headers });
             if (res.data.error === false) {
                 return res.data
             }
@@ -49,23 +44,6 @@ const UserProvider = ({ children }) => {
                 res = await axios.post(`${baseURL}/user/getUserByBirthDayMonth-search`, { filter: query }, { params: { page, limit }, headers: headers });
             } else {
                 res = await axios.get(`${baseURL}/user/getUserByBirthDayMonth`, { params: { page, limit } }, { headers });
-            }
-            if (res.data.error === false) {
-                return res.data
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-    //get All Employee
-    const getAllEmployee = async (page, limit, query, sortField, sortOrder) => {
-        try {
-            let res;
-            if (query) {
-                res = await axios.post(`${baseURL}/user/user-search`, { filter: query }, { params: { page, limit, sortField, sortOrder }, headers: headers });
-            } else {
-                res = await axios.get(`${baseURL}/user/employeeList`, { params: { page, limit, sortField, sortOrder } }, { headers });
             }
             if (res.data.error === false) {
                 return res.data
@@ -106,25 +84,29 @@ const UserProvider = ({ children }) => {
     }
 
     //update user
-    const updateUser = async (updateUsers, id) => {
+    const updateUser = async (userDetail, id) => {
         try {
-            let { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining, photo, projects } = updateUsers
+            console.log(userDetail);
+            
+            // let { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining, photo, projects } = userDetail
 
-            const editUser = new FormData()
-            editUser.append("employeeNumber", employeeNumber)
-            editUser.append("firstname", firstname)
-            editUser.append("lastname", lastname)
-            editUser.append("email", email)
-            editUser.append("phone", phone)
-            editUser.append("address", address)
-            editUser.append("department", department)
-            editUser.append("dateOfJoining", dateOfJoining)
-            editUser.append("dateOfBirth", dateOfBirth)
-            editUser.append("projects", JSON.stringify(projects))
-            photo && editUser.append("photo", photo);
+            // const editUser = new FormData()
+            // editUser.append("employeeNumber", employeeNumber)
+            // editUser.append("firstname", firstname)
+            // editUser.append("lastname", lastname)
+            // editUser.append("email", email)
+            // editUser.append("phone", phone)
+            // editUser.append("address", address)
+            // editUser.append("department", department)
+            // editUser.append("dateOfJoining", dateOfJoining)
+            // editUser.append("dateOfBirth", dateOfBirth)
+            // editUser.append("projects", JSON.stringify(projects))
+            // photo && editUser.append("photo", photo);
 
-            const { data } = await axios.put(`${baseURL}/user/updateProfile/${id}`, editUser, { headers });
+            const { data } = await axios.put(`${baseURL}/user/updateProfile/${id}`, userDetail, { headers });
+            console.log("CONTEXT------------", data);
             if (data.error === false) {
+                
                 fetchUsers()
                 setTimeout(function () {
                     toast.current.show({ severity: 'success', summary: 'User', detail: 'User detail is updated successfully.', life: 3000 })
@@ -224,7 +206,7 @@ const UserProvider = ({ children }) => {
     };
 
     return (
-        <UserContext.Provider value={{ fetchUsers, createUser, updateUser, deleteUser, getUserProfile, updateProfile, resetPassword, getAllUsers, getAllEmployee, getAllUsersByBirthMonth, userForCredential }}>
+        <UserContext.Provider value={{ fetchUsers, createUser, updateUser, deleteUser, getUserProfile, updateProfile, resetPassword, getAllUsers, getAllUsersByBirthMonth, userForCredential }}>
             {children}
         </UserContext.Provider>
     );
