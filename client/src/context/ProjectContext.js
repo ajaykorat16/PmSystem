@@ -16,7 +16,7 @@ const ProjectProvider = ({ children }) => {
     const fetchProjects = async () => {
         try {
             const { data } = await axios.get(`${baseURL}/projects/project-list`, { headers });
-            
+
             if (data.error === false) {
                 return data
             }
@@ -30,7 +30,7 @@ const ProjectProvider = ({ children }) => {
         try {
             let res;
             if (query) {
-                res = await axios.post(`${baseURL}/projects/project-search`, { filter: query }, { params: { page, limit, sortField, sortOrder }, headers });
+                res = await axios.get(`${baseURL}/projects`, { params: { page, limit, sortField, sortOrder, filter: query }, headers });
             } else {
                 res = await axios.get(`${baseURL}/projects`, { params: { page, limit, sortField, sortOrder } }, { headers });
             }
@@ -122,7 +122,7 @@ const ProjectProvider = ({ children }) => {
         try {
             let res;
             if (query) {
-                res = await axios.post(`${baseURL}/projects/search-project-list`, { filter: query }, { params: { page, limit, sortField, sortOrder }, headers });
+                res = await axios.get(`${baseURL}/projects/developer-project-list`, { params: { page, limit, sortField, sortOrder, filter: query }, headers });
             } else {
                 res = await axios.get(`${baseURL}/projects/developer-project-list`, { params: { page, limit, sortField, sortOrder } }, { headers });
             }
