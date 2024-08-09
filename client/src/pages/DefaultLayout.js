@@ -28,37 +28,39 @@ const DefaultLayout = () => {
 
   const fetchLeave = async () => {
     const data = await getUserLeave()
-    setLeaveCount(data?.approvedLeave)
+    if (data) {
+      setLeaveCount(data?.approvedLeave)
+    }
   }
 
   const fetchProjects = async () => {
-    const { totalProjects } = await userProject()
-    setProjectCount(totalProjects)
+    const data = await userProject()
+    if (data) setProjectCount(data.totalProjects)
   }
 
   const fetchAllProjects = async () => {
-    const { totalProjects } = await getProject()
-    setAllProjectsCount(totalProjects)
+    const data = await getProject()
+    if (data) setAllProjectsCount(data.totalProjects)
   }
 
   const fetchBirthdayUser = async () => {
-    const { totalUsers } = await getAllUsersByBirthMonth()
-    setBirthdayUsercount(totalUsers)
+    const data = await getAllUsersByBirthMonth()
+    if (data) setBirthdayUsercount(data.totalUsers)
   }
 
   const fetchEmployee = async () => {
-    const { totalEmployee } = await getAllUsers()
-    setEmployeeCount(totalEmployee)
+    const data = await getAllUsers()
+    if (data) setEmployeeCount(data.totalEmployee)
   }
 
   const fetchAdminWorklog = async () => {
-    const { worklogUserCount } = await getAdminWorklog()
-    setAdminWorklogCount(worklogUserCount)
+    const data = await getAdminWorklog()
+    if (data) setAdminWorklogCount(data.worklogUserCount)
   }
 
   const fetchUserWorklog = async () => {
-    const { totalWeekTime } = await getWorklog()
-    setUserWorklogCount(totalWeekTime)
+    const data = await getWorklog()
+    if (data) setUserWorklogCount(data.totalWeekTime)
   }
 
   const fetchData = async () => {
@@ -520,7 +522,7 @@ const DefaultLayout = () => {
           }
         </CCol>
       </CRow>
-      {userRole === "admin" && ( <PendingLeaves/>)}
+      {userRole === "admin" && (<PendingLeaves />)}
     </Layout>
   )
 }
