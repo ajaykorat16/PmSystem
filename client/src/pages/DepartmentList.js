@@ -36,11 +36,11 @@ const DepartmentList = ({ title }) => {
   };
 
   useEffect(() => {
-    if(globalFilterValue.length > 0) {
+    if (globalFilterValue.length > 0) {
       fetchDepartments(currentPage, rowsPerPage, globalFilterValue.trim(), sortField, sortOrder);
     }
   }, [currentPage, rowsPerPage, sortField, sortOrder]);
-  
+
   useEffect(() => {
     if (globalFilterValue.trim() === '') {
       // setCurrentPage(1);
@@ -81,7 +81,6 @@ const DepartmentList = ({ title }) => {
   const handleSorting = async (e) => {
     const field = e.sortField;
     const order = e.sortOrder;
-    console.log(field);
     setSortField(field);
     setSortOrder(order);
     fetchDepartments(currentPage, rowsPerPage, globalFilterValue, field, order)

@@ -16,7 +16,7 @@ const CredentialProvider = ({ children }) => {
     const addCredentials = async (credentials) => {
         try {
             const { data } = await axios.post(`${baseURL}/credential/create`, credentials, { headers })
-            
+
             if (data.error === false) {
                 setTimeout(function () {
                     toast.current.show({ severity: 'success', summary: 'Credential', detail: data.message, life: 3000 })
@@ -47,7 +47,7 @@ const CredentialProvider = ({ children }) => {
         try {
             let res;
             if (query) {
-                res = await axios.post(`${baseURL}/credential/search-credential`, { filter: query }, { params: { page, limit, sortField, sortOrder }, headers: headers });
+                res = await axios.get(`${baseURL}/credential`, { params: { page, limit, sortField, sortOrder, filter: query }, headers: headers });
             } else {
                 res = await axios.get(`${baseURL}/credential`, { params: { page, limit, sortField, sortOrder } }, { headers });
             }

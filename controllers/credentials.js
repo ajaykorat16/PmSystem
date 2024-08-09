@@ -45,7 +45,7 @@ const getCredential = asyncHandler(async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const sortField = req.query.sortField || "createdAt";
     const sortOrder = parseInt(req.query.sortOrder) || -1;
-    const { filter } = req.body;
+    const filter = req.query.filter || '';
     const userId = req.user.id;
 
     query = function () {
@@ -53,19 +53,19 @@ const getCredential = asyncHandler(async (req, res) => {
     };
 
     let filterQuery = {};
-    if(filter) {
-      filterQuery = function() {
+    if (filter) {
+      filterQuery = function () {
         this.where("c.title", "like", `%${filter}%`)
-            .orWhere("c.description", "like", `%${filter}%`);
+          .orWhere("c.description", "like", `%${filter}%`);
       }
     }
 
     let totalCredentialCount = await knex(`${CREDENTIALS} as c`)
       .leftJoin(`${USER_CREDENTIAL_RELATION} as uc`, "uc.credentialId", "c.id")
       .leftJoin(`${USERS} as u`, "uc.userId", "u.id")
-      .where(function() {
+      .where(function () {
         this.where("c.createdBy", userId)
-            .orWhere("uc.userId", userId);
+          .orWhere("uc.userId", userId);
       })
       .andWhere(filterQuery)
       .countDistinct('c.id as count')
@@ -78,16 +78,16 @@ const getCredential = asyncHandler(async (req, res) => {
       .from(`${CREDENTIALS} as c`)
       .leftJoin(`${USER_CREDENTIAL_RELATION} as uc`, "uc.credentialId", "c.id")
       .leftJoin(`${USERS} as u`, "uc.userId", "u.id")
-      .where(function() {
+      .where(function () {
         this.where("c.createdBy", userId)
-            .orWhere("uc.userId", userId);
+          .orWhere("uc.userId", userId);
       })
       .andWhere(filterQuery)
       .groupBy('c.id')
       .offset((page - 1) * limit)
       .limit(limit)
       .orderBy(`c.${sortField}`, sortOrder === -1 ? "desc" : "asc");
-      
+
     return res.status(201).json({
       error: false,
       message: "Credential is getting successfully.",
@@ -107,10 +107,10 @@ const getSingleCredential = asyncHandler(async (req, res) => {
     const { id } = req.params;
 
     const credential = await knex.select(
-        'c.*', 
-        'c.id as credentialId', 'uc.*',
-        knex.raw('IFNULL(GROUP_CONCAT(IF(u.id IS NOT NULL, JSON_OBJECT("id", u.id, "fullName", u.fullName, "photo", u.photo), NULL)), "") as users') 
-      )
+      'c.*',
+      'c.id as credentialId', 'uc.*',
+      knex.raw('IFNULL(GROUP_CONCAT(IF(u.id IS NOT NULL, JSON_OBJECT("id", u.id, "fullName", u.fullName, "photo", u.photo), NULL)), "") as users')
+    )
       .from(`${CREDENTIALS} as c`)
       .where(`c.id`, id)
       .leftJoin(`${USER_CREDENTIAL_RELATION} as uc`, `c.id`, `uc.credentialId`)
@@ -179,14 +179,14 @@ const updateCredential = asyncHandler(async (req, res) => {
       title: title ? capitalizeFLetter(title) : existingCredential.title,
       description: description ? capitalizeFLetter(description) : existingCredential.description,
     };
-      
+
     if (existingCredential.createdBy.toString() !== req.user.id.toString()) {
       return res.status(403).json({
         error: true,
         message: "You are not authorized to Update this credential.",
       });
     }
-    
+
     if (users && Array.isArray(users)) {
       await knex(USER_CREDENTIAL_RELATION).where('credentialId', id).del();
       for (const user of users) {

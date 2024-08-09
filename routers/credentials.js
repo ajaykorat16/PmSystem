@@ -7,8 +7,6 @@ const { createCredential, getCredential, getSingleCredential, updateCredential, 
 
 router.get("/", auth, getCredential)
 
-router.post("/search-credential", auth, getCredential)
-
 router.get("/single-credential/:id", auth, getSingleCredential)
 
 router.post("/create",
