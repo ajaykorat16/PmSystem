@@ -14,8 +14,6 @@ router.post("/create",
 
 router.get('/user-worklog', auth, userGetWorklog)
 
-router.post('/search-worklog', auth, userGetWorklog)
-
 router.post('/admin-search-worklog', auth, isAdmin, getAllWorklog)
 
 router.get('/', auth, isAdmin, getAllWorklog)

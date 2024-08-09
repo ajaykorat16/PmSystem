@@ -75,7 +75,7 @@ function AdminWorkLogList({ title }) {
     const handleWorklogDetail = async (worklog) => {
         setVisible(true);
         setWorklog({
-            userId: worklog.userId.fullName,
+            userId: worklog.fullName,
             project: worklog.project.name,
             description: worklog.description,
             logDate: worklog.logDate,

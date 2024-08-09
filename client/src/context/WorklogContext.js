@@ -15,14 +15,9 @@ const WorklogProvider = ({ children }) => {
     //get worklog
     const getWorklog = async (page, limit, query, sortField, sortOrder) => {
         try {
-            let res;
-            if (query) {
-                res = await axios.post(`${baseURL}/worklog/search-worklog`, { filter: query }, { params: { page, limit, sortField, sortOrder }, headers: headers });
-            } else {
-                res = await axios.get(`${baseURL}/worklog/user-worklog`, { params: { page, limit, sortField, sortOrder } }, { headers });
-            }
-            if (res.data.error === false) {
-                return res.data
+            let { data } = await axios.get(`${baseURL}/worklog/user-worklog?page=${page}&limit=${limit}&sortField=${sortField}&sortOrder=${sortOrder}&filter=${query}`, { headers });
+            if (data.error === false) {
+                return data
             }
         } catch (error) {
             console.log(error);
