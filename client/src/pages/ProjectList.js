@@ -43,25 +43,25 @@ const ProjectList = ({ title }) => {
       projectData = await userProject(currentPage, rowsPerPage, query, sortField, sortOrder);
     }
 
-    if(projectData){
+    if (projectData) {
       const totalRecordsCount = projectData?.totalProjects;
       setTotalRecords(totalRecordsCount);
       setProjectList(projectData.data);
     }
     setIsLoading(false);
   };
-  
+
   const handleSubmit = async () => {
     setCurrentPage(1);
     fetchProjects(1, rowsPerPage, globalFilterValue?.trim(), sortField, sortOrder);
   };
 
   useEffect(() => {
-    if(globalFilterValue.length > 0) {
+    if (globalFilterValue.length > 0) {
       fetchProjects(currentPage, rowsPerPage, globalFilterValue.trim(), sortField, sortOrder);
     }
   }, [currentPage, rowsPerPage, sortField, sortOrder]);
-  
+
   useEffect(() => {
     if (globalFilterValue.trim() === '') {
       fetchProjects(currentPage, rowsPerPage, "", sortField, sortOrder);
@@ -105,8 +105,9 @@ const ProjectList = ({ title }) => {
     const developerNames = project.developers.map(
       (developer) => developer.fullName
     );
+
     setProject({
-      name: project.name,
+      name: project.projectName,
       developers: developerNames.join(', '),
       description: project.description,
       startDate: project.startDate,

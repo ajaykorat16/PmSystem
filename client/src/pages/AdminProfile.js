@@ -133,7 +133,7 @@ const UserUpdate = ({ title }) => {
                                             </div>
                                             <div className='row userDetail'>
                                                 <div className='col'><strong> Department </strong> </div>
-                                                <div className='col'>{departments}</div>
+                                                <div className='col'>{departments ? departments : '-'}</div>
                                             </div>
                                             <div className='row userDetail'>
                                                 <div className='col'><strong> Email </strong> </div>
