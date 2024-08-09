@@ -2,6 +2,7 @@ const { knex } = require('../database/db');
 const { USERS, DEPARTMENTS } = require('../constants/tables');
 var fs = require("fs");
 const momentTimezone = require('moment-timezone')
+const mimeTypes = require('mime-types')
 const moment = require('moment')
 const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
