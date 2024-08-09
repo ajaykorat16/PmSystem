@@ -83,7 +83,7 @@ const createUser = asyncHandler(async (req, res) => {
     const currentYear = currentDate.getFullYear();
 
     if (doj.getFullYear() === currentYear && doj.getMonth() === currentMonth && doj.getDate() <= 15) {
-      await knex(LEAVEMANAGEMENTS).where("user", newUser[0]).insert({ monthly: currentDate, leave: 1.5 });
+      await knex(LEAVEMANAGEMENTS).insert({ user:newUser[0], monthly: currentDate, leave: 1.5 });
 
       await knex(USERS).where("id", newUser[0]).increment("leaveBalance", 1.5);
     }
