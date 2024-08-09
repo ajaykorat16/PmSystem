@@ -8,17 +8,13 @@ const { createUser, loginUser, updateUser, deleteUserProfile, getAllUser, getUse
 
 router.get("/userList", auth, isAdmin, getAllUser)
 
-router.get("/", auth, isAdmin, getUsers)
+router.get("/", auth, getUsers)
 
 router.get("/credentialUser", auth, userForCredential)
 
 router.get("/getUserByBirthDayMonth", auth, getUserByBirthDayMonth)
 
 router.post("/getUserByBirthDayMonth-search", auth, getUserByBirthDayMonth)
-
-router.post("/user-search", auth, getUsers)
-
-router.get("/employeeList", auth, getUsers)
 
 router.get("/profile", auth, getUserProfile)
 
@@ -69,9 +65,9 @@ router.post("/loginByAdmin",
     loginUserByAdmin
 )
 
-router.put("/updateProfile", auth, formidableMiddleware(), updateUser)
+router.put("/updateProfile", auth, updateUser)
 
-router.put("/updateProfile/:id", auth, isAdmin, formidableMiddleware(), updateUser)
+router.put("/updateProfile/:id", auth, isAdmin, updateUser)
 
 router.get("/getUserProfile/:id", auth, formidableMiddleware(), getUserProfile)
 

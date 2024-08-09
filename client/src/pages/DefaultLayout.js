@@ -17,7 +17,7 @@ const DefaultLayout = () => {
   const { getUserLeave } = useLeave()
   const { getAdminWorklog, getWorklog } = useWorklog()
   const { userProject, getProject } = useProject()
-  const { getAllUsersByBirthMonth, getAllEmployee } = useUser()
+  const { getAllUsersByBirthMonth, getAllUsers } = useUser()
   const [leaveCount, setLeaveCount] = useState(0)
   const [projectcount, setProjectCount] = useState(0)
   const [allProjectsCount, setAllProjectsCount] = useState(0)
@@ -47,7 +47,7 @@ const DefaultLayout = () => {
   }
 
   const fetchEmployee = async () => {
-    const { totalEmployee } = await getAllEmployee()
+    const { totalEmployee } = await getAllUsers()
     setEmployeeCount(totalEmployee)
   }
 
