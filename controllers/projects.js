@@ -143,7 +143,7 @@ const getProjects = asyncHandler(async (req, res) => {
       return {
         ...row,
         developers: JSON.parse(`[${row.developers}]`),
-        startDate: formattedDate(row.startDate),
+        startDate: utcToLocal(row.startDate),
       };
     });
 
@@ -288,13 +288,7 @@ const getSingleProject = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
 
-    const projectQuery = await knex.select(
-      'p.*',
-      knex.raw('IFNULL(' +
-        'GROUP_CONCAT(' +
-        'IF(u.id IS NOT NULL, JSON_OBJECT("id", u.id, "fullName", u.fullName), NULL)' +
-        '), "") as developers'),
-    )
+    const projectQuery = await knex.select('p.*')
       .from(`${PROJECTS} as p`)
       .where('p.id', id)
       .leftJoin(`${USER_PROJECT_RELATION} as up`, "p.id", "up.projectId")
@@ -302,13 +296,15 @@ const getSingleProject = asyncHandler(async (req, res) => {
       .groupBy('p.id')
       .first();
 
+    const projectDevelopers = await knex(`${USER_PROJECT_RELATION} as upr`).select('u.id', 'u.fullName').leftJoin(`${USERS} as u`, 'u.id', 'upr.userId').where('upr.projectId', id);
+
     if (!projectQuery) {
       return res.status(400).json({
         error: true,
         message: "Project doesn't exist.",
       });
     } else {
-      projectQuery.developers = JSON.parse(`[${projectQuery.developers}]`);
+      projectQuery.developers = projectDevelopers;
     }
 
     return res.status(200).json({

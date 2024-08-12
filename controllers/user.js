@@ -500,40 +500,26 @@ const userForCredential = asyncHandler(async (req, res) => {
 
 const getUserProfile = asyncHandler(async (req, res) => {
   try {
-    const { id } = req.params;
+    const userId = req.params.id || req.user.id;
 
     let query = knex
       .select(
         'u.*',
         'd.name as departmentName',
-        knex.raw(`
-          IFNULL(
-            GROUP_CONCAT(
-              IF(p.id IS NOT NULL, 
-                JSON_OBJECT("id", p.id, "name", p.name), 
-                NULL
-              )
-            ), 
-            ''
-          ) as projects
-        `)
       )
       .from(`${USERS} as u`)
       .leftJoin(`${DEPARTMENTS} as d`, 'd.id', 'u.department')
       .leftJoin(`${USER_PROJECT_RELATION} as up`, 'u.id', 'up.userId')
       .leftJoin(`${PROJECTS} as p`, 'p.id', 'up.projectId')
+      .where('u.id', userId)
       .groupBy('u.id')
       .first();
 
-    if (id) {
-      query = query.where('u.id', id);
-    } else {
-      query = query.where('u.id', req.user.id);
-    }
-
     let getProfile = await query;
 
-    getProfile.projects = JSON.parse(`[${getProfile.projects}]`);
+    const userProjects = await knex(`${USER_PROJECT_RELATION} as upr`).select('p.id', 'p.name').leftJoin(`${PROJECTS} as p`, 'p.id', 'upr.projectId').where('upr.userId', userId);
+
+    getProfile.projects = userProjects;
 
     const photoUrl = getProfile?.photo ? `${DOMAIN}/images/${getProfile.photo}` : null;
 

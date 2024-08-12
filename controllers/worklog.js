@@ -84,7 +84,7 @@ const userGetWorklog = async (req, res) => {
             .innerJoin('projects as p', 'w.project', 'p.id')
             .where('w.userId', userId);
 
-        if (filter !== undefined) {
+        if (filter !== undefined && filter !== 'undefined') {
             query = query.where(function () {
                 this.where('w.description', 'like', `%${filter}%`)
                     .orWhereIn('w.project', projects);

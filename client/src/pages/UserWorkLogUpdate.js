@@ -18,14 +18,14 @@ const UserWorkLogUpdate = ({ title }) => {
     const [logDate, setLogDate] = useState("")
     const [time, setTime] = useState("")
     const { updateWorklog, getSingleWorklog } = useWorklog()
-    const { fetchProjects } = useProject()
+    const { getUserProject } = useProject()
     const { formatDate } = useHelper()
     const { toast } = useAuth()
     const navigate = useNavigate()
     const params = useParams()
 
     const getProjects = async () => {
-        const { data } = await fetchProjects();
+        const { data } = await getUserProject();
         setProjects(data);
     };
     useEffect(() => {
@@ -36,7 +36,7 @@ const UserWorkLogUpdate = ({ title }) => {
         const fetchData = async () => {
             try {
                 let { data } = await getSingleWorklog(params.id);
-                if (data.length>0) {
+                if (data.length > 0) {
                     setSelectProject(data[0].project ? data[0].project : "")
                     setDescription(data[0].description)
                     setLogDate(new Date(data[0].logDate));

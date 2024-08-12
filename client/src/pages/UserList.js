@@ -102,8 +102,6 @@ const UserList = ({ title }) => {
   }
 
   const handleViewEmployeeProfile = async (user) => {
-    console.log(user);
-    
     setVisible(true)
     setUserDetail(user)
   }
