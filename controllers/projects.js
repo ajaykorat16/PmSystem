@@ -128,7 +128,6 @@ const getProjects = asyncHandler(async (req, res) => {
       "p.id as projectId",
       "p.startDate",
       'p.description as description',
-      knex.raw('GROUP_CONCAT(JSON_OBJECT("id", u.id, "fullName", u.fullName)) as developers')
     )
       .from(`${PROJECTS} as p`)
       .leftJoin(`${USER_PROJECT_RELATION} as up`, "p.id", "up.projectId")
@@ -139,13 +138,20 @@ const getProjects = asyncHandler(async (req, res) => {
       .offset(skip)
       .limit(limit);
 
-    const projects = projectsQuery.map(row => {
-      return {
-        ...row,
-        developers: JSON.parse(`[${row.developers}]`),
-        startDate: utcToLocal(row.startDate),
-      };
-    });
+    const projects = await Promise.all(
+      projectsQuery.map(async (row) => {
+        const projectDevelopers = await knex(`${USER_PROJECT_RELATION} as upr`)
+          .select('u.id', 'u.fullName')
+          .leftJoin(`${USERS} as u`, 'u.id', 'upr.userId')
+          .where('upr.projectId', row.projectId);
+
+        return {
+          ...row,
+          developers: projectDevelopers,
+          startDate: utcToLocal(row.startDate),
+        };
+      })
+    );
 
     return res.status(200).json({
       error: false,
@@ -206,7 +212,6 @@ const getUserProjects = asyncHandler(async (req, res) => {
       "p.id as projectId",
       "p.startDate",
       'p.description as description',
-      knex.raw('GROUP_CONCAT(JSON_OBJECT("id", u.id, "fullName", u.fullName)) as developers')
     )
       .from(`${USER_PROJECT_RELATION} as up`)
       .innerJoin(`${USERS} as u`, "up.userId", "u.id")
@@ -218,13 +223,20 @@ const getUserProjects = asyncHandler(async (req, res) => {
       .offset((page - 1) * limit)
       .limit(limit);
 
-    const projects = projectsQuery.map(row => {
-      return {
-        ...row,
-        developers: JSON.parse(`[${row.developers}]`),
-        startDate: formattedDate(row.startDate),
-      };
-    });
+    const projects = await Promise.all(
+      projectsQuery.map(async (row) => {
+        const projectDevelopers = await knex(`${USER_PROJECT_RELATION} as upr`)
+          .select('u.id', 'u.fullName')
+          .leftJoin(`${USERS} as u`, 'u.id', 'upr.userId')
+          .where('upr.projectId', row.projectId);
+
+        return {
+          ...row,
+          developers: projectDevelopers,
+          startDate: utcToLocal(row.startDate),
+        };
+      })
+    );
 
     return res.status(200).json({
       error: false,
