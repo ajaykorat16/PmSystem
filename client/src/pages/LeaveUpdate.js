@@ -32,6 +32,7 @@ const LeaveUpdate = ({ title }) => {
   useEffect(() => {
     const setValues = async () => {
       const data = await getLeaveById(id);
+      console.log(data);
       if (data) {
         setUserId(data.userId ? data.userId : "");
         setReason(data.reason);
@@ -56,7 +57,7 @@ const LeaveUpdate = ({ title }) => {
       } else {
         leaveData = { reason, startDate: formatDate(startDate), endDate: formatDate(endDate), leaveType, leaveDayType, totalDays }
       }
-      
+
       const data = await updateLeave(leaveData, id);
       if (typeof data !== 'undefined' && data.error === false) {
         const redirectPath = auth.user.role === "admin" ? "/dashboard/leave/list" : "/dashboard-user/leave/list";

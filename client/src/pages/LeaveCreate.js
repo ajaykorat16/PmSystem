@@ -30,11 +30,11 @@ const LeaveCreate = ({ title }) => {
     try {
       let leaveData;
       if (auth.user.role === "admin") {
-        leaveData = { reason, startDate: formatDate(startDate), endDate: formatDate(endDate), leaveType, leaveDayType, totalDays, userId, status: "approved" }
+        leaveData = { reason, startDate, endDate, leaveType, leaveDayType, totalDays, userId, status: "approved" }
       } else {
-        leaveData = { reason, startDate: formatDate(startDate), endDate: formatDate(endDate), leaveType, leaveDayType, totalDays }
+        leaveData = { reason, startDate, endDate, leaveType, leaveDayType, totalDays }
       }
-      
+
       const data = auth.user.role === "admin" ? await addLeave(leaveData) : await addUserLeave(leaveData);
       if (typeof data !== 'undefined' && data.error === false) {
         const redirectPath = auth.user.role === "admin" ? "/dashboard/leave/list" : "/dashboard-user/leave/list";

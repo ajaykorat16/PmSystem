@@ -58,18 +58,18 @@ const LeaveList = ({ title }) => {
     setIsLoading(false);
   };
 
-  
+
   const handleSubmit = async () => {
     setCurrentPage(1);
     fetchLeaves(1, rowsPerPage, globalFilterValue.trim(), sortField, sortOrder);
   };
 
   useEffect(() => {
-    if(globalFilterValue.length > 0) {
+    if (globalFilterValue.length > 0) {
       fetchLeaves(currentPage, rowsPerPage, globalFilterValue.trim(), sortField, sortOrder);
     }
   }, [currentPage, rowsPerPage, sortField, sortOrder]);
-  
+
   useEffect(() => {
     if (globalFilterValue.trim() === '') {
       fetchLeaves(currentPage, rowsPerPage, "", sortField, sortOrder);
@@ -154,7 +154,9 @@ const LeaveList = ({ title }) => {
 
   const handleViewLeaveDetail = async (leaveDetail) => {
     setViewLeave(true)
-    
+
+    console.log(leaveDetail);
+
     setLeaveDetail({
       name: leaveDetail.username,
       startDate: leaveDetail.startDate,
@@ -324,7 +326,7 @@ const LeaveList = ({ title }) => {
                 header="Status"
                 alignHeader="center"
                 body={(rowData) => (
-                <Tag value={rowData.status} severity={getSeverity(rowData.status)} />
+                  <Tag value={rowData.status} severity={getSeverity(rowData.status)} />
                 )}
                 filterField="status"
                 align="center"

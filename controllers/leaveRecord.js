@@ -10,6 +10,7 @@ const {
   parsedDayType,
 } = require("../helper/mail");
 const { USERS, LEAVES } = require("../constants/tables");
+const { utcToLocal, localToUtc } = require("../helper/helper");
 
 const createLeave = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
@@ -17,7 +18,10 @@ const createLeave = asyncHandler(async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
   try {
-    const { reason, startDate, endDate, leaveType, leaveDayType, userId, status, totalDays, } = req.body;
+    let { reason, startDate, endDate, leaveType, leaveDayType, userId, status, totalDays, } = req.body;
+
+    startDate = localToUtc(startDate);
+    endDate = localToUtc(endDate);
 
     if (startDate > endDate) {
       return res.status(200).json({
@@ -36,7 +40,7 @@ const createLeave = asyncHandler(async (req, res) => {
     const user = await knex(USERS).where("id", uId).first();
 
     let createLeaves;
-    if ( user.leaveBalance >= totalDays && leaveType === "paid" && user.leaveBalance !== 0 ) {
+    if (user.leaveBalance >= totalDays && leaveType === "paid" && user.leaveBalance !== 0) {
       const leaveData = {
         userId: uId,
         reason,
@@ -101,10 +105,13 @@ const getAllLeaves = asyncHandler(async (req, res) => {
     const formattedLeaves = leaves.map((leave) => {
       return {
         ...leave,
-        startDate: formattedDate(leave.startDate),
-        endDate: formattedDate(leave.endDate),
+        startDate: utcToLocal(leave.startDate),
+        endDate: utcToLocal(leave.endDate),
       };
     });
+
+    console.log("Formattedleaves--------", formattedLeaves);
+
     return res.status(200).json({
       error: false,
       message: "All Leaves getting successfully.",
@@ -142,10 +149,10 @@ const getLeaves = asyncHandler(async (req, res) => {
     }
 
     let totalLeaves = await knex(`${LEAVES} as l`)
-        .where(query)
-        .innerJoin(`${USERS} as u`, "l.userId", "u.id")
-        .count('l.id as count')
-        .first();
+      .where(query)
+      .innerJoin(`${USERS} as u`, "l.userId", "u.id")
+      .count('l.id as count')
+      .first();
     totalLeaves = totalLeaves.count ? totalLeaves.count : 0;
 
     const skip = (page - 1) * limit;
@@ -181,10 +188,13 @@ const getLeaves = asyncHandler(async (req, res) => {
         leaveType: capitalizeFLetter(leave.leaveType),
         leaveDayType: formatteDayType(leave.leaveDayType),
         status: capitalizeFLetter(leave.status),
-        startDate: formattedDate(leave.startDate),
-        endDate: formattedDate(leave.endDate),
+        startDate: utcToLocal(leave.startDate),
+        endDate: utcToLocal(leave.endDate),
       };
     });
+
+    console.log('Formatted Leaves....', formattedLeaves);
+
     return res.status(200).json({
       error: false,
       message: "Leaves is retrieved successfully.",
@@ -206,14 +216,14 @@ const userGetLeave = asyncHandler(async (req, res) => {
     const sortField = req.query.sortField || "createdAt";
     const sortOrder = parseInt(req.query.sortOrder) || -1;
     let query = { userId: req.user.id };
-    
+
     if (filter) {
       query = function () {
         this.where("l.leaveType", filter.toLowerCase())
-          .orWhere("l.status",filter.toLowerCase());
+          .orWhere("l.status", filter.toLowerCase());
       };
     }
-    
+
     totalLeaves = await knex(`${LEAVES} as l`)
       .where("l.userId", req.user.id)
       .andWhere(query)
@@ -283,14 +293,16 @@ const getLeaveById = asyncHandler(async (req, res) => {
 
     const { password, ...rest } = leaves;
 
+    console.log(leaves);
+
     return res.status(200).json({
       error: false,
       message: "Single Leave getting successfully !!",
       data: {
         ...rest,
         leaveDayType: formatteDayType(rest.leaveDayType),
-        startDate: rest.startDate.toISOString().split("T")[0],
-        endDate: rest.endDate.toISOString().split("T")[0],
+        startDate: utcToLocal(rest.startDate),
+        endDate: utcToLocal(rest.endDate),
       },
     });
   } catch (error) {
@@ -327,7 +339,7 @@ const updateLeave = asyncHandler(async (req, res) => {
     const user = await knex(USERS).where("id", updatedFields.userId).first();
 
     let updateLeave;
-    if ( user.leaveBalance >= updatedFields.totalDays && updatedFields.leaveType === "paid" && user.leaveBalance !== 0 ) {
+    if (user.leaveBalance >= updatedFields.totalDays && updatedFields.leaveType === "paid" && user.leaveBalance !== 0) {
       updateLeave = await knex(LEAVES).where("id", userLeave.id).update({ ...updatedFields, updatedAt: new Date() });
     } else if (updatedFields.leaveType === "lwp") {
       updateLeave = await knex(LEAVES).where("id", userLeave.id).update({ ...updatedFields, updatedAt: new Date() });
@@ -432,19 +444,19 @@ const getAllPendingLeave = asyncHandler(async (req, res) => {
 
       query = function () {
         this.where("l.status", "pending")
-          .andWhere(function() {
+          .andWhere(function () {
             this.orWhere("l.leaveType", filter.toLowerCase())
-                .orWhereIn("l.userId", fullName);
-        });
+              .orWhereIn("l.userId", fullName);
+          });
       };
     }
 
     totalLeaves = await knex(`${LEAVES} as l`)
-        .innerJoin(`${USERS} as u`, "l.userId", "u.id")
-        .orWhere(query)
-        .andWhere('l.status', 'pending')
-        .count('l.id as count')
-        .first();
+      .innerJoin(`${USERS} as u`, "l.userId", "u.id")
+      .orWhere(query)
+      .andWhere('l.status', 'pending')
+      .count('l.id as count')
+      .first();
     totalLeaves = totalLeaves.count ? totalLeaves.count : 0;
 
 
@@ -459,7 +471,7 @@ const getAllPendingLeave = asyncHandler(async (req, res) => {
         .andWhere("l.status", "pending")
         .offset(skip)
         .limit(limit);
-      
+
       leaves.sort((a, b) => {
         const nameA = a.username || "";
         const nameB = b.username || "";

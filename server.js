@@ -33,6 +33,8 @@ const corsOptions = { origin: "*" }
 app.use(cors(corsOptions))
 app.use(express.json())
 
+global.TIMEZONE = process.env.TIMEZONE;
+
 app.use("/user", user)
 app.use("/department", department)
 app.use("/leaves", leaveRecord)
