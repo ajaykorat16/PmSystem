@@ -15,7 +15,7 @@ const WorklogProvider = ({ children }) => {
     //get worklog
     const getWorklog = async (page, limit, query, sortField, sortOrder) => {
         try {
-            let { data } = await axios.get(`${baseURL}/worklog/user-worklog?page=${page}&limit=${limit}&sortField=${sortField}&sortOrder=${sortOrder}&filter=${query}`, { headers });
+            let { data } = await axios.get(`${baseURL}/worklog/user-worklog?page=${page ? page : 1}&limit=${limit ? limit : 10}&sortField=${sortField ? sortField : 'createdAt'}&sortOrder=${sortOrder ? sortOrder : -1}&filter=${query}`, { headers });
             if (data.error === false) {
                 return data
             }

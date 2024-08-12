@@ -55,7 +55,7 @@ const DefaultLayout = () => {
 
   const fetchAdminWorklog = async () => {
     const data = await getAdminWorklog()
-    if (data) setAdminWorklogCount(data.worklogUserCount)
+    if (data) setAdminWorklogCount(data.totalWorklog)
   }
 
   const fetchUserWorklog = async () => {

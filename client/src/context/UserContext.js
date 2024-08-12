@@ -86,27 +86,10 @@ const UserProvider = ({ children }) => {
     //update user
     const updateUser = async (userDetail, id) => {
         try {
-            console.log(userDetail);
-            
-            // let { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth, department, dateOfJoining, photo, projects } = userDetail
-
-            // const editUser = new FormData()
-            // editUser.append("employeeNumber", employeeNumber)
-            // editUser.append("firstname", firstname)
-            // editUser.append("lastname", lastname)
-            // editUser.append("email", email)
-            // editUser.append("phone", phone)
-            // editUser.append("address", address)
-            // editUser.append("department", department)
-            // editUser.append("dateOfJoining", dateOfJoining)
-            // editUser.append("dateOfBirth", dateOfBirth)
-            // editUser.append("projects", JSON.stringify(projects))
-            // photo && editUser.append("photo", photo);
-
             const { data } = await axios.put(`${baseURL}/user/updateProfile/${id}`, userDetail, { headers });
-            console.log("CONTEXT------------", data);
+
             if (data.error === false) {
-                
+
                 fetchUsers()
                 setTimeout(function () {
                     toast.current.show({ severity: 'success', summary: 'User', detail: 'User detail is updated successfully.', life: 3000 })
@@ -123,17 +106,7 @@ const UserProvider = ({ children }) => {
     //update user
     const updateProfile = async (updateUsers) => {
         try {
-            let { firstname, lastname, phone, address, dateOfBirth, photo } = updateUsers
-
-            const editUser = new FormData()
-            editUser.append("firstname", firstname)
-            editUser.append("lastname", lastname)
-            editUser.append("phone", phone)
-            editUser.append("address", address)
-            editUser.append("dateOfBirth", dateOfBirth)
-            photo && editUser.append("photo", photo);
-
-            const { data } = await axios.put(`${baseURL}/user/updateProfile`, editUser, { headers });
+            const { data } = await axios.put(`${baseURL}/user/updateProfile`, updateUsers, { headers });
             if (data.error === false) {
                 toast.current.show({ severity: 'success', summary: 'Profile', detail: 'Your profile is updated successfully.', life: 3000 })
                 return data;

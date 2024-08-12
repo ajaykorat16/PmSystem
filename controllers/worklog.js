@@ -54,7 +54,7 @@ const userGetWorklog = async (req, res) => {
         let dateSearch = null;
         let projects = [];
 
-        if (filter) {
+        if (filter !== undefined) {
             const isValidDate = (filter) => {
                 const dateRegex = /^(0?[1-9]|[1-2]\d|3[0-1])-(0?[1-9]|1[0-2])-\d{4}$/;
                 return dateRegex.test(filter);
@@ -83,7 +83,7 @@ const userGetWorklog = async (req, res) => {
             .innerJoin('projects as p', 'w.project', 'p.id')
             .where('w.userId', userId);
 
-        if (filter) {
+        if (filter !== undefined) {
             query = query.where(function () {
                 this.where('w.description', 'like', `%${filter}%`)
                     .orWhereIn('w.project', projects);
@@ -119,7 +119,6 @@ const userGetWorklog = async (req, res) => {
         });
 
         const totalWeekTime = Object.values(dayWiseTotals).reduce((total, dayTime) => total + dayTime, 0);
-
         return res.status(200).json({
             error: false,
             message: "Worklog retrieved successfully.",

@@ -64,7 +64,7 @@ const UserUpdate = ({ title }) => {
                         };
                         reader.readAsDataURL(blob);
                     }
-                    
+
                     if (getProfile.projects && getProfile.projects.length > 0) {
                         setNewProjects(getProfile.projects.map((e) => e.id));
                     } else {
@@ -94,7 +94,6 @@ const UserUpdate = ({ title }) => {
             let updateUsers = { employeeNumber, firstname, lastname, email, phone, address, dateOfBirth: formatDate(dateOfBirth), department: departments, dateOfJoining: formatDate(dateOfJoining), photo: newPhoto ? newPhoto : photo, projects: newProjects }
             let id = params.id
             const data = await updateUser(updateUsers, id)
-console.log("data-----------", data);
 
             if (data.error) {
                 toast.current.show({ severity: 'error', summary: 'User', detail: data.message, life: 3000 })
