@@ -32,7 +32,7 @@ const LeaveUpdate = ({ title }) => {
   useEffect(() => {
     const setValues = async () => {
       const data = await getLeaveById(id);
-      console.log(data);
+
       if (data) {
         setUserId(data.userId ? data.userId : "");
         setReason(data.reason);

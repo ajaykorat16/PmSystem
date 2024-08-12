@@ -3,10 +3,11 @@ const { validationResult } = require("express-validator");
 const fs = require("fs");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { formattedDate, capitalizeFLetter, isValidDate, uploadImage, isBase64Image } = require("../helper/mail");
+const { capitalizeFLetter, isValidDate, uploadImage, isBase64Image } = require("../helper/mail");
 const asyncHandler = require("express-async-handler");
 const saltRounds = 10;
 const { LEAVEMANAGEMENTS, USERS, WORKLOGS, PROJECTS, CREDENTIALS, LEAVES, DEPARTMENTS, USER_PROJECT_RELATION, USER_CREDENTIAL_RELATION } = require("../constants/tables");
+const { utcToLocal } = require("../helper/helper");
 
 const hashPassword = async (password) => {
   try {
@@ -371,8 +372,8 @@ const getUsers = asyncHandler(async (req, res) => {
         ...dataWithoutPassword,
         avatar,
         department: user.department || null,
-        dateOfBirth: formattedDate(user.dateOfBirth),
-        dateOfJoining: formattedDate(user.dateOfJoining),
+        dateOfBirth: utcToLocal(user.dateOfBirth),
+        dateOfJoining: utcToLocal(user.dateOfJoining),
         photo: photoUrl,
       };
     });
@@ -433,8 +434,8 @@ const getUserByBirthDayMonth = asyncHandler(async (req, res) => {
         ...user,
         avatar: avatar,
         department: user.department ? user.department : null,
-        dateOfBirth: formattedDate(user.dateOfBirth),
-        dateOfJoining: formattedDate(user.dateOfJoining),
+        dateOfBirth: utcToLocal(user.dateOfBirth),
+        dateOfJoining: utcToLocal(user.dateOfJoining),
         photo: photoUrl,
       };
     });

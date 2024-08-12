@@ -4,6 +4,7 @@ const { validationResult } = require('express-validator');
 const { capitalizeFLetter, formattedDate } = require("../helper/mail");
 const { knex } = require('../database/db');
 const { WORKLOGS, PROJECTS, USERS } = require("../constants/tables");
+const { utcToLocal } = require('../helper/helper');
 
 const createWorkLog = asyncHandler(async (req, res) => {
     const errors = validationResult(req);
@@ -101,7 +102,7 @@ const userGetWorklog = async (req, res) => {
 
         const formattedWorklog = worklog.map((log) => ({
             ...log,
-            logDate: formattedDate(log.logDate),
+            logDate: utcToLocal(log.logDate),
         }));
 
         const currentWeekStart = moment().startOf('week');
@@ -202,7 +203,7 @@ const getAllWorklog = async (req, res) => {
 
         const formattedWorklog = worklog.map((log) => ({
             ...log,
-            logDate: formattedDate(log.logDate),
+            logDate: utcToLocal(log.logDate),
         }));
 
         return res.status(200).json({

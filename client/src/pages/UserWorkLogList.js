@@ -45,11 +45,11 @@ const UserWorkLogList = ({ title }) => {
   };
 
   useEffect(() => {
-    if(globalFilterValue.length > 0) {
+    if (globalFilterValue.length > 0) {
       fetchWorklog(currentPage, rowsPerPage, globalFilterValue.trim(), sortField, sortOrder);
     }
   }, [currentPage, rowsPerPage, sortField, sortOrder]);
-  
+
   useEffect(() => {
     if (globalFilterValue.trim() === '') {
       fetchWorklog(currentPage, rowsPerPage, "", sortField, sortOrder);
@@ -89,9 +89,10 @@ const UserWorkLogList = ({ title }) => {
 
   const handleWorklogDetail = async (worklog) => {
     setVisible(true)
+
     setWorklog({
       userId: worklog.userId.fullName,
-      project: worklog.project.name,
+      project: worklog.projectName,
       description: worklog.description,
       logDate: worklog.logDate,
       time: worklog.time

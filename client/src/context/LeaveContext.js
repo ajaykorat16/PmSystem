@@ -82,6 +82,10 @@ const LeaveProvider = ({ children }) => {
           toast.current.show({ severity: 'success', summary: 'Leave', detail: data.message, life: 3000 })
         }, 1000);
         return data
+      } else {
+        setTimeout(function () {
+          toast.current.show({ severity: 'error', summary: 'Leave', detail: data.message, life: 3000 })
+        }, 1000);
       }
     } catch (error) {
       console.log(error);
@@ -157,7 +161,7 @@ const LeaveProvider = ({ children }) => {
   };
 
   //Get All Pending Leaves
-  const getAllPendingLeaves = async(page, limit, query, sortField, sortOrder)=>{
+  const getAllPendingLeaves = async (page, limit, query, sortField, sortOrder) => {
     try {
       let res;
       if (query) {
@@ -174,7 +178,7 @@ const LeaveProvider = ({ children }) => {
   }
 
   return (
-    <LeaveContext.Provider value={{ getLeave, addLeave, deleteLeave, updateLeave, getLeaveById, addUserLeave, getUserLeave, updateStatus, getAllPendingLeaves}}>
+    <LeaveContext.Provider value={{ getLeave, addLeave, deleteLeave, updateLeave, getLeaveById, addUserLeave, getUserLeave, updateStatus, getAllPendingLeaves }}>
       {children}
     </LeaveContext.Provider>
   );

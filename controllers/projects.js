@@ -3,6 +3,7 @@ const { validationResult } = require("express-validator");
 const { capitalizeFLetter, formattedDate } = require("../helper/mail");
 const { knex } = require("../database/db");
 const { PROJECTS, USER_PROJECT_RELATION, USERS, WORKLOGS } = require("../constants/tables");
+const { utcToLocal } = require("../helper/helper");
 
 const createProject = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
@@ -52,7 +53,7 @@ const getAllProjects = asyncHandler(async (req, res) => {
     const formattedProject = allProjects.map((project) => {
       return {
         ...project,
-        startDate: formattedDate(project.startDate),
+        startDate: utcToLocal(project.startDate),
       };
     });
 
