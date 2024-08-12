@@ -109,14 +109,15 @@ const getSingleCredential = asyncHandler(async (req, res) => {
     const credential = await knex.select(
       'c.*',
       'c.id as credentialId', 'uc.*',
-      knex.raw('IFNULL(GROUP_CONCAT(IF(u.id IS NOT NULL, JSON_OBJECT("id", u.id, "fullName", u.fullName, "photo", u.photo), NULL)), "") as users')
     )
       .from(`${CREDENTIALS} as c`)
       .where(`c.id`, id)
       .leftJoin(`${USER_CREDENTIAL_RELATION} as uc`, `c.id`, `uc.credentialId`)
       .leftJoin(`${USERS} as u`, `uc.userId`, `u.id`).first();
 
-    credential.users = JSON.parse(`[${credential.users}]`);
+    const userCredentials = await knex(`${USER_CREDENTIAL_RELATION} as uc`).select('u.id', 'u.fullName', 'u.photo').leftJoin(`${USERS} as u`, 'u.id', 'uc.userId').where('credentialId', id);
+
+    credential.users = userCredentials;
 
     const createdBy = await knex(CREDENTIALS)
       .where(`createdBy`, credential.createdBy)
