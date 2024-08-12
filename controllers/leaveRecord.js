@@ -1,10 +1,9 @@
 const { knex } = require("../database/db");
-const asyncHandler = require("express-async-handler");
 const { validationResult } = require("express-validator");
+const asyncHandler = require("express-async-handler");
 const {
   sendMailForLeaveStatus,
   sendMailForLeaveRequest,
-  formattedDate,
   capitalizeFLetter,
   formatteDayType,
   parsedDayType,
@@ -39,38 +38,30 @@ const createLeave = asyncHandler(async (req, res) => {
 
     const user = await knex(USERS).where("id", uId).first();
 
+    const leaveData = {
+      userId: uId,
+      reason,
+      startDate,
+      endDate,
+      leaveType,
+      leaveDayType: parsedDayType(leaveDayType),
+      status,
+      totalDays,
+    };
+
     let createLeaves;
     if (user.leaveBalance >= totalDays && leaveType === "paid" && user.leaveBalance !== 0) {
-      const leaveData = {
-        userId: uId,
-        reason,
-        startDate: startDate,
-        endDate: endDate,
-        leaveType,
-        leaveDayType: parsedDayType(leaveDayType),
-        status,
-        totalDays,
-      };
       createLeaves = await knex(LEAVES).insert(leaveData);
     } else if (leaveType === "lwp") {
-      const leaveData = {
-        userId: uId,
-        reason,
-        startDate: startDate,
-        endDate: endDate,
-        leaveType,
-        leaveDayType: parsedDayType(leaveDayType),
-        status,
-        totalDays,
-      };
       createLeaves = await knex(LEAVES).insert(leaveData);
     } else {
-      return res.status(201).json({
+      return res.status(200).json({
         error: true,
         message: "Your leave balance is not enough to take paid leave!",
       });
     }
     const createdLeave = await knex(LEAVES).where('id', createLeaves[0]).first();
+
     await sendMailForLeaveRequest(createdLeave);
 
     if (status === "approved" && leaveType === "paid") {
@@ -78,7 +69,7 @@ const createLeave = asyncHandler(async (req, res) => {
         await knex(USERS).where("id", uId).decrement("leaveBalance", totalDays);
         await sendMailForLeaveStatus(createdLeave, "-");
       } else {
-        return res.status(201).json({
+        return res.status(200).json({
           error: true,
           message: `${user.fullName}'s leave balance is not enough to take paid leave!`,
         });
@@ -110,8 +101,6 @@ const getAllLeaves = asyncHandler(async (req, res) => {
       };
     });
 
-    console.log("Formattedleaves--------", formattedLeaves);
-
     return res.status(200).json({
       error: false,
       message: "All Leaves getting successfully.",
@@ -126,9 +115,10 @@ const getAllLeaves = asyncHandler(async (req, res) => {
 const getLeaves = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 5;
-  const { filter } = req.body;
   const sortField = req.query.sortField || "createdAt";
   const sortOrder = parseInt(req.query.sortOrder) || 1;
+  const { filter } = req.body;
+
   try {
     let query = {};
 
@@ -153,8 +143,8 @@ const getLeaves = asyncHandler(async (req, res) => {
       .innerJoin(`${USERS} as u`, "l.userId", "u.id")
       .count('l.id as count')
       .first();
-    totalLeaves = totalLeaves.count ? totalLeaves.count : 0;
 
+    totalLeaves = totalLeaves.count ? totalLeaves.count : 0;
     const skip = (page - 1) * limit;
     let leaves;
 
@@ -193,8 +183,6 @@ const getLeaves = asyncHandler(async (req, res) => {
       };
     });
 
-    console.log('Formatted Leaves....', formattedLeaves);
-
     return res.status(200).json({
       error: false,
       message: "Leaves is retrieved successfully.",
@@ -212,9 +200,10 @@ const userGetLeave = asyncHandler(async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
-    const { filter } = req.body;
     const sortField = req.query.sortField || "createdAt";
     const sortOrder = parseInt(req.query.sortOrder) || -1;
+    const { filter } = req.body;
+
     let query = { userId: req.user.id };
 
     if (filter) {
@@ -231,6 +220,7 @@ const userGetLeave = asyncHandler(async (req, res) => {
       .innerJoin(`${USERS} as u`, "l.userId", "u.id")
       .count("l.id as count")
       .first();
+
     totalLeaves = totalLeaves.count ? totalLeaves.count : 0;
 
     const skip = (page - 1) * limit;
@@ -262,8 +252,8 @@ const userGetLeave = asyncHandler(async (req, res) => {
         leaveType: capitalizeFLetter(leave.leaveType),
         leaveDayType: formatteDayType(leave.leaveDayType),
         status: capitalizeFLetter(leave.status),
-        startDate: formattedDate(leave.startDate),
-        endDate: formattedDate(leave.endDate),
+        startDate: utcToLocal(leave.startDate),
+        endDate: utcToLocal(leave.endDate),
       };
     });
 
@@ -293,16 +283,14 @@ const getLeaveById = asyncHandler(async (req, res) => {
 
     const { password, ...rest } = leaves;
 
-    console.log(leaves);
-
     return res.status(200).json({
       error: false,
       message: "Single Leave getting successfully !!",
       data: {
         ...rest,
         leaveDayType: formatteDayType(rest.leaveDayType),
-        startDate: utcToLocal(rest.startDate),
-        endDate: utcToLocal(rest.endDate),
+        startDate: utcToLocal(rest.startDate, format = 'YYYY-MM-DD'),
+        endDate: utcToLocal(rest.endDate, format = 'YYYY-MM-DD'),
       },
     });
   } catch (error) {
@@ -329,27 +317,28 @@ const updateLeave = asyncHandler(async (req, res) => {
       userId: userId || userLeave.userId,
       reason: reason || userLeave.reason,
       status: status || userLeave.status,
-      startDate: startDate || userLeave.startDate,
-      endDate: endDate || userLeave.endDate,
+      startDate: localToUtc(startDate) || userLeave.startDate,
+      endDate: localToUtc(endDate) || userLeave.endDate,
       leaveType: leaveType || userLeave.leaveType,
       leaveDayType: parsedDayType(leaveDayType) || userLeave.leaveDayType,
       totalDays: totalDays || userLeave.totalDays,
+      updatedAt: localToUtc(new Date())
     };
 
     const user = await knex(USERS).where("id", updatedFields.userId).first();
 
-    let updateLeave;
+
     if (user.leaveBalance >= updatedFields.totalDays && updatedFields.leaveType === "paid" && user.leaveBalance !== 0) {
-      updateLeave = await knex(LEAVES).where("id", userLeave.id).update({ ...updatedFields, updatedAt: new Date() });
+      await knex(LEAVES).where("id", userLeave.id).update(updatedFields);
     } else if (updatedFields.leaveType === "lwp") {
-      updateLeave = await knex(LEAVES).where("id", userLeave.id).update({ ...updatedFields, updatedAt: new Date() });
+      await knex(LEAVES).where("id", userLeave.id).update(updatedFields);
     } else {
-      return res.status(201).json({
+      return res.status(200).json({
         error: true,
         message: "Your leave balance is not enough to take paid leave!",
       });
     }
-    return res.status(201).send({
+    return res.status(200).send({
       error: false,
       message: "Leave updated successfully.",
     });
@@ -363,8 +352,9 @@ const deleteLeave = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
 
-    await knex(LEAVES).where("id", id).delete();
-    return res.status(201).send({
+    await knex(LEAVES).where("id", id).del();
+
+    return res.status(200).send({
       error: false,
       message: "Leave deleted successfully.",
     });
@@ -379,30 +369,31 @@ const updateStatus = asyncHandler(async (req, res) => {
     const { status, reasonForLeaveReject } = req.body;
     const { id } = req.params;
 
+    const leaveDetail = await knex(LEAVES).where("id", id).first();
+
     let updateLeave;
     if (status === "rejected") {
-      const leaveDetail = await knex(LEAVES).where("id", id).first();
       if (leaveDetail.status === "rejected") {
         return res.status(200).json({
           error: true,
-          message: "Cannot reject already rejected leave",
+          message: "Can not reject already rejected leave",
         });
       }
 
-      await knex(LEAVES).where("id", id).update({ status, reasonForLeaveReject, updatedAt: new Date() });
+      await knex(LEAVES).where("id", id).update({ status, reasonForLeaveReject, updatedAt: localToUtc(new Date()) });
       updateLeave = await knex(LEAVES).where("id", id).first();
       await sendMailForLeaveStatus(updateLeave, reasonForLeaveReject);
     }
 
     if (status === "approved") {
-      const leaveDetail = await knex(LEAVES).where("id", id).first();
       if (leaveDetail.status === "approved") {
         return res.status(200).json({
           error: true,
-          message: "Cannot approve already approved leave",
+          message: "Can not approve already approved leave",
         });
       }
-      await knex(LEAVES).where("id", id).update({ status, updatedAt: new Date() });
+
+      await knex(LEAVES).where("id", id).update({ status, updatedAt: localToUtc(new Date()) });
       updateLeave = await knex(LEAVES).where("id", id).first();
       await sendMailForLeaveStatus(updateLeave, "-");
     }
@@ -411,7 +402,7 @@ const updateStatus = asyncHandler(async (req, res) => {
       await knex(USERS).where("id", updateLeave.userId).decrement("leaveBalance", updateLeave.totalDays);
     }
 
-    return res.status(201).send({
+    return res.status(200).send({
       error: false,
       message: "Status updated successfully.",
     });
@@ -425,10 +416,12 @@ const getAllPendingLeave = asyncHandler(async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 5;
-    const { filter } = req.body;
     const sortField = req.query.sortField || "createdAt";
     const sortOrder = parseInt(req.query.sortOrder) || -1;
+    const { filter } = req.body;
+
     let query = {};
+
     if (filter) {
       let fullName = [];
 
@@ -457,10 +450,11 @@ const getAllPendingLeave = asyncHandler(async (req, res) => {
       .andWhere('l.status', 'pending')
       .count('l.id as count')
       .first();
+
     totalLeaves = totalLeaves.count ? totalLeaves.count : 0;
 
-
     const skip = (page - 1) * limit;
+
     let leaves;
     if (sortField === "username") {
       leaves = await knex
@@ -495,8 +489,8 @@ const getAllPendingLeave = asyncHandler(async (req, res) => {
         leaveType: capitalizeFLetter(leave.leaveType),
         leaveDayType: formatteDayType(leave.leaveDayType),
         status: capitalizeFLetter(leave.status),
-        startDate: formattedDate(leave.startDate),
-        endDate: formattedDate(leave.endDate),
+        startDate: utcToLocal(leave.startDate),
+        endDate: utcToLocal(leave.endDate),
       };
     });
 
@@ -510,6 +504,7 @@ const getAllPendingLeave = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
+    res.status(500).send("Server error");
   }
 });
 
