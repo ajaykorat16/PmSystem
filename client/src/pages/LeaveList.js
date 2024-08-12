@@ -155,8 +155,6 @@ const LeaveList = ({ title }) => {
   const handleViewLeaveDetail = async (leaveDetail) => {
     setViewLeave(true)
 
-    console.log(leaveDetail);
-
     setLeaveDetail({
       name: leaveDetail.username,
       startDate: leaveDetail.startDate,
