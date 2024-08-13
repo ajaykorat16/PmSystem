@@ -76,7 +76,7 @@ function AdminWorkLogList({ title }) {
         setVisible(true);
         setWorklog({
             userId: worklog.fullName,
-            project: worklog.project.name,
+            project: worklog.projectName,
             description: worklog.description,
             logDate: worklog.logDate,
             time: worklog.time,

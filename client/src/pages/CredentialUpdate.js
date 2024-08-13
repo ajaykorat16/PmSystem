@@ -44,8 +44,8 @@ const CredentialUpdate = ({ title }) => {
             const data = await updateCredential(credentialData, id)
             if (data.error) {
                 toast.current.show({ severity: 'error', summary: 'Credential', detail: data.message, life: 3000 })
-            }else{
-                navigate('/dashboard-user/credential/list')
+            } else {
+                auth?.user?.role === 'admin' ? navigate('/dashboard/credential/list') : navigate('/dashboard-user/credential/list')
             }
         } catch (error) {
             console.log(error)

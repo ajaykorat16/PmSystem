@@ -142,7 +142,7 @@ const LeaveProvider = ({ children }) => {
         }, 1000);
         return data;
       } else {
-        toast.current.show({ severity: 'warn', summary: 'Leave', detail: data.message, life: 3000 })
+        toast.current.show({ severity: 'error', summary: 'Leave', detail: data.message, life: 3000 })
       }
     } catch (error) {
       if (error.response) {

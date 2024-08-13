@@ -7,7 +7,7 @@ const carryForwardLeaves = async () => {
         const currentDate = new Date();
         const oneYearAgo = new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), currentDate.getDate());
 
-        for(const user of allUsers) {
+        for (const user of allUsers) {
             const getLeaves = await knex(`${LEAVES} as l`)
                 .select('l.userId', knex.raw('SUM(l.totalDays) as totalLeaves'))
                 .where('l.userId', user.id)
@@ -15,7 +15,7 @@ const carryForwardLeaves = async () => {
                 .andWhere('l.leaveType', 'paid')
                 .andWhere('l.startDate', '>=', oneYearAgo)
                 .groupBy('l.userId');
-            
+
             const previousYearLeaves = await knex(`${LEAVEMANAGEMENTS} as lm`)
                 .select('lm.user', knex.raw('SUM(lm.leave) as totalLeave'))
                 .where('lm.user', user.id)
@@ -23,11 +23,21 @@ const carryForwardLeaves = async () => {
                 .groupBy('lm.user');
 
             for (const lastLeaves of previousYearLeaves) {
-                for (const leave of getLeaves) {
-                    const finalTotal = (parseFloat(user.carryForward) + parseFloat(lastLeaves.totalLeave)) - parseFloat(leave.totalLeaves);
+                if (getLeaves.length > 0) {
+                    for (const leave of getLeaves) {
+                        const finalTotal = (parseFloat(user.carryForward) + parseFloat(lastLeaves.totalLeave)) - parseFloat(leave.totalLeaves);
+                        const carryForwardLeave = finalTotal >= 5 ? 5 : (finalTotal >= 0 ? finalTotal : 0);
+                        await knex(USERS).where('id', user.id).update({
+                            carryForward: carryForwardLeave,
+                            leaveBalance: carryForwardLeave,
+                            updatedAt: new Date()
+                        });
+                    }
+                } else {
+                    const finalTotal = (parseFloat(user.carryForward) + parseFloat(lastLeaves.totalLeave));
                     const carryForwardLeave = finalTotal >= 5 ? 5 : (finalTotal >= 0 ? finalTotal : 0);
-                    await knex(USERS).where('id', user.id).update({ 
-                        carryForward: carryForwardLeave, 
+                    await knex(USERS).where('id', user.id).update({
+                        carryForward: carryForwardLeave,
                         leaveBalance: carryForwardLeave,
                         updatedAt: new Date()
                     });
@@ -49,7 +59,7 @@ const createMonthly = async () => {
 
         allUsers.map(async (e) => {
             await knex(LEAVEMANAGEMENTS).insert({ user: e.id, monthly: today, leave });
-            
+
             await knex(USERS).where('id', e.id).increment('leaveBalance', leave).update({ updatedAt: new Date() });
         })
     } catch (error) {
