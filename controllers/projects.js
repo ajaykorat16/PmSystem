@@ -123,17 +123,13 @@ const getProjects = asyncHandler(async (req, res) => {
     const skip = (page - 1) * limit;
 
     const projectsQuery = await knex.select(
-      "u.fullName as username",
       "p.name as projectName",
       "p.id as projectId",
       "p.startDate",
       'p.description as description',
     )
       .from(`${PROJECTS} as p`)
-      .leftJoin(`${USER_PROJECT_RELATION} as up`, "p.id", "up.projectId")
-      .leftJoin(`${USERS} as u`, "up.userId", "u.id")
       .where(query)
-      .groupBy('p.id')
       .orderBy(`p.${sortField}`, sortOrder === -1 ? "desc" : "asc")
       .offset(skip)
       .limit(limit);
@@ -207,14 +203,12 @@ const getUserProjects = asyncHandler(async (req, res) => {
 
     totalProjectsCount = totalProjectsCount ? totalProjectsCount.count : 0;
     const projectsQuery = await knex.select(
-      "u.fullName as username",
       "p.name as projectName",
       "p.id as projectId",
       "p.startDate",
       'p.description as description',
     )
       .from(`${USER_PROJECT_RELATION} as up`)
-      .innerJoin(`${USERS} as u`, "up.userId", "u.id")
       .innerJoin(`${PROJECTS} as p`, "up.projectId", "p.id")
       .where('up.userId', userId)
       .where(query)
@@ -300,24 +294,17 @@ const getSingleProject = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
 
-    const projectQuery = await knex.select('p.*')
-      .from(`${PROJECTS} as p`)
-      .where('p.id', id)
-      .leftJoin(`${USER_PROJECT_RELATION} as up`, "p.id", "up.projectId")
-      .leftJoin(`${USERS} as u`, "up.userId", "u.id")
-      .groupBy('p.id')
-      .first();
-
-    const projectDevelopers = await knex(`${USER_PROJECT_RELATION} as upr`).select('u.id', 'u.fullName').leftJoin(`${USERS} as u`, 'u.id', 'upr.userId').where('upr.projectId', id);
-
+    const projectQuery = await knex.select('p.*').from(`${PROJECTS} as p`).where('p.id', id).first();
     if (!projectQuery) {
       return res.status(400).json({
         error: true,
         message: "Project doesn't exist.",
       });
-    } else {
-      projectQuery.developers = projectDevelopers;
     }
+
+    const projectDevelopers = await knex(`${USER_PROJECT_RELATION} as upr`).select('u.id', 'u.fullName').leftJoin(`${USERS} as u`, 'u.id', 'upr.userId').where('upr.projectId', id);
+
+    projectQuery.developers = projectDevelopers;
 
     return res.status(200).json({
       error: false,

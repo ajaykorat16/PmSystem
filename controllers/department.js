@@ -59,7 +59,7 @@ const updateDepartment = asyncHandler(async (req, res) => {
     }
 
     await knex(DEPARTMENTS).where("id", id).update({ name: capitalizeFLetter(name), updatedAt: new Date() });
-    
+
     return res.status(201).json({
       error: false,
       message: "Department updated successfully.",
@@ -88,7 +88,7 @@ const deleteDepartment = asyncHandler(async (req, res) => {
     const users = await knex(USERS).where('department', id);
 
     if (users.length > 0) {
-      await knex(USERS).where("department", id).update({ department: "", updatedAt: new Date() });
+      await knex(USERS).where("department", id).update({ department: null, updatedAt: new Date() });
     }
 
     return res.status(200).json({
@@ -107,18 +107,18 @@ const getAllDepartment = asyncHandler(async (req, res) => {
   const filter = req.query.query || "";
   const sortField = req.query.sortField || "createdAt";
   const sortOrder = parseInt(req.query.sortOrder) || -1;
-  
+
   try {
-    
+
     const skip = (page - 1) * limit;
     let query = {};
-    
-    if(filter) {
-      query = function(){
+
+    if (filter) {
+      query = function () {
         this.where("name", "like", `%${filter}%`)
       }
     }
-    
+
     let totalDepartments = await knex(DEPARTMENTS).where(query).count('id as count').first();
     totalDepartments = totalDepartments.count ? totalDepartments.count : 0;
 

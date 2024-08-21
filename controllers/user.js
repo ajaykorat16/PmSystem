@@ -509,13 +509,18 @@ const getUserProfile = asyncHandler(async (req, res) => {
       )
       .from(`${USERS} as u`)
       .leftJoin(`${DEPARTMENTS} as d`, 'd.id', 'u.department')
-      .leftJoin(`${USER_PROJECT_RELATION} as up`, 'u.id', 'up.userId')
-      .leftJoin(`${PROJECTS} as p`, 'p.id', 'up.projectId')
       .where('u.id', userId)
       .groupBy('u.id')
       .first();
 
     let getProfile = await query;
+
+    if (!getProfile) {
+      return res.status(400).json({
+        error: true,
+        message: "User does not exist.",
+      });
+    }
 
     const userProjects = await knex(`${USER_PROJECT_RELATION} as upr`).select('p.id', 'p.name').leftJoin(`${PROJECTS} as p`, 'p.id', 'upr.projectId').where('upr.userId', userId);
 

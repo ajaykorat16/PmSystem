@@ -73,11 +73,10 @@ const getCredential = asyncHandler(async (req, res) => {
 
     totalCredentialCount = totalCredentialCount.count ? totalCredentialCount.count : 0;
 
-    const credential = await knex
-      .select("uc.*", "u.fullName as username", "c.id as credentialId", "c.title", "c.description", "c.createdBy", "c.createdAt", 'c.updatedAt')
+    const credentials = await knex
+      .select("c.id as credentialId", "c.title", "c.description", "c.createdBy", "c.createdAt", 'c.updatedAt')
       .from(`${CREDENTIALS} as c`)
       .leftJoin(`${USER_CREDENTIAL_RELATION} as uc`, "uc.credentialId", "c.id")
-      .leftJoin(`${USERS} as u`, "uc.userId", "u.id")
       .where(function () {
         this.where("c.createdBy", userId)
           .orWhere("uc.userId", userId);
@@ -91,7 +90,7 @@ const getCredential = asyncHandler(async (req, res) => {
     return res.status(201).json({
       error: false,
       message: "Credential is getting successfully.",
-      data: credential,
+      data: credentials,
       currentPage: page,
       totalPages: Math.ceil(totalCredentialCount / limit),
       totalCredential: totalCredentialCount,
@@ -114,6 +113,13 @@ const getSingleCredential = asyncHandler(async (req, res) => {
       .where(`c.id`, id)
       .leftJoin(`${USER_CREDENTIAL_RELATION} as uc`, `c.id`, `uc.credentialId`)
       .leftJoin(`${USERS} as u`, `uc.userId`, `u.id`).first();
+
+    if (!credential) {
+      return res.status(400).json({
+        error: true,
+        message: 'Credential does not exist.'
+      })
+    }
 
     const userCredentials = await knex(`${USER_CREDENTIAL_RELATION} as uc`).select('u.id', 'u.fullName', 'u.photo').leftJoin(`${USERS} as u`, 'u.id', 'uc.userId').where('credentialId', id);
 
@@ -153,7 +159,7 @@ const getSingleCredential = asyncHandler(async (req, res) => {
       }
     });
   } catch (error) {
-    console.error(error);
+    console.error(error.message);
     res.status(500).send("Server error");
   }
 });
