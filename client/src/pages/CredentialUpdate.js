@@ -8,6 +8,7 @@ import { useCredential } from '../context/CredentialContext';
 import { useUser } from '../context/UserContext';
 import { useAuth } from '../context/AuthContext';
 import { useHelper } from '../context/Helper';
+import Loader from '../components/Loader';
 
 const CredentialUpdate = ({ title }) => {
     const { id } = useParams()
@@ -19,19 +20,27 @@ const CredentialUpdate = ({ title }) => {
     const [credentialTitle, setCredentialTitle] = useState("");
     const [description, setDescription] = useState("")
     const [developers, setDevelopers] = useState([])
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate()
 
     useEffect(() => {
         const currentCredential = async () => {
-            const { data } = await getSingleCredential(id);
-            if (data) {
-                setCredentialTitle(data.title);
-                setDescription(data.description);
-                if (data.users && data.users.length > 0) {
-                    setDevelopers(data.users.map((e) => e.id));
-                } else {
-                    setDevelopers([]);
+            try {
+                setIsLoading(true)
+                const { data } = await getSingleCredential(id);
+                if (data) {
+                    setCredentialTitle(data.title);
+                    setDescription(data.description);
+                    if (data.users && data.users.length > 0) {
+                        setDevelopers(data.users.map((e) => e.id));
+                    } else {
+                        setDevelopers([]);
+                    }
                 }
+            } catch (error) {
+                console.log(error);
+            } finally {
+                setIsLoading(false);
             }
         };
         currentCredential();
@@ -63,39 +72,45 @@ const CredentialUpdate = ({ title }) => {
 
     return (
         <Layout title={title} toast={toast}>
-            <div className="mb-3">
-                <h2 className="mb-5 mt-2">Update Credentials</h2>
-            </div>
-            <CForm className="row g-3" onSubmit={handleSubmit}>
-                <CCol md={12}>
-                    <CFormInput id="inputTitle" label="Title" value={credentialTitle} onChange={(e) => setCredentialTitle(e.target.value)} />
-                </CCol>
-                <CCol xs={12}>
-                    <label htmlFor="developerSelect" className="form-label">Users</label>
-                    <MultiSelect
-                        value={developers}
-                        onChange={(e) => setDevelopers(e.value)}
-                        options={users}
-                        size={6}
-                        style={{ border: "1px solid var(--cui-input-border-color, #b1b7c1)", borderRadius: "6px" }}
-                        optionLabel="fullName"
-                        placeholder="Select Users"
-                        optionValue='id'
-                        id="developerSelect"
-                        className="form-control"
-                        onShow={onShow}
-                    />
-                </CCol>
-                <CCol md={12}>
-                    <label className='mb-2'>Description</label>
-                    <div className="card">
-                        <Editor value={description} onTextChange={(e) => setDescription(e.htmlValue)} className="editorContainer" />
+            {isLoading ? (
+                <Loader />
+            ) : (
+                <>
+                    <div className="mb-3">
+                        <h2 className="mb-5 mt-2">Update Credentials</h2>
                     </div>
-                </CCol>
-                <CCol xs={12}>
-                    <CButton type="submit">Submit</CButton>
-                </CCol>
-            </CForm>
+                    <CForm className="row g-3" onSubmit={handleSubmit}>
+                        <CCol md={12}>
+                            <CFormInput id="inputTitle" label="Title" value={credentialTitle} onChange={(e) => setCredentialTitle(e.target.value)} />
+                        </CCol>
+                        <CCol xs={12}>
+                            <label htmlFor="developerSelect" className="form-label">Users</label>
+                            <MultiSelect
+                                value={developers}
+                                onChange={(e) => setDevelopers(e.value)}
+                                options={users}
+                                size={6}
+                                style={{ border: "1px solid var(--cui-input-border-color, #b1b7c1)", borderRadius: "6px" }}
+                                optionLabel="fullName"
+                                placeholder="Select Users"
+                                optionValue='id'
+                                id="developerSelect"
+                                className="form-control"
+                                onShow={onShow}
+                            />
+                        </CCol>
+                        <CCol md={12}>
+                            <label className='mb-2'>Description</label>
+                            <div className="card">
+                                <Editor value={description} onTextChange={(e) => setDescription(e.htmlValue)} className="editorContainer" />
+                            </div>
+                        </CCol>
+                        <CCol xs={12}>
+                            <CButton type="submit">Submit</CButton>
+                        </CCol>
+                    </CForm>
+                </>
+            )}
         </Layout>
     )
 }

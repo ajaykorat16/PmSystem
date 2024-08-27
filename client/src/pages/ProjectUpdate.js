@@ -10,6 +10,7 @@ import { useProject } from "../context/ProjectContext";
 import { useHelper } from "../context/Helper";
 import { useAuth } from "../context/AuthContext";
 import Layout from "./Layout";
+import Loader from "../components/Loader";
 
 const ProjectUpdate = ({ title }) => {
     const { toast } = useAuth()
@@ -21,12 +22,14 @@ const ProjectUpdate = ({ title }) => {
     const [description, setDescription] = useState("")
     const [startDate, setStartDate] = useState("")
     const [developers, setDevelopers] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate()
     const params = useParams()
 
     useEffect(() => {
         const fetchData = async () => {
             try {
+                setIsLoading(true)
                 let { data } = await getSingleProject(params.id);
                 setName(data.name)
                 setStartDate(new Date(data.startDate));
@@ -38,11 +41,13 @@ const ProjectUpdate = ({ title }) => {
                 }
             } catch (error) {
                 console.log(error.message);
+            } finally {
+                setIsLoading(false);
             }
         };
         fetchData();
     }, [params.id, getSingleProject]);
-    
+
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -72,55 +77,61 @@ const ProjectUpdate = ({ title }) => {
 
     return (
         <Layout title={title} toast={toast}>
-            <div className="mb-3">
-                <h2 className="mb-5 mt-2">Update Project</h2>
-            </div>
-            <CForm className="row g-3" onSubmit={handleSubmit}>
-                <CCol md={6}>
-                    <CFormInput id="inputName" label="Name" value={name} onChange={(e) => setName(e.target.value)} />
-                </CCol>
-                <CCol md={6}>
-                    <label className="form-label">Date</label>
-                    <Calendar
-                        value={startDate}
-                        dateFormat="dd-mm-yy"
-                        onChange={(e) => setStartDate(e.target.value)}
-                        maxDate={new Date()}
-                        showIcon
-                        id="date"
-                        className="form-control"
-                    />
-                </CCol>
-                <CCol xs={12}>
-                    <label htmlFor="developerSelect" className="form-label">Developers</label>
-                    <MultiSelect
-                        value={developers}
-                        onChange={(e) => setDevelopers(e.target.value)}
-                        options={users}
-                        size={6}
-                        style={{ border: "1px solid var(--cui-input-border-color, #b1b7c1)", borderRadius: "6px" }}
-                        optionLabel="fullName"
-                        placeholder="Select Users"
-                        optionValue='id'
-                        id="developerSelect"
-                        className="form-control"
-                        onShow={onShow}
-                    />
-                </CCol>
-                <CCol md={12}>
-                    <label className='mb-2'>Description</label>
-                    <div className="card">
-                        <Editor
-                            value={description}
-                            onTextChange={(e) => setDescription(e.htmlValue)}
-                            className="editorContainer"
-                        />
+            {isLoading ? (
+                <Loader />
+            ) : (
+                <>
+                    <div className="mb-3">
+                        <h2 className="mb-5 mt-2">Update Project</h2>
                     </div>
-                </CCol>
-                <CCol xs={12}>
-                    <CButton type="submit">Submit</CButton>
-                </CCol>
-            </CForm>
+                    <CForm className="row g-3" onSubmit={handleSubmit}>
+                        <CCol md={6}>
+                            <CFormInput id="inputName" label="Name" value={name} onChange={(e) => setName(e.target.value)} />
+                        </CCol>
+                        <CCol md={6}>
+                            <label className="form-label">Date</label>
+                            <Calendar
+                                value={startDate}
+                                dateFormat="dd-mm-yy"
+                                onChange={(e) => setStartDate(e.target.value)}
+                                maxDate={new Date()}
+                                showIcon
+                                id="date"
+                                className="form-control"
+                            />
+                        </CCol>
+                        <CCol xs={12}>
+                            <label htmlFor="developerSelect" className="form-label">Developers</label>
+                            <MultiSelect
+                                value={developers}
+                                onChange={(e) => setDevelopers(e.target.value)}
+                                options={users}
+                                size={6}
+                                style={{ border: "1px solid var(--cui-input-border-color, #b1b7c1)", borderRadius: "6px" }}
+                                optionLabel="fullName"
+                                placeholder="Select Users"
+                                optionValue='id'
+                                id="developerSelect"
+                                className="form-control"
+                                onShow={onShow}
+                            />
+                        </CCol>
+                        <CCol md={12}>
+                            <label className='mb-2'>Description</label>
+                            <div className="card">
+                                <Editor
+                                    value={description}
+                                    onTextChange={(e) => setDescription(e.htmlValue)}
+                                    className="editorContainer"
+                                />
+                            </div>
+                        </CCol>
+                        <CCol xs={12}>
+                            <CButton type="submit">Submit</CButton>
+                        </CCol>
+                    </CForm>
+                </>
+            )}
         </Layout>
     );
 };

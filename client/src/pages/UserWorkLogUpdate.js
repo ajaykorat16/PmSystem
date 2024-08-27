@@ -10,6 +10,7 @@ import { Calendar } from 'primereact/calendar';
 import { Editor } from 'primereact/editor';
 import { useHelper } from '../context/Helper';
 import { useAuth } from '../context/AuthContext';
+import Loader from '../components/Loader';
 
 const UserWorkLogUpdate = ({ title }) => {
     const [projects, setProjects] = useState([]);
@@ -17,6 +18,8 @@ const UserWorkLogUpdate = ({ title }) => {
     const [description, setDescription] = useState("")
     const [logDate, setLogDate] = useState("")
     const [time, setTime] = useState("")
+    const [isLoading, setIsLoading] = useState(false);
+
     const { updateWorklog, getSingleWorklog } = useWorklog()
     const { getUserProject } = useProject()
     const { formatDate } = useHelper()
@@ -35,6 +38,7 @@ const UserWorkLogUpdate = ({ title }) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
+                setIsLoading(true);
                 let { data } = await getSingleWorklog(params.id);
                 if (data.length > 0) {
                     setSelectProject(data[0].project ? data[0].project : "")
@@ -44,6 +48,8 @@ const UserWorkLogUpdate = ({ title }) => {
                 }
             } catch (error) {
                 console.log(error.message);
+            } finally {
+                setIsLoading(false);
             }
         };
         fetchData();
@@ -67,47 +73,53 @@ const UserWorkLogUpdate = ({ title }) => {
 
     return (
         <Layout title={title} toast={toast}>
-            <div className="mb-3">
-                <h2 className="mb-5 mt-2">Update Work Log</h2>
-            </div>
-            <CForm className="row g-3" onSubmit={handleSubmit}>
-                <CCol xs={4}>
-                    <CFormSelect id="inputProject" label="Project" value={selectproject} onChange={(e) => setSelectProject(e.target.value)} >
-                        <option value="" disabled>Select a project</option>
-                        {projects.map((p) => (
-                            <option key={p.id} value={p.id}>{p.name}</option>
-                        ))}
-                    </CFormSelect>
-                </CCol>
-                <CCol md={4}>
-                    <CFormInput id="inputTime" label="Time" type="number" value={time} onChange={(e) => setTime(e.target.value)} />
-                </CCol>
-                <CCol md={4}>
-                    <label className="form-label">Log Date</label>
-                    <Calendar
-                        value={logDate}
-                        dateFormat="dd-mm-yy"
-                        onChange={(e) => setLogDate(e.target.value)}
-                        maxDate={new Date()}
-                        showIcon
-                        id="date"
-                        className="form-control"
-                    />
-                </CCol>
-                <CCol md={12}>
-                    <label className='mb-2'>Description</label>
-                    <div className="card">
-                        <Editor
-                            value={description}
-                            onTextChange={(e) => setDescription(e.htmlValue)}
-                            className="editorContainer"
-                        />
+            {isLoading ? (
+                <Loader />
+            ) : (
+                <>
+                    <div className="mb-3">
+                        <h2 className="mb-5 mt-2">Update Work Log</h2>
                     </div>
-                </CCol>
-                <CCol xs={12}>
-                    <CButton type="submit">Submit</CButton>
-                </CCol>
-            </CForm>
+                    <CForm className="row g-3" onSubmit={handleSubmit}>
+                        <CCol xs={4}>
+                            <CFormSelect id="inputProject" label="Project" value={selectproject} onChange={(e) => setSelectProject(e.target.value)} >
+                                <option value="" disabled>Select a project</option>
+                                {projects.map((p) => (
+                                    <option key={p.id} value={p.id}>{p.name}</option>
+                                ))}
+                            </CFormSelect>
+                        </CCol>
+                        <CCol md={4}>
+                            <CFormInput id="inputTime" label="Time" type="number" value={time} onChange={(e) => setTime(e.target.value)} />
+                        </CCol>
+                        <CCol md={4}>
+                            <label className="form-label">Log Date</label>
+                            <Calendar
+                                value={logDate}
+                                dateFormat="dd-mm-yy"
+                                onChange={(e) => setLogDate(e.target.value)}
+                                maxDate={new Date()}
+                                showIcon
+                                id="date"
+                                className="form-control"
+                            />
+                        </CCol>
+                        <CCol md={12}>
+                            <label className='mb-2'>Description</label>
+                            <div className="card">
+                                <Editor
+                                    value={description}
+                                    onTextChange={(e) => setDescription(e.htmlValue)}
+                                    className="editorContainer"
+                                />
+                            </div>
+                        </CCol>
+                        <CCol xs={12}>
+                            <CButton type="submit">Submit</CButton>
+                        </CCol>
+                    </CForm>
+                </>
+            )}
         </Layout>
     )
 }
