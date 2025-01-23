@@ -53,9 +53,9 @@ const LeaveUpdate = ({ title }) => {
     try {
       let leaveData
       if (auth.user.role === "admin") {
-        leaveData = { reason, startDate: formatDate(startDate), endDate: formatDate(endDate), leaveType, leaveDayType, userId, status, totalDays, };
+        leaveData = { reason, startDate, endDate, leaveType, leaveDayType, userId, status, totalDays, };
       } else {
-        leaveData = { reason, startDate: formatDate(startDate), endDate: formatDate(endDate), leaveType, leaveDayType, totalDays }
+        leaveData = { reason, startDate, endDate, leaveType, leaveDayType, totalDays }
       }
 
       const data = await updateLeave(leaveData, id);

@@ -10,6 +10,7 @@ const {
 } = require("../helper/mail");
 const { USERS, LEAVES } = require("../constants/tables");
 const { utcToLocal, localToUtc } = require("../helper/helper");
+const moment = require('moment');
 
 const createLeave = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
@@ -18,9 +19,6 @@ const createLeave = asyncHandler(async (req, res) => {
   }
   try {
     let { reason, startDate, endDate, leaveType, leaveDayType, userId, status, totalDays, } = req.body;
-
-    startDate = localToUtc(startDate);
-    endDate = localToUtc(endDate);
 
     if (startDate > endDate) {
       return res.status(200).json({
@@ -41,8 +39,8 @@ const createLeave = asyncHandler(async (req, res) => {
     const leaveData = {
       userId: uId,
       reason,
-      startDate,
-      endDate,
+      startDate: moment(startDate).format('YYYY-MM-DD'),
+      endDate: moment(endDate).format('YYYY-MM-DD'),
       leaveType,
       leaveDayType: parsedDayType(leaveDayType),
       status,
@@ -317,8 +315,8 @@ const updateLeave = asyncHandler(async (req, res) => {
       userId: userId || userLeave.userId,
       reason: reason || userLeave.reason,
       status: status || userLeave.status,
-      startDate: startDate || userLeave.startDate,
-      endDate: endDate || userLeave.endDate,
+      startDate: startDate ? moment(startDate).format('YYYY-MM-DD') : userLeave.startDate,
+      endDate: endDate ? moment(endDate).format('YYYY-MM-DD') : userLeave.endDate,
       leaveType: leaveType || userLeave.leaveType,
       leaveDayType: parsedDayType(leaveDayType) || userLeave.leaveDayType,
       totalDays: totalDays || userLeave.totalDays,
