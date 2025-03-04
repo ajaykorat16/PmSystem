@@ -24,15 +24,15 @@ const LeaveCreate = ({ title }) => {
   const typeList = ["paid", "lwp"];
   const dayTypeList = ["Single Day", "Multiple Day", "First Half", "Second Half"];
   const navigate = useNavigate();
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       let leaveData;
       if (auth.user.role === "admin") {
-        leaveData = { reason, startDate, endDate, leaveType, leaveDayType, totalDays, userId, status: "approved" }
+        leaveData = { reason, startDate: formatDate(startDate), endDate: formatDate(endDate), leaveType, leaveDayType, totalDays, userId, status: "approved" }
       } else {
-        leaveData = { reason, startDate, endDate, leaveType, leaveDayType, totalDays }
+        leaveData = { reason, startDate: formatDate(startDate), endDate: formatDate(endDate), leaveType, leaveDayType, totalDays }
       }
 
       const data = auth.user.role === "admin" ? await addLeave(leaveData) : await addUserLeave(leaveData);

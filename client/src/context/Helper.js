@@ -7,12 +7,12 @@ const HelperProvider = ({ children }) => {
 
     const formatDate = (date, format = 'YYYY-MM-DD') => {
         if (date !== "") {
-            const inputTime = moment(date);
-            return inputTime.format(format);
+            const inputTime = moment(date).format(format);
+            return inputTime;
         } else {
             return ""
         }
-    };
+    };     
 
     const onShow = () => {
         let selectAllCheckbox = document.querySelector(
