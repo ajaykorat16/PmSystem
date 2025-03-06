@@ -4,11 +4,13 @@ const { check } = require('express-validator');
 const { auth, isAdmin } = require("../middleware/auth")
 const formidableMiddleware = require('express-formidable');
 
-const { createUser, loginUser, updateUser, deleteUserProfile, getAllUser, getUserProfile, changePasswordController, getUsers, getUserByBirthDayMonth, loginUserByAdmin, userForCredential } = require("../controllers/user")
+const { createUser, loginUser, updateUser, deleteUserProfile, getAllUser, getUserProfile, changePasswordController, getUsers, getUserByBirthDayMonth, loginUserByAdmin, userForCredential, setDateOfLeaving } = require("../controllers/user")
+
+router.get("/", auth, getUsers)
 
 router.get("/userList", auth, isAdmin, getAllUser)
 
-router.get("/", auth, getUsers)
+router.get("/getUserProfile/:id", auth, formidableMiddleware(), getUserProfile)
 
 router.get("/credentialUser", auth, userForCredential)
 
@@ -69,7 +71,9 @@ router.put("/updateProfile", auth, updateUser)
 
 router.put("/updateProfile/:id", auth, isAdmin, updateUser)
 
-router.get("/getUserProfile/:id", auth, formidableMiddleware(), getUserProfile)
+router.put("/date-of-leaving/:id",
+    check('dateOfLeaving', 'Date of leaving is required').notEmpty(),
+    auth, isAdmin, setDateOfLeaving)
 
 router.delete("/deleteProfile/:id", auth, isAdmin, deleteUserProfile)
 

@@ -178,8 +178,33 @@ const UserProvider = ({ children }) => {
         }
     };
 
+    const setUserDateOfLeaving = async (id, dateOfLeaving) => {
+        try {
+            const { data } = await axios.put(`${baseURL}/user/date-of-leaving/${id}`, { dateOfLeaving }, { headers });
+
+            if (!data.error) {
+                toast.current.show({ severity: 'success', summary: 'User', detail: data.message, life: 3000 });
+            } else {
+                toast.current.show({ severity: 'error', summary: 'Error', detail: data.message, life: 3000 });
+            }
+        } catch (error) {
+            if (error.response) {
+                const errors = error.response.data.errors;
+                if (errors && Array.isArray(errors) && errors.length > 0) {
+                    if (errors.length > 1) {
+                        toast.current.show({ severity: 'error', summary: 'User', detail: "Please fill all fields.", life: 3000 })
+                    } else {
+                        toast.current.show({ severity: 'error', summary: 'User', detail: errors[0].msg, life: 3000 })
+                    }
+                }
+            } else {
+                toast.current.show({ severity: 'error', summary: 'User', detail: 'An error occurred. Please try again later.', life: 3000 })
+            }
+        }
+    };
+
     return (
-        <UserContext.Provider value={{ fetchUsers, createUser, updateUser, deleteUser, getUserProfile, updateProfile, resetPassword, getAllUsers, getAllUsersByBirthMonth, userForCredential }}>
+        <UserContext.Provider value={{ fetchUsers, createUser, updateUser, deleteUser, getUserProfile, updateProfile, resetPassword, getAllUsers, getAllUsersByBirthMonth, userForCredential, setUserDateOfLeaving }}>
             {children}
         </UserContext.Provider>
     );

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { CButton, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from "@coreui/react";
 import { useNavigate } from "react-router-dom";
 import { Column } from "primereact/column";
@@ -13,11 +13,14 @@ import { useAuth } from "../context/AuthContext";
 import Layout from "./Layout";
 import Loader from "../components/Loader";
 import "../styles/Styles.css";
+import { useHelper } from "../context/Helper";
+import { Calendar } from "primereact/calendar";
 
 const UserList = ({ title }) => {
   const navigate = useNavigate();
-  const { deleteUser, getAllUsers, getUserProfile } = useUser();
+  const { deleteUser, getAllUsers, getUserProfile, setUserDateOfLeaving } = useUser();
   const { loginUserByAdmin, toast, auth } = useAuth()
+  const { formatDate } = useHelper()
   const [isLoading, setIsLoading] = useState(true);
   const [userList, setUserList] = useState([]);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -37,6 +40,9 @@ const UserList = ({ title }) => {
     dateOfBirth: "",
     dateOfJoining: "",
   })
+  const [dateOfLeaving, setDateOfLeaving] = useState("");
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const dateRef = useRef("");
 
   const fetchUsers = async (currentPage, rowsPerPage, query, sortField, sortOrder) => {
     setIsLoading(true);
@@ -78,6 +84,50 @@ const UserList = ({ title }) => {
         await deleteUser(id);
         fetchUsers(currentPage, rowsPerPage, globalFilterValue.trim(), sortField, sortOrder);
       },
+    });
+  };
+
+  const handleDateOfLeaving = (id) => {
+    setSelectedUserId(id);
+    setDateOfLeaving("");
+    dateRef.current = "";
+
+    confirmDialog({
+      message: (
+        <div>
+          <p>Please enter the date of leaving:</p>
+          <Calendar
+            value={dateOfLeaving}
+            dateFormat="dd-mm-yy"
+            onChange={(e) => {
+              setDateOfLeaving(e.value);
+              dateRef.current = e.value; // Store the latest value
+            }}
+            showIcon
+            id="date"
+            className="form-control"
+          />
+        </div>
+      ),
+      header: 'Date of Leaving',
+      icon: 'pi pi-calendar',
+      position: 'center',
+      contentStyle: { overflow: 'visible' },
+      accept: async () => {
+        const leavingDate = formatDate(dateRef.current);
+
+        await setUserDateOfLeaving(selectedUserId, leavingDate);
+        fetchUsers(currentPage, rowsPerPage, globalFilterValue.trim(), sortField, sortOrder);
+        setDateOfLeaving("");
+      },
+      reject: () => {
+        setDateOfLeaving("");
+        fetchUsers(currentPage, rowsPerPage, globalFilterValue.trim(), sortField, sortOrder);
+      },
+      onHide: () => {
+        setDateOfLeaving("");
+        dateRef.current = "";
+      }
     });
   };
 
@@ -269,6 +319,11 @@ const UserList = ({ title }) => {
                 filterField="department"
                 align="center" />
               <Column
+                field="leaveBalance"
+                header="Leave Balance"
+                filterField="leaveBalance"
+                align="center" />
+              <Column
                 field="action"
                 header="Action"
                 body={(rowData) => (
@@ -298,6 +353,14 @@ const UserList = ({ title }) => {
                           className="ms-2"
                           aria-label="login"
                           onClick={() => handleLogin(rowData.id)} />
+                        <Button
+                          icon="pi pi-calendar-times"
+                          title="Date of Leaving"
+                          rounded
+                          severity="warning"
+                          className="ms-2"
+                          aria-label="login"
+                          onClick={() => handleDateOfLeaving(rowData.id)} />
                       </>
                     )}
                     {auth.user.role === "user" && (

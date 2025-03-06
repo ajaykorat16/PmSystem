@@ -572,6 +572,42 @@ const changePasswordController = asyncHandler(async (req, res) => {
   }
 });
 
+const setDateOfLeaving = asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ error: true, errors: errors.array() });
+  }
+  try {
+    const { id } = req.params;
+    const { dateOfLeaving } = req.body;
+
+    let user = await knex(USERS).where("id", id).first();
+
+    if (!user) {
+      return res.status(400).json({
+        error: true,
+        message: "User Not Found.",
+      });
+    }
+
+    const updateDetail = {
+      dateOfLeaving,
+      status: "deactive",
+      updatedAt: new Date()
+    }
+
+    await knex(USERS).where("id", id).update(updateDetail);
+
+    res.status(200).send({
+      error: false,
+      message: "User leaving date updated successfully.",
+    });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).send("Server error");
+  }
+});
+
 module.exports = {
   createUser,
   loginUser,
@@ -584,4 +620,5 @@ module.exports = {
   getUserByBirthDayMonth,
   loginUserByAdmin,
   userForCredential,
+  setDateOfLeaving
 };
