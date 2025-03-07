@@ -75,11 +75,11 @@ router.put("/date-of-leaving/:id",
     check('dateOfLeaving', 'Date of leaving is required').notEmpty(),
     auth, isAdmin, setDateOfLeaving)
 
-router.delete("/deleteProfile/:id", auth, isAdmin, deleteUserProfile)
-
 router.put("/resetPassword",
     check('password', 'Please enter a password with 6 or more characters.').isLength({ min: 6 }),
     auth, changePasswordController
 )
+
+router.delete("/deleteProfile/:id", auth, isAdmin, deleteUserProfile)
 
 module.exports = router    

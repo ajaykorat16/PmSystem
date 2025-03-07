@@ -20,13 +20,14 @@ const getLeavesMonthWise = asyncHandler(async (req, res) => {
     let totalLeaves = await knex(`${LEAVEMANAGEMENTS} as lm`)
       .innerJoin(`${USERS} as u`, 'lm.user', 'u.id')
       .where(query)
+      .where('u.status', 'active')
       .count('lm.id as count')
       .first();
     totalLeaves = totalLeaves ? totalLeaves.count : 0;
 
     const skip = (page - 1) * limit;
 
-    const leaves = await knex.select('lm.*', 'u.fullName').from(`${LEAVEMANAGEMENTS} as lm`).where(query).innerJoin(`${USERS} as u`, 'lm.user', 'u.id').offset(skip).limit(limit);
+    const leaves = await knex.select('lm.*', 'u.fullName').from(`${LEAVEMANAGEMENTS} as lm`).where(query).innerJoin(`${USERS} as u`, 'lm.user', 'u.id').where('u.status', 'active').offset(skip).limit(limit);
 
     return res.status(200).json({
       error: false,

@@ -89,7 +89,8 @@ const getAllLeaves = asyncHandler(async (req, res) => {
     const leaves = await knex
       .select("l.*", "u.fullName as username")
       .from(`${LEAVES} as l`)
-      .innerJoin(`${USERS} as u`, "l.userId", "u.id");
+      .innerJoin(`${USERS} as u`, "l.userId", "u.id")
+      .where('u.status', 'active')
 
     const formattedLeaves = leaves.map((leave) => {
       return {
@@ -123,7 +124,7 @@ const getLeaves = asyncHandler(async (req, res) => {
     let fullName = [];
 
     if (filter) {
-      let searchUser = await knex(USERS).select().where("fullName", "like", `%${filter}%`);
+      let searchUser = await knex(USERS).where("fullName", "like", `%${filter}%`);
 
       if (searchUser.length !== 0) {
         fullName = searchUser.map((u) => u.id);
@@ -139,6 +140,7 @@ const getLeaves = asyncHandler(async (req, res) => {
     let totalLeaves = await knex(`${LEAVES} as l`)
       .where(query)
       .innerJoin(`${USERS} as u`, "l.userId", "u.id")
+      .where("u.status", "active") // Ensure only active users' leaves are counted
       .count('l.id as count')
       .first();
 
@@ -152,6 +154,7 @@ const getLeaves = asyncHandler(async (req, res) => {
         .from(`${LEAVES} as l`)
         .where(query)
         .innerJoin(`${USERS} as u`, "l.userId", "u.id")
+        .where("u.status", "active") // Filter only active users
         .offset(skip)
         .limit(limit);
       leaves.sort((a, b) => {
@@ -164,8 +167,9 @@ const getLeaves = asyncHandler(async (req, res) => {
         .select("l.*", "u.fullName as username")
         .from(`${LEAVES} as l`)
         .where(query)
-        .orderBy(sortField, sortOrder === -1 ? "desc" : "asc")
         .innerJoin(`${USERS} as u`, "l.userId", "u.id")
+        .where("u.status", "active") // Filter only active users
+        .orderBy(sortField, sortOrder === -1 ? "desc" : "asc")
         .offset(skip)
         .limit(limit);
     }
@@ -183,7 +187,7 @@ const getLeaves = asyncHandler(async (req, res) => {
 
     return res.status(200).json({
       error: false,
-      message: "Leaves is retrieved successfully.",
+      message: "Leaves are retrieved successfully.",
       data: formattedLeaves,
       currentPage: page,
       totalPages: Math.ceil(totalLeaves / limit),

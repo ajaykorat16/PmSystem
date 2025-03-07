@@ -68,6 +68,7 @@ const getCredential = asyncHandler(async (req, res) => {
           .orWhere("uc.userId", userId);
       })
       .andWhere(filterQuery)
+      .andWhere('u.status', 'active')
       .countDistinct('c.id as count')
       .first();
 
@@ -121,7 +122,7 @@ const getSingleCredential = asyncHandler(async (req, res) => {
       })
     }
 
-    const userCredentials = await knex(`${USER_CREDENTIAL_RELATION} as uc`).select('u.id', 'u.fullName', 'u.photo').leftJoin(`${USERS} as u`, 'u.id', 'uc.userId').where('credentialId', id);
+    const userCredentials = await knex(`${USER_CREDENTIAL_RELATION} as uc`).select('u.id', 'u.fullName', 'u.photo').leftJoin(`${USERS} as u`, 'u.id', 'uc.userId').where('credentialId', id).andWhere('u.status', 'active');
 
     credential.users = userCredentials;
 

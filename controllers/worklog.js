@@ -151,7 +151,8 @@ const getAllWorklog = async (req, res) => {
         let countQuery = knex('worklogs')
             .count('* as totalCount')
             .innerJoin('users as u', 'worklogs.userId', 'u.id')
-            .innerJoin('projects as p', 'worklogs.project', 'p.id');
+            .innerJoin('projects as p', 'worklogs.project', 'p.id')
+            .where('u.status', 'active')
 
         if (filter.project) {
             countQuery = countQuery.where('p.id', filter.project);
@@ -176,7 +177,8 @@ const getAllWorklog = async (req, res) => {
         let query = knex('worklogs')
             .select('worklogs.*', 'u.fullName', 'p.name as projectName')
             .innerJoin('users as u', 'worklogs.userId', 'u.id')
-            .innerJoin('projects as p', 'worklogs.project', 'p.id');
+            .innerJoin('projects as p', 'worklogs.project', 'p.id')
+            .where('u.status', 'active')
 
         if (filter.project) {
             query = query.where('p.id', filter.project);
@@ -220,7 +222,6 @@ const getAllWorklog = async (req, res) => {
         return res.status(500).send('Server error');
     }
 };
-
 
 const getSingleWorklog = asyncHandler(async (req, res) => {
     const errors = validationResult(req);

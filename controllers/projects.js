@@ -139,7 +139,8 @@ const getProjects = asyncHandler(async (req, res) => {
         const projectDevelopers = await knex(`${USER_PROJECT_RELATION} as upr`)
           .select('u.id', 'u.fullName')
           .leftJoin(`${USERS} as u`, 'u.id', 'upr.userId')
-          .where('upr.projectId', row.projectId);
+          .where('upr.projectId', row.projectId)
+          .andWhere('u.status', 'active')
 
         return {
           ...row,
@@ -302,7 +303,7 @@ const getSingleProject = asyncHandler(async (req, res) => {
       });
     }
 
-    const projectDevelopers = await knex(`${USER_PROJECT_RELATION} as upr`).select('u.id', 'u.fullName').leftJoin(`${USERS} as u`, 'u.id', 'upr.userId').where('upr.projectId', id);
+    const projectDevelopers = await knex(`${USER_PROJECT_RELATION} as upr`).select('u.id', 'u.fullName').leftJoin(`${USERS} as u`, 'u.id', 'upr.userId').where('upr.projectId', id).andWhere('u.status', "active");
 
     projectQuery.developers = projectDevelopers;
 

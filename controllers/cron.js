@@ -3,7 +3,7 @@ const { knex } = require('../database/db');
 
 const carryForwardLeaves = async () => {
     try {
-        const allUsers = await knex.select('u.id', 'u.fullName', 'u.carryForward', 'u.leaveBalance').from(`${USERS} as u`).where('role', 'user')
+        const allUsers = await knex.select('u.id', 'u.fullName', 'u.carryForward', 'u.leaveBalance').from(`${USERS} as u`).where({ role: 'user', status: 'active' })
         const currentDate = new Date();
         const oneYearAgo = new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), currentDate.getDate());
 
@@ -55,7 +55,7 @@ const createMonthly = async () => {
         let today = new Date();
         let leave = 1.5
 
-        const allUsers = await knex(USERS).where('role', 'user');
+        const allUsers = await knex(USERS).where({ role: 'user', status: 'active' });
 
         allUsers.map(async (e) => {
             await knex(LEAVEMANAGEMENTS).insert({ user: e.id, monthly: today, leave });

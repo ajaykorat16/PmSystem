@@ -123,6 +123,13 @@ const loginUser = asyncHandler(async (req, res) => {
       });
     }
 
+    if (user.status !== 'active') {
+      return res.status(401).json({
+        error: true,
+        message: "Your account is inactive. Please contact the administrator.",
+      });
+    }
+
     const token = jwt.sign({ user }, process.env.JWT_SECRET_KEY, { expiresIn: "365 days" });
 
     return res.status(200).send({
@@ -312,10 +319,13 @@ const getUsers = asyncHandler(async (req, res) => {
   sortField = sortField || "createdAt";
   authUser = req.user;
 
+  console.log(filter);
+
   try {
     let query = knex(`${USERS} as u`)
       .select('u.*', 'd.name as department')
-      .leftJoin(`${DEPARTMENTS} as d`, 'u.department', 'd.id');
+      .leftJoin(`${DEPARTMENTS} as d`, 'u.department', 'd.id')
+      .where('u.status', 'active')
 
     if (filter) {
       const dateSearch = typeof filter === "string" && isValidDate(filter)
@@ -418,6 +428,7 @@ const getUserByBirthDayMonth = asyncHandler(async (req, res) => {
       .from(`${USERS} as u`)
       .leftJoin(`${DEPARTMENTS} as d`, 'd.id', 'u.department')
       .where(query)
+      .where('u.status', 'active')
       .offset(skip)
       .limit(limit);
 
@@ -456,7 +467,7 @@ const getUserByBirthDayMonth = asyncHandler(async (req, res) => {
 
 const getAllUser = asyncHandler(async (req, res) => {
   try {
-    let getAllUsers = await knex(USERS).where("role", "user");
+    let getAllUsers = await knex(USERS).where({ role: "user", status: "active" });
 
     getAllUsers = getAllUsers.map((userData) => {
       const { password, ...dataWithoutPassword } = userData;
@@ -479,7 +490,7 @@ const userForCredential = asyncHandler(async (req, res) => {
   try {
     const loginUser = req.user.id;
 
-    let getAllUsers = await knex(USERS).where("id", "!=", loginUser);
+    let getAllUsers = await knex(USERS).where("id", "!=", loginUser).andWhere('status', 'active');
 
     getAllUsers = getAllUsers.map((userData) => {
       const { password, ...dataWithoutPassword } = userData;
@@ -577,34 +588,54 @@ const setDateOfLeaving = asyncHandler(async (req, res) => {
   if (!errors.isEmpty()) {
     return res.status(400).json({ error: true, errors: errors.array() });
   }
+
   try {
-    const { id } = req.params;
+    const { id: userId } = req.params;
     const { dateOfLeaving } = req.body;
 
-    let user = await knex(USERS).where("id", id).first();
-
+    const user = await knex(USERS).where("id", userId).first();
     if (!user) {
-      return res.status(400).json({
+      return res.status(404).json({
         error: true,
-        message: "User Not Found.",
+        message: "User not found.",
       });
     }
 
-    const updateDetail = {
+    const updatedUserData = {
       dateOfLeaving,
       status: "deactive",
-      updatedAt: new Date()
+      updatedAt: new Date(),
+    };
+
+    const activeAdmin = await knex(USERS).where({ role: "admin", status: "active" }).first();
+    if (!activeAdmin) {
+      return res.status(400).json({
+        error: true,
+        message: "Active admin not found.",
+      });
     }
 
-    await knex(USERS).where("id", id).update(updateDetail);
+    const userCredentials = await knex(CREDENTIALS).where("createdBy", userId);
+    if (userCredentials.length > 0) {
+      const credentialIds = userCredentials.map((cred) => cred.id);
 
-    res.status(200).send({
+      await knex(USER_CREDENTIAL_RELATION).whereIn("credentialId", credentialIds).andWhere("userId", activeAdmin.id).del();
+    }
+
+    await knex(USERS).where("id", userId).update(updatedUserData);
+    await knex(CREDENTIALS).where("createdBy", userId).update({ createdBy: activeAdmin.id });
+    await knex(USER_CREDENTIAL_RELATION).where("userId", userId).del();
+
+    res.status(200).json({
       error: false,
       message: "User leaving date updated successfully.",
     });
   } catch (error) {
-    console.error(error.message);
-    return res.status(500).send("Server error");
+    console.error("Error updating user leaving date:", error.message);
+    return res.status(500).json({
+      error: true,
+      message: "Internal server error. Please try again later.",
+    });
   }
 });
 

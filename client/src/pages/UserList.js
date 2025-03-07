@@ -5,16 +5,16 @@ import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { Avatar } from "primereact/avatar";
 import { Dropdown } from "primereact/dropdown";
+import { Calendar } from "primereact/calendar";
 import { InputText } from "primereact/inputtext";
 import { DataTable } from "primereact/datatable";
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { useHelper } from "../context/Helper";
 import { useUser } from "../context/UserContext";
 import { useAuth } from "../context/AuthContext";
 import Layout from "./Layout";
 import Loader from "../components/Loader";
 import "../styles/Styles.css";
-import { useHelper } from "../context/Helper";
-import { Calendar } from "primereact/calendar";
 
 const UserList = ({ title }) => {
   const navigate = useNavigate();
@@ -88,7 +88,6 @@ const UserList = ({ title }) => {
   };
 
   const handleDateOfLeaving = (id) => {
-    setSelectedUserId(id);
     setDateOfLeaving("");
     dateRef.current = "";
 
@@ -101,7 +100,7 @@ const UserList = ({ title }) => {
             dateFormat="dd-mm-yy"
             onChange={(e) => {
               setDateOfLeaving(e.value);
-              dateRef.current = e.value; // Store the latest value
+              dateRef.current = e.value; 
             }}
             showIcon
             id="date"
@@ -110,13 +109,12 @@ const UserList = ({ title }) => {
         </div>
       ),
       header: 'Date of Leaving',
-      icon: 'pi pi-calendar',
       position: 'center',
       contentStyle: { overflow: 'visible' },
       accept: async () => {
         const leavingDate = formatDate(dateRef.current);
 
-        await setUserDateOfLeaving(selectedUserId, leavingDate);
+        await setUserDateOfLeaving(id, leavingDate);
         fetchUsers(currentPage, rowsPerPage, globalFilterValue.trim(), sortField, sortOrder);
         setDateOfLeaving("");
       },
@@ -226,8 +224,6 @@ const UserList = ({ title }) => {
               </CButton>
             </CModalFooter>
           </CModal>
-
-          {/* Users Table head starts... */}
           <div className="card mb-5">
             <div className="mainHeader d-flex align-items-center justify-content-between">
               <div>
